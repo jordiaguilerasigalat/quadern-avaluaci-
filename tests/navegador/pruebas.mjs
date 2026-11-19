@@ -131,7 +131,7 @@ export const PRUEBAS = [
     const r = await p.evaluate(async () => {
       const P = tag => `Zq"'><img src=x onerror=top.__x(/${tag}/)>');top.__x(/${tag}_js/);('&#39;);top.__x(/${tag}_ent/);(&#39;`;
       const hits = {}; let donde = ''; window.__x = re => { hits[re.source + ' @ ' + donde] = 1; };
-      const g = state.grupos[0], cr = getCatalogo('GeH_1ESO').ces[0].criterios[0].id;
+      const g = state.grupos[0], cr = getCatalogo('FiQ_2ESO').ces[0].criterios[0].id;
       g.nombre = '1º A ' + P('grupo');
       g.alumnos.forEach((a, i) => { a.apellidos = 'Pérez ' + P('apellidos'); a.nombreP = 'Ana' + i + P('nombreP'); a.nombre = a.apellidos + ', ' + a.nombreP; a.observaciones = P('obs'); a.comentariosEval = [P('coment'), '', ''];
         a.nese = true; a.neseNivel = P('neseNivel'); a.familia = [{ parentesco: P('parentesco'), nombre: P('famNombre'), email: P('email') }, { parentesco: '', nombre: '', email: '' }]; });
@@ -146,7 +146,7 @@ export const PRUEBAS = [
       state.eventos.push({ id: uid(), fecha: hoy, titulo: P('evento'), tipo: 'examen', grupoIds: [g.id], nota: P('eventoNota') });
       state.reuniones.push({ id: uid(), fecha: hoy, tipo: 'familia', titulo: P('reunion'), asistentes: P('asistentes'), temas: P('temas'), acuerdos: P('acuerdos'), grupoId: g.id, alumnoId: g.alumnos[0].id });
       state.centroNombre = P('centro'); state.profesorNombreGlobal = P('profesor');
-      state.programaciones = [{ id: 'p1', nombre: P('prog'), catalogoKey: 'GeH_1ESO', sdas: [{ id: 's1', titulo: P('sdaTitulo'), trimestre: 0, sesionesPrevistas: 6 }], actividades: [] }];
+      state.programaciones = [{ id: 'p1', nombre: P('prog'), catalogoKey: 'FiQ_2ESO', sdas: [{ id: 's1', titulo: P('sdaTitulo'), trimestre: 0, sesionesPrevistas: 6 }], actividades: [] }];
       migrarEstado(); state.ui.grupoId = g.id; save();
       const inyectados = () => [...document.querySelectorAll('img[onerror*="__x"]')].map(im => (im.getAttribute('onerror').match(/__x\(\/(\w+)\//) || [])[1] + ' @ ' + donde);
       const malos = new Set(); const mira = async d => { donde = d; _mostrarBienvenida = false; render(); await new Promise(r => setTimeout(r, 120)); inyectados().forEach(x => malos.add(x)); };
@@ -363,7 +363,7 @@ export const PRUEBAS = [
       const fuera = []; p.on('request', r => { if (!r.url().startsWith(srv.url) && !/^(data|blob|about):/.test(r.url())) fuera.push(r.url()); });
       await p.reload(); await esperar(1500);
       const plan = await p.evaluate(async () => { _mostrarBienvenida = false;
-        state.programaciones = [{ id: 'p1', nombre: 'Prueba', catalogoKey: 'GeH_1ESO', sdas: [], actividades: [] }]; migrarEstado();
+        state.programaciones = [{ id: 'p1', nombre: 'Prueba', catalogoKey: 'FiQ_2ESO', sdas: [], actividades: [] }]; migrarEstado();
         state.ui.appMode = 'programacion'; state.ui.progTab = 'detalle'; state.ui.progId = 'p1'; state.ui.progDetTab = 'planificacion'; render();
         await new Promise(r => setTimeout(r, 2500));
         return { hay: !!document.querySelector('#planTempWrap iframe') }; });
@@ -422,13 +422,13 @@ export const PRUEBAS = [
   { nombre: 'nuevo-curso', descripcion: 'Empezar curso nuevo: archiva el curso entero y deja los grupos, las programaciones y el horario listos', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     const ids = await cuadernoConGrupo(p, t.url);
-    await p.evaluate(() => { const g = state.grupos[0], cr = getCatalogo('GeH_1ESO').ces[0].criterios[0].id;
+    await p.evaluate(() => { const g = state.grupos[0], cr = getCatalogo('FiQ_2ESO').ces[0].criterios[0].id;
       g.actividades = [{ id: 'e1', nombre: 'Examen', trimestre: 0, bloqueId: 'b0', esExamen: true, criterios: [{ critId: cr, peso: 100 }] }];
       g.notasCuant = { [g.alumnos[0].id]: { e1: 7 } }; g.bloques[0].peso = 70; g.bloques[1].peso = 30; g.umbrales.excelente = 90;
       g.diario['2026-10-01'] = { nota: 'Clase', incidencias: '', unidadId: '' }; g.asistencia['2026-10-01'] = { [g.alumnos[1].id]: { estado: 'retraso', nota: '' } };
       g.alumnos[0].observaciones = 'Observación del curso pasado'; g.alumnos[0].nese = true; g.alumnos[0].fechaNacimiento = '2013-05-02';
-      state.programaciones = [{ id: 'p1', nombre: 'Prog 1º', catalogoKey: 'GeH_1ESO', sdas: [{ id: 's1', titulo: 'SdA 1', trimestre: 0, sesionesPrevistas: 6 }], actividades: [] }]; g.programacionId = 'p1';
-      state.horario.celdas['0-lun'] = { tipo: 'clase', materia: 'GeH', nivelGrupo: '1º A', aula: '12', nota: '', grupoId: g.id };
+      state.programaciones = [{ id: 'p1', nombre: 'Prog 1º', catalogoKey: 'FiQ_2ESO', sdas: [{ id: 's1', titulo: 'SdA 1', trimestre: 0, sesionesPrevistas: 6 }], actividades: [] }]; g.programacionId = 'p1';
+      state.horario.celdas['0-lun'] = { tipo: 'clase', materia: 'FiQ', nivelGrupo: '1º A', aula: '12', nota: '', grupoId: g.id };
       state.eventos = [{ id: 'ev1', fecha: '2026-11-02', titulo: 'Examen', tipo: 'examen', grupoIds: [g.id] }]; state.festivos = [{ id: 'f1', fechaInicio: '2026-10-09', fechaFin: '2026-10-09', etiqueta: '9 d\'Octubre' }];
       state.reuniones = [{ id: 'r1', fecha: '2026-10-05', tipo: 'familia', titulo: 'Reunión' }]; state.planesRefuerzo = [{ id: 'pr1', alumnoId: g.alumnos[0].id, estado: 'activo' }];
       state.cursoEscolarGlobal = '2026-2027'; _mostrarBienvenida = false; migrarEstado(); state.ui.grupoId = null; save(); render(); });
@@ -447,7 +447,7 @@ export const PRUEBAS = [
       eventos: state.eventos.length, festivos: state.festivos.length, reuniones: state.reuniones.length, planes: state.planesRefuerzo.length, disenos: (await exLeerTodos()).map(x => x.key).join(','), copias: (await idbAll('copias')).map(c => c.motivo).join(' | ') }; });
     t.ok(antes === 3 && r.curso === '2027-2028' && r.alumnos === 0 && r.acts === 0 && r.notas === 0 && r.diario === 0 && r.asist === 0 && r.eventos === 0 && r.festivos === 0 && r.reuniones === 0 && r.planes === 0,
       'se vacía lo que es de un solo curso', JSON.stringify(r));
-    t.ok(r.grupo === '1º ESO A' && r.pesos === '70/30' && r.umbral === 90 && r.prog === 'p1' && r.progs === 1 && r.cursoProg === '2027-2028' && r.horario,
+    t.ok(r.grupo === '1º ESO A' && r.pesos === '70/30/20/5' && r.umbral === 90 && r.prog === 'p1' && r.progs === 1 && r.cursoProg === '2027-2028' && r.horario,
       'se conservan el grupo con su configuración, la programación y el horario', JSON.stringify(r));
     t.ok(r.disenos === 'prog:pa1' && /Antes de empezar el curso 2027-2028/.test(r.copias), 'quedan las plantillas de examen y una copia interna del curso anterior', JSON.stringify(r));
     // Deshacer devuelve el curso anterior.
@@ -493,7 +493,7 @@ export const PRUEBAS = [
   { nombre: 'modo-proyector', descripcion: 'Modo proyector: los nombres del alumnado y sus notas se difuminan en todas las pantallas', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     await cuadernoConGrupo(p, t.url, { nombres: ['Xilófono Quetzal, Wenceslao', 'Ñandú Kiwi, Brígida', 'Yunque Zafiro, Úrsula'] });
-    await p.evaluate(() => { _mostrarBienvenida = false; const g = state.grupos[0], cr = getCatalogo('GeH_1ESO').ces[0].criterios[0].id;
+    await p.evaluate(() => { _mostrarBienvenida = false; const g = state.grupos[0], cr = getCatalogo('FiQ_2ESO').ces[0].criterios[0].id;
       g.actividades = [{ id: 'e1', nombre: 'Examen', trimestre: 0, bloqueId: 'b0', esExamen: true, criterios: [{ critId: cr, peso: 100 }] }];
       g.alumnos.forEach((a, i) => { g.notasCuant[a.id] = { e1: 3 + i * 2.5 }; g.notas[a.id] = { e1: { [cr]: 5 + i } }; a.familia[0] = { parentesco: 'Madre', nombre: 'Familiar Reconocible ' + i, email: 'familia' + i + '@correo.es' }; });
       g.convivencia.push({ id: uid(), alumnoId: g.alumnos[0].id, fecha: agHoyStr(), tipo: 'AC', descripcion: 'Incidencia' });
@@ -597,9 +597,9 @@ export const PRUEBAS = [
   { nombre: 'examen-adaptado', descripcion: 'Examen adaptado NESE: aviso, creación desde el Diseño, corrección con su rúbrica y paso por la Programación a otro grupo', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     await cuadernoConGrupo(p, t.url, { nombres: ['Alfa, Ana', 'Beta, Bruno', 'Gamma, Gema'] });
-    await p.evaluate(() => { _mostrarBienvenida = false; const g = state.grupos[0], cr = getCatalogo('GeH_1ESO').ces[0].criterios[0].id;
+    await p.evaluate(() => { _mostrarBienvenida = false; const g = state.grupos[0], cr = getCatalogo('FiQ_2ESO').ces[0].criterios[0].id;
       g.alumnos[1].nese = true;
-      state.programaciones = [{ id: 'p1', nombre: 'Prog', catalogoKey: 'GeH_1ESO', sdas: [], actividades: [{ id: 'pa1', nombre: 'Examen tema 1', tipo: TIPOS[0], esExamen: true, criterios: [{ critId: cr, peso: 100 }], sdaIds: [] }] }];
+      state.programaciones = [{ id: 'p1', nombre: 'Prog', catalogoKey: 'FiQ_2ESO', sdas: [], actividades: [{ id: 'pa1', nombre: 'Examen tema 1', tipo: TIPOS[0], esExamen: true, criterios: [{ critId: cr, peso: 100 }], sdaIds: [] }] }];
       migrarEstado(); g.programacionId = 'p1';
       const act = progCrearActividadEnGrupo(g, state.programaciones[0].actividades[0], 0); g.actividades.push(act);
       state.ui.appMode = 'corrector'; state.ui.grupoId = g.id; state.ui.corExamId = act.id; state.ui.corTab = 'diseno'; save(); render(); });
@@ -631,7 +631,7 @@ export const PRUEBAS = [
     t.ok(await p.evaluate(() => state.programaciones[0].actividades[0].variantes.length === 1), 'guardar la rúbrica en la Programación no duplica la versión adaptada');
     // Otro grupo trae el examen: nace con la versión adaptada, su alumnado NESE y el diseño adaptado.
     r = await p.evaluate(async () => {
-      const g2 = defGrupo('1º ESO B', 'GeH_1ESO'); g2.programacionId = 'p1';
+      const g2 = defGrupo('1º ESO B', 'FiQ_2ESO'); g2.programacionId = 'p1';
       g2.alumnos = ['Delta, Dani', 'Épsilon, Eva'].map(n => normalizarAlumno({ id: uid(), nombre: n })); g2.alumnos[1].nese = true;
       state.grupos.push(g2);
       const act = progCrearActividadEnGrupo(g2, state.programaciones[0].actividades[0], 0); g2.actividades.push(act);
@@ -851,7 +851,7 @@ export const PRUEBAS = [
   { nombre: 'que-me-falta', descripcion: 'Inicio: «Qué me falta» detecta notas a medias y comentarios pendientes', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     await cuadernoConGrupo(p, t.url, { nombres: ['A, Uno', 'B, Dos', 'C, Tres', 'D, Cuatro'] });
-    const txt = await p.evaluate(() => { const g = state.grupos[0], [A, B, C, D] = g.alumnos.map(a => a.id), cr = getCatalogo('GeH_1ESO').ces[0].criterios[0].id;
+    const txt = await p.evaluate(() => { const g = state.grupos[0], [A, B, C, D] = g.alumnos.map(a => a.id), cr = getCatalogo('FiQ_2ESO').ces[0].criterios[0].id;
       g.actividades = [{ id: 'e1', nombre: 'Examen tema 1', trimestre: 0, bloqueId: 'b0', esExamen: true, criterios: [{ critId: cr, peso: 100 }] },
                        { id: 't2', nombre: 'Sin corregir', trimestre: 0, bloqueId: 'b1', criterios: [{ critId: cr, peso: 100 }] }];
       g.notasCuant = { [A]: { e1: 7 }, [B]: { e1: 5 } }; g.marcas = { [C]: { e1: 'NP' } }; g.alumnos[0].comentariosEval = ['Bien', '', ''];
@@ -864,7 +864,7 @@ export const PRUEBAS = [
   { nombre: 'calificar', descripcion: 'Calificar (Tarjetas): Intro pasa al siguiente y las notas se guardan', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     await cuadernoConGrupo(p, t.url);
-    await p.evaluate(() => { const g = state.grupos[0], cr = getCatalogo('GeH_1ESO').ces[0].criterios[0].id;
+    await p.evaluate(() => { const g = state.grupos[0], cr = getCatalogo('FiQ_2ESO').ces[0].criterios[0].id;
       g.actividades = [{ id: 'e1', nombre: 'Examen', trimestre: 0, bloqueId: 'b0', esExamen: true, criterios: [{ critId: cr, peso: 100 }] }];
       state.ui.appMode = 'competencial'; state.ui.tab = 'calificar'; state.ui.calViewMode = 'cards'; save(); render(); });
     await esperar(400);
@@ -942,7 +942,7 @@ export const PRUEBAS = [
   { nombre: 'rubrica-niveles', descripcion: 'Rúbrica por niveles de logro: crear, corregir pinchando casillas, afinar, cambiar valores y pesos, imprimir, plantillas y cambio de tipo', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     const [A, B] = await cuadernoConGrupo(p, t.url);
-    const cr = await p.evaluate(() => getCatalogo('GeH_1ESO').ces[0].criterios.slice(0, 2).map(c => c.id));
+    const cr = await p.evaluate(() => getCatalogo('FiQ_2ESO').ces[0].criterios.slice(0, 2).map(c => c.id));
     // Crear desde el formulario «Nuevo examen», con dos criterios marcados.
     await p.evaluate(cr => { state.ui.appMode = 'corrector'; state.ui.corTab = 'crear';
       state.ui.corForm = { nombre: 'Exposición oral', bloqueId: '', sda: '', fecha: '', plantillaId: '', criterios: cr, tipoRub: 'niveles' }; save(); render(); }, cr);
@@ -1032,7 +1032,7 @@ export const PRUEBAS = [
     const p = await nuevaPagina(t.contexto);
     await cuadernoConGrupo(p, t.url);
     const r = await p.evaluate(() => {
-      const g = state.grupos[0], cr = getCatalogo('GeH_1ESO').ces[0].criterios.slice(0, 3).map(c => c.id);
+      const g = state.grupos[0], cr = getCatalogo('FiQ_2ESO').ces[0].criterios.slice(0, 3).map(c => c.id);
       const pa = { id: 'pa1', nombre: 'Proyecto de investigación', tipo: 'Prueba objetiva / examen', esExamen: true, criterios: cr.map(c => ({ critId: c, peso: 100 })) };
       const act = progCrearActividadEnGrupo(g, pa, state.ui.trim); save();
       const viejo = { id: 'old', nombre: 'Examen antiguo', trimestre: state.ui.trim, esExamen: true, bloqueId: g.bloques[0].id, criterios: [], rubrica: cxRubricaDesdeCriterios(cr.map(c => ({ critId: c, peso: 100 })), g.catalogoKey) };
@@ -1048,7 +1048,7 @@ export const PRUEBAS = [
     t.ok(await p.locator('table.cxn-editor').count() === 1 && await p.getByText('¿Con qué tipo de rúbrica quieres corregir').count() === 0, 'se ve la tabla y ya no pregunta');
     await p.evaluate(() => cxElegirTipoInicial('old', 'puntos'));
     t.ok(await p.evaluate(() => { const g = state.grupos[0]; return !cxTipoPendiente(g, g.actividades.find(a => a.id === 'old')); }), 'elegir «por puntos» deja de preguntar');
-    await p.evaluate(() => { const g = state.grupos[0]; const pa = { id: 'pa2', nombre: 'Otro', tipo: 'Prueba objetiva / examen', esExamen: true, criterios: [{ critId: getCatalogo('GeH_1ESO').ces[0].criterios[0].id, peso: 100 }] };
+    await p.evaluate(() => { const g = state.grupos[0]; const pa = { id: 'pa2', nombre: 'Otro', tipo: 'Prueba objetiva / examen', esExamen: true, criterios: [{ critId: getCatalogo('FiQ_2ESO').ces[0].criterios[0].id, peso: 100 }] };
       const a = progCrearActividadEnGrupo(g, pa, state.ui.trim); g.rubricScores = { [g.alumnos[0].id]: { [a.id]: { [a.rubrica[0].items[0].id]: 5 } } }; window._a2 = a.id; });
     t.ok(await p.evaluate(() => !cxTipoPendiente(state.grupos[0], state.grupos[0].actividades.find(a => a.id === window._a2))), 'si ya hay alumnado corregido, no pregunta');
   } },
@@ -1067,7 +1067,7 @@ export const PRUEBAS = [
       t.ok(!otras.length, `${pant}: sin errores de accesibilidad`, otras.map(x => x.id + '×' + x.n).join(', '));
     };
     await cuadernoConGrupo(p, t.url);
-    await p.evaluate(() => { const g = state.grupos[0], cr = getCatalogo('GeH_1ESO').ces[0].criterios[0].id;
+    await p.evaluate(() => { const g = state.grupos[0], cr = getCatalogo('FiQ_2ESO').ces[0].criterios[0].id;
       g.actividades = [{ id: 'e1', nombre: 'Examen', trimestre: 0, bloqueId: 'b0', esExamen: true, criterios: [{ critId: cr, peso: 100 }] }];
       g.notasCuant = { [g.alumnos[0].id]: { e1: 7 } }; save(); });
     // Todas las pestañas del grupo y todos los modos (la pantalla de bienvenida está quitada: si no, se auditaría solo ella).
@@ -1119,7 +1119,7 @@ export const PRUEBAS = [
     const p = await nuevaPagina(t.contexto);
     const ids = await cuadernoConGrupo(p, t.url);
     await p.evaluate(() => {
-      const g = state.grupos[0], cr = getCatalogo('GeH_1ESO').ces[0].criterios[0].id;
+      const g = state.grupos[0], cr = getCatalogo('FiQ_2ESO').ces[0].criterios[0].id;
       g.actividades = [{ id: 'e1', nombre: 'Examen 1', tipo: TIPOS[0], trimestre: 0, bloqueId: g.bloques[0].id, esExamen: true, criterios: [{ critId: cr, peso: 100 }] }];
       g.notasCuant = { [g.alumnos[0].id]: { e1: 6.5 }, [g.alumnos[1].id]: { e1: 9.5 } };
       state.ui.appMode = 'competencial'; state.ui.tab = 'calificar'; state.ui.calAct = 'e1'; save(); render();

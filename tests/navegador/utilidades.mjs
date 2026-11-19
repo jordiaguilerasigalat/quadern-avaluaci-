@@ -36,7 +36,7 @@ export async function cuadernoConGrupo(p, url, { nombres = ['García López, Ana
   await p.goto(url + '/'); await esperar(1500);
   return p.evaluate(nombres => {
     _mostrarBienvenida = false;
-    const g = defGrupo('1º ESO A', 'GeH_1ESO');
+    const g = defGrupo('1º ESO A', 'FiQ_2ESO');
     g.alumnos = nombres.map(n => normalizarAlumno({ id: uid(), nombre: n }));
     state.grupos = [g]; state.ui.grupoId = g.id; state.ui.trim = 0; save();
     return g.alumnos.map(a => a.id);

@@ -13,12 +13,15 @@ function defGrupo(nombre,catalogoKey){
     sdaPrevistas:[null,null,null],
     propuestasMejora:["","",""], propuestasMejoraFinal:"",
     bloques:cat.bloques.map((b,i)=>({id:"b"+i,label:b.label,peso:b.peso})),
+    modoNota:cat.modoNota==="ce"?"ce":"bloques", pesosCE:{...(cat.pesosCE||{})},
     marcas:{}, papelera:{alumnos:[],actividades:[]}, diario:{}, asistencia:{}, convivencia:[], contactosFamilia:[], fechasTrimestre:[{inicio:"",fin:""},{inicio:"",fin:""},{inicio:"",fin:""}], programacionId:"",
     plano:{filas:5,columnas:6,posiciones:{}}
   };
 }
 function normalizarGrupo(g){
   if(!g.pesosTrim) g.pesosTrim={};
+  if(g.modoNota!=="ce" && g.modoNota!=="bloques") g.modoNota="bloques";
+  if(!g.pesosCE || typeof g.pesosCE!=="object" || Array.isArray(g.pesosCE)) g.pesosCE={};
   if(!g.marcas || typeof g.marcas!=="object") g.marcas={};
   if(!g.notasCuant || typeof g.notasCuant!=="object") g.notasCuant={};
   if(!g.rubricScores || typeof g.rubricScores!=="object") g.rubricScores={};

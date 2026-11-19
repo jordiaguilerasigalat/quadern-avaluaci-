@@ -76,7 +76,25 @@ function renderAjustes(grupo){
   </div>
 
   <div class="card">
-    <h2>Ponderación de la nota cuantitativa</h2>
+    <h2>Mode de qualificació</h2>
+    <p class="sub">Tria com es calcula la nota numèrica d'este grup. <strong>Per instruments</strong>: mitjana ponderada dels blocs (proves, quadern, laboratori…). <strong>Per competències</strong>: cada criteri és la mitjana de les seues evidències, cada CE la mitjana dels seus criteris i la nota, la mitjana ponderada de les CE (cada avaluació amb tot el que s'ha treballat fins a eixe moment; la final, amb tot el curs). Les dues coses es registren sempre: només canvia quina dona la nota.</p>
+    <div class="flex" role="radiogroup" aria-label="Mode de qualificació">
+      <label style="display:flex;gap:6px;align-items:center"><input type="radio" name="modoNota" value="bloques" ${modoNotaGrupo(grupo)==="bloques"?"checked":""} onchange="setModoNota(this.value)"> Per instruments (blocs)</label>
+      <label style="display:flex;gap:6px;align-items:center"><input type="radio" name="modoNota" value="ce" ${modoNotaGrupo(grupo)==="ce"?"checked":""} onchange="setModoNota(this.value)"> Per competències específiques</label>
+    </div>
+    <div style="${modoNotaGrupo(grupo)==="ce"?"":"display:none"};margin-top:12px">
+      <p class="sub" style="margin-bottom:6px">Pes de cada competència específica (%). En blanc = repartiment igual. Si una CE no té cap criteri avaluat, el seu pes es reparteix entre la resta.</p>
+      <p id="sumaPesosCEAviso" style="font-size:13px;margin:0 0 8px">${sumaPesosCEHTML(grupo)}</p>
+      <div class="flex">
+        ${idx.cat.ces.map(ce=>`
+          <label style="font-size:13.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px" title="${esc(ce.titulo)}">${esc(ce.id)} (%)
+            <input class="in" style="width:90px" type="number" min="0" placeholder="${fmt(pesoCEGrupo({...grupo,pesosCE:{}},ce.id))}" value="${grupo.pesosCE[ce.id]??''}" oninput="setPesoCE('${escJS(ce.id)}',this.value)"></label>`).join("")}
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="${modoNotaGrupo(grupo)==="ce"?"opacity:.6":""}">
+    <h2>Ponderación de la nota cuantitativa</h2>${modoNotaGrupo(grupo)==="ce"?`<p class="sub"><strong>Este grup qualifica per competències:</strong> els blocs no compten per a la nota, però pots continuar classificant-hi les activitats.</p>`:""}
     <p class="sub">Bloques de la propuesta pedagógica de ${esc(idx.cat.materia)}. Deben sumar 100.</p>
     <p id="sumaBloquesAviso" style="font-size:13px;margin:0 0 8px">${sumaBloquesHTML(grupo)}</p>
     <div class="flex">
@@ -131,6 +149,7 @@ window.duplicarGrupo=async ()=>{
   nuevo.umbrales={...grupo.umbrales};
   nuevo.pesosTrim={...grupo.pesosTrim};
   nuevo.bloques=grupo.bloques.map(b=>({...b}));
+  nuevo.modoNota=grupo.modoNota; nuevo.pesosCE={...(grupo.pesosCE||{})};
   nuevo.actividades=grupo.actividades.map(a=>{
     const copia={...a,id:uid(),criterios:a.criterios.map(l=>({...l}))};
     if(a.rubrica) copia.rubrica=JSON.parse(JSON.stringify(a.rubrica));
@@ -204,6 +223,16 @@ function sumaBloquesHTML(grupo){
   return `<span style="color:#b45309;font-weight:600">⚠️ Suman ${String(t).replace(".",",")} %.</span> <span class="sub">La nota se calcula igualmente en proporción (cada bloque pesa su parte sobre ${String(t).replace(".",",")}), pero lo normal es que sumen 100.</span>`;
 }
 window.setUmbral=(k,v)=>{ grupoActual().umbrales[k]=Number(v)||0; save(); };
+window.setModoNota=v=>{ const g=grupoActual(); g.modoNota=(v==="ce"?"ce":"bloques"); save(); render(); };
+window.setPesoCE=(ceId,v)=>{ const g=grupoActual(); if(!g.pesosCE) g.pesosCE={};
+  const t=String(v).trim(); if(t==="") delete g.pesosCE[ceId]; else g.pesosCE[ceId]=Math.max(0,Number(t.replace(",","."))||0);
+  save(); const el=document.getElementById("sumaPesosCEAviso"); if(el) el.innerHTML=sumaPesosCEHTML(g); };
+function sumaPesosCEHTML(grupo){
+  const ces=catIndex(grupo.catalogoKey).cat.ces;
+  const t=Math.round(ces.reduce((n,ce)=>n+pesoCEGrupo(grupo,ce.id),0)*100)/100;
+  if(Math.abs(t-100)<0.01) return `<span style="color:#15803d">✓ Sumen 100 %.</span>`;
+  return `<span style="color:#b45309;font-weight:600">⚠️ Sumen ${String(t).replace(".",",")} %.</span> <span class="sub">La nota es calcula igualment en proporció, però el normal és que sumen 100.</span>`;
+}
 window.setPesoTrim=(t,v)=>{ const g=grupoActual(); if(!g.pesosTrim) g.pesosTrim={}; g.pesosTrim[t]=v; save(); };
 window.setFechaTrimestre=(t,campo,v)=>{ const g=grupoActual(); if(!g.fechasTrimestre) g.fechasTrimestre=[{inicio:"",fin:""},{inicio:"",fin:""},{inicio:"",fin:""}]; g.fechasTrimestre[t][campo]=v; save(); };
 window.setProgramacionGrupo=(id)=>{ const g=grupoActual(); g.programacionId=id; save(); render(); };

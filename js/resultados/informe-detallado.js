@@ -169,7 +169,23 @@ function desgloseBloqueHTML(grupo,al,b,trim){
     <table class="dsg-tabla"><thead><tr><th>Actividad</th><th style="text-align:right">Nota</th><th style="text-align:right">Peso en el bloque</th></tr></thead><tbody>${filas}</tbody></table>
   </div>`;
 }
+/* FiQ · desglossament quan el grup qualifica per competències. */
+function desgloseNotaPerCEHTML(grupo,al,trims,periodo,titol){
+  const ces=catIndex(grupo.catalogoKey).cat.ces;
+  const v=periodo==="final"?notaFinal(grupo,al.id):notaTrimestre(grupo,al.id,periodo);
+  const base=periodo==="final"?notaFinalSinExtra(grupo,al.id):notaTrimestreSinExtra(grupo,al.id,periodo);
+  const files=ces.map(ce=>{
+    const sc=scoreCETrims(grupo,al.id,ce.id,trims), w=pesoCEGrupo(grupo,ce.id);
+    const crit=ce.criterios.map(c=>{ const x=_scoreCriterioTrims(grupo,al.id,c.id,trims); return x==null?"":`${esc(c.id)}: ${fmt(x/10)}`; }).filter(Boolean).join(" · ");
+    return `<tr><td><strong>${esc(ce.id)}</strong>${crit?`<div class="dsg-muted" style="font-size:11.5px">${crit}</div>`:`<div class="dsg-muted" style="font-size:11.5px">Sense criteris avaluats: el seu pes es reparteix</div>`}</td><td style="text-align:right">${sc==null?"—":fmt(sc/10)}</td><td style="text-align:right">${fmtPct(w)}</td></tr>`;
+  }).join("");
+  return `<div class="dsg-formula">${titol}</div>
+    <table class="dsg-tabla"><thead><tr><th>Competència específica (criteris)</th><th style="text-align:right">Nota</th><th style="text-align:right">Pes</th></tr></thead><tbody>${files}</tbody></table>
+    ${dsgExtraEvalHTML(grupo,al,periodo,base,"Mitjana ponderada de les CE")}
+    <div class="dsg-total"><span>${periodo==="final"?"Nota final de curs":"Nota del període"}</span><span>${v==null?"—":fmt(v)} / 10</span></div>`;
+}
 function desgloseTrimestreHTML(grupo,al,trim){
+  if(modoNotaGrupo(grupo)==="ce") return desgloseNotaPerCEHTML(grupo,al,trimsFinsA(trim),trim,`Nota = mitjana ponderada de les competències específiques, amb tot el que s'ha avaluat fins a la ${esc(TRIMESTRES[trim].toLowerCase())} (avaluació contínua). Cada CE és la mitjana dels seus criteris.`);
   const v=notaTrimestre(grupo,al.id,trim);
   const bloquesHtml=grupo.bloques.map(b=>desgloseBloqueHTML(grupo,al,b,trim)).join("");
   return `<div class="dsg-formula">Nota = media ponderada de los bloques de calificación de ${esc(TRIMESTRES[trim].toLowerCase())}.</div>
@@ -194,6 +210,7 @@ function desgloseTrimResumenBloquesHTML(grupo,al,trim){
   return `<table class="dsg-mini"><thead><tr><th>Bloque</th><th style="text-align:right">Nota</th><th style="text-align:right">Peso</th></tr></thead><tbody>${filas}</tbody></table>`;
 }
 function desgloseFinalHTML(grupo,al){
+  if(modoNotaGrupo(grupo)==="ce") return desgloseNotaPerCEHTML(grupo,al,[0,1,2],"final","Nota final = mitjana ponderada de les competències específiques amb tots els criteris avaluats durant el curs (no és la mitjana de les avaluacions).");
   const disponibles=[0,1,2].filter(t=>notaTrimestre(grupo,al.id,t)!=null);
   const nf=notaFinal(grupo,al.id);
   const filasResumen=[0,1,2].map(t=>{

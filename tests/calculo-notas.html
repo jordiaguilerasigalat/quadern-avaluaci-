@@ -188,6 +188,26 @@ function ejecutarPruebas() {
   state.ajustesNota = { redondeoActa: 'truncar' };
   comprobar('Acta truncando: 6,9 → 6', notaActa(6.9, g), 6);
   delete state.ajustesNota;
+
+  // --- Mode de qualificació per competències (FiQ, Batxillerat)
+  // 1.1 = (7·100 + 8·50) / 150 = 7,333 · 1.2 = 4 · CE1 = (73,33 + 40) / 2 = 56,67 % · CE2 = 2.1 = 90 %
+  g.modoNota = 'ce'; g.pesosCE = { CE1: 75, CE2: 25 }; reiniciar();
+  comprobar('Per CE: 1.ª avaluació = 5,667 × 75 % + 9 × 25 %', notaTrimestre(g, 'a1', 0), (17 / 3) * 0.75 + 9 * 0.25);
+  comprobar('Per CE: la 2.ª avaluació usa també el treballat en la 1.ª', notaTrimestre(g, 'a1', 1), (17 / 3) * 0.75 + 9 * 0.25);
+  comprobar('Per CE: sense cap criteri avaluat no hi ha nota', notaTrimestre(g, 'a2', 0), null);
+  g.notas.a1.ex2 = { '1.1': 4 }; reiniciar();
+  // 1.1 amb 1.ª i 2.ª = (700 + 400 + 400) / 250 = 6 → CE1 = (60 + 40) / 2 = 50 %
+  comprobar('Per CE: la 1.ª avaluació no veu les notes de la 2.ª', notaTrimestre(g, 'a1', 0), (17 / 3) * 0.75 + 9 * 0.25);
+  comprobar('Per CE: 2.ª avaluació acumulada = 5 × 75 % + 9 × 25 %', notaTrimestre(g, 'a1', 1), 6);
+  comprobar('Per CE: la final usa tot el curs, no la mitjana d’avaluacions', notaFinal(g, 'a1'), 6);
+  g.pesosCE = {}; reiniciar();
+  comprobar('Per CE sense pesos: CE a parts iguals', notaFinal(g, 'a1'), (5 + 9) / 2);
+  g.pesosCE = { CE1: 100, CE2: 0 }; reiniciar();
+  comprobar('Per CE: una CE amb pes 0 no compta', notaFinal(g, 'a1'), 5);
+  g.pesosCE = { CE1: 75, CE2: 25 }; delete g.notas.a1.t2; reiniciar();
+  comprobar('Per CE: el pes d’una CE sense criteris avaluats es reparteix', notaFinal(g, 'a1'), 5);
+  g.notas.a1.t2 = { '2.1': 9 }; delete g.notas.a1.ex2; g.modoNota = 'bloques'; reiniciar();
+  comprobar('Tornant a instruments: la nota torna a eixir dels blocs', notaTrimestre(g, 'a1', 0), 6.6);
 }
 
 (async () => {

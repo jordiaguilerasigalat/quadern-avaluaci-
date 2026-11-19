@@ -15,7 +15,7 @@ if(!state){
   try{
     const old=JSON.parse(localStorage.getItem(OLD_KEY));
     if(old && (old.alumnos?.length || old.actividades?.length)){
-      const g=defGrupo("Historia del Mundo Contemporáneo (importado)","HMC_1BACH");
+      const g=defGrupo("Grup importat","FiQ_1BAT");
       g.alumnos=(old.alumnos||[]).map(a=>normalizarAlumno({...a})); g.actividades=(old.actividades||[]).map(a=>({...a,bloqueId:a.bloqueId||(a.bloque==="examenes"?"b0":"b1")}));
       g.notas=old.notas||{}; g.pesos=old.pesos||{crit:{},ceCc:{}};
       g.umbrales=old.umbralesCustom||g.umbrales;

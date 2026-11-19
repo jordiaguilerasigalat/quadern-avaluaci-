@@ -255,8 +255,68 @@ function notaTrimestre(grupo,alId,trim){
 function _notaTrimestreSinCache(grupo,alId,trim){
   return _sumarExtra(notaTrimestreSinExtra(grupo,alId,trim),ptsExtraEval(grupo,alId,trim));
 }
+/* =================================================================
+   FiQ · MODE DE QUALIFICACIÓ
+   grupo.modoNota = "bloques" (per instruments: mitjana ponderada dels
+   blocs, com fins ara) o "ce" (per competències: mitjana ponderada de
+   les CE amb grupo.pesosCE). En mode "ce":
+     - cada criteri és la mitjana de les seues evidències (com sempre);
+     - cada CE, la mitjana dels seus criteris treballats;
+     - la nota d'una avaluació usa els criteris treballats FINS A eixa
+       avaluació (avaluació contínua) i la final, tots els del curs;
+     - si una CE no té cap criteri treballat, el seu pes es reparteix
+       proporcionalment entre la resta.
+   ================================================================= */
+function modoNotaGrupo(grupo){ return grupo && grupo.modoNota==="ce" ? "ce" : "bloques"; }
+function pesoCEGrupo(grupo,ceId){
+  const v=grupo.pesosCE && grupo.pesosCE[ceId];
+  if(v!=null && v!=="" && isFinite(Number(v))) return Math.max(0,Number(v));
+  const n=catIndex(grupo.catalogoKey).cat.ces.length;
+  return n? 100/n : 0;
+}
+function _scoreCriterioTrims(grupo,alId,cid,trims){
+  let sw=0,sv=0;
+  for(const a of grupo.actividades){
+    if(a.recupera || !trims.includes(a.trimestre)) continue;
+    const l=(a.criterios||[]).find(x=>x.critId===cid); if(!l) continue;
+    let n=_notaCritCruda(grupo,alId,a,cid);
+    for(const r of recuperacionesDe(grupo,a.id)){
+      if(marcaDe(grupo,alId,r.id)==="EX") continue;
+      n=_combinarRec(n,_notaCritCruda(grupo,alId,r,cid),r.recupera.modo);
+    }
+    if(n==null||n==="") continue;
+    const w=Number(l.peso)||0; if(w<=0) continue;
+    sw+=w; sv+=(Number(n)/10)*100*w;
+  }
+  return sw>0? sv/sw : null;
+}
+/* Puntuació (0-100) d'una CE amb les evidències dels trimestres indicats. */
+function scoreCETrims(grupo,alId,ceId,trims){
+  const ce=catIndex(grupo.catalogoKey).ceMap[ceId]; if(!ce) return null;
+  let sw=0,sv=0;
+  for(const c of ce.criterios){
+    const sc=_scoreCriterioTrims(grupo,alId,c.id,trims); if(sc==null) continue;
+    const w=pesoCriterio(grupo,c.id); sw+=w; sv+=sc*w;
+  }
+  return sw>0? sv/sw : null;
+}
+/* Nota (0-10) per competències amb les evidències dels trimestres indicats. */
+function notaPorCE(grupo,alId,trims){
+  const memo=_estructura(grupo).memo, k="nce|"+trims.join(",")+"|"+alId;
+  if(memo.has(k)) return memo.get(k);
+  let sw=0,sv=0;
+  for(const ce of catIndex(grupo.catalogoKey).cat.ces){
+    const w=pesoCEGrupo(grupo,ce.id); if(!(w>0)) continue;
+    const sc=scoreCETrims(grupo,alId,ce.id,trims); if(sc==null) continue;
+    sw+=w; sv+=(sc/10)*w;
+  }
+  const v=sw>0? sv/sw : null; memo.set(k,v); return v;
+}
+function trimsFinsA(t){ return [0,1,2].filter(x=>x<=t); }
+
 /* Media ponderada de los bloques, sin el extra de la evaluación. */
 function notaTrimestreSinExtra(grupo,alId,trim){
+  if(modoNotaGrupo(grupo)==="ce") return notaPorCE(grupo,alId,trimsFinsA(trim));
   let sw=0,sv=0;
   for(const b of grupo.bloques){
     const v=notaBloque(grupo,alId,b.id,trim); if(v==null) continue;
@@ -274,6 +334,7 @@ function notaFinal(grupo,alId){
 }
 /* Media ponderada de las evaluaciones (cada una ya con su extra), sin el extra de la nota final. */
 function notaFinalSinExtra(grupo,alId){
+  if(modoNotaGrupo(grupo)==="ce") return notaPorCE(grupo,alId,[0,1,2]);
   const disponibles=[0,1,2].filter(t=>notaTrimestre(grupo,alId,t)!=null);
   if(!disponibles.length) return null;
   let sw=0,sv=0;
