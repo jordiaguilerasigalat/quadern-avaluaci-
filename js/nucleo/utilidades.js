@@ -108,6 +108,7 @@ function mostrarToast(mensaje,tipo){
 let _dlgZ=2000;
 function _textoDialogoHTML(m){ return esc(String(m??"")).replace(/\n/g,"<br>"); }
 function _dialogo({titulo,mensaje,ok,cancelar,peligro,entrada,valor}){
+  if(window.traduirText){ const T=window.traduirText; mensaje=T(mensaje); titulo=T(titulo); ok=T(ok); cancelar=T(cancelar); }
   const auto=window.__dialogosAuto;
   if(auto){
     (window.__dialogosLog=window.__dialogosLog||[]).push(String(mensaje));

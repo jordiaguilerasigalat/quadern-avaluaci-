@@ -40,12 +40,12 @@ function barraAprobadosHTML(r,opts){
   const seg=(n,color,label)=> n>0? `<div title="${label}: ${n}" style="flex:${n};background:${color};display:flex;align-items:center;justify-content:center;color:#fff;font-size:11.5px;font-weight:600;min-width:26px;print-color-adjust:exact;-webkit-print-color-adjust:exact">${n}</div>`:"";
   return `
   <div style="display:flex;height:26px;border-radius:7px;overflow:hidden;border:1px solid ${opts.print?'#ccc':'var(--line)'};margin:6px 0 4px">
-    ${seg(r.ap,"#2f7d4f","Aprobados")}${seg(r.su,"#b04343","Suspensos")}${seg(r.sc,"#9aa1ab","Sin calificar")}
+    ${seg(r.ap,"#2f7d4f","Aprovats")}${seg(r.su,"#b04343","Suspesos")}${seg(r.sc,"#9aa1ab","Sense qualificar")}
   </div>
   <div style="font-size:12px;color:${opts.print?'#555':'var(--mut)'}">
-    <span style="color:#2f7d4f;font-weight:600">■</span> Aprobados ${r.ap} (${Math.round(r.ap/r.total*100)}%) ·
-    <span style="color:#b04343;font-weight:600">■</span> Suspensos ${r.su} (${Math.round(r.su/r.total*100)}%)
-    ${r.sc?` · <span style="color:#9aa1ab;font-weight:600">■</span> Sin calificar ${r.sc}`:""}
+    <span style="color:#2f7d4f;font-weight:600">■</span> Aprovats ${r.ap} (${Math.round(r.ap/r.total*100)}%) ·
+    <span style="color:#b04343;font-weight:600">■</span> Suspesos ${r.su} (${Math.round(r.su/r.total*100)}%)
+    ${r.sc?` · <span style="color:#9aa1ab;font-weight:600">■</span> Sense qualificar ${r.sc}`:""}
   </div>`;
 }
 function sdaResumenTexto(trabajadas,previstas,opts){

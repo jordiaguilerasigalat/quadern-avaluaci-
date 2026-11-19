@@ -1170,4 +1170,28 @@ export const PRUEBAS = [
     t.ok(r3.sinAct && r3.actVuelve, 'borrar y restaurar la actividad conserva sus extras', JSON.stringify(r3));
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'valencia', descripcion: 'Interfície en valencià: les pestanyes, els modes i els diàlegs es veuen traduïts', async fn(t) {
+    await t.contexto.addInitScript(() => { try { localStorage.setItem('quadern_idioma', 'ca'); } catch (e) {} });
+    const p = await nuevaPagina(t.contexto);
+    await cuadernoConGrupo(p, t.url);
+    const ES = /\b(Todavía|Añadir|Guardar actividad|Nueva actividad|alumnos con nota|Ningún|ninguna|Programación de Aula|Evaluación)\b/;
+    const vistos = [];
+    for (const tab of ['alumnos', 'actividades', 'calificar', 'resultados', 'asistencia', 'resumen', 'diario', 'cobertura', 'ajustes']) {
+      await p.evaluate(tab => { state.ui.appMode = 'competencial'; state.ui.tab = tab; render(); }, tab); await esperar(200);
+      const txt = await p.evaluate(() => document.body.innerText);
+      const m = txt.match(ES); if (m) vistos.push(tab + ': ' + m[0]);
+    }
+    for (const m of ['inicio', 'programacion', 'refuerzo', 'repeticion', 'reuniones']) {
+      await p.evaluate(m => { state.ui.appMode = m; render(); }, m); await esperar(200);
+      const txt = await p.evaluate(() => document.body.innerText);
+      const x = txt.match(ES); if (x) vistos.push(m + ': ' + x[0]);
+    }
+    t.ok(!vistos.length, 'cap text en castellà a les pantalles principals', vistos.join(' | '));
+    await p.evaluate(() => { state.ui.appMode = 'competencial'; state.ui.tab = 'actividades'; render(); }); await esperar(200);
+    const txt = await p.evaluate(() => document.getElementById('tabContent').innerText);
+    t.ok(/Exàmens i proves escrites/.test(txt) && /Nova activitat d'avaluació/.test(txt), 'Activitats en valencià', txt.slice(0, 200));
+    t.ok(await p.evaluate(() => traduirText('Todavía no hay actividades en este periodo.') === 'Encara no hi ha activitats en este període.'), 'el diccionari tradueix textos exactes');
+    t.ok(await p.evaluate(() => /^Vore l'evolució de Pérez, Ana en esta avaluació$/.test(traduirText('Ver la evolución de Pérez, Ana en esta evaluación'))), 'els patrons conserven les parts variables');
+    t.ok(!p.errores.length, 'sense errors de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
 ];
