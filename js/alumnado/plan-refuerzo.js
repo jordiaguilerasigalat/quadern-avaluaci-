@@ -64,6 +64,23 @@ window.rfSetBusqueda=v=>{ state.ui.rfBusqueda=v; save(); render(); };
 window.rfAbrirModalNueva=()=>{ if(!state.grupos.length){ mostrarAviso("Crea primero un grupo con alumnado desde Evaluación por Competencias."); return; } state.ui.rfModalNueva=true; save(); render(); };
 window.rfCerrarModalNueva=()=>{ state.ui.rfModalNueva=false; save(); render(); };
 
+/* Pestanya «Atenció a la diversitat»: capçalera comuna de NESE, Pla de
+   repetició i Pla de reforç, amb dos apartats (NESE · Repetició i pendents).
+   Cada pla continua guardant-se on estava (state.planesNESE, planesRepeticion,
+   planesRefuerzo): només canvia com s'hi arriba. */
+function divCapcaleraHTML(actiu){
+  const tab=(m,txt)=>`<button class="tab ${actiu===m?"on":""}" aria-pressed="${actiu===m}" onclick="irModo('${m}')">${txt}</button>`;
+  return `<div class="card" style="padding:12px 16px">
+    <div class="flex" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <div><strong style="font-size:15px">🌈 Atenció a la diversitat</strong><span style="color:var(--mut);font-size:13px"> · NESE, repetició i pendents</span></div>
+      <button class="ghost" style="border:1px solid var(--line)" onclick="irInicio()">🏠 Inici</button>
+    </div>
+    <div class="flex" style="flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:10px">
+      <div class="flex" style="gap:6px;align-items:center"><span class="sub" style="margin:0;font-size:12px;font-weight:700">NESE</span>${tab("nese","🧩 Alumnat NESE")}</div>
+      <div class="flex" style="gap:6px;align-items:center;flex-wrap:wrap"><span class="sub" style="margin:0;font-size:12px;font-weight:700">Repetició i pendents</span>${tab("repeticion","🔁 Pla de repetició")}${tab("refuerzo","📈 Pla de reforç")}</div>
+    </div>
+  </div>`;
+}
 /* Documents del departament per a reforç, NESE i repetició (sense dades
    d'alumnes), per a descarregar des de la pestanya de plans de reforç. */
 const RF_DOCS_DEPARTAMENT=[
@@ -96,12 +113,7 @@ const RF_TEXT_REPETICIO="Pla específic per a l'alumnat que repetix (2026-27): m
 const RF_TEXT_NESE="Pla de reforç NESE amb adaptacions per tema i els dossiers de treball per a l'alumnat (2026-27). Descarrega'ls i completa'ls per a cada alumne/a: les fitxes personals no s'han de publicar.";
 function renderRefuerzoApp(){
   const app=document.getElementById("app");
-  app.innerHTML=`<div class="card" style="padding:12px 16px">
-    <div class="flex" style="justify-content:space-between">
-      <div><strong style="font-size:15px">📈 Plan de Refuerzo</strong><span style="color:var(--mut);font-size:13px"> · seguimiento individualizado</span></div>
-      <button class="ghost" style="border:1px solid var(--line)" onclick="irInicio()">🏠 Inicio</button>
-    </div>
-  </div>${rfDocumentsHTML([2],RF_TEXT_REPETICIO)}<div id="rfRoot"></div>`;
+  app.innerHTML=`${divCapcaleraHTML("refuerzo")}${rfDocumentsHTML([2],RF_TEXT_REPETICIO)}<div id="rfRoot"></div>`;
   const root=document.getElementById("rfRoot");
   if(state.ui.rfTab==="detalle" && state.ui.rfId && (state.planesRefuerzo||[]).find(p=>p.id===state.ui.rfId)){
     renderRfDetalleHTML(root);

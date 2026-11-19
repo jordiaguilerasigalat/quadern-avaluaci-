@@ -44,12 +44,7 @@ window.neCerrarModalCrear=()=>{ state.ui.neModalCrear=null; save(); render(); };
 
 function renderNeseApp(){
   const app=document.getElementById("app");
-  app.innerHTML=`<div class="card" style="padding:12px 16px">
-    <div class="flex" style="justify-content:space-between">
-      <div><strong style="font-size:15px">🧩 Alumnos NESE</strong><span style="color:var(--mut);font-size:13px"> · seguimiento curricular adaptado</span></div>
-      <button class="ghost" style="border:1px solid var(--line)" onclick="irInicio()">🏠 Inicio</button>
-    </div>
-  </div>${typeof rfDocumentsHTML==="function"? rfDocumentsHTML([0,1],RF_TEXT_NESE) : ""}<div id="neRoot"></div>`;
+  app.innerHTML=`${divCapcaleraHTML("nese")}${typeof rfDocumentsHTML==="function"? rfDocumentsHTML([0,1],RF_TEXT_NESE) : ""}<div id="neRoot"></div>`;
   const root=document.getElementById("neRoot");
   if(state.ui.neTab==="detalle" && state.ui.neId && (state.planesNESE||[]).find(p=>p.id===state.ui.neId)){
     renderNeDetalleHTML(root);

@@ -149,7 +149,7 @@ function renderHome(){
   ${queMeFaltaHTML()}
   ${homeAlertasHTML()}
 
-  ${homeSeccionHeaderHTML("evaluacion","Avaluació i correcció")}
+  ${homeSeccionHeaderHTML("evaluacion","Avaluació i seguiment de l'alumnat")}
   ${homeSecciones.evaluacion?`<div class="gcard-grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">
     <div class="gcard">
       <div style="font-size:28px;margin-bottom:4px">📊</div>
@@ -161,34 +161,20 @@ function renderHome(){
     <div class="gcard">
       <div style="font-size:28px;margin-bottom:4px">🖊️</div>
       <div class="gcard-title">Corrector d'Exàmens</div>
-      <div class="gcard-meta">Rúbriques per examen, vinculades a criteris d'avaluació. La nota quantitativa i la qualitativa per criteri es calculen soles i es guarden en Competències.</div>
+      <div class="gcard-meta">Rúbriques per examen, vinculades a criteris d'avaluació. La nota quantitativa i la qualitativa per criteri es calculen soles i es guarden en Seguiment i avaluació.</div>
       <div class="gcard-count">${nExamenes} ${nExamenes===1?"examen":"exàmens"} amb rúbrica</div>
       <div class="gcard-actions"><button class="btn" onclick="irModo('corrector')">Obrir</button></div>
     </div>
-  </div>`:""}
-
-  ${homeSeccionHeaderHTML("seguimiento","Seguiment i suport a l'alumnat")}
-  ${homeSecciones.seguimiento?`<div class="gcard-grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">
     <div class="gcard">
-      <div style="font-size:28px;margin-bottom:4px">📈</div>
-      <div class="gcard-title">Pla de Reforç</div>
-      <div class="gcard-meta">Seguiment individualitzat: objectius, mesures aplicades i diari d'evolució per alumne/a.</div>
-      <div class="gcard-count">${nRefuerzoActivos} pla${nRefuerzoActivos===1?"":"ns"} actiu${nRefuerzoActivos===1?"":"s"}</div>
-      <div class="gcard-actions"><button class="btn" onclick="irModo('refuerzo')">Obrir</button></div>
-    </div>
-    <div class="gcard">
-      <div style="font-size:28px;margin-bottom:4px">🔁</div>
-      <div class="gcard-title">Pla de Repetició</div>
-      <div class="gcard-meta">Seguiment trimestral de l'alumnat que repetix curs, amb l'objectiu de superar la teua matèria enguany.</div>
-      <div class="gcard-count">${nRepeticionActivos} pla${nRepeticionActivos===1?"":"ns"} actiu${nRepeticionActivos===1?"":"s"}</div>
-      <div class="gcard-actions"><button class="btn" onclick="irModo('repeticion')">Obrir</button></div>
-    </div>
-    <div class="gcard">
-      <div style="font-size:28px;margin-bottom:4px">🧩</div>
-      <div class="gcard-title">Alumnat NESE</div>
-      <div class="gcard-meta">Pla de seguiment curricular adaptat, organitzat per grup, amb informes per avaluació.</div>
-      <div class="gcard-count">${nNeseTotal} alumne${nNeseTotal===1?"":"s"}${nNesePendientes?` · ${nNesePendientes} sense pla`:""}</div>
-      <div class="gcard-actions"><button class="btn" onclick="irModo('nese')">Obrir</button></div>
+      <div style="font-size:28px;margin-bottom:4px">🌈</div>
+      <div class="gcard-title">Atenció a la diversitat</div>
+      <div class="gcard-meta">NESE (adaptacions, plans de reforç NESE i dossiers) i Repetició i pendents (plans de repetició i de reforç).</div>
+      <div class="gcard-count">${nNeseTotal} NESE${nNesePendientes?` (${nNesePendientes} sense pla)`:""} · ${nRepeticionActivos} repetició · ${nRefuerzoActivos} reforç</div>
+      <div class="gcard-actions" style="display:flex;flex-wrap:wrap;gap:6px">
+        <button class="btn" onclick="irModo('nese')">🧩 NESE</button>
+        <button class="ghost" style="border:1px solid var(--line)" onclick="irModo('repeticion')">🔁 Repetició</button>
+        <button class="ghost" style="border:1px solid var(--line)" onclick="irModo('refuerzo')">📈 Reforç</button>
+      </div>
     </div>
   </div>`:""}
 

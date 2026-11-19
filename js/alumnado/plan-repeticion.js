@@ -40,12 +40,7 @@ window.rpCerrarModalNueva=()=>{ state.ui.rpModalNueva=false; save(); render(); }
 
 function renderRepeticionApp(){
   const app=document.getElementById("app");
-  app.innerHTML=`<div class="card" style="padding:12px 16px">
-    <div class="flex" style="justify-content:space-between">
-      <div><strong style="font-size:15px">🔁 Plan de Repetición</strong><span style="color:var(--mut);font-size:13px"> · seguimiento trimestral de alumnado repetidor</span></div>
-      <button class="ghost" style="border:1px solid var(--line)" onclick="irInicio()">🏠 Inicio</button>
-    </div>
-  </div>${typeof rfDocumentsHTML==="function"? rfDocumentsHTML([2],RF_TEXT_REPETICIO) : ""}<div id="rpRoot"></div>`;
+  app.innerHTML=`${divCapcaleraHTML("repeticion")}${typeof rfDocumentsHTML==="function"? rfDocumentsHTML([2],RF_TEXT_REPETICIO) : ""}<div id="rpRoot"></div>`;
   const root=document.getElementById("rpRoot");
   if(state.ui.rpTab==="detalle" && state.ui.rpId && (state.planesRepeticion||[]).find(p=>p.id===state.ui.rpId)){
     renderRpDetalleHTML(root);
