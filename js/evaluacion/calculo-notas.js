@@ -440,5 +440,5 @@ function materiasEtiqueta(){
   const ms=[...new Set(state.grupos.map(g=>{ const c=getCatalogo(g.catalogoKey); return c&&c.materia; }).filter(Boolean))];
   if(!ms.length) return "Quadern d'avaluació";
   if(ms.length<=2) return ms.join(" · ");
-  return ms.slice(0,2).join(" · ")+` y ${ms.length-2} más`;
+  return ms.slice(0,2).join(" · ")+` i ${ms.length-2} més`;
 }

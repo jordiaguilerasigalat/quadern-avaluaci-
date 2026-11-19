@@ -433,7 +433,7 @@ export const PRUEBAS = [
       state.reuniones = [{ id: 'r1', fecha: '2026-10-05', tipo: 'familia', titulo: 'Reunión' }]; state.planesRefuerzo = [{ id: 'pr1', alumnoId: g.alumnos[0].id, estado: 'activo' }];
       state.cursoEscolarGlobal = '2026-2027'; _mostrarBienvenida = false; migrarEstado(); state.ui.grupoId = null; save(); render(); });
     await p.evaluate(() => exPut({ key: 'e1', exam: { titulo: 'Diseño del examen' } })); await p.evaluate(() => exPut({ key: 'prog:pa1', exam: { titulo: 'Plantilla' } }));
-    await p.click('button:has-text("Empezar curso nuevo")'); await esperar(300);
+    await p.click('button:has-text("Començar curs nou")'); await esperar(300);
     t.ok(await p.inputValue('#ncCurso') === '2027-2028', 'propone el curso siguiente');
     await p.click('button:has-text("Preparar el archivo")'); await esperar(600);
     const antes = await p.evaluate(() => state.grupos[0].alumnos.length);
@@ -858,7 +858,7 @@ export const PRUEBAS = [
       state.ui.appMode = 'inicio'; save(); render(); return document.querySelector('.que-falta')?.innerText || ''; });
     t.ok(/Examen tema 1.*falta 1 nota.*D, Cuatro/s.test(txt), 'avisa de la nota que falta (sin contar NP)', txt);
     t.ok(!/Sin corregir/.test(txt), 'no avisa de actividades sin empezar a corregir');
-    t.ok(/1 alumno con nota y sin comentario/.test(txt), 'avisa del comentario pendiente', txt);
+    t.ok(/1 alumne amb nota i sense comentari/.test(txt), 'avisa del comentario pendiente', txt);
   } },
 
   { nombre: 'calificar', descripcion: 'Calificar (Tarjetas): Intro pasa al siguiente y las notas se guardan', async fn(t) {

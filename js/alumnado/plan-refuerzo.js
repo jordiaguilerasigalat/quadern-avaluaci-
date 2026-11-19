@@ -635,7 +635,7 @@ window.rfImprimirInforme=id=>{
   const vfinal=rfrpValoracionPNInfo(p.valoracionFinal);
   const body=`
     <h1>Plan de refuerzo</h1>
-    <div class="meta">${esc(rfNombre(p))}${alV?" · "+esc(alV.g.nombre):""} · Geografía e Historia · Generado el ${new Date().toLocaleDateString("es-ES")}</div>
+    <div class="meta">${esc(rfNombre(p))}${alV?" · "+esc(alV.g.nombre):""} · Física i Química · Generat el ${new Date().toLocaleDateString("es-ES")}</div>
     <table>
       <tr><th style="width:170px">Título</th><td>${esc(p.titulo||"—")}</td></tr>
       <tr><th>Curso académico</th><td>${esc(p.cursoAcademico)||"—"}</td></tr>

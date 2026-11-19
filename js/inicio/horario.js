@@ -67,7 +67,7 @@ function horRenderModalHTML(){
         <div id="horFCamposClase" style="display:${c.tipo==="clase"?"":"none"}">
           <div class="grid" style="gap:10px">
             <label style="font-size:12.5px;color:var(--mut);font-weight:500">Materia
-              <input class="in" style="width:100%;margin-top:4px" id="horFMateria" list="horMateriasList" value="${esc(c.materia||"")}" placeholder="Geografía e Historia">
+              <input class="in" style="width:100%;margin-top:4px" id="horFMateria" list="horMateriasList" value="${esc(c.materia||"")}" placeholder="Física i Química">
               <datalist id="horMateriasList">${materiasSugeridas.map(m=>`<option value="${esc(m)}">`).join("")}</datalist>
             </label>
             <label style="font-size:12.5px;color:var(--mut);font-weight:500">Grupo del cuaderno (para los accesos de «Hoy»)

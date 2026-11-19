@@ -220,7 +220,7 @@ function progRenderModalNuevaHTML(){
       </div>
       <div class="grid" style="gap:10px;margin-top:10px">
         <label style="font-size:12.5px;color:var(--mut);font-weight:500">Nombre
-          <input class="in" id="progNNombre" style="width:100%;margin-top:4px" placeholder="Ej. 2.º ESO — Geografía e Historia">
+          <input class="in" id="progNNombre" style="width:100%;margin-top:4px" placeholder="Ex. 2n ESO · Física i Química">
         </label>
         <label style="font-size:12.5px;color:var(--mut);font-weight:500">Materia y curso
           <select class="in" id="progNCatalogo" style="width:100%;margin-top:4px">

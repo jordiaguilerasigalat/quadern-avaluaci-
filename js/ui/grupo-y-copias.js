@@ -19,10 +19,10 @@ function avisoCopiaHTML(){
   const hasData=state.grupos.some(g=>g.alumnos.length>0||g.actividades.length>0);
   if(!hasData) return "";
   const last=state.lastBackupAt;
-  if(!last) return `<div class="alert-box">⚠️ <strong>Todavía no has exportado ninguna copia de seguridad.</strong>&nbsp;Todo se guarda solo en este navegador: exporta una copia (arriba a la derecha) para no perder tu trabajo si cambias de equipo o se borra el caché.</div>`;
+  if(!last) return `<div class="alert-box">⚠️ <strong>Encara no has exportat cap còpia de seguretat.</strong>&nbsp;Tot es guarda només en este navegador: exporta una còpia (dalt a la dreta) per a no perdre la teua faena si canvies d'equip o s'esborra la memòria cau.</div>`;
   const days=Math.floor((Date.now()-last)/86400000);
-  if(days>=14) return `<div class="alert-box">⚠️ <strong>Última copia de seguridad: hace ${days} días.</strong>&nbsp;Conviene exportar una copia reciente.</div>`;
-  return `<p class="sub" style="margin:-6px 0 4px">Última copia de seguridad: ${haceTiempo(last)}.</p>`;
+  if(days>=14) return `<div class="alert-box">⚠️ <strong>Última còpia de seguretat: fa ${days} dies.</strong>&nbsp;Convé exportar una còpia recent.</div>`;
+  return `<p class="sub" style="margin:-6px 0 4px">Última còpia de seguretat: ${haceTiempo(last)}.</p>`;
 }
 function renderLanding(){
   const app=document.getElementById("app");
@@ -31,31 +31,31 @@ function renderLanding(){
   const hayGrupos=state.grupos.length>0;
   app.innerHTML=`
   <div class="hero">
-    <div class="hero-eyebrow">Evaluación por competencias (LOMLOE) · para cualquier materia</div>
-    <h1 class="hero-title">Evaluación por competencias</h1>
-    <p class="hero-tag">Cualitativa y cuantitativa, criterio a criterio, trimestre a trimestre. Incluye de serie los catálogos de Geografía e Historia, y te permite importar los de cualquier otra materia (más abajo). Funciona en local: sin cuenta, sin conexión, sin que ningún dato salga de este dispositivo.</p>
+    <div class="hero-eyebrow">Avaluació per competències (LOMLOE) · Física i Química</div>
+    <h1 class="hero-title">Avaluació per competències</h1>
+    <p class="hero-tag">Qualitativa i quantitativa, criteri a criteri, trimestre a trimestre. Inclou de sèrie el currículum de Física i Química de 2n, 3r i 4t d'ESO, i de 1r i 2n de Batxillerat (Física i Química), i et permet importar el de qualsevol altra matèria (més avall). Funciona en local: sense compte, sense connexió, sense que cap dada isca d'este dispositiu.</p>
     <div class="timeline">
-      <div class="pt"><span class="dot"></span><span class="lbl">1ª evaluación</span></div>
+      <div class="pt"><span class="dot"></span><span class="lbl">1a avaluació</span></div>
       <span class="seg"></span>
-      <div class="pt"><span class="dot"></span><span class="lbl">2ª evaluación</span></div>
+      <div class="pt"><span class="dot"></span><span class="lbl">2a avaluació</span></div>
       <span class="seg"></span>
-      <div class="pt"><span class="dot"></span><span class="lbl">3ª evaluación</span></div>
+      <div class="pt"><span class="dot"></span><span class="lbl">3a avaluació</span></div>
     </div>
     ${avisoCopiaHTML()}
   </div>
 
   ${hayGrupos ? `
   <div>
-    <div class="section-eyebrow">Tus grupos</div>
+    <div class="section-eyebrow">Els teus grups</div>
     <div class="gcard-grid">
       ${state.grupos.map(g=>{
         const cat=getCatalogo(g.catalogoKey);
         return `<div class="gcard">
           <div class="gcard-title">${esc(g.nombre)}</div>
           <div class="gcard-meta">${esc(cat.materia)} · ${esc(cat.curso)}</div>
-          <div class="gcard-count">${g.alumnos.length} alumno${g.alumnos.length===1?"":"s"} · ${g.actividades.length} actividad${g.actividades.length===1?"":"es"}</div>
+          <div class="gcard-count">${g.alumnos.length} alumne${g.alumnos.length===1?"":"s"} · ${g.actividades.length} activitat${g.actividades.length===1?"":"s"}</div>
           <div class="gcard-actions">
-            <button class="btn" onclick="irAGrupo('${g.id}')">Abrir</button>
+            <button class="btn" onclick="irAGrupo('${g.id}')">Obrir</button>
             <button class="ghost danger" onclick="borrarGrupoId('${g.id}')">Eliminar</button>
           </div>
         </div>`;
@@ -63,22 +63,22 @@ function renderLanding(){
     </div>
   </div>` : `
   <div class="card">
-    <h2>Bienvenido/a</h2>
-    <p class="sub">Empieza cargando una copia que ya tuvieras exportada, o crea tu primer grupo.</p>
+    <h2>Benvingut/da</h2>
+    <p class="sub">Comença carregant una còpia que ja tingueres exportada, o crea el teu primer grup.</p>
   </div>`}
 
   <div class="card">
-    <h2>Cargar archivo exportado</h2>
-    <p class="sub">Recupera todos tus grupos, alumnado y calificaciones desde una copia de seguridad (.json) exportada previamente.</p>
-    <label class="in file">Elegir archivo…<input type="file" accept="application/json,.json" style="display:none" onchange="importarTodo(this)"></label>
+    <h2>Carregar arxiu exportat</h2>
+    <p class="sub">Recupera tots els teus grups, alumnat i qualificacions des d'una còpia de seguretat (.json) exportada prèviament.</p>
+    <label class="in file">Triar arxiu…<input type="file" accept="application/json,.json" style="display:none" onchange="importarTodo(this)"></label>
   </div>
   <div class="card">
-    <h2>Crear grupo nuevo</h2>
-    <p class="sub">Elige la materia y el curso: el catálogo de competencias específicas, criterios y competencias clave se carga automáticamente. Si tu materia no está en la lista, o quieres editar o eliminar alguna, hazlo en "Materias: importar, editar o eliminar plantillas" (justo debajo) y luego vuelve aquí.</p>
+    <h2>Crear grup nou</h2>
+    <p class="sub">Tria la matèria i el curs: el catàleg de competències específiques, criteris i competències clau es carrega automàticament. Si la teua matèria no està en la llista, o en vols editar o eliminar alguna, fes-ho en "Matèries: importar, editar o eliminar plantilles" (just davall) i després torna ací.</p>
     <div class="grid" style="max-width:440px">
-      <input class="in" id="ngNombre" placeholder="Nombre del grupo (p. ej. 1º Bach A)" value="${esc(ng.nombre)}">
+      <input class="in" id="ngNombre" placeholder="Nom del grup (p. ex. 1r Batx A)" value="${esc(ng.nombre)}">
       <select class="in" id="ngCat">${opcionesCatalogosHTML(ng.catalogoKey)}</select>
-      <button class="btn" onclick="crearGrupo()" ${!ng.nombre.trim()?"disabled":""} style="justify-self:start">Crear grupo</button>
+      <button class="btn" onclick="crearGrupo()" ${!ng.nombre.trim()?"disabled":""} style="justify-self:start">Crear grup</button>
     </div>
   </div>
 

@@ -95,7 +95,7 @@ window.buscarAbrir=()=>{
   div.innerHTML=`
     <div class="modal-box" style="max-width:560px">
       <div class="flex" style="justify-content:space-between;align-items:center">
-        <h2 style="font-size:17px">🔍 Buscar</h2>
+        <h2 style="font-size:17px">🔍 Cercar</h2>
         <button class="modal-close" onclick="buscarCerrar()">×</button>
       </div>
       <input class="in" id="buscarInput" style="width:100%;margin-top:10px;font-size:15px" placeholder="Alumnado, Programaciones, exámenes, reuniones, eventos…" autocomplete="off">

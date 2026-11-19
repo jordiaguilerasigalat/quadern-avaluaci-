@@ -55,12 +55,12 @@ function normalizarGrupo(g){
 function haceTiempo(ts){
   const diff=Date.now()-ts;
   const min=Math.floor(diff/60000);
-  if(min<1) return "hace un momento";
-  if(min<60) return `hace ${min} min`;
+  if(min<1) return "fa un moment";
+  if(min<60) return `fa ${min} min`;
   const h=Math.floor(min/60);
-  if(h<24) return `hace ${h} h`;
+  if(h<24) return `fa ${h} h`;
   const d=Math.floor(h/24);
-  return `hace ${d} día${d===1?"":"s"}`;
+  return `fa ${d} di${d===1?"a":"es"}`;
 }
 function defAppState(){ return { grupos:[], catalogosPersonalizados:{}, catalogosOcultos:{}, eventos:[], festivos:[], tiposColores:{}, reuniones:[], plantillasRubrica:[], plantillasReunion:[], planesRefuerzo:[], planesRepeticion:[], planesNESE:[], horario:{celdas:{}}, centroNombre:"", centroCodigo:"", cursoEscolarGlobal:cursoAcademicoActual(), profesorNombreGlobal:"", programaciones:[], ui:{
   appMode:"inicio", corTab:"lista", corExamId:"", corAlId:"", corItemAbierto:"", corForm:{nombre:"",bloqueId:"",sda:"",fecha:"",plantillaId:""},

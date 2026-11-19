@@ -1,5 +1,5 @@
 /* ============================================================================
-   Cuaderno del profesor · Pantalla de bienvenida y conservación de scroll
+   Quadern d'avaluació · Pantalla de bienvenida y conservación de scroll
    js/ui/bienvenida.js
    ============================================================================ */
 
@@ -14,17 +14,17 @@ let _mostrarBienvenida=true;
 window.entrarDesdeBienvenida=()=>{ _mostrarBienvenida=false; state.ui.appMode="inicio"; save(); render(); };
 function _bienvenidaSaludo(){
   const h=new Date().getHours();
-  if(h<6) return "Buenas noches";
-  if(h<12) return "Buenos días";
-  if(h<20) return "Buenas tardes";
-  return "Buenas noches";
+  if(h<6) return "Bona nit";
+  if(h<12) return "Bon dia";
+  if(h<20) return "Bona vesprada";
+  return "Bona nit";
 }
 window._bienvenidaSoltarArchivo=e=>{
   e.preventDefault();
   if(e.currentTarget) e.currentTarget.classList.remove("bienvenida-sobre");
   const file=e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
   if(!file) return;
-  if(!/\.json$/i.test(file.name)){ mostrarAviso("Arrastra un archivo .json de copia de seguridad."); return; }
+  if(!/\.json$/i.test(file.name)){ mostrarAviso("Arrossega un arxiu .json de còpia de seguretat."); return; }
   _procesarArchivoCopiaJSON(file,null);
 };
 document.addEventListener("keydown",e=>{
@@ -36,20 +36,20 @@ function renderBienvenidaHTML(){
   const diasSinCopia=state.lastBackupAt?(Date.now()-state.lastBackupAt)/86400000:Infinity;
   const avisoCopia=hayDatos && diasSinCopia>7;
   const avisoTexto=state.lastBackupAt
-    ?`Hace tiempo que no exportas una copia externa (${haceTiempo(state.lastBackupAt)}). Consérvala fuera de este dispositivo desde 🛟 Copias.`
-    :"Todavía no has exportado ninguna copia de seguridad a un archivo. Hazlo desde 🛟 Copias en cuanto entres.";
+    ?`Fa temps que no exportes una còpia externa (${haceTiempo(state.lastBackupAt)}). Conserva-la fora d'este dispositiu des de 🛟 Còpies.`
+    :"Encara no has exportat cap còpia de seguretat a un arxiu. Fes-ho des de 🛟 Còpies tan bon punt entres.";
   const botonEntrar=`<button class="btn" onclick="entrarDesdeBienvenida()">Entrar →</button>`;
-  const botonAbrir=`<label class="file">📂 Abrir archivo…<input type="file" accept="application/json,.json" style="display:none" onchange="importarTodo(this)"></label>`;
+  const botonAbrir=`<label class="file">📂 Obrir arxiu…<input type="file" accept="application/json,.json" style="display:none" onchange="importarTodo(this)"></label>`;
   return `<div class="bienvenida-wrap" ondragover="event.preventDefault();this.classList.add('bienvenida-sobre')" ondragleave="this.classList.remove('bienvenida-sobre')" ondrop="_bienvenidaSoltarArchivo(event)">
     <div class="bienvenida-emblema">🗂️</div>
-    <div class="bienvenida-eyebrow">${_bienvenidaSaludo()} · Geografía e Historia · Evaluación</div>
-    <h1 class="bienvenida-title">Cuaderno del profesor</h1>
-    <p class="bienvenida-tag">Programación de aula, evaluación por competencias, corrección con rúbricas y el seguimiento diario de tu alumnado — todo en un mismo sitio, sin cuentas y sin conexión.</p>
+    <div class="bienvenida-eyebrow">${_bienvenidaSaludo()} · Física i Química · Avaluació</div>
+    <h1 class="bienvenida-title">Quadern d'avaluació</h1>
+    <p class="bienvenida-tag">Programació d'aula, avaluació per competències, correcció amb rúbriques i el seguiment diari del teu alumnat de Física i Química, tot en un mateix lloc, sense comptes i sense connexió.</p>
     ${hayDatos?`<div class="bienvenida-resumen">📊 ${esc(r.texto)}</div>`:""}
     <div class="bienvenida-botones${hayDatos?"":" nuevo"}">
       ${hayDatos?botonEntrar+botonAbrir:botonAbrir+botonEntrar}
     </div>
     ${avisoCopia?`<p class="bienvenida-aviso">⚠️ ${avisoTexto}</p>`:""}
-    <p class="bienvenida-nota">${hayDatos?"«Abrir archivo» sustituye los datos de este dispositivo por los de la copia (.json) que elijas — se guarda antes una copia de seguridad automática de lo actual. También puedes arrastrarla aquí.":"¿Vienes de otro dispositivo? Arrastra aquí tu copia de seguridad (.json) o usa «Abrir archivo» para cargarla y continuar donde lo dejaste."}</p>
+    <p class="bienvenida-nota">${hayDatos?"«Obrir arxiu» substituïx les dades d'este dispositiu per les de la còpia (.json) que tries; abans es guarda una còpia de seguretat automàtica del que hi ha. També pots arrossegar-la ací.":"Véns d'un altre dispositiu? Arrossega ací la teua còpia de seguretat (.json) o usa «Obrir arxiu» per a carregar-la i continuar on ho vas deixar."}</p>
   </div>`;
 }

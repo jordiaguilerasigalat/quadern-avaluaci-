@@ -10,15 +10,15 @@
    ================================================================= */
 const AG_TIPOS=[
   {id:"examen",label:"Examen",color:"#dc2626"},
-  {id:"entrega",label:"Entrega de trabajo",color:"#2563eb"},
-  {id:"reunion",label:"Reunión",color:"#7c3aed"},
+  {id:"entrega",label:"Lliurament de treball",color:"#2563eb"},
+  {id:"reunion",label:"Reunió",color:"#7c3aed"},
   {id:"cocope",label:"COCOPE",color:"#059669"},
   {id:"claustro",label:"Claustro",color:"#ea580c"},
-  {id:"otro",label:"Otro",color:"#64748b"}
+  {id:"otro",label:"Altre",color:"#64748b"}
 ];
-const AG_DIAS=["L","M","X","J","V","S","D"];
-const AG_DIAS_LARGO=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
-const AG_MESES=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const AG_DIAS=["Dl","Dt","Dc","Dj","Dv","Ds","Dg"];
+const AG_DIAS_LARGO=["Dilluns","Dimarts","Dimecres","Dijous","Divendres","Dissabte","Diumenge"];
+const AG_MESES=["gener","febrer","març","abril","maig","juny","juliol","agost","setembre","octubre","novembre","desembre"];
 function agTipoBase(id){ return AG_TIPOS.find(t=>t.id===id)||AG_TIPOS[AG_TIPOS.length-1]; }
 function agTipoInfo(id){
   const base=agTipoBase(id);
@@ -87,7 +87,7 @@ function agRenderModalFestivosHTML(){
   <div class="modal-overlay" onclick="if(event.target===this) agCerrarModalFestivos()">
     <div class="modal-box" style="max-width:460px">
       <div class="flex" style="justify-content:space-between;align-items:flex-start">
-        <h2 style="font-size:17px">🔴 Festivos</h2>
+        <h2 style="font-size:17px">🔴 Festius</h2>
         <button class="modal-close" onclick="agCerrarModalFestivos()">×</button>
       </div>
       <div class="grid" style="gap:12px;margin-top:10px">
@@ -104,7 +104,7 @@ function agRenderModalFestivosHTML(){
         </label>
         <button class="btn" style="justify-self:start" onclick="agAnadirFestivo()">+ Añadir festivo</button>
         <div style="border-top:1px solid var(--line);padding-top:10px">
-          <div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">Festivos marcados</div>
+          <div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">Festius marcats</div>
           <div class="ag-lista" style="max-height:180px">${filas}</div>
         </div>
         <div style="border-top:1px solid var(--line);padding-top:10px">
@@ -176,7 +176,7 @@ function agIcsEscape(s){ return String(s||"").replace(/\\/g,"\\\\").replace(/;/g
 function agGenerarICS(){
   const evs=agEventosFiltrados(state.eventos||[]).slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
   const ahora=new Date().toISOString().replace(/[-:]/g,"").split(".")[0]+"Z";
-  let ics="BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Geografia e Historia//Calendario//ES\r\nCALSCALE:GREGORIAN\r\n";
+  let ics="BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Quadern FiQ//Calendari//CA\r\nCALSCALE:GREGORIAN\r\n";
   evs.forEach(e=>{
     const info=agTipoInfo(e.tipo);
     const grupoLabel=agGruposLabelEvento(e);
@@ -206,7 +206,7 @@ window.agExportarICS=()=>{
   if(!evs.length){ mostrarAviso("No hay eventos para exportar"+((state.ui.agFiltroGrupo||state.ui.agFiltroTipo)?" con este filtro.":".")); return; }
   const blob=new Blob([agGenerarICS()],{type:"text/calendar;charset=utf-8"});
   const u=URL.createObjectURL(blob); const a=document.createElement("a");
-  a.href=u; a.download="calendario-geohist.ics"; a.click(); URL.revokeObjectURL(u);
+  a.href=u; a.download="calendari-fiq.ics"; a.click(); URL.revokeObjectURL(u);
 };
 function agImprimirMesHTML(mesStr,tamano){
   tamano=(tamano==="A4")?"A4":"A3";
@@ -214,8 +214,8 @@ function agImprimirMesHTML(mesStr,tamano){
   const [y,m]=mesStr.split("-").map(Number);
   const hoyStr=agHoyStr();
   const eventosDelMes=agEventosDelMes(mesStr);
-  const grupoFiltro = state.ui.agFiltroGrupo ? (state.ui.agFiltroGrupo==="__general__" ? "Sin grupo (general)" : esc((state.grupos.find(g=>g.id===state.ui.agFiltroGrupo)||{}).nombre||"")) : "Todos los grupos";
-  const tipoFiltro = state.ui.agFiltroTipo ? esc(agTipoInfo(state.ui.agFiltroTipo).label) : "Todos los tipos";
+  const grupoFiltro = state.ui.agFiltroGrupo ? (state.ui.agFiltroGrupo==="__general__" ? "Sense grup (general)" : esc((state.grupos.find(g=>g.id===state.ui.agFiltroGrupo)||{}).nombre||"")) : "Tots els grups";
+  const tipoFiltro = state.ui.agFiltroTipo ? esc(agTipoInfo(state.ui.agFiltroTipo).label) : "Tots els tipus";
   const centro = esc(state.centroNombre||"");
 
   const celdas=agCalcularCeldasMes(mesStr).map(c=>{
@@ -304,7 +304,7 @@ function agImprimirMesHTML(mesStr,tamano){
     button{padding:8px 16px;font-size:14px;cursor:pointer;border-radius:8px;border:1px solid #ccc}
     @media print{ .btnbar{display:none} }
   </style></head><body>
-  <div class="btnbar"><button onclick="window.print()">Imprimir / Guardar como PDF</button> <button onclick="window.close()" style="background:#eee;color:#333">✕ Cerrar</button></div>
+  <div class="btnbar"><button onclick="window.print()">Imprimir / Guardar com a PDF</button> <button onclick="window.close()" style="background:#eee;color:#333">✕ Cerrar</button></div>
   <div class="ap-banda">
     <div>
       ${centro?`<div class="ap-centro">${centro}</div>`:""}
@@ -354,7 +354,7 @@ function agModalMesGrandeHTML(){
   const filas=[];
   for(let i=0;i<celdas.length;i+=7) filas.push(celdas.slice(i,i+7).map((c,idx)=>celdaHTML(c,idx)).join(""));
   const leyenda=AG_TIPOS.map(t=>`<span class="agg-leyenda-item"><span class="agg-dot" style="background:${t.color}"></span>${esc(t.label)}</span>`).join("");
-  const grupoFiltro = state.ui.agFiltroGrupo ? (state.ui.agFiltroGrupo==="__general__" ? "Sin grupo (general)" : esc((state.grupos.find(g=>g.id===state.ui.agFiltroGrupo)||{}).nombre||"")) : "";
+  const grupoFiltro = state.ui.agFiltroGrupo ? (state.ui.agFiltroGrupo==="__general__" ? "Sense grup (general)" : esc((state.grupos.find(g=>g.id===state.ui.agFiltroGrupo)||{}).nombre||"")) : "";
 
   return `<div class="modal-overlay" onclick="if(event.target===this) agCerrarModalMesGrande()">
     <div class="modal-box agg-modal-box" style="max-width:min(1400px,96vw);width:96vw;height:92vh;max-height:92vh;display:flex;flex-direction:column;padding:0;overflow:hidden;background:var(--card);backdrop-filter:none;-webkit-backdrop-filter:none">
@@ -367,7 +367,7 @@ function agModalMesGrandeHTML(){
           </div>
           <div class="flex" style="gap:6px;flex-wrap:wrap">
             <button class="ghost" style="border:1px solid var(--line)" onclick="agMesAnterior()" title="Mes anterior">←</button>
-            <button class="ghost" style="border:1px solid var(--line)" onclick="agMesHoy()">Hoy</button>
+            <button class="ghost" style="border:1px solid var(--line)" onclick="agMesHoy()">Hui</button>
             <button class="ghost" style="border:1px solid var(--line)" onclick="agMesSiguiente()" title="Mes siguiente">→</button>
             <button class="ghost" style="border:1px solid var(--line)" onclick="agImprimirMes('A4')" title="Vista imprimible en una página A4 apaisada">🖨️ Imprimir A4</button>
             <button class="ghost" style="border:1px solid var(--line)" onclick="agImprimirMes('A3')" title="Vista imprimible en una página A3 apaisada (más grande, más legible)">🖨️ Imprimir A3</button>
@@ -455,7 +455,7 @@ function agImprimirAnioHTML(anio){
     button{padding:8px 16px;font-size:14px;cursor:pointer;border-radius:8px;border:1px solid #ccc}
     @media print{ .btnbar{display:none} }
   </style></head><body>
-  <div class="btnbar"><button onclick="window.print()">Imprimir / Guardar como PDF</button> <button onclick="window.close()" style="background:#eee;color:#333">✕ Cerrar</button></div>
+  <div class="btnbar"><button onclick="window.print()">Imprimir / Guardar com a PDF</button> <button onclick="window.close()" style="background:#eee;color:#333">✕ Cerrar</button></div>
   ${centro?`<div class="ay-centro">${centro}</div>`:""}
   <h1>🗓️ Calendario ${anio}</h1>
   <div class="ay-leyenda">${leyenda}</div>
@@ -470,12 +470,12 @@ function agFiltroSelectHTML(){
   return `<div class="flex" style="gap:8px;flex-wrap:wrap;align-items:center">
   <input class="in" style="padding:6px 10px;font-size:13px;width:150px" id="agBusquedaInput" placeholder="🔎 Buscar evento…" value="${esc(state.ui.agBusqueda||"")}" oninput="agSetBusqueda(this.value)">
   <select class="in" style="padding:6px 10px;font-size:13px" id="agFiltroSel" onchange="agSetFiltro(this.value)">
-    <option value="" ${state.ui.agFiltroGrupo===""?"selected":""}>Todos los grupos</option>
-    <option value="__general__" ${state.ui.agFiltroGrupo==="__general__"?"selected":""}>Sin grupo (general)</option>
+    <option value="" ${state.ui.agFiltroGrupo===""?"selected":""}>Tots els grups</option>
+    <option value="__general__" ${state.ui.agFiltroGrupo==="__general__"?"selected":""}>Sense grup (general)</option>
     ${state.grupos.map(g=>`<option value="${g.id}" ${state.ui.agFiltroGrupo===g.id?"selected":""}>${esc(g.nombre)}</option>`).join("")}
   </select>
   <select class="in" style="padding:6px 10px;font-size:13px" id="agFiltroTipoSel" onchange="agSetFiltroTipo(this.value)">
-    <option value="" ${state.ui.agFiltroTipo===""?"selected":""}>Todos los tipos</option>
+    <option value="" ${state.ui.agFiltroTipo===""?"selected":""}>Tots els tipus</option>
     ${AG_TIPOS.map(t=>`<option value="${t.id}" ${state.ui.agFiltroTipo===t.id?"selected":""}>${t.label}</option>`).join("")}
   </select>
   </div>`;
@@ -495,7 +495,7 @@ function agRenderHoyBannerHTML(){
   }).join("");
   return `<div class="card" style="border-left:4px solid var(--accent);padding:14px 18px">
     <div class="flex" style="align-items:center;gap:10px;flex-wrap:wrap">
-      <strong style="font-size:13.5px;color:var(--accent-texto);flex-shrink:0">📌 Hoy</strong>
+      <strong style="font-size:13.5px;color:var(--accent-texto);flex-shrink:0">📌 Hui</strong>
       <div class="flex" style="gap:8px">${chips}</div>
     </div>
   </div>`;
@@ -527,7 +527,7 @@ function agRenderModalColoresHTML(){
   <div class="modal-overlay" onclick="if(event.target===this) agCerrarModalColores()">
     <div class="modal-box" style="max-width:380px">
       <div class="flex" style="justify-content:space-between;align-items:flex-start">
-        <h2 style="font-size:17px">🎨 Colores de los tipos de evento</h2>
+        <h2 style="font-size:17px">🎨 Colors dels tipus d'esdeveniment</h2>
         <button class="modal-close" onclick="agCerrarModalColores()">×</button>
       </div>
       <div style="margin-top:10px">${filas}</div>
@@ -609,14 +609,14 @@ function agRenderSemanaHTML(toggleVista,botonesExtra){
         ${agFiltroSelectHTML()}
         <div class="flex" style="gap:4px">
           <button class="ghost" onclick="agSemanaAnterior()" title="Semana anterior">←</button>
-          <button class="ghost" onclick="agSemanaHoy()">Hoy</button>
+          <button class="ghost" onclick="agSemanaHoy()">Hui</button>
           <button class="ghost" onclick="agSemanaSiguiente()" title="Semana siguiente">→</button>
         </div>
       </div>
     </div>
     <div class="ag-semana">${cols}</div>
     <div class="flex" style="margin-top:14px">
-      <button class="btn" onclick="agAbrirModal('${agFechaPorDefecto()}','')">+ Añadir evento</button>
+      <button class="btn" onclick="agAbrirModal('${agFechaPorDefecto()}','')">+ Afegir esdeveniment</button>
       <button class="ghost" style="border:1px solid var(--line)" onclick="agExportarICS()" title="Descarga un archivo .ics para importar en el Calendario del iPad, iPhone, Mac o Google Calendar">⬇ Exportar .ics</button>
     </div>
   </div>`;
@@ -625,11 +625,11 @@ function agRenderCalendarioHTML(){
   const vistaCal=state.ui.agVistaCal||"mes";
   const toggleVista=`<div class="flex" style="gap:4px">
     <button class="tab ${vistaCal==="mes"?"on":""}" style="padding:5px 12px;font-size:12.5px" onclick="agSetVistaCal('mes')">📅 Mes</button>
-    <button class="tab ${vistaCal==="semana"?"on":""}" style="padding:5px 12px;font-size:12.5px" onclick="agSetVistaCal('semana')">🗓️ Semana</button>
+    <button class="tab ${vistaCal==="semana"?"on":""}" style="padding:5px 12px;font-size:12.5px" onclick="agSetVistaCal('semana')">🗓️ Setmana</button>
   </div>`;
   const botonesExtra=`<div class="flex" style="gap:8px;flex-wrap:wrap">
-    <button class="ghost small" style="border:1px solid var(--line)" onclick="agAbrirModalFestivos()">🔴 Festivos</button>
-    <button class="ghost small" style="border:1px solid var(--line)" onclick="agAbrirModalColores()">🎨 Colores</button>
+    <button class="ghost small" style="border:1px solid var(--line)" onclick="agAbrirModalFestivos()">🔴 Festius</button>
+    <button class="ghost small" style="border:1px solid var(--line)" onclick="agAbrirModalColores()">🎨 Colors</button>
   </div>`;
   if(vistaCal==="semana") return agRenderSemanaHTML(toggleVista,botonesExtra);
   const mesStr=agMesActual();
@@ -677,7 +677,7 @@ function agRenderCalendarioHTML(){
         ${agFiltroSelectHTML()}
         <div class="flex" style="gap:4px">
           <button class="ghost" onclick="agMesAnterior()" title="Mes anterior">←</button>
-          <button class="ghost" onclick="agMesHoy()">Hoy</button>
+          <button class="ghost" onclick="agMesHoy()">Hui</button>
           <button class="ghost" onclick="agMesSiguiente()" title="Mes siguiente">→</button>
         </div>
       </div>
@@ -685,11 +685,11 @@ function agRenderCalendarioHTML(){
     <div class="ag-grid ag-grid-head">${AG_DIAS.map(d=>`<div class="ag-cell-head">${d}</div>`).join("")}</div>
     <div class="ag-grid">${celdas}</div>
     <div class="flex" style="margin-top:14px">
-      <button class="btn" onclick="agAbrirModal('${agFechaPorDefecto()}','')">+ Añadir evento</button>
+      <button class="btn" onclick="agAbrirModal('${agFechaPorDefecto()}','')">+ Afegir esdeveniment</button>
       <button class="ghost" style="border:1px solid var(--line)" onclick="agExportarICS()" title="Descarga un archivo .ics para importar en el Calendario del iPad, iPhone, Mac o Google Calendar">⬇ Exportar .ics</button>
-      <button class="ghost" style="border:1px solid var(--line)" onclick="agAbrirModalMesGrande()" title="Abre este mes en grande, con todos los eventos y festivos, y desde ahí se puede imprimir en A4 o A3">🔍 Ver mes en grande</button>
-      <button class="ghost" style="border:1px solid var(--line)" onclick="agImprimirMes()" title="Abre una vista imprimible de este mes, lista para imprimir en A3">🖨️ Imprimir mes (A3)</button>
-      <button class="ghost" style="border:1px solid var(--line)" onclick="agImprimirAnio()" title="Vista anual compacta con los festivos marcados, lista para imprimir">🖨️ Imprimir año</button>
+      <button class="ghost" style="border:1px solid var(--line)" onclick="agAbrirModalMesGrande()" title="Abre este mes en grande, con todos los eventos y festivos, y desde ahí se puede imprimir en A4 o A3">🔍 Vore el mes en gran</button>
+      <button class="ghost" style="border:1px solid var(--line)" onclick="agImprimirMes()" title="Abre una vista imprimible de este mes, lista para imprimir en A3">🖨️ Imprimir el mes (A3)</button>
+      <button class="ghost" style="border:1px solid var(--line)" onclick="agImprimirAnio()" title="Vista anual compacta con los festivos marcados, lista para imprimir">🖨️ Imprimir l'any</button>
     </div>
   </div>`;
 }
@@ -752,7 +752,7 @@ function agRenderDiaHTML(fecha){
     <div class="flex" style="justify-content:space-between;align-items:center;margin-bottom:2px;flex-wrap:wrap;gap:8px">
       <div>
         <strong style="font-size:14.5px">${nombreDia} ${d.getDate()} de ${AG_MESES[d.getMonth()]}</strong>
-        ${esHoy?`<span class="pill" style="background:var(--accent-soft);color:var(--accent-texto);margin-left:8px">Hoy</span>`:""}
+        ${esHoy?`<span class="pill" style="background:var(--accent-soft);color:var(--accent-texto);margin-left:8px">Hui</span>`:""}
         ${esFestivo?`<span class="pill" style="background:rgba(220,38,38,.14);color:#b91c1c;margin-left:8px">Festivo${festivoInfo&&festivoInfo.etiqueta?": "+esc(festivoInfo.etiqueta):""}</span>`:""}
       </div>
       <button class="ghost" style="padding:2px 10px" onclick="agCerrarDia()" title="Volver al resumen del mes">× Cerrar</button>
@@ -767,7 +767,7 @@ function agRenderDiaHTML(fecha){
     <div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin:14px 0 6px">📌 Eventos</div>
     <div class="ag-lista">${filas}</div>
     <div class="flex" style="margin-top:12px">
-      <button class="btn small" onclick="agAbrirModal('${fecha}','')">+ Añadir evento este día</button>
+      <button class="btn small" onclick="agAbrirModal('${fecha}','')">+ Afegir esdeveniment este dia</button>
     </div>
   </div>`;
 }
@@ -794,16 +794,16 @@ function agRenderResumenHTML(){
         ${rango?`<div class="ag-evento-grupo">📅 ${rango}</div>`:""}
       </div>
     </div>`;
-  }).join("") : `<p class="sub" style="margin:8px 0 0">${busqueda?"Sin resultados para esta búsqueda.":(vista==="proximos"?"No hay próximos eventos.":"Sin eventos este mes.")} ${busqueda?"":`Pulsa un día del calendario para ver qué hay previsto, o "Nuevo" para añadir uno.`}</p>`;
+  }).join("") : `<p class="sub" style="margin:8px 0 0">${busqueda?"Sense resultats per a esta cerca.":(vista==="proximos"?"No hi ha pròxims esdeveniments.":"Sense esdeveniments este mes.")} ${busqueda?"":`Prem un dia del calendari per a vore què hi ha previst, o "Nou" per a afegir-ne un.`}</p>`;
   return `
   <div class="card">
     <div class="flex" style="justify-content:space-between;align-items:center;margin-bottom:2px;flex-wrap:wrap;gap:8px">
       <div class="flex" style="gap:4px">
         ${busqueda?`<span class="pill" style="background:var(--accent-soft);color:var(--accent-texto)">🔎 Resultados de "${esc(busqueda)}"</span>`:`
         <button class="tab ${vista==="mes"?"on":""}" style="padding:5px 12px;font-size:12.5px" onclick="agSetVista('mes')">Este mes</button>
-        <button class="tab ${vista==="proximos"?"on":""}" style="padding:5px 12px;font-size:12.5px" onclick="agSetVista('proximos')">Próximos</button>`}
+        <button class="tab ${vista==="proximos"?"on":""}" style="padding:5px 12px;font-size:12.5px" onclick="agSetVista('proximos')">Pròxims</button>`}
       </div>
-      <button class="btn small" onclick="agAbrirModal('${agFechaPorDefecto()}','')">+ Nuevo</button>
+      <button class="btn small" onclick="agAbrirModal('${agFechaPorDefecto()}','')">+ Nou</button>
     </div>
     <div class="ag-lista" style="margin-top:10px">${filas}</div>
   </div>`;

@@ -192,9 +192,9 @@ function resumenEstado(st){
   const alumnos=grupos.reduce((n,g)=>n+((g.alumnos||[]).length),0);
   const actividades=grupos.reduce((n,g)=>n+((g.actividades||[]).length),0);
   const otros=(st.programaciones||[]).length+(st.reuniones||[]).length+(st.planesRefuerzo||[]).length+(st.planesRepeticion||[]).length+(st.planesNESE||[]).length+(st.eventos||[]).length;
-  const partes=[`${grupos.length} grupo${grupos.length===1?"":"s"}`,`${alumnos} alumno${alumnos===1?"":"s"}`,`${actividades} actividad${actividades===1?"":"es"}`];
-  if((st.programaciones||[]).length) partes.push(`${st.programaciones.length} programación(es)`);
-  if((st.reuniones||[]).length) partes.push(`${st.reuniones.length} reunión(es)`);
+  const partes=[`${grupos.length} grup${grupos.length===1?"":"s"}`,`${alumnos} alumne${alumnos===1?"":"s"}`,`${actividades} activitat${actividades===1?"":"s"}`];
+  if((st.programaciones||[]).length) partes.push(`${st.programaciones.length} programació/ons`);
+  if((st.reuniones||[]).length) partes.push(`${st.reuniones.length} reunió/ons`);
   return {grupos:grupos.length,alumnos,actividades,total:grupos.length+alumnos+actividades+otros,texto:partes.join(" · ")};
 }
 function crearCopiaAuto(motivo,forzar){

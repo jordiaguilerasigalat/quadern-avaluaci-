@@ -141,30 +141,25 @@ window.aplicarArreglosDiagnostico=async()=>{
 };
 
 /* v3 · Tarjeta de novedades: se ve una vez tras actualizar, y se cierra. */
-const NOVEDADES_VERSION="v3-5";
+const NOVEDADES_VERSION="fiq-1";
 window.cerrarNovedades=()=>{ state.novedadesVistas=NOVEDADES_VERSION; save(); render(); };
 const NOVEDADES_V3=[
-  ["🔀 Modelo B de verdad","sigue siempre al examen general, repartes quién hace A o B en Corregir (también según el plano de aula) y la rúbrica sale en el orden de cada modelo."],
-  ["🧩 Exámenes adaptados más fáciles","«+ Examen adaptado (NESE)» en el Diseño, aviso si un alumno NESE haría el examen general, y la versión adaptada se guarda en la Programación para los demás grupos."],
-  ["🎓 Empezar curso nuevo","aquí arriba: archiva el curso que termina y deja grupos, programaciones y horario listos para el siguiente."],
-  ["🙈 Modo proyector","el botón 👁️ de la cabecera difumina los nombres del alumnado y las notas mientras proyectas."],
-  ["🔒 Bloqueo con PIN","en 🛟 Copias: la app pide un PIN al abrirla y tras unos minutos sin usarla (también Tutoría)."],
-  ["🎲 Sorteo y grupos","en el botón del cronómetro: elegir a alguien al azar y repartir la clase en equipos."],
-  ["☁️ Copias cifradas","la copia automática en carpeta se puede cifrar con contraseña (🛟 Copias → «Cifrar las copias»)."],
-  ["💾 Más sitio y más seguro","los datos ya no dependen del límite de 5 MB del navegador; las fotos de Tutoría tampoco."],
-  ["📱 Más cómodo","en el móvil la cabecera ocupa la mitad; en el ordenador, las secciones del grupo están a la vista."]
+  ["⚗️ Currículum de Física i Química","2n, 3r i 4t d'ESO, 1r de Batxillerat, i Química i Física de 2n de Batxillerat, amb les CE i els criteris del departament."],
+  ["⚖️ Dos maneres de qualificar","per instruments (blocs de la proposta pedagògica) o per competències específiques (mitjana ponderada de les CE). Es tria en Ajustos de cada grup."],
+  ["📥 Programacions del departament 2026-2027","en Programació d'Aula, un botó per curs carrega totes les SdA amb trimestre, sessions, CE i criteris."],
+  ["🧩 Models NESE i de reforç de FiQ","plantilles de partida per a 2n, 3r i 4t d'ESO (cal que el departament les revise)."]
 ];
 function novedadesHTML(){
   if(state.novedadesVistas===NOVEDADES_VERSION) return "";
   return `<div class="card" style="border-left:4px solid var(--accent-2);padding:12px 16px">
     <div class="flex" style="justify-content:space-between;align-items:center;gap:10px">
-      <strong style="font-size:14px">Novedades de esta versión</strong>
-      <button class="modal-close" onclick="cerrarNovedades()" aria-label="Cerrar novedades">×</button>
+      <strong style="font-size:14px">Novetats d'esta versió</strong>
+      <button class="modal-close" onclick="cerrarNovedades()" aria-label="Tancar novetats">×</button>
     </div>
     <ul style="margin:6px 0 0 18px;font-size:13.5px;line-height:1.55">
       ${NOVEDADES_V3.map(([t,d])=>`<li><strong>${t}</strong>: ${d}</li>`).join("")}
     </ul>
-    <div class="flex" style="gap:8px;margin-top:8px"><a class="btn small" href="guia_mejorada.html#novedades" style="text-decoration:none">Ver la guía</a><button class="ghost small" style="border:1px solid var(--line)" onclick="cerrarNovedades()">Entendido</button></div>
+    <div class="flex" style="gap:8px;margin-top:8px"><a class="btn small" href="guia_mejorada.html#novedades" style="text-decoration:none">Vore la guia</a><button class="ghost small" style="border:1px solid var(--line)" onclick="cerrarNovedades()">Entesos</button></div>
   </div>`;
 }
 function coberturaTrim(grupo,trim){

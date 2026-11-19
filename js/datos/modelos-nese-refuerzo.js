@@ -8,7 +8,7 @@
 const TIPOS=["Activitat de classe","Deures (activitat per a casa)","Resolució de problemes","Pràctica de laboratori / informe","Treball / projecte / SdA","Exposició oral","Qüestionari en línia (Aules)","Quadern / llibreta","Proactivitat i hàbits de treball","Prova escrita / examen"];
 const TIPO_EXAMEN=TIPOS[TIPOS.length-1];
 const ESCALA=[{etq:"Realizada con éxito",v:10},{etq:"Realizada",v:7.5},{etq:"Incompleta",v:5},{etq:"No realizada",v:0}];
-const TRIMESTRES=["1ª evaluación","2ª evaluación","3ª evaluación"];
+const TRIMESTRES=["1a avaluació","2a avaluació","3a avaluació"];
 const NIVELES_NESE=["1º de Primaria","2º de Primaria","3º de Primaria","4º de Primaria","5º de Primaria","6º de Primaria","1º de ESO","2º de ESO","3º de ESO","4º de ESO","Altas Capacidades"];
 /* Plantilles de seguiment NESE per a Física i Química (5 models, segons el
    nivell de competència curricular real de l'alumne/a). Les files són sabers i

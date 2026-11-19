@@ -415,22 +415,22 @@ function renderListaCatalogosPersonalizados(){
   const cont=document.getElementById("catImportadasLista");
   if(!cont) return;
   const datos=listaPlantillasDatos();
-  cont.innerHTML=`<div style="font-size:12.5px;color:var(--mut);margin:14px 0 6px">Todas las plantillas de materia</div>
+  cont.innerHTML=`<div style="font-size:12.5px;color:var(--mut);margin:14px 0 6px">Totes les plantilles de matèria</div>
     <div class="grid">
       ${datos.map(d=>{
         const nCrit=d.cat.ces.reduce((n,ce)=>n+ce.criterios.length,0);
-        const badges=`<span class="badge">${d.cat.ces.length} CE · ${nCrit} criterios</span>`
-          +(d.oficial?` <span class="badge">oficial</span>`:` <span class="badge" style="opacity:.75">personalizada</span>`)
+        const badges=`<span class="badge">${d.cat.ces.length} CE · ${nCrit} criteris</span>`
+          +(d.oficial?` <span class="badge">oficial</span>`:` <span class="badge" style="opacity:.75">personalitzada</span>`)
           +(d.override?` <span class="badge" style="background:var(--accent-soft);color:var(--accent-texto)">editada</span>`:"")
           +(d.oculto?` <span class="badge" style="background:var(--danger-soft);color:var(--danger)">oculta</span>`:"");
         const editable=catalogoEsEditableComoTexto(d.cat);
         const botones=[];
         if(d.oculto){
-          botones.push(`<button class="ghost" style="border:1px solid var(--line)" onclick="mostrarPlantilla('${d.key}')">Mostrar de nuevo</button>`);
+          botones.push(`<button class="ghost" style="border:1px solid var(--line)" onclick="mostrarPlantilla('${d.key}')">Tornar a mostrar</button>`);
         } else {
           if(editable) botones.push(`<button class="ghost" style="border:1px solid var(--line)" onclick="editarCatalogo('${d.key}')">✏️ Editar</button>`);
-          if(d.override) botones.push(`<button class="ghost" style="border:1px solid var(--line)" onclick="restaurarPlantillaOriginal('${d.key}')">↺ Restaurar oficial</button>`);
-          botones.push(`<button class="ghost danger" onclick="eliminarPlantilla('${d.key}')">${d.oficial?"Ocultar":"Eliminar"}</button>`);
+          if(d.override) botones.push(`<button class="ghost" style="border:1px solid var(--line)" onclick="restaurarPlantillaOriginal('${d.key}')">↺ Restaurar l'oficial</button>`);
+          botones.push(`<button class="ghost danger" onclick="eliminarPlantilla('${d.key}')">${d.oficial?"Amagar":"Eliminar"}</button>`);
         }
         return `<div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:6px;${d.oculto?"opacity:.6":""}">
           <span style="font-size:13.5px">${esc(d.cat.materia)} · ${esc(d.cat.curso)} ${badges}</span>
@@ -447,39 +447,39 @@ function renderGestionCatalogosHTML(){
   const editando=!!state.ui.catEditKey;
   const catEdit=editando?getCatalogo(state.ui.catEditKey):null;
   return `<div class="card">
-    <h2>${editando?"Editar plantilla de materia":"Materias: importar, editar o eliminar plantillas"}</h2>
+    <h2>${editando?"Editar plantilla de matèria":"Matèries: importar, editar o eliminar plantilles"}</h2>
     ${editando
-      ? `<div class="alert-box">✏️ Editando <strong>${esc(catEdit?catEdit.materia:"")} · ${esc(catEdit?catEdit.curso:"")}</strong>. Cambia lo que necesites abajo y pulsa "Guardar cambios", o <a onclick="cancelarEdicionCatalogo()" style="cursor:pointer;text-decoration:underline;color:var(--brand-3)">cancela la edición</a>.</div>`
-      : `<p class="sub">¿Impartes una materia distinta a Geografía e Historia? Da de alta tu propio catálogo de competencias específicas, criterios de evaluación y bloques de calificación, y úsalo igual que los precargados. También puedes editar o eliminar/ocultar cualquier plantilla, incluidas las que trae la aplicación de serie.</p>`}
+      ? `<div class="alert-box">✏️ Editant <strong>${esc(catEdit?catEdit.materia:"")} · ${esc(catEdit?catEdit.curso:"")}</strong>. Canvia el que necessites a baix i prem "Guardar canvis", o <a onclick="cancelarEdicionCatalogo()" style="cursor:pointer;text-decoration:underline;color:var(--brand-3)">cancel·la l'edició</a>.</div>`
+      : `<p class="sub">Imparteixes una altra matèria a més de Física i Química? Dona d'alta el teu propi catàleg de competències específiques, criteris d'avaluació i blocs de qualificació, i usa'l igual que els que ja hi ha. També pots editar o eliminar/amagar qualsevol plantilla, incloses les que porta l'aplicació de sèrie.</p>`}
     <div class="flex" style="margin-bottom:14px">
-      <button class="btn" onclick="descargarPlantillaCatalogo()">⬇ Descargar plantilla en blanco (.txt)</button>
-      <button class="ghost" id="catEjemploBtn" style="border:1px solid var(--line)" onclick="toggleEjemploCatalogo()">Ver un ejemplo ya relleno</button>
+      <button class="btn" onclick="descargarPlantillaCatalogo()">⬇ Descarregar plantilla en blanc (.txt)</button>
+      <button class="ghost" id="catEjemploBtn" style="border:1px solid var(--line)" onclick="toggleEjemploCatalogo()">Vore un exemple ja omplit</button>
     </div>
-    <p class="sub" style="margin-top:-8px">Descarga la plantilla, ábrela con cualquier editor de texto (Bloc de notas, TextEdit…), sustituye lo que está entre corchetes <code>[así]</code> por los datos de tu materia y vuelve aquí para cargarla con el botón "cargar un archivo" de más abajo.</p>
+    <p class="sub" style="margin-top:-8px">Descarrega la plantilla, obri-la amb qualsevol editor de text (Bloc de notes, TextEdit…), substituïx el que està entre claudàtors <code>[així]</code> per les dades de la teua matèria i torna ací per a carregar-la amb el botó "carregar un arxiu" de més avall.</p>
     <pre id="catEjemplo" style="display:none;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:12px;white-space:pre-wrap;margin-bottom:14px">${esc(ejemploCatalogoTexto())}</pre>
     <details style="margin-bottom:14px">
-      <summary style="cursor:pointer;font-size:13.5px;color:var(--ink);font-weight:600;text-decoration:underline;text-decoration-color:var(--accent)">Cómo rellenar el formato (instrucciones)</summary>
+      <summary style="cursor:pointer;font-size:13.5px;color:var(--ink);font-weight:600;text-decoration:underline;text-decoration-color:var(--accent)">Com omplir el format (instruccions)</summary>
       <div style="font-size:13.5px;color:var(--ink);margin-top:10px;line-height:1.65">
-        <p>La plantilla descargable ya trae el formato con marcadores de ejemplo, pero por si prefieres escribirlo tú mismo/a, así funciona, una línea por dato:</p>
+        <p>La plantilla descarregable ja porta el format amb marcadors d'exemple, però si prefereixes escriure-ho tu mateix/a, funciona així, una línia per dada:</p>
         <ul style="padding-left:18px;margin:6px 0">
-          <li><code>MATERIA: ...</code> y <code>CURSO: ...</code> — el nombre de tu materia y el curso.</li>
-          <li><code>BLOQUES</code> seguido de líneas <code>Nombre del bloque = porcentaje</code> (conviene que sumen 100). Son las partes que se combinan para la nota: exámenes, trabajo diario, actitud…</li>
-          <li>Una línea <code>CE1: título de la competencia específica | CCL, STEM</code> por cada competencia específica de tu currículum. El número puede ser el que quieras (CE1, CE2…); tras la barra "|" van los códigos de las competencias clave que trabaja (lista abajo).</li>
-          <li>Debajo de cada CE, una línea <code>1.1: texto del criterio</code> por cada criterio de evaluación asociado, con la numeración de tu currículum (1.1, 1.2, 2.1…).</li>
-          <li><strong>Opcional</strong>: debajo de los criterios de una CE, una línea <code>SABERES:</code> seguida de una línea <code>- texto</code> por cada saber básico de esa competencia. Si los rellenas, Programación de Aula podrá ofrecértelos al elegir los saberes de una Situación de Aprendizaje, en vez de solo el cuadro de texto libre — imprescindible si tu materia no está entre las que trae la aplicación por defecto y quieres hacer una Programación de Aula completa.</li>
-          <li>Las líneas que empiezan por <code>#</code> son solo comentarios/explicaciones: la aplicación las ignora al importar, así que puedes dejarlas, borrarlas o añadir las tuyas.</li>
+          <li><code>MATERIA: ...</code> i <code>CURSO: ...</code>: el nom de la teua matèria i el curs.</li>
+          <li><code>BLOQUES</code> seguit de línies <code>Nom del bloc = percentatge</code> (convé que sumen 100). Són les parts que es combinen per a la nota: proves, laboratori, quadern…</li>
+          <li>Una línia <code>CE1: títol de la competència específica | CCL, STEM</code> per cada competència específica del teu currículum. El número pot ser el que vulgues (CE1, CE2…); després de la barra "|" van els codis de les competències clau que treballa (llista a baix).</li>
+          <li>Davall de cada CE, una línia <code>1.1: text del criteri</code> per cada criteri d'avaluació associat, amb la numeració del teu currículum (1.1, 1.2, 2.1…).</li>
+          <li><strong>Opcional</strong>: davall dels criteris d'una CE, una línia <code>SABERES:</code> seguida d'una línia <code>- text</code> per cada saber bàsic d'eixa competència. Si els omplis, Programació d'Aula te'ls podrà oferir en triar els sabers d'una Situació d'Aprenentatge, en compte de només el quadre de text lliure.</li>
+          <li>Les línies que comencen per <code>#</code> són només comentaris/explicacions: l'aplicació les ignora en importar, així que pots deixar-les, esborrar-les o afegir-ne de teues.</li>
         </ul>
-        <p>Las competencias específicas y los criterios son los de tu materia y curso: puedes copiarlos de tu currículum oficial (Real Decreto de enseñanzas mínimas o el decreto de tu comunidad autónoma).</p>
-        <p><strong>Competencias clave (CC)</strong> — son las mismas 8 para todas las materias (fijadas por ley); solo tienes que usar sus códigos al definir cada CE:</p>
+        <p>Les competències específiques i els criteris són els de la teua matèria i curs: pots copiar-los del currículum oficial (en la Comunitat Valenciana, els decrets de currículum d'ESO i de Batxillerat).</p>
+        <p><strong>Competències clau (CC)</strong>: són les mateixes 8 per a totes les matèries (fixades per llei); només has d'usar els seus codis en definir cada CE:</p>
         <ul style="padding-left:18px;margin:6px 0;columns:2;font-size:13px">
           ${Object.entries(COMP_CLAVE).map(([k,v])=>`<li><strong>${k}</strong> · ${esc(v)}</li>`).join("")}
         </ul>
       </div>
     </details>
-    <textarea class="in" id="catTexto" style="width:100%;min-height:160px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px" placeholder="MATERIA: ...&#10;CURSO: ...&#10;&#10;BLOQUES&#10;Exámenes = 70&#10;Trabajo diario = 30&#10;&#10;CE1: ... | CCL, STEM&#10;1.1: ...">${esc(state.ui.catImportTexto||"")}</textarea>
+    <textarea class="in" id="catTexto" style="width:100%;min-height:160px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px" placeholder="MATERIA: ...&#10;CURSO: ...&#10;&#10;BLOQUES&#10;Proves = 70&#10;Laboratori i quadern = 30&#10;&#10;CE1: ... | CCL, STEM&#10;1.1: ...">${esc(state.ui.catImportTexto||"")}</textarea>
     <div class="flex" style="margin-top:8px">
-      <button class="btn" onclick="validarEImportarCatalogo()">${editando?"Guardar cambios":"Validar e importar"}</button>
-      ${editando?`<button class="ghost" style="border:1px solid var(--line)" onclick="cancelarEdicionCatalogo()">Cancelar</button>`:`<label class="ghost file">o cargar un archivo .txt/.json…<input type="file" accept=".txt,.json,text/plain,application/json" style="display:none" onchange="cargarArchivoCatalogo(this)"></label>`}
+      <button class="btn" onclick="validarEImportarCatalogo()">${editando?"Guardar canvis":"Validar i importar"}</button>
+      ${editando?`<button class="ghost" style="border:1px solid var(--line)" onclick="cancelarEdicionCatalogo()">Cancel·lar</button>`:`<label class="ghost file">o carregar un arxiu .txt/.json…<input type="file" accept=".txt,.json,text/plain,application/json" style="display:none" onchange="cargarArchivoCatalogo(this)"></label>`}
     </div>
     <div id="catImportResultado" style="margin-top:10px"></div>
     <div id="catImportadasLista"></div>
