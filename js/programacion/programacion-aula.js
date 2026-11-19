@@ -107,6 +107,39 @@ window.progCrear=()=>{
   save(); render();
   mostrarToast("✓ Programación creada");
 };
+/* Crea una programació a partir de la del departament (PROG_DEPARTAMENTO):
+   una SdA per unitat, amb els sabers, CE i criteris en el text de sabers, i una
+   activitat «Criteris de la SdA» amb els criteris vinculats (si n'hi ha). */
+window.progCargarDepartamento=async (key)=>{
+  const d=PROG_DEPARTAMENTO[key], cat=getCatalogo(key); if(!d||!cat) return;
+  const ja=(state.programaciones||[]).find(p=>p.origenDepartamento===key);
+  if(ja && !await confirmar(`Ja tens una programació creada des de la del departament per a ${cat.materia} · ${cat.curso} («${ja.nombre}»). Vols crear-ne una altra còpia?`)) return;
+  const p=progNueva(d.nombre,key);
+  p.origenDepartamento=key; p.cursoEscolar="2026-2027";
+  p.criteriosCalifCuantitativa=progTextoAHTML(d.calif||"");
+  d.sdas.forEach(s=>{
+    const sda=progSdaDefault(s.trimestre);
+    sda.titulo=s.titulo; sda.sesionesPrevistas=s.sesiones==null?"":String(s.sesiones);
+    const linies=[];
+    if(s.saberes&&s.saberes.length) linies.push("Sabers: "+s.saberes.join("; ")+".");
+    if(s.ces&&s.ces.length) linies.push("CE: "+s.ces.join(", ")+".");
+    if(s.criterios&&s.criterios.length) linies.push("Criteris: "+s.criterios.join(", ")+".");
+    if(s.instrumentos) linies.push("Instruments: "+s.instrumentos);
+    sda.saberesOtros=linies.join("\n");
+    p.sdas.push(sda);
+    if(s.criterios&&s.criterios.length){
+      const a=progActividadDefault();
+      a.nombre="Criteris de la SdA · "+s.titulo; a.tipo=TIPOS.find(t=>/SdA/.test(t))||TIPOS[0];
+      a.sdaIds=[sda.id]; a.criterios=s.criterios.map(c=>({critId:c,peso:100}));
+      p.actividades.push(a);
+    }
+  });
+  if(!Array.isArray(state.programaciones)) state.programaciones=[];
+  state.programaciones.push(p);
+  state.ui.progTab="detalle"; state.ui.progId=p.id;
+  save(); render();
+  mostrarToast(`✓ Programació del departament carregada: ${d.sdas.length} SdA`);
+};
 window.progExportar=(id)=>{
   const p=progPorId(id); if(!p) return;
   const cat=getCatalogo(p.catalogoKey);
@@ -213,6 +246,12 @@ function progListaHTML(root){
           <input type="file" accept=".json,application/json" style="display:none" onchange="progImportarArchivo(this)">
         </label>
         <button class="btn" onclick="progAbrirModalNueva()">+ Nueva programación</button>
+      </div>
+    </div>
+    <div style="margin-top:10px">
+      <p class="sub" style="margin:0 0 6px"><strong>📥 Programació del departament (2026-2027):</strong> crea una còpia editable amb les situacions d'aprenentatge, sessions, CE i criteris de cada curs.</p>
+      <div class="flex" style="flex-wrap:wrap;gap:6px">
+        ${Object.keys(PROG_DEPARTAMENTO).filter(k=>getCatalogo(k)).map(k=>`<button class="chip" onclick="progCargarDepartamento('${escJS(k)}')">${esc(getCatalogo(k).materia)} · ${esc(getCatalogo(k).curso)}</button>`).join("")}
       </div>
     </div>
     <p class="sub" style="margin:8px 0 0">Importar añade la programación del archivo a tu lista, sin tocar ni sobrescribir ninguna de las que ya tengas.</p>
