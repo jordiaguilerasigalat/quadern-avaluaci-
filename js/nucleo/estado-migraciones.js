@@ -64,6 +64,7 @@ state.festivos = state.festivos.map(f=>{
 if(!state.tiposColores || typeof state.tiposColores!=="object") state.tiposColores={};
 if(!Array.isArray(state.reuniones)) state.reuniones=[];
 if(!Array.isArray(state.plantillasRubrica)) state.plantillasRubrica=[];
+if(typeof sembrarRubriquesFiq==="function") sembrarRubriquesFiq(state);
 if(!Array.isArray(state.plantillasReunion)) state.plantillasReunion=[];
 if(!Array.isArray(state.planesRefuerzo)) state.planesRefuerzo=[];
 state.planesRefuerzo.forEach(p=>{

@@ -1005,8 +1005,8 @@ export const PRUEBAS = [
     await p.evaluate(() => { window.pedirTexto = async () => 'Exposición oral'; window.confirmar = async () => true; window.mostrarAviso = () => {}; });
     await p.evaluate(act => cxGuardarComoPlantilla(act), ids.act); await esperar(100);
     await p.evaluate(act => cxGuardarComoPlantilla(act), ids.act); await esperar(100);
-    t.ok(await p.evaluate(() => state.plantillasRubrica.length) === 1, 'guardar con el mismo nombre sustituye la plantilla en vez de duplicarla');
-    await p.evaluate(() => { const pl = state.plantillasRubrica[0]; state.ui.corTab = 'crear'; state.ui.corForm = { nombre: 'Proyecto', bloqueId: '', sda: '', fecha: '', plantillaId: pl.id, criterios: [] }; save(); render(); });
+    t.ok(await p.evaluate(() => state.plantillasRubrica.filter(x => !x.fiq).length) === 1, 'guardar con el mismo nombre sustituye la plantilla en vez de duplicarla');
+    await p.evaluate(() => { const pl = state.plantillasRubrica.find(x => !x.fiq); state.ui.corTab = 'crear'; state.ui.corForm = { nombre: 'Proyecto', bloqueId: '', sda: '', fecha: '', plantillaId: pl.id, criterios: [] }; save(); render(); });
     await esperar(200); await p.locator('#cxfBtn').click(); await esperar(300);
     const r2 = await p.evaluate(() => { const [a, b] = state.grupos[0].actividades; const sinId = n => JSON.stringify(n.map(l => ({ ...l, id: 0 }))); return { f: b.rubrica[0].formato, mismo: sinId(b.rubrica[0].niveles) === sinId(a.rubrica[0].niveles) && b.rubrica[0].niveles[0].id !== a.rubrica[0].niveles[0].id, txt: Object.values(b.rubrica[0].items[0].celdas).includes('Habla con un volumen adecuado TEXTO-EXPERTO'), otroId: b.rubrica[0].items[0].id !== a.rubrica[0].items[0].id }; });
     t.ok(r2.f === 'niveles' && r2.mismo && r2.txt && r2.otroId, 'un examen nuevo desde la plantilla copia niveles, valores y descriptores', JSON.stringify(r2));
