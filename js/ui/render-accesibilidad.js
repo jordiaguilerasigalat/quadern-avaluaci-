@@ -129,6 +129,10 @@ function render(){
       if(header) header.style.display="";
       tabs.style.display="none"; bar.style.display="";
       renderTopBar(); renderProgramacionApp();
+    }else if(state.ui.appMode==="biblioteca"){
+      if(header) header.style.display="";
+      tabs.style.display="none"; bar.style.display="";
+      renderTopBar(); renderBibliotecaApp();
     }else if(state.ui.appMode==="memoria"){
       if(header) header.style.display="";
       tabs.style.display="none"; bar.style.display="";

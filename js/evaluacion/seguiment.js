@@ -127,6 +127,7 @@ function segExamensHTML(grupo){
     const mitj=notes.length? fmt(notes.reduce((s,v)=>s+v,0)/notes.length) : "—";
     return `<div class="row" style="justify-content:space-between;gap:6px;flex-wrap:wrap;padding:6px 0;border-top:1px solid var(--line)">
       <span style="font-size:13.5px"><strong>${esc(a.nombre)}</strong>${a.rubrica?` <span class="badge">rúbrica</span>`:""}<br><span class="sub" style="margin:0">${n} de ${grupo.alumnos.length} avaluats · mitjana ${mitj}</span></span>
+      ${segDataInputHTML(a)}
       ${a.rubrica?`<button class="btn small" onclick="segObrir('${a.id}')">Corregir →</button>`:`<button class="btn small" onclick="segQualificar('${a.id}')">Posar notes →</button>`}
     </div>`;}).join("");
   return `<div class="gcard">
@@ -139,6 +140,16 @@ function segExamensHTML(grupo){
     </div>
   </div>`;
 }
+/* Data de l'activitat: es guarda com a esdeveniment del calendari. */
+function segDataInputHTML(a){
+  if(typeof agDataActivitat!=="function") return "";
+  return `<label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--mut);margin-left:auto" title="La data apareix al calendari">📅<input class="in" type="date" style="padding:4px 6px;font-size:12.5px;width:auto" value="${esc(agDataActivitat(a.id))}" aria-label="Data de ${esc(a.nombre)}" onchange="segFixarData('${escJS(a.id)}',this.value)"></label>`;
+}
+window.segFixarData=(actId,f)=>{
+  const g=grupoActual(); const a=g&&g.actividades.find(x=>x.id===actId); if(!a) return;
+  agFixarDataActivitat(g,a,f); save();
+  mostrarToast(f?"📅 Afegit al calendari":"Data llevada del calendari");
+};
 window.segQualificar=actId=>{ state.ui.calAct=actId; state.ui.tab="calificar"; save(); render(); };
 window.segNouExamen=()=>{ state.ui.appMode="corrector"; state.ui.corTab="crear"; state.ui.corExamId=""; state.ui.corAlId=""; save(); render(); };
 window.segNouExamenSimple=()=>{
@@ -169,6 +180,7 @@ function segApartatsHTML(grupo){
       const mitj=notes.length? fmt(notes.reduce((s,v)=>s+v,0)/notes.length) : "—";
       return `<div class="row" style="justify-content:space-between;gap:6px;flex-wrap:wrap;padding:6px 0;border-top:1px solid var(--line)">
         <span style="font-size:13.5px"><strong>${esc(a.nombre)}</strong><br><span class="sub" style="margin:0">${n} de ${grupo.alumnos.length} avaluats · mitjana ${mitj}</span></span>
+        ${segDataInputHTML(a)}
         <button class="btn small" onclick="segObrir('${a.id}')">Avaluar →</button>
       </div>`;}).join("");
     return `<div class="gcard">

@@ -537,12 +537,16 @@
   body[data-proyector="1"] #proyectorBtn{ background:var(--accent); color:var(--accent-ink)!important; border-color:var(--accent)!important }
   @media print{ body[data-proyector="1"] .priv{ filter:none!important } }
   /* v3 · Secciones del grupo: pestañas a la vista en pantallas anchas, desplegable en estrechas */
-  .gtabs{display:none;gap:2px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+  .gseccions{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:10px;padding:4px;border-radius:14px;background:var(--surface-2)}
+  .gseccio{padding:8px 6px;border-radius:10px;border:0;background:transparent;color:var(--mut);font-size:13.5px;font-weight:700;cursor:pointer;min-height:40px;transition:.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gseccio:hover{color:var(--ink)}
+  .gseccio.on{background:var(--card,#fff);color:var(--ink);box-shadow:var(--shadow-sm)}
+  @media(max-width:420px){ .gseccio{font-size:12px;padding:8px 2px} }
+  .gtabs{display:flex;gap:2px;flex-wrap:wrap;margin-top:8px}
   .gtab{padding:6px 9px;border-radius:999px;border:1px solid transparent;background:transparent;color:var(--mut);font-size:13px;font-weight:700;letter-spacing:-.005em;cursor:pointer;transition:.15s;min-height:34px}
   .gtab:hover{background:var(--surface-2);color:var(--ink)}
   .gtab.on{background:linear-gradient(135deg,var(--gpill-on-1),var(--gpill-on-2));color:#fff;box-shadow:var(--shadow-sm)}
   body[data-tema="oscuro"] .gtab.on{color:var(--accent-ink)}
-  @media(min-width:1000px){ .gtabs{display:flex} .gtabs-sel{display:none} }
   /* v3 · teléfono: la cabecera cabe en dos filas (iconos sin texto; exportar e importar están en 🛟 Copias) */
   @media (max-width:640px){
     .tb-txt{display:none}

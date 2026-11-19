@@ -151,10 +151,29 @@ function _procesarArchivoCopiaJSON(file,limpiar){
 window.importarTodo=inp=>{ _procesarArchivoCopiaJSON(inp.files[0],()=>{ inp.value=""; }); };
 
 /* Secciones de un grupo. En pantallas anchas se ven todas como pestañas (.gtabs); en estrechas, en un desplegable. */
-const GRUPO_PESTANAS=[["alumnos","Alumnado"],["plano","Plànol d'aula"],["programa","Programació"],["actividades","Activitats"],["calificar","Calificar"],["resultados","Resultados"],["asistencia","Asistencia"],["convivencia","Convivencia"],["familias","Familias"],["resumen","Resumen"],["diario","Diario"],["cobertura","Cobertura"],["ajustes","Ajustes"]];
+/* Les 12 pestanyes del grup s'agrupen en 4 seccions. state.ui.tab continua
+   guardant la subpestanya (alumnos, calificar…), així els enllaços de tota
+   l'aplicació (irATab('asistencia'), etc.) segueixen funcionant igual. */
+const GRUPO_SECCIONS=[
+  ["alumnat","👥 Alumnat",[["alumnos","Llista"],["plano","Plànol d'aula"],["asistencia","Assistència"],["convivencia","Convivència"],["familias","Famílies"]]],
+  ["avaluar","✍️ Avaluar",[["programa","Programació"],["diario","Diari de classe"],["actividades","Activitats"],["calificar","Qualificar"]]],
+  ["resultats","📊 Resultats",[["resultados","Notes i informes"],["resumen","Resum del grup"],["cobertura","Cobertura de criteris"]]],
+  ["ajustos","⚙️ Ajustos",[["ajustes","Ajustos del grup"]]]
+];
+const GRUPO_PESTANAS=GRUPO_SECCIONS.flatMap(x=>x[2]);
+function grupSeccioDe(tab){ return GRUPO_SECCIONS.find(x=>x[2].some(y=>y[0]===tab))||GRUPO_SECCIONS[0]; }
+window.irASeccio=k=>{
+  const sec=GRUPO_SECCIONS.find(x=>x[0]===k); if(!sec) return;
+  const ult=(state.ui.tabUltim||{})[k];
+  state.ui.tab=sec[2].some(y=>y[0]===ult)? ult : sec[2][0][0];
+  save(); render();
+};
 function renderGrupo(grupo){
   const cat=getCatalogo(grupo.catalogoKey);
   const app=document.getElementById("app");
+  if(!GRUPO_PESTANAS.some(x=>x[0]===state.ui.tab) && state.ui.tab!=="seguiment") state.ui.tab="alumnos";
+  const sec=grupSeccioDe(state.ui.tab==="seguiment"?"actividades":state.ui.tab);
+  state.ui.tabUltim=Object.assign({},state.ui.tabUltim,{[sec[0]]:state.ui.tab});
   app.innerHTML=`
   <div class="card" style="padding:12px 16px">
     <div class="flex" style="justify-content:space-between">
@@ -164,14 +183,14 @@ function renderGrupo(grupo){
       </div>
       <div class="flex">
         <button class="ghost boto-inici-intern" style="border:1px solid var(--line)" onclick="irAGrupo(null)">← Inici</button>
-        <select class="in gtabs-sel" style="font-weight:600;min-width:160px" onchange="irATab(this.value)" aria-label="Pestaña del grupo">
-          ${GRUPO_PESTANAS.map(([k,l])=>`<option value="${k}" ${state.ui.tab===k?"selected":""}>${l}</option>`).join("")}
-        </select>
       </div>
     </div>
-    <div class="gtabs" role="tablist" aria-label="Secciones del grupo">
-      ${GRUPO_PESTANAS.map(([k,l])=>`<button class="gtab ${state.ui.tab===k?"on":""}" role="tab" aria-selected="${state.ui.tab===k?"true":"false"}" onclick="irATab('${k}')">${l}</button>`).join("")}
+    <div class="gseccions" role="tablist" aria-label="Seccions del grup">
+      ${GRUPO_SECCIONS.map(([k,l])=>`<button class="gseccio ${sec[0]===k?"on":""}" role="tab" aria-selected="${sec[0]===k?"true":"false"}" onclick="irASeccio('${k}')">${l}</button>`).join("")}
     </div>
+    ${sec[2].length>1?`<div class="gtabs" role="tablist" aria-label="Apartats de ${esc(sec[1].replace(/^\S+\s/,""))}">
+      ${sec[2].map(([k,l])=>`<button class="gtab ${state.ui.tab===k?"on":""}" role="tab" aria-selected="${state.ui.tab===k?"true":"false"}" onclick="irATab('${k}')">${l}</button>`).join("")}
+    </div>`:""}
   </div>
   <div id="tabContent"></div>`;
   const t=state.ui.tab;

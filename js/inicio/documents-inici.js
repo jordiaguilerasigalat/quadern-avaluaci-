@@ -11,7 +11,8 @@ const DOCS_PESTANYES_FIXES=[
   {id:"prog",nom:"📘 Programacions"},
   {id:"pp",nom:"🧭 Propostes pedagògiques"},
   {id:"temp",nom:"🗓️ Temporització"},
-  {id:"mat",nom:"📎 Material"}
+  {id:"mat",nom:"📎 Material"},
+  {id:"div",nom:"🌈 Diversitat"}
 ];
 function docsDades(){
   if(!state.documentsInici || typeof state.documentsInici!=="object") state.documentsInici={};
@@ -64,6 +65,12 @@ function docsContingutFix(id){
     return `<p class="sub" style="margin:0 0 4px">Temporització de cada programació: quantes sessions té cada Situació d'Aprenentatge i en quines setmanes cau.</p>${llista}`;
   }
   if(id==="mat") return typeof materialDocumentsHTML==="function"? materialDocumentsHTML() : "";
+  if(id==="div"){
+    const grups=typeof RF_DOCS_DEPARTAMENT!=="undefined"? RF_DOCS_DEPARTAMENT : [];
+    return `<p class="sub" style="margin:0 0 4px">Plans de reforç NESE, dossiers per a l'alumnat i plans de repetició del departament. També els tens dins d'Atenció a la diversitat.</p>
+      ${grups.map(g=>`<div style="margin-top:8px"><div style="font-size:12.5px;font-weight:700;color:var(--mut);margin-bottom:4px">${esc(g.titol)}</div>
+        <div class="flex" style="flex-wrap:wrap;gap:6px">${g.docs.map(d=>bibChip({url:"docs/reforc/"+d.f,t:d.t})).join("")}</div></div>`).join("")}`;
+  }
   return "";
 }
 function docsEnllacosHTML(id){
@@ -89,9 +96,11 @@ function renderDocumentsIniciHTML(){
   const tabs=[...DOCS_PESTANYES_FIXES,...propies.map(p=>({id:p.id,nom:"📁 "+p.nom}))];
   return `<div class="card" style="margin-top:12px">
     <div class="flex" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-      <div><h2 style="font-size:15px;margin:0">📂 Documents del departament</h2>
-      <p class="sub" style="margin:2px 0 0">Programacions, propostes pedagògiques, temporització i el que vulgues afegir.</p></div>
+      <p class="sub" style="margin:0">Programacions, propostes pedagògiques, temporització, material de cada tema, diversitat i els teus enllaços.</p>
     </div>
+    <input class="in" id="bibCerca" type="search" style="width:100%;margin-top:10px" placeholder="🔎 Busca un document (p. ex. «examen tema 3», «dossier», «2n ESO»)" value="${esc(state.ui.bibQ||"")}" oninput="bibCercar(this.value)" aria-label="Buscar en la biblioteca">
+    <div id="bibResultats">${bibResultatsHTML(state.ui.bibQ||"")}</div>
+    <div id="bibPestanyes" ${(state.ui.bibQ||"").trim()?'style="display:none"':""}>
     <div class="flex" style="flex-wrap:wrap;gap:6px;margin:10px 0 12px">
       ${tabs.map(t=>`<button class="tab ${t.id===actual?"on":""}" aria-pressed="${t.id===actual}" onclick="docsTriarPestanya('${escJS(t.id)}')">${esc(t.nom)}</button>`).join("")}
       <button class="ghost small" style="border:1px dashed var(--line)" onclick="docsNovaPestanya()">+ Nova pestanya</button>
@@ -103,7 +112,61 @@ function renderDocumentsIniciHTML(){
       ${(d.enllacos&&d.enllacos[propia.id]||[]).length?"":`<p class="sub" style="margin:0">Pestanya buida. Afig enllaços a documents (Drive, OneDrive, web del centre…).</p>`}`
       : docsContingutFix(actual)}
     ${docsEnllacosHTML(actual)}
+    </div>
   </div>`;
+}
+/* ── Cerca en tota la biblioteca ── */
+function bibChip(d){
+  const pdf=/\.pdf$/i.test(d.url), ext=/^https?:/i.test(d.url);
+  return `<a class="chip" style="text-decoration:none" href="${esc(d.url)}" ${pdf||ext?'target="_blank" rel="noopener"':"download"}>${ext?"🔗":pdf?"📕":"📄"} ${esc(d.t)}</a>`;
+}
+function bibIndex(){
+  const out=[];
+  (typeof PROG_DOCUMENTS_PDF!=="undefined"?PROG_DOCUMENTS_PDF:[]).forEach(([f,t])=>out.push({t,sec:/^PP_/.test(f)?"Propostes pedagògiques":"Programacions",url:"docs/programacions/"+f}));
+  (typeof RF_DOCS_DEPARTAMENT!=="undefined"?RF_DOCS_DEPARTAMENT:[]).forEach(g=>g.docs.forEach(d=>out.push({t:d.t,sec:"Diversitat · "+g.titol,url:"docs/reforc/"+d.f})));
+  if(typeof MATERIAL_CURSOS!=="undefined") Object.keys(MATERIAL_CURSOS).forEach(clau=>{
+    const mat=materialDe(clau); if(!mat) return;
+    const prog=(state.programaciones||[]).find(x=>x.catalogoKey===clau);
+    Object.keys(mat).forEach(k=>{
+      const s=k==="globals"? null : prog&&(prog.sdas||[]).find(x=>materialNumTema(x)===k);
+      const tema=k==="globals"? "Recuperacions i finals" : (s&&s.tema? s.tema : "Tema "+k);
+      (mat[k]||[]).forEach(it=>out.push({t:it.t,sec:`${MATERIAL_CURSOS[clau]} · ${tema} · ${(MATERIAL_TIPUS[it.tipus]||MATERIAL_TIPUS.teoria).nom}`,url:`docs/material/${clau}/${it.f}`}));
+    });
+  });
+  const d=state.documentsInici||{};
+  const noms={}; DOCS_PESTANYES_FIXES.forEach(p=>noms[p.id]=p.nom.replace(/^\S+\s/,"")); (d.pestanyes||[]).forEach(p=>noms[p.id]=p.nom);
+  Object.keys(d.enllacos||{}).forEach(id=>(d.enllacos[id]||[]).forEach(l=>out.push({t:l.titol,sec:"Els teus enllaços · "+(noms[id]||""),url:l.url})));
+  return out;
+}
+function bibResultatsHTML(q){
+  const paraules=normalizarTexto(String(q||"")).split(/\s+/).filter(Boolean);
+  if(!paraules.length) return "";
+  /* Els números van com a paraula sencera: «tema 2» no ha de trobar «2n ESO» ni «25-26». */
+  const prova=paraules.map(w=>/^\d+$/.test(w)? (t=>new RegExp("(^|[^0-9])"+w+"([^0-9a-z]|$)").test(t)) : (t=>t.includes(w)));
+  const r=bibIndex().filter(d=>{ const txt=normalizarTexto(d.t+" "+d.sec); return prova.every(f=>f(txt)); });
+  if(!r.length) return `<p class="sub" style="margin:10px 0 0">No hi ha cap document que coincidisca amb «${esc(q)}».</p>`;
+  return `<p class="sub" style="margin:10px 0 4px">${r.length} document${r.length===1?"":"s"}${r.length>60?" (es mostren els 60 primers)":""}</p>
+    ${r.slice(0,60).map(d=>`<div class="flex" style="justify-content:space-between;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);flex-wrap:wrap">${bibChip(d)}<span style="font-size:12px;color:var(--mut)">${esc(d.sec)}</span></div>`).join("")}`;
+}
+window.bibCercar=(q)=>{
+  state.ui.bibQ=q;
+  if(typeof MATERIAL_CURSOS!=="undefined") Object.keys(MATERIAL_CURSOS).forEach(c=>materialDe(c));
+  const r=document.getElementById("bibResultats"), p=document.getElementById("bibPestanyes");
+  if(r) r.innerHTML=bibResultatsHTML(q);
+  if(p) p.style.display=String(q||"").trim()?"none":"";
+};
+/* Pantalla pròpia de la Biblioteca (Inici → 📚 Biblioteca). */
+function renderBibliotecaApp(){
+  const app=document.getElementById("app");
+  if(typeof MATERIAL_CURSOS!=="undefined") Object.keys(MATERIAL_CURSOS).forEach(c=>materialDe(c));
+  const teniaFocus=document.activeElement&&document.activeElement.id==="bibCerca";
+  app.innerHTML=`<div class="card" style="padding:12px 16px">
+    <div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <div><strong style="font-size:15px">📚 Biblioteca</strong><span style="color:var(--mut);font-size:13px"> · tots els documents en un sol lloc</span></div>
+      <button class="ghost boto-inici-intern" style="border:1px solid var(--line)" onclick="irInicio()">← Inici</button>
+    </div>
+  </div>${renderDocumentsIniciHTML().replace('<div class="card" style="margin-top:12px">','<div class="card">')}`;
+  if(teniaFocus){ const i=document.getElementById("bibCerca"); if(i){ i.focus(); i.setSelectionRange(i.value.length,i.value.length); } }
 }
 window.docsTriarPestanya=(id)=>{ state.ui.docsTab=id; save(); render(); };
 window.docsNovaPestanya=async ()=>{

@@ -581,7 +581,9 @@ window.cxNuevoAlternativo=()=>{
   setTimeout(()=>nombre.focus(),0);
 };
 window.cxSetVarianteTipo=t=>{ const x=cxCtxEd(); const va=x&&cxVarEditando(x.act); if(!va) return; if(t==="ausencia") va.tipo="ausencia"; else delete va.tipo; save(); render(); };
-window.cxSetVarianteFecha=f=>{ const x=cxCtxEd(); const va=x&&cxVarEditando(x.act); if(!va) return; if(f) va.fecha=String(f); else delete va.fecha; save(); render(); };
+window.cxSetVarianteFecha=f=>{ const x=cxCtxEd(); const va=x&&cxVarEditando(x.act); if(!va) return; if(f) va.fecha=String(f); else delete va.fecha;
+  if(typeof agFixarDataActivitat==="function") agFixarDataActivitat(x.grupo,x.act,f,va.id,va.nombre||"Examen alternatiu");
+  save(); render(); };
 window.cxSetVarianteNombre=v=>{ const x=cxCtxEd(); const va=x&&cxVarEditando(x.act); if(!va) return; va.nombre=String(v||"").trim()||va.nombre; save(); render(); };
 window.cxToggleAlumnoVariante=(alId,on)=>{
   const x=cxCtxEd(); const va=x&&cxVarEditando(x.act); if(!va) return;

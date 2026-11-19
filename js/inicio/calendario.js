@@ -121,6 +121,31 @@ function agRenderModalFestivosHTML(){
     </div>
   </div>`;
 }
+/* ── Exàmens i activitats amb data → calendari ──
+   La data d'una activitat viu en el seu esdeveniment del calendari (examId=act.id),
+   així només hi ha un lloc on canviar-la: des de l'activitat o des del calendari. */
+function agEventDeActivitat(actId,varId){
+  return (state.eventos||[]).find(e=>e.examId===actId && (e.varId||"")===(varId||""));
+}
+function agDataActivitat(actId){ const e=agEventDeActivitat(actId); return e? e.fecha : ""; }
+function agFixarDataActivitat(g,act,fecha,varId,titolExtra){
+  if(!g||!act) return;
+  if(!Array.isArray(state.eventos)) state.eventos=[];
+  const ev=agEventDeActivitat(act.id,varId);
+  fecha=String(fecha||"").trim();
+  if(!fecha){ if(ev) state.eventos=state.eventos.filter(e=>e!==ev); return; }
+  const titulo=act.nombre+(titolExtra?" · "+titolExtra:"");
+  const tipo=(act.esExamen || /prov[ae]|examen|control|escrit/i.test(act.nombre+" "+(act.tipo||"")))? "examen" : "entrega";
+  if(ev){ ev.fecha=fecha; ev.titulo=titulo; if(!agGrupoIdsDeEvento(ev).length) ev.grupoIds=[g.id]; }
+  else state.eventos.push({id:uid(),fecha,fechaFin:"",titulo,tipo,hora:"",horaFin:"",grupoIds:[g.id],notas:"",examId:act.id,varId:varId||"",reunionId:"",reunionCon:"",recurrenciaId:"",auto:true});
+}
+function agTreureEventsActivitat(actId){
+  if(Array.isArray(state.eventos)) state.eventos=state.eventos.filter(e=>!(e.examId===actId && e.auto));
+}
+function agDataBadgeHTML(actId){
+  const f=agDataActivitat(actId); if(!f) return "";
+  return `<span class="badge" style="vertical-align:middle;margin-left:6px" title="Al calendari">📅 ${esc(fmt2(f))}</span>`;
+}
 function agMesActual(){
   if(!state.ui.agMes) state.ui.agMes=agHoyStr().slice(0,7);
   return state.ui.agMes;

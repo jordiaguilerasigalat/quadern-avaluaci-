@@ -55,6 +55,7 @@ function buscarNavItems(){
     {label:"🔁 Plan de Repetición", modo:"repeticion"},
     {label:"🧩 Alumnos NESE", modo:"nese"},
     {label:"📋 Memoria de curso", modo:"memoria"},
+    {label:"📚 Biblioteca (documents i material)", modo:"biblioteca"},
   ].map(it=>({label:it.label, meta:"Ir al módulo", onclick:`buscarIrModulo('${it.modo}')`}));
   state.grupos.forEach(g=>{
     items.push({label:`👥 ${esc(g.nombre)}`, meta:"Ir al grupo", onclick:`buscarIrGrupo('${g.id}')`});

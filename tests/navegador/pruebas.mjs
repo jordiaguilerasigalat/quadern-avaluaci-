@@ -1194,11 +1194,15 @@ export const PRUEBAS = [
     t.ok(await p.evaluate(() => /^Vore l'evolució de Pérez, Ana en esta avaluació$/.test(traduirText('Ver la evolución de Pérez, Ana en esta evaluación'))), 'els patrons conserven les parts variables');
     t.ok(!p.errores.length, 'sense errors de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
-  { nombre: 'documents-inici', descripcion: 'Inici → Documents del departament: pestanyes, PDF, enllaços propis i pestanyes noves', async fn(t) {
+  { nombre: 'documents-inici', descripcion: 'Biblioteca: pestanyes, PDF, cerca, enllaços propis i pestanyes noves', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     await cuadernoConGrupo(p, t.url);
-    await p.evaluate(() => { state.ui.appMode = 'inicio'; render(); }); await esperar(200);
+    await p.evaluate(() => { state.ui.appMode = 'biblioteca'; render(); }); await esperar(200);
     const r = await p.evaluate(async () => {
+      bibCercar('dossier 2n');
+      const cerca = document.querySelectorAll('#bibResultats a[href^="docs/reforc/dossier-alumnat-nese-fiq-2eso"]').length;
+      const amagat = document.getElementById('bibPestanyes').style.display === 'none';
+      bibCercar('');
       const pdfsProg = document.querySelectorAll('a[href^="docs/programacions/PA_"]').length;
       docsTriarPestanya('pp');
       const pdfsPP = document.querySelectorAll('a[href^="docs/programacions/PP_"]').length;
@@ -1208,8 +1212,9 @@ export const PRUEBAS = [
       document.getElementById('docsTitol').value = 'Acta'; document.getElementById('docsUrl').value = 'drive.google.com/a';
       docsAfegirEnllac('pp');
       window.__dialogosAuto = { texto: 'Actes' }; await docsNovaPestanya();
-      return { pdfsProg, pdfsPP, rebutjat, enl: state.documentsInici.enllacos.pp, pest: state.documentsInici.pestanyes.map(x => x.nom), tab: state.ui.docsTab === state.documentsInici.pestanyes[0]?.id };
+      return { cerca, amagat, pdfsProg, pdfsPP, rebutjat, enl: state.documentsInici.enllacos.pp, pest: state.documentsInici.pestanyes.map(x => x.nom), tab: state.ui.docsTab === state.documentsInici.pestanyes[0]?.id };
     });
+    t.ok(r.cerca === 2 && r.amagat, 'la cerca troba els dossiers de 2n ESO i amaga les pestanyes', JSON.stringify(r));
     t.ok(r.pdfsProg === 6 && r.pdfsPP === 2, 'Programacions mostra les 6 PA i Propostes les 2 PP', JSON.stringify(r));
     t.ok(r.rebutjat, 'no accepta enllaços que no siguen http(s)');
     t.ok(r.enl?.length === 1 && r.enl[0].url === 'https://drive.google.com/a', 'afig un enllaç propi i li posa https://');

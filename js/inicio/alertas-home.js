@@ -204,8 +204,14 @@ function renderHome(){
       <div class="gcard-count">S'obri en la seua pròpia carpeta</div>
       <div class="gcard-actions"><a class="btn" href="tutoria/index.html" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center">Obrir</a></div>
     </div>
-  </div>
-  ${typeof renderDocumentsIniciHTML==="function"?renderDocumentsIniciHTML():""}`:""}
+    <div class="gcard">
+      <div style="font-size:28px;margin-bottom:4px">📚</div>
+      <div class="gcard-title">Biblioteca</div>
+      <div class="gcard-meta">Tots els documents en un sol lloc i amb buscador: programacions, propostes pedagògiques, temporització, material de cada tema (teoria, exercicis, exàmens…), diversitat i els teus enllaços.</div>
+      <div class="gcard-count">Material de ${typeof MATERIAL_CURSOS!=="undefined"?Object.keys(MATERIAL_CURSOS).length:0} cursos · ${Object.values((state.documentsInici||{}).enllacos||{}).reduce((a,l)=>a+(l||[]).length,0)} enllaços teus</div>
+      <div class="gcard-actions"><button class="btn" onclick="irModo('biblioteca')">Obrir</button></div>
+    </div>
+  </div>`:""}
 
   ${homeSeccionHeaderHTML("calendario","Calendari i el meu horari")}
   ${homeSecciones.calendario?`<div class="card" style="margin-top:0;padding-bottom:10px">
