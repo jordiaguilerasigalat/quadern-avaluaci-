@@ -42,6 +42,18 @@ window.neAbrirDesdeOtroModo=id=>{ state.ui.appMode="nese"; state.ui.neTab="detal
 window.neAbrirModalCrear=(grupoId,alumnoId)=>{ state.ui.neModalCrear={grupoId,alumnoId}; save(); render(); };
 window.neCerrarModalCrear=()=>{ state.ui.neModalCrear=null; save(); render(); };
 
+/* Plans de reforç NESE del departament (Word, sense dades d'alumnes), un per curs. */
+const NE_DOCS_DEPARTAMENT=[
+  {f:"docs/nese/pla-reforc-nese-fiq-2eso-2026-27.docx",t:"Pla de reforç NESE · FiQ 2n ESO (2026-27)"},
+  {f:"docs/nese/pla-reforc-nese-fiq-3eso-2026-27.docx",t:"Pla de reforç NESE · FiQ 3r ESO (2026-27)"}
+];
+function neDocumentsHTML(){
+  return `<div class="card" style="padding:12px 16px">
+    <div style="font-weight:600;font-size:14px">📎 Plans de reforç NESE del departament</div>
+    <p class="sub" style="margin:2px 0 8px">Sabers mínims, criteris prioritzats, activitats adaptades, pautes DUA i models d'examen adaptats per tema. Document Word per a descarregar i completar (la fitxa de l'alumne/a de l'annex A no s'ha de publicar).</p>
+    <div class="flex" style="flex-wrap:wrap;gap:6px">${NE_DOCS_DEPARTAMENT.map(d=>`<a class="chip" style="text-decoration:none" href="${esc(d.f)}" download>📄 ${esc(d.t)}</a>`).join("")}</div>
+  </div>`;
+}
 function renderNeseApp(){
   const app=document.getElementById("app");
   app.innerHTML=`<div class="card" style="padding:12px 16px">
@@ -49,7 +61,7 @@ function renderNeseApp(){
       <div><strong style="font-size:15px">🧩 Alumnos NESE</strong><span style="color:var(--mut);font-size:13px"> · seguimiento curricular adaptado</span></div>
       <button class="ghost" style="border:1px solid var(--line)" onclick="irInicio()">🏠 Inicio</button>
     </div>
-  </div><div id="neRoot"></div>`;
+  </div>${neDocumentsHTML()}<div id="neRoot"></div>`;
   const root=document.getElementById("neRoot");
   if(state.ui.neTab==="detalle" && state.ui.neId && (state.planesNESE||[]).find(p=>p.id===state.ui.neId)){
     renderNeDetalleHTML(root);
