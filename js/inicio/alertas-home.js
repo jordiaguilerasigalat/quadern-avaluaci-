@@ -123,8 +123,7 @@ function renderHome(){
     <div class="hero-eyebrow">${esc(materiasEtiqueta())}</div>
     <h1 class="hero-title">Inici</h1>
     <details class="hero-dades" ${(state.cursoEscolarGlobal&&state.profesorNombreGlobal&&state.centroNombre)?"":"open"}>
-      <summary style="cursor:pointer;color:rgba(255,255,255,.85);font-size:13px;font-weight:600;margin-top:4px">${state.profesorNombreGlobal?esc(state.profesorNombreGlobal)+" · ":""}${esc(state.cursoEscolarGlobal||"")}${state.centroNombre?" · "+esc(state.centroNombre):""}${(state.cursoEscolarGlobal||state.profesorNombreGlobal)?" — ":""}les meues dades, còpies i ajuda</summary>
-    <p class="hero-tag" style="max-width:none">El teu quadern d'avaluació de Física i Química: programació, seguiment i avaluació, correcció amb rúbriques, més el seguiment diari de l'alumnat (assistència, convivència, famílies, reforç, repetició i NESE). Tot compartix el mateix alumnat i les mateixes notes, i tot ix en informes preparats per a imprimir.</p>
+      <summary style="cursor:pointer;color:rgba(255,255,255,.85);font-size:13px;font-weight:600;margin-top:4px">${state.profesorNombreGlobal?esc(state.profesorNombreGlobal)+" · ":""}${esc(state.cursoEscolarGlobal||"")}${state.centroNombre?" · "+esc(state.centroNombre):""}${(state.cursoEscolarGlobal||state.profesorNombreGlobal)?" — ":""}les meues dades i còpies</summary>
     <div class="flex" style="gap:10px;margin-top:12px;flex-wrap:wrap">
       <label style="font-size:12px;color:rgba(255,255,255,.75);font-weight:500">Curs escolar
         <input class="in" style="display:block;margin-top:3px;width:130px;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);color:#fff" placeholder="2026-2027" value="${esc(state.cursoEscolarGlobal||"")}" onchange="setDatoGlobal('cursoEscolarGlobal',this.value)">
@@ -141,76 +140,29 @@ function renderHome(){
     </div>
     <p class="hero-tag" style="margin-top:8px;font-size:12px;max-width:none;opacity:.75">Estes dades s'usen en les portades de tots els documents imprimibles. Cada Programació d'Aula pot tindre el seu propi curs escolar i professor/a si cal; si els deixa en blanc, usa estos.</p>
     <div class="flex" style="gap:8px;margin-top:10px;flex-wrap:wrap"><button class="ghost small" style="color:#fff;border:1px solid rgba(255,255,255,.35)" onclick="abrirDiagnostico()">🩺 Revisar les meues dades</button><button class="ghost small" style="color:#fff;border:1px solid rgba(255,255,255,.35)" onclick="abrirCopias()">🛟 Còpies de seguretat</button><button class="ghost small" style="color:#fff;border:1px solid rgba(255,255,255,.35)" onclick="abrirNuevoCurso()" title="Arxiva el curs que acaba i prepara el següent conservant grups, programacions i horari">🎓 Començar curs nou</button></div>
-    <p class="hero-tag" style="margin-top:6px;font-size:12.5px;max-width:none;opacity:.85">📶 Afig-la a la pantalla d'inici de l'iPad (Safari → compartir → "Afegir a la pantalla d'inici"). Després d'obrir-la una vegada amb connexió, continua funcionant sense wifi.</p>
     </details>
   </div>
   ${hoyTarjetaHTML()}
   ${homeGrupsActiusHTML()}
-  ${novedadesHTML()}
-  ${coberturaAvisosInicioHTML()}
-  ${typeof ccAvisoInicioHTML==="function"?ccAvisoInicioHTML():""}
   ${queMeFaltaHTML()}
   ${homeAlertasHTML()}
+  ${coberturaAvisosInicioHTML()}
+  ${typeof ccAvisoInicioHTML==="function"?ccAvisoInicioHTML():""}
+  ${novedadesHTML()}
 
-  ${homeSeccionHeaderHTML("evaluacion","Avaluació i seguiment de l'alumnat")}
-  ${homeSecciones.evaluacion?`<div class="gcard-grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">
-    <div class="gcard">
-      <div style="font-size:28px;margin-bottom:4px">📊</div>
-      <div class="gcard-title">Seguiment i avaluació</div>
-      <div class="gcard-meta">Els teus grups (alumnat, activitats, rúbriques, qualificacions i informes) i les programacions d'aula per temes i situacions d'aprenentatge, amb la seua temporització. Inclou les programacions del departament 2026-2027.</div>
-      <div class="gcard-count">${nGrupos} grup${nGrupos===1?"":"s"} · ${nAlumnos} alumne${nAlumnos===1?"":"s"} · ${nProgramaciones} programaci${nProgramaciones===1?"ó":"ons"}</div>
-      <div class="gcard-actions" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="irModo('competencial')">👥 Grups</button><button class="btn" onclick="irModo('programacion')">📘 Programacions</button></div>
-    </div>
-    <div class="gcard">
-      <div style="font-size:28px;margin-bottom:4px">🖊️</div>
-      <div class="gcard-title">Corrector d'Exàmens</div>
-      <div class="gcard-meta">Rúbriques per examen, vinculades a criteris d'avaluació. La nota quantitativa i la qualitativa per criteri es calculen soles i es guarden en Seguiment i avaluació.</div>
-      <div class="gcard-count">${nExamenes} ${nExamenes===1?"examen":"exàmens"} amb rúbrica</div>
-      <div class="gcard-actions"><button class="btn" onclick="irModo('corrector')">Obrir</button></div>
-    </div>
-    <div class="gcard">
-      <div style="font-size:28px;margin-bottom:4px">🌈</div>
-      <div class="gcard-title">Atenció a la diversitat</div>
-      <div class="gcard-meta">NESE (adaptacions, plans de reforç NESE i dossiers) i Repetició i pendents (plans de repetició i de reforç).</div>
-      <div class="gcard-count">${nNeseTotal} NESE${nNesePendientes?` (${nNesePendientes} sense pla)`:""} · ${nRepeticionActivos} repetició · ${nRefuerzoActivos} reforç</div>
-      <div class="gcard-actions" style="display:flex;flex-wrap:wrap;gap:6px">
-        <button class="btn" onclick="irModo('nese')">🧩 NESE</button>
-        <button class="ghost" style="border:1px solid var(--line)" onclick="irModo('repeticion')">🔁 Repetició</button>
-        <button class="ghost" style="border:1px solid var(--line)" onclick="irModo('refuerzo')">📈 Reforç</button>
-      </div>
-    </div>
-  </div>`:""}
-
-  ${homeSeccionHeaderHTML("organizacion","Organització")}
-  ${homeSecciones.organizacion?`<div class="gcard-grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">
-    <div class="gcard">
-      <div style="font-size:28px;margin-bottom:4px">🗂️</div>
-      <div class="gcard-title">Reunions</div>
-      <div class="gcard-meta">Registre de reunions amb famílies, alumnat i equip directiu, amb acta imprimible.</div>
-      <div class="gcard-count">${nReuniones} reuni${nReuniones===1?"ó":"ons"} registrad${nReuniones===1?"a":"es"}</div>
-      <div class="gcard-actions"><button class="btn" onclick="irModo('reuniones')">Obrir</button></div>
-    </div>
-    <div class="gcard">
-      <div style="font-size:28px;margin-bottom:4px">📄</div>
-      <div class="gcard-title">Memòria de curs</div>
-      <div class="gcard-meta">Resultats, assistència, convivència i SdA de tots els teus grups junts, per avaluació o per al curs complet, amb l'evolució de cada grup.</div>
-      <div class="gcard-count">${state.grupos.length} grup${state.grupos.length===1?"":"s"}</div>
-      <div class="gcard-actions"><button class="btn" onclick="irModo('memoria')">Obrir</button></div>
-    </div>
-    <div class="gcard">
-      <div style="font-size:28px;margin-bottom:4px">👥</div>
-      <div class="gcard-title">Gestor de Tutoria</div>
-      <div class="gcard-meta">Aplicació a banda, amb les seues pròpies dades. Pot rebre la teua llista d'alumnat i els teus suspesos.</div>
-      <div class="gcard-count">S'obri en la seua pròpia carpeta</div>
-      <div class="gcard-actions"><a class="btn" href="tutoria/index.html" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center">Obrir</a></div>
-    </div>
-    <div class="gcard">
-      <div style="font-size:28px;margin-bottom:4px">📚</div>
-      <div class="gcard-title">Biblioteca</div>
-      <div class="gcard-meta">Tots els documents en un sol lloc i amb buscador: programacions, propostes pedagògiques, temporització, material de cada tema (teoria, exercicis, exàmens…), diversitat i els teus enllaços.</div>
-      <div class="gcard-count">Material de ${typeof MATERIAL_CURSOS!=="undefined"?Object.keys(MATERIAL_CURSOS).length:0} cursos · ${Object.values((state.documentsInici||{}).enllacos||{}).reduce((a,l)=>a+(l||[]).length,0)} enllaços teus</div>
-      <div class="gcard-actions"><button class="btn" onclick="irModo('biblioteca')">Obrir</button></div>
-    </div>
+  ${homeSeccionHeaderHTML("evaluacion","🧰 Totes les eines")}
+  ${homeSecciones.evaluacion?`<div class="home-eines">
+    ${[
+      ["👥","Grups",`${nGrupos} grup${nGrupos===1?"":"s"} · ${nAlumnos} alumne${nAlumnos===1?"":"s"}`,"irModo('competencial')","Alumnat, activitats, rúbriques, qualificacions i informes de cada grup"],
+      ["📘","Programacions",`${nProgramaciones} programaci${nProgramaciones===1?"ó":"ons"}`,"irModo('programacion')","Programacions d'aula per temes i situacions d'aprenentatge, amb la temporització"],
+      ["🖊️","Corrector d'exàmens",`${nExamenes} amb rúbrica`,"irModo('corrector')","Rúbriques per examen vinculades a criteris; les notes van soles a Seguiment i avaluació"],
+      ["🧩","NESE",`${nNeseTotal} alumne${nNeseTotal===1?"":"s"}${nNesePendientes?` · ${nNesePendientes} sense pla`:""}`,"irModo('nese')","Adaptacions, plans de reforç NESE i dossiers"],
+      ["🔁","Repetició i pendents",`${nRepeticionActivos} repetició · ${nRefuerzoActivos} reforç`,"irModo('repeticion')","Plans de repetició i de reforç"],
+      ["📚","Biblioteca","Documents i material","irModo('biblioteca')","Programacions, propostes, material de cada tema, diversitat i els teus enllaços, amb buscador"],
+      ["🗂️","Reunions",`${nReuniones} registrad${nReuniones===1?"a":"es"}`,"irModo('reuniones')","Reunions amb famílies, alumnat i equip directiu, amb acta imprimible"],
+      ["📄","Memòria de curs",`${state.grupos.length} grup${state.grupos.length===1?"":"s"}`,"irModo('memoria')","Resultats, assistència, convivència i SdA de tots els grups junts"]
+    ].map(([ico,nom,meta,on,tit])=>`<button class="home-eina" onclick="${on}" title="${esc(tit)}"><span class="home-eina-ico">${ico}</span><span><span class="home-eina-nom">${nom}</span><span class="home-eina-meta">${meta}</span></span></button>`).join("")}
+    <a class="home-eina" href="tutoria/index.html" target="_blank" rel="noopener" title="Aplicació a banda, amb les seues pròpies dades" style="text-decoration:none"><span class="home-eina-ico">🎓</span><span><span class="home-eina-nom">Gestor de Tutoria</span><span class="home-eina-meta">S'obri a banda</span></span></a>
   </div>`:""}
 
   ${homeSeccionHeaderHTML("calendario","Calendari i el meu horari")}
@@ -225,27 +177,6 @@ function renderHome(){
     ${agRenderResumenHTML()}
   </div>`:horRenderGridHTML()}`:""}
 
-  <button class="home-seccion-header" onclick="homeToggleAyuda()" aria-expanded="${homeAyudaAbierta}">
-    <span class="home-seccion-chevron">${homeAyudaAbierta?"▾":"▸"}</span>
-    <span class="section-eyebrow" style="margin:0">Ajuda</span>
-  </button>
-  ${homeAyudaAbierta?`<div class="card" style="margin-top:0">
-    <div class="grid" style="gap:10px">
-      <div class="row" style="justify-content:space-between;align-items:center">
-        <div>
-          <div style="font-weight:700;font-size:13.5px">📖 Guia d'ús</div>
-          <p class="sub" style="margin:2px 0 0">Primers passos, rúbriques, còpies de seguretat, paperera i preguntes freqüents (guia original, en castellà).</p>
-        </div>
-        <a class="btn small" href="guia_mejorada.html" style="text-decoration:none;display:inline-flex;align-items:center;flex-shrink:0">Obrir la guia</a>
-      </div>
-      <div class="row" style="align-items:flex-start">
-        <div>
-          <div style="font-weight:700;font-size:13.5px">Nota sobre el Gestor de Tutoria</div>
-          <p class="sub" style="margin:2px 0 0">Viu en la subcarpeta <code>tutoria/</code> i guarda les seues pròpies dades: el que canvies en Tutoria no modifica el Quadern. Es poden passar dades d'ací a Tutoria de dos maneres: <strong>👥 Per a la tutoria</strong> (en Resultats de cada grup) crea un arxiu amb els teus suspesos per avaluació, que el tutor/a carrega en Tutoria → Gestió del Curs → «Importar suspensos del Cuaderno»; i el botó <strong>📥 Del Cuaderno</strong> de cada grup de Tutoria copia la llista d'alumnat (noms i dates de naixement) d'un grup d'este Quadern, si els dos s'usen en el mateix dispositiu i navegador.</p>
-        </div>
-      </div>
-    </div>
-  </div>`:""}
   ${state.ui.agModalFecha ? agRenderModalHTML() : ""}
   ${state.ui.agModalFestivos ? agRenderModalFestivosHTML() : ""}
   ${state.ui.agModalColores ? agRenderModalColoresHTML() : ""}

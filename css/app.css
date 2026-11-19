@@ -637,3 +637,12 @@
 .nom-fitxa{background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;cursor:pointer;text-align:left;text-decoration:underline dotted 1px;text-underline-offset:3px}
 .nom-fitxa:hover{color:var(--accent-texto,#7d5a12)}
 @media print{ .nom-fitxa{text-decoration:none} }
+
+/* Inici: totes les eines en botons compactes */
+.home-eines{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;margin-bottom:12px}
+.home-eina{display:flex;align-items:center;gap:10px;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;min-height:54px;transition:.15s}
+.home-eina:hover{border-color:var(--accent);box-shadow:var(--shadow-sm)}
+.home-eina-ico{font-size:22px;line-height:1}
+.home-eina-nom{display:block;font-weight:700;font-size:13.5px}
+.home-eina-meta{display:block;font-size:12px;color:var(--mut)}
+.boto-ajuda{font-weight:800;min-width:34px;border:1px solid var(--line)!important;border-radius:50%!important}

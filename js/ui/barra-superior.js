@@ -26,13 +26,11 @@ function renderTopBar(){
   document.getElementById("backupBar").innerHTML = `
     <button class="ghost" style="border:1px solid var(--line)" onclick="irInicio()" aria-label="Inici">🏠<span class="tb-txt"> Inici</span></button>
     ${copiaBadge}
-    <span class="badge tb-fuera-movil">Període</span>
-    <select class="in" id="trimSel" style="padding:6px 9px" aria-label="Període"></select>
-    <button class="ghost tb-fuera-movil" onclick="exportarTodo()">Exportar còpia</button>
-    <label class="ghost file tb-fuera-movil">Importar còpia<input type="file" accept="application/json,.json" style="display:none" onchange="importarTodo(this)"></label>
+    <select class="in" id="trimSel" style="padding:6px 9px" aria-label="Període" title="Període (avaluació) amb què treballes"></select>
     <button class="ghost" onclick="abrirCopias()" title="Còpies de seguretat: exportar, importar, còpies automàtiques, PIN" aria-label="Còpies de seguretat">🛟<span class="tb-txt"> Còpies</span></button>
     <button class="ghost" id="btnDeshacer" onclick="deshacer()" ${_pilaDeshacer.length?"":"disabled"} title="Desfer l'últim canvi (Ctrl/Cmd+Z)" aria-label="Desfer l'últim canvi" style="${_pilaDeshacer.length?"":"opacity:.45"}">↶</button>
-    <button class="ghost" id="btnRehacer" onclick="rehacer()" ${_pilaRehacer.length?"":"disabled"} title="Refer (Ctrl/Cmd+Maj+Z)" aria-label="Refer" style="${_pilaRehacer.length?"":"opacity:.45"}">↷</button>`;
+    <button class="ghost" id="btnRehacer" onclick="rehacer()" ${_pilaRehacer.length?"":"disabled"} title="Refer (Ctrl/Cmd+Maj+Z)" aria-label="Refer" style="${_pilaRehacer.length?"":"opacity:.45"}">↷</button>
+    <button class="ghost boto-ajuda" onclick="ajudaObrir()" title="Ajuda: com funciona el quadern" aria-label="Ajuda">?</button>`;
   const trimSel=document.getElementById("trimSel");
   trimSel.innerHTML=TRIMESTRES.map((t,i)=>`<option value="${i}">${t}</option>`).join("");
   trimSel.value=state.ui.trim;
@@ -40,6 +38,27 @@ function renderTopBar(){
 }
 function renderShell(){ renderTopBar(); renderMain(); }
 function renderCorrectorApp(){ renderTopBar(); renderCorMain(); }
+/* «?»: les explicacions llargues que abans ocupaven Inici. */
+window.ajudaObrir=()=>{
+  ajudaTancar();
+  const div=document.createElement("div");
+  div.className="modal-overlay"; div.id="ajudaModal";
+  div.onclick=e=>{ if(e.target===div) ajudaTancar(); };
+  const bloc=(tit,cos)=>`<div style="padding:10px 0;border-top:1px solid var(--line)"><div style="font-weight:700;font-size:13.5px;margin-bottom:3px">${tit}</div><div class="sub" style="margin:0">${cos}</div></div>`;
+  div.innerHTML=`<div class="modal-box" style="max-width:620px">
+    <div class="flex" style="justify-content:space-between;align-items:center"><h2 style="font-size:17px;margin:0">❓ Ajuda</h2><button class="modal-close" onclick="ajudaTancar()" aria-label="Tancar">×</button></div>
+    <p class="sub" style="margin:8px 0 6px">El teu quadern d'avaluació de Física i Química: programació, seguiment i avaluació, correcció amb rúbriques i el seguiment diari de l'alumnat (assistència, convivència, famílies, reforç, repetició i NESE). Tot compartix el mateix alumnat i les mateixes notes, i tot ix en informes preparats per a imprimir.</p>
+    ${bloc("📌 Com està organitzat","<strong>Inici</strong>: el que tens hui (Avui), els teus grups i el que et falta per fer. <strong>Cada grup</strong> té 4 seccions: Alumnat (llista, plànol, assistència, convivència, famílies), Avaluar (programació, diari, activitats, qualificar), Resultats i Ajustos. Toca el nom d'un alumne/a per a obrir la seua fitxa. La <strong>Biblioteca</strong> té tots els documents amb buscador.")}
+    ${bloc("🔍 Buscar","El botó Cercar (o Ctrl/Cmd + K) troba alumnat, activitats, exàmens, programacions, reunions i esdeveniments de tots els grups.")}
+    ${bloc("🛟 Còpies de seguretat","Les dades es guarden només en este dispositiu. Exporta una còpia de tant en tant des de 🛟 Còpies; l'app també en fa d'automàtiques.")}
+    ${bloc("📶 Sense connexió","Afig-la a la pantalla d'inici de l'iPad (Safari → compartir → «Afegir a la pantalla d'inici»). Després d'obrir-la una vegada amb connexió, funciona sense wifi.")}
+    ${bloc("🎓 Gestor de Tutoria","Viu en la subcarpeta <code>tutoria/</code> i guarda les seues pròpies dades. Pots passar-li els teus suspesos amb «👥 Per a la tutoria» (en Resultats de cada grup) i la llista d'alumnat amb «📥 Del Cuaderno» des de Tutoria, si les dos s'usen en el mateix navegador.")}
+    ${bloc("📖 Guia d'ús",`Primers passos, rúbriques, còpies, paperera i preguntes freqüents (guia original, en castellà). <a href="guia_mejorada.html">Obrir la guia</a>`)}
+  </div>`;
+  document.body.appendChild(div);
+};
+window.ajudaTancar=()=>{ const m=document.getElementById("ajudaModal"); if(m) m.remove(); };
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") ajudaTancar(); });
 window.irInicio=()=>{ state.ui.appMode="inicio"; save(); render(); };
 
 /* =================================================================
