@@ -1,7 +1,7 @@
 /* Material de FiQ 3r ESO per temes (numeració de la programació d'aula 2026-27).
    Rutes relatives a docs/material/FiQ_3ESO/. */
 window.MATERIAL_TEMES=window.MATERIAL_TEMES||{};
-MATERIAL_TEMES["FiQ_3ESO"]={
+window.MATERIAL_TEMES["FiQ_3ESO"]={
  "1": [
   {
    "f": "tema-01/presentacio-tema-1.pdf",
