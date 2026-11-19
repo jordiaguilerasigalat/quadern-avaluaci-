@@ -56,14 +56,31 @@ function planTempDefaultData(){
   }catch(e){ __planTempDefaultCache={}; }
   return __planTempDefaultCache;
 }
+/* Unitats de la planificació a partir dels temes/SdA de la programació (ordenats per trimestre). */
+function planTempUnitatsDe(p){
+  return [...(p.sdas||[])].sort((a,b)=>(a.trimestre||0)-(b.trimestre||0)).map(s=>{
+    const nom=sdaNom(s)||"Situació sense títol";
+    const n=parseInt(s.sesionesPrevistas,10);
+    return {name:{es:nom,va:nom},sessions:Number.isFinite(n)&&n>0?n:8,fixed:false};
+  });
+}
+/* La plantilla porta d'exemple les unitats de Geografia i Història: si una
+   planificació encara les té, es torna a generar amb les de la programació. */
+function planTempEsExempleGeH(pt){
+  return !!(pt && Array.isArray(pt.units) && pt.units.some(u=>/prehist|civilizaci[oó]n griega|civilització grega|relieve terrestre/i.test((u.name&&(u.name.es||u.name.va))||u.name||"")));
+}
 function planTempSeedPara(p){
-  if(p.planTemp) return p.planTemp;
+  if(p.planTemp && planTempEsExempleGeH(p.planTemp)){ delete p.planTemp; delete p.planTempUnitsSchedule; }
+  if(p.planTemp){ if(p.planTemp.lang!=="va"){ p.planTemp.lang="va"; } return p.planTemp; }
   const idx=catIndex(p.catalogoKey), cat=idx.cat;
   const base=JSON.parse(JSON.stringify(planTempDefaultData()));
   const materia=cat.materia||"", curso=cat.curso||"";
   base.subjectName={es:materia,va:materia};
   base.courseLevel={es:curso,va:curso};
   if(p.cursoEscolar) base.courseLabel=p.cursoEscolar;
+  base.lang="va";
+  const unitats=planTempUnitatsDe(p);
+  base.units=unitats.length? unitats : [{name:{es:"Tema 1",va:"Tema 1"},sessions:8,fixed:false}];
   return base;
 }
 function planTempBuildDoc(p){
@@ -158,6 +175,7 @@ window.planTempAplicarAProgramacion=async (progId)=>{
 
 function renderProgramacionApp(){
   if(typeof progMigrarTemes==="function") progMigrarTemes(state);
+  if(typeof progMigrarTemporitzacio1Bat==="function") progMigrarTemporitzacio1Bat(state);
   const app=document.getElementById("app");
   app.innerHTML=`<div class="card" style="padding:12px 16px">
     <div class="flex" style="justify-content:space-between">

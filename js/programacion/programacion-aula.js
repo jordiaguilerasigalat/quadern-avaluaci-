@@ -135,8 +135,11 @@ function progDesDeDepartament(key){
     if(s.saberes&&s.saberes.length) linies.push("Sabers: "+s.saberes.join("; ")+".");
     if(s.ces&&s.ces.length) linies.push("CE: "+s.ces.join(", ")+".");
     if(s.criterios&&s.criterios.length) linies.push("Criteris: "+s.criterios.join(", ")+".");
-    if(s.instrumentos) linies.push("Instruments: "+s.instrumentos);
+    if(s.objectius) linies.push("Objectius: "+s.objectius);
+    if(s.activitatsTipus) linies.push("Activitats: "+s.activitatsTipus);
+    if(s.instrumentos) linies.push((s.objectius?"Avaluació: ":"Instruments: ")+s.instrumentos);
     sda.saberesOtros=linies.join("\n");
+    if(Array.isArray(s.sessionsDetall)) sda.sessionsDetall=s.sessionsDetall.map(r=>({n:r[0],contingut:r[1],activitats:r[2]}));
     p.sdas.push(sda);
     if(s.criterios&&s.criterios.length){
       const a=progActividadDefault();
@@ -145,7 +148,7 @@ function progDesDeDepartament(key){
       p.actividades.push(a);
     }
   });
-  p.temesFiq=1;
+  p.temesFiq=1; if(key==="FiQ_1BAT") p.temporitzacio1Bat=1;
   if(!Array.isArray(state.programaciones)) state.programaciones=[];
   state.programaciones.push(p);
   return p;

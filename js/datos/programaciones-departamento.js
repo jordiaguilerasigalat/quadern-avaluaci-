@@ -738,31 +738,9 @@ const PROG_DEPARTAMENTO={
   "calif": "Qualificació per competències específiques: CE1 30 %, CE2 15 %, CE3 25 %, CE4 10 %, CE5 10 %, CE6 10 %. Cada criteri es qualifica de 0 a 10 i cada CE és la mitjana dels seus criteris treballats.",
   "sdas": [
    {
-    "titulo": "U1. La física i la química com a ciències experimentals",
+    "titulo": "U1. Nomenclatura i formulació inorgànica",
     "trimestre": 0,
-    "sesiones": 4,
-    "ces": [
-     "CE2",
-     "CE3",
-     "CE4"
-    ],
-    "criterios": [
-     "2.1",
-     "2.2",
-     "3.1",
-     "3.4",
-     "4.1",
-     "4.2"
-    ],
-    "saberes": [
-     "Bloc de sabers: Transversal"
-    ],
-    "instrumentos": ""
-   },
-   {
-    "titulo": "U2. Estructura atòmica, enllaç i formulació inorgànica",
-    "trimestre": 0,
-    "sesiones": 18,
+    "sesiones": 12,
     "ces": [
      "CE1",
      "CE2",
@@ -777,35 +755,226 @@ const PROG_DEPARTAMENTO={
     "saberes": [
      "Bloc de sabers: A"
     ],
-    "instrumentos": ""
+    "instrumentos": "Prova escrita",
+    "objectius": "Dominar regles bàsiques de nomenclatura i formulació d’acord amb la IUPAC, reconèixer compostos habituals.",
+    "activitatsTipus": "Llibre de l’alumnat, exercicis guiats, fitxes autocorrectives, jocs de nom-fórmula.",
+    "sessionsDetall": [
+     [
+      "1",
+      "Introducció i conceptes bàsics",
+      ""
+     ],
+     [
+      "2",
+      "Regles generals de nomenclatura: nombres d’oxidació i seqüència d’electronegativitat",
+      "Dossier IUPAC"
+     ],
+     [
+      "3",
+      "Tipus de nomenclatura",
+      "Dossier IUPAC + dossier Universitat de Badalona"
+     ],
+     [
+      "4",
+      "Hidrurs",
+      "Dossier IUPAC + dossier Universitat de Badalona"
+     ],
+     [
+      "5",
+      "Òxids, peròxids i hidròxids",
+      "Dossier IUPAC + dossier Universitat de Badalona"
+     ],
+     [
+      "6",
+      "Sals binàries",
+      "Dossier IUPAC + dossier Universitat de Badalona"
+     ],
+     [
+      "7",
+      "Oxoàcids I (nomenclatura tradicional)",
+      "Dossier IUPAC + dossier Universitat de Badalona"
+     ],
+     [
+      "8",
+      "Oxoàcids II (nomenclatura d’hidrogen i d’addició)",
+      "Dossier IUPAC + dossier Universitat de Badalona"
+     ],
+     [
+      "9",
+      "Oxosals",
+      "Dossier IUPAC + dossier Universitat de Badalona"
+     ],
+     [
+      "10",
+      "Errors freqüents",
+      "Dossier IUPAC + dossier Universitat de Badalona"
+     ],
+     [
+      "11",
+      "Repàs general + examen fake",
+      "Dossier IUPAC + dossier Universitat de Badalona"
+     ],
+     [
+      "12",
+      "Examen",
+      ""
+     ]
+    ]
+   },
+   {
+    "titulo": "U2. Estructura atòmica",
+    "trimestre": 0,
+    "sesiones": 12,
+    "ces": [
+     "CE1",
+     "CE2",
+     "CE3"
+    ],
+    "criterios": [
+     "1.1",
+     "2.1",
+     "3.2",
+     "3.3"
+    ],
+    "saberes": [
+     "Bloc de sabers: A"
+    ],
+    "instrumentos": "Prova escrita.",
+    "objectius": "Comprendre models atòmics, configuracions electròniques i propietats periòdiques.",
+    "activitatsTipus": "Llibre de l’alumnat, simulacions digitals, qüestionaris.",
+    "sessionsDetall": [
+     [
+      "1",
+      "Models històrics de l’àtom: Dalton, Thomson; Experiment làmina d’or; Rutherford i limitacions; PhET: simulació",
+      ""
+     ],
+     [
+      "2",
+      "Postulats de Bohr i limitacions; L’àtom: nombre atòmic i màssic",
+      "Exemple 1; Pàg 32, act 1-4; Pàg 54, act 2 i 3"
+     ],
+     [
+      "3",
+      "Isòtops",
+      "Pàg 34, act 5-7; Pàg 54, act 4 i 5"
+     ],
+     [
+      "4",
+      "Radiació electromagnètica: paràmetres característics (T, c, λ)",
+      "Exemple 3; Pàg 36, act 8 -10"
+     ],
+     [
+      "5",
+      "Espectre atòmic i línies espectrals",
+      "Exemple 4; Pàg 39, act 11 i 13; Pàg 54, act 14, 15, 17 i 19"
+     ],
+     [
+      "6",
+      "Nivells atòmics i números quàntics.; Concepte d’orbitals",
+      "Exemple 6 i 7; Pàg 41, act 15"
+     ],
+     [
+      "7 i 8",
+      "Configuració electrònica; Taula periòdica: organització i famílies; Propietats periòdiques",
+      "Pàg 43, act 16 i 17; Pàg 55, act 20, 21, 23, 24 i 25"
+     ],
+     [
+      "9-10",
+      "Enllaç químic: metàl·lic, iònic, covalent.; Estructures de Lewis; Enllaç intermolecular",
+      "Pàg 48, act 18 i 19; Pàg 49, act 21 i 22; Pàg 50, act 23 i 24; Pàg 51, act 25 i 26; Pàg 55, act 26-30, 32"
+     ],
+     [
+      "11",
+      "Repàs + activitats de recapitulació",
+      "Pàg 56, act 35-45"
+     ],
+     [
+      "12",
+      "Examen escrit",
+      ""
+     ]
+    ]
    },
    {
     "titulo": "U3. Lleis i conceptes bàsics en química",
     "trimestre": 0,
-    "sesiones": 16,
+    "sesiones": 12,
     "ces": [
      "CE1",
      "CE2",
      "CE3",
+     "CE4",
      "CE6"
     ],
     "criterios": [
      "1.2",
      "2.1",
+     "2.2",
      "2.3",
      "3.1",
      "3.4",
+     "4.1",
+     "4.2",
      "6.2"
     ],
     "saberes": [
      "Bloc de sabers: B"
     ],
-    "instrumentos": ""
+    "instrumentos": "Prova teòrica + pràctica de laboratori.",
+    "objectius": "Treballar magnituds químiques, mol, dissolucions i gasos.",
+    "activitatsTipus": "Llibre de l’alumnat, problemes numèrics, pràctiques de laboratori senzilles.",
+    "sessionsDetall": [
+     [
+      "1",
+      "Lleis ponderals: conservació de la matèria, proporcions constants (definides), proporcions múltiples",
+      "Pàg 60, act 1; Pàg 62, act 2; Pàg 85, act 1, 3, 6"
+     ],
+     [
+      "2",
+      "Lleis dels volums de combinació",
+      "Pàg 62, act 3"
+     ],
+     [
+      "3-4",
+      "Hipòtesi d’Avogadro; El mol i la massa molar",
+      "Exemple 4; Pàg 69, act 4, 5 i 6"
+     ],
+     [
+      "5-6",
+      "Lleis dels gasos ideals: Boyle-Mariotte, Gay-Lussac, Charles; Llei general dels gasos ideals",
+      "Pàg 72, act 7-9; Pàg 86, act 16"
+     ],
+     [
+      "7",
+      "Volum molar; Pressions parcials",
+      "Pàg 73, act 10-14; Pàg 74, act 15; Pàg 86, act 17, 19-22"
+     ],
+     [
+      "8",
+      "Fórmules empíriques i moleculars",
+      "Exemple 12; Exemple 13; Pàg 76, act 16 i 17; Pàg 86, act 23-25"
+     ],
+     [
+      "9-10",
+      "Dissolucions i concentracions (M, N, m fracció molar, %, g/L, ppm)",
+      "Pàg 79, act 18-22; Pàg 87, act 26-34"
+     ],
+     [
+      "11",
+      "Propietats col·ligatives; Repàs + activitats de recapitulació",
+      "Pag 87 i 88, act 37-55"
+     ],
+     [
+      "12",
+      "Examen escrit",
+      ""
+     ]
+    ]
    },
    {
     "titulo": "U4. Estequiometria i química industrial",
     "trimestre": 0,
-    "sesiones": 14,
+    "sesiones": 12,
     "ces": [
      "CE1",
      "CE3",
@@ -823,12 +992,56 @@ const PROG_DEPARTAMENTO={
     "saberes": [
      "Bloc de sabers: B"
     ],
-    "instrumentos": ""
+    "instrumentos": "Prova escrita.",
+    "objectius": "Aplicar càlculs estequiomètrics i contextualitzar-los en processos industrials.",
+    "activitatsTipus": "Llibre de l’alumnat, estudi de casos.",
+    "sessionsDetall": [
+     [
+      "1",
+      "Reaccions químiques: teoria de les col·lisions i estat de transició; Equacions químiques",
+      "Activitats llibre"
+     ],
+     [
+      "2-4",
+      "Càlculs estequiomètrics bàsics: factors de conversió; Càlculs massa-massa; Càlculs massa-volum; Càlculs volum-volum; Estequiometria amb gasos",
+      "Activitats llibre"
+     ],
+     [
+      "5-6",
+      "Rendiment, riquesa i reactiu limitant",
+      "Activitats llibre"
+     ],
+     [
+      "7",
+      "Classificació de les reaccions químiques",
+      "Activitats llibre"
+     ],
+     [
+      "8",
+      "Balanceig avançat i redox; PheT: balanceig",
+      "Activitats llibre"
+     ],
+     [
+      "9",
+      "Química i industria",
+      "Activitats llibre"
+     ],
+     [
+      "10-11",
+      "Repàs + activitats de recapitulació",
+      ""
+     ],
+     [
+      "12",
+      "Examen escrit",
+      ""
+     ]
+    ]
    },
    {
-    "titulo": "U5. Química del carboni",
+    "titulo": "U5. Química orgànica",
     "trimestre": 1,
-    "sesiones": 14,
+    "sesiones": 12,
     "ces": [
      "CE1",
      "CE3",
@@ -844,12 +1057,71 @@ const PROG_DEPARTAMENTO={
     "saberes": [
      "Bloc de sabers: C"
     ],
-    "instrumentos": ""
+    "instrumentos": "Prova escrita + exercici pràctic.",
+    "objectius": "Identificar grups funcionals i tipus de reaccions orgàniques bàsiques.",
+    "activitatsTipus": "Llibre de l’alumnat, maquetes moleculars, pràctiques de reaccions simples, problemes de nomenclatura.",
+    "sessionsDetall": [
+     [
+      "1",
+      "Enllaç del carboni i introducció",
+      ""
+     ],
+     [
+      "2-3",
+      "Hidrocarburs (alcans, alquens, alquins); Hidrocarburs cíclics; Hidrocarburs aromàtics",
+      "Activitats llibre + activitats dossier"
+     ],
+     [
+      "4",
+      "Funcions orgàniques (I): halurs, alcohols i èters",
+      "Activitats llibre + activitats dossier"
+     ],
+     [
+      "5",
+      "Funcions orgàniques (II): aldehids i cetones",
+      "Activitats llibre + activitats dossier"
+     ],
+     [
+      "6",
+      "Funcions orgàniques (III): èsters i àcids carboxílics",
+      "Activitats llibre + activitats dossier"
+     ],
+     [
+      "7",
+      "Funcions orgàniques (IV): amines i amides",
+      "Activitats llibre + activitats dossier"
+     ],
+     [
+      "8",
+      "Isomeria estructural i estereoisomeria",
+      "Activitats llibre + activitats dossier"
+     ],
+     [
+      "9",
+      "Biomolècules",
+      ""
+     ],
+     [
+      "10",
+      "Repàs + activitats de recapitulació I",
+      "Activitats llibre + activitats dossier"
+     ],
+     [
+      "11",
+      "Repàs + activitats de recapitulació II",
+      "Activitats llibre + activitats dossier"
+     ],
+     [
+      "12",
+      "Examen escrit",
+      ""
+     ]
+    ]
    },
    {
     "titulo": "U6. Cinemàtica del punt material",
     "trimestre": 1,
-    "sesiones": 18,
+    "sesiones": 15,
     "ces": [
      "CE1",
      "CE2",
@@ -867,12 +1139,76 @@ const PROG_DEPARTAMENTO={
     "saberes": [
      "Bloc de sabers: D"
     ],
-    "instrumentos": ""
+    "instrumentos": "Prova escrita.",
+    "objectius": "Descriure moviments en 1D i 2D mitjançant magnituds cinemàtiques.",
+    "activitatsTipus": "Llibre de l’alumnat, resolució de problemes, simulacions, pràctiques virtuals.",
+    "sessionsDetall": [
+     [
+      "1",
+      "Concepte de cinemàtica i vectors; El moviment; Elements fonamentals del moviment",
+      "Pàg 160, act 1-6; Exemple 1 i 2; Pàg 164, act 7-9"
+     ],
+     [
+      "2 - 3",
+      "Magnituds del moviment:; - posició; - desplaçament; - espai recorregut",
+      "Pàg 166, act 10-13; Ex 4, Pàg 168, act 14; Ex 5, Pàg 169, act 15-19"
+     ],
+     [
+      "4",
+      "Velocitat mitjana i instantània; Acceleració mitjana i instantània; Acceleració normal i tangencial",
+      "Pàg 170, act 21; Pàg 171, act 22, 23, 24; Repàs: pàg 193, act 1-7; Exercicis complementaris cinemàtica"
+     ],
+     [
+      "5",
+      "MRU",
+      "Ex 7 i 8, Pàg 176, act 26"
+     ],
+     [
+      "6",
+      "MRUA",
+      "Ex 9 i 10, Pàg 179, act 27; Pàg 193, act 8-14"
+     ],
+     [
+      "7",
+      "Caiguda lliure",
+      "Ex 10 i 11; Pàg 194, act 15, 17, 19 i 20"
+     ],
+     [
+      "8",
+      "MCU; MCUA",
+      "Ex 13, Pàg 182, act 29-30; Ex 14; Pàg 195, act 23-24"
+     ],
+     [
+      "9",
+      "Composició de moviments: Moviment en 2D",
+      "Ex 15"
+     ],
+     [
+      "10",
+      "Tir horitzontal",
+      "Ex 16"
+     ],
+     [
+      "11-12",
+      "Tir parabòlic",
+      "Ex 17 i 18, Pàg 190, act 31; Pàg 195, 26-32"
+     ],
+     [
+      "13 - 14",
+      "Repàs + activitats de recapitulació",
+      "Pàg 196, act 36, 37,38"
+     ],
+     [
+      "15",
+      "Examen escrit",
+      ""
+     ]
+    ]
    },
    {
     "titulo": "U7. Dinàmica",
     "trimestre": 2,
-    "sesiones": 18,
+    "sesiones": 15,
     "ces": [
      "CE1",
      "CE2",
@@ -888,12 +1224,66 @@ const PROG_DEPARTAMENTO={
     "saberes": [
      "Bloc de sabers: E"
     ],
-    "instrumentos": ""
+    "instrumentos": "Prova escrita.",
+    "objectius": "Aplicar les lleis de Newton a situacions físiques senzilles.",
+    "activitatsTipus": "Llibre de l’alumnat, experiments virtuals, plans inclinats i polies, problemes guiats.",
+    "sessionsDetall": [
+     [
+      "1",
+      "Introducció: Força i representació",
+      "Ex 1; Pàg 200, act 3"
+     ],
+     [
+      "2",
+      "1a i 2a llei de Newton: Gravetat i pes",
+      "Pàg 201, act 5; Ex 2; Pàg 203, act 6 i 8"
+     ],
+     [
+      "3",
+      "3a llei de Newton",
+      "Ex 3, 4 i 5; Pàg 206, act 10 i 12; Pàg 231, act 4, 6, 7, 8 10 i 11"
+     ],
+     [
+      "4",
+      "Força de fregament i plans horitzontals",
+      "Ex 6; Pàg 208, act 14"
+     ],
+     [
+      "5 - 6",
+      "Força de fregament i plans inclinats",
+      "Ex 7, 8 i 9; Pàg 211, act 15 i 17; Pàg 232, act 16 i 17"
+     ],
+     [
+      "7",
+      "Forces elàstiques",
+      "Ex 10 i 11; Pàg 213, act 18 i 19; Pàg 232, act 19 i 21"
+     ],
+     [
+      "8",
+      "Dinàmica del MCU: Força centrípeta",
+      "Ex 13 i 14; Pàg 233, act 26, 25 i 27"
+     ],
+     [
+      "9 - 10",
+      "Força gravitatòria; Llei de Newton de la gravitació universal; Acceleració de la gravetat en la Terra; Moviment de planetes i satèl·lits",
+      "Ex 21 i 22; Pàg 226, act 30; Pàg 233, act 36, 39, 41, 43 i 44"
+     ],
+     [
+      "11 - 12",
+      "Repàs i activitats de recapitulació",
+      "Pàg 234, act 49,; Pàg 235, 50, 52, 53, 54, 55 i 57"
+     ],
+     [
+      "13",
+      "Examen escrit",
+      ""
+     ]
+    ]
    },
    {
-    "titulo": "U8. Treball, energia i termodinàmica",
+    "titulo": "U8. Treball i energia",
     "trimestre": 2,
-    "sesiones": 18,
+    "sesiones": 10,
     "ces": [
      "CE1",
      "CE2",
@@ -912,9 +1302,54 @@ const PROG_DEPARTAMENTO={
     "saberes": [
      "Bloc de sabers: F"
     ],
-    "instrumentos": ""
+    "instrumentos": "Prova escrita.",
+    "objectius": "Relacionar treball i energia, entendre conservació i eficiència.",
+    "activitatsTipus": "Llibre de l’alumnat, exercicis pràctics, experiments amb molla i pendul.",
+    "sessionsDetall": [
+     [
+      "1",
+      "Treball d’una força, treball de fregament; Representació",
+      "Ex 1; Pàg 241, act 1, 2, i 3; Pàg 255, act 1"
+     ],
+     [
+      "2",
+      "Potència i rendiment",
+      "Ex 2 i 3; Pàg 243, act 5 i 7; Pàg 255, act 12"
+     ],
+     [
+      "3",
+      "Energia cinètica i teorema",
+      "Ex 4 i 5; Pàg 245, act 10"
+     ],
+     [
+      "4",
+      "Energia potencial gravitatòria; Energia potencial elàstica",
+      "Ex 6; Pàg 247, act 11 i 12; Pàg 256 act 16 i 17"
+     ],
+     [
+      "5 i 6",
+      "Conservació de l’energia mecànica",
+      "Ex 7 i 8; Pàg 249, act 14; Pàg 256, act 19, 20 i 23"
+     ],
+     [
+      "7 i 8",
+      "Transformacions de l’energia. Llei de conservació de l’energia",
+      "Ex 9 i 10; Pàg 252, act 16; Pàg 256, act 24, 26, 28 i 30"
+     ],
+     [
+      "9",
+      "Repàs i activitats de recapitulació",
+      "Pàg 255, act 10 i 14; Pàg 256, act 20, 23, 28 i 30"
+     ],
+     [
+      "10",
+      "Examen Escrit",
+      ""
+     ]
+    ]
    }
-  ]
+  ],
+  "temporitzacio": "Temporització del professorat de FiQ 1r Batx 2026-2027"
  },
  "QUI_2BAT": {
   "nombre": "Química 2n Batxillerat · Programació del departament 2026-2027",
@@ -1355,6 +1790,20 @@ function progSepararTitol(titol,ordre){
   m=titol.match(/^(.+?)\s*\(([^()]+)\)$/);
   if(m) return {tema:`Tema ${ordre}.- ${m[2].trim()}`, titulo:m[1].trim()};
   return {tema:"", titulo:titol};
+}
+/* Si la programació de 1r Batx es va carregar amb la versió anterior i encara no
+   s'ha usat (cap grup la té vinculada), es torna a generar amb la temporització nova. */
+function progMigrarTemporitzacio1Bat(st){
+  if(typeof progDesDeDepartament!=="function") return;
+  (st.programaciones||[]).slice().forEach(p=>{
+    if(p.origenDepartamento!=="FiQ_1BAT" || p.temporitzacio1Bat) return;
+    const enUs=(st.grupos||[]).some(g=>g.programacionId===p.id);
+    if(enUs || (p.sdas||[]).some(s=>s.sessionsDetall)){ p.temporitzacio1Bat=1; return; }
+    const nova=progDesDeDepartament("FiQ_1BAT");
+    st.programaciones.pop();
+    p.sdas=nova.sdas; p.actividades=nova.actividades; p.nombre=nova.nombre; p.temesFiq=1; p.temporitzacio1Bat=1;
+    delete p.planTemp; delete p.planTempUnitsSchedule;
+  });
 }
 function progMigrarTemes(st){
   (st.programaciones||[]).forEach(p=>{

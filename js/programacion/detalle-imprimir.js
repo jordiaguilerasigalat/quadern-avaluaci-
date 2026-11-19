@@ -135,6 +135,7 @@ function progDetalleHTML(root){
         <label style="font-size:12.5px;color:var(--mut);font-weight:500;display:block;margin-top:10px">Otros saberes / notas (opcional)
           <textarea class="in" style="width:100%;margin-top:4px;min-height:46px;resize:vertical" placeholder="Cualquier saber adicional no listado arriba…" onchange="progSetSdaCampo('${s.id}','saberesOtros',this.value)">${esc(s.saberesOtros||"")}</textarea>
         </label>
+        ${sdaSessionsDetallHTML(s,false)}
         <div class="section-eyebrow" style="margin-top:12px">Recursos de esta SdA</div>
         ${(s.recursos||[]).length? `<div class="grid" style="gap:4px;margin-top:4px">
           ${s.recursos.map(r=>`<div class="flex" style="justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:8px;padding:6px 10px">
@@ -314,6 +315,7 @@ window.progImprimir=(id)=>{
         <p style="font-size:12px;color:#666;margin:0 0 6px">Sesiones previstas: ${esc(s.sesionesPrevistas)||"—"}</p>
         ${saberesHTML||s.saberesOtros?`<p style="font-size:13px;margin:6px 0 0"><strong>Saberes básicos:</strong></p>${saberesHTML}${s.saberesOtros?`<p style="font-size:13px;margin:4px 0 0">${esc(s.saberesOtros)}</p>`:""}`:""}
         ${recursosHTML}
+        ${sdaSessionsDetallHTML(s,true)}
         <p style="font-size:13px;margin:6px 0 0"><strong>Actividades:</strong></p>
         ${actsHTML}
       </div>`;
@@ -381,3 +383,15 @@ window.progImprimir=(id)=>{
   `;
   abrirVentanaInforme(`Programación de Aula — ${p.nombre}`, body);
 };
+
+/* Temporització detallada per sessions (contingut i activitats de cada sessió). */
+function sdaSessionsDetallHTML(s,imprimir){
+  const rows=s.sessionsDetall||[]; if(!rows.length) return "";
+  const td=imprimir?'style="border:1px solid #ccc;padding:3px 6px;vertical-align:top"':'style="border-top:1px solid var(--line);padding:5px 8px;vertical-align:top"';
+  const taula=`<table style="width:100%;border-collapse:collapse;font-size:12.5px;margin-top:4px">
+    <thead><tr><th ${td}>Sessió</th><th ${td}>Contingut</th><th ${td}>Activitats</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr><td ${td}>${esc(r.n)}</td><td ${td}>${esc(r.contingut).replace(/; /g,"<br>")}</td><td ${td}>${esc(r.activitats).replace(/; /g,"<br>")}</td></tr>`).join("")}</tbody></table>`;
+  return imprimir
+    ? `<p style="font-size:13px;margin:6px 0 0"><strong>Temporització per sessions:</strong></p>${taula}`
+    : `<details style="margin-top:12px"><summary class="section-eyebrow" style="cursor:pointer">🗓️ Temporització per sessions (${rows.length} files)</summary>${taula}</details>`;
+}
