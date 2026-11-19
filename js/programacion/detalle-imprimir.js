@@ -24,7 +24,10 @@ function progDetalleHTML(root){
   <div class="card">
     <div class="flex" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
       <button class="ghost" style="border:1px solid var(--line)" onclick="progVolverLista()">← Volver al listado</button>
-      <button class="ghost" style="border:1px solid var(--line)" onclick="progImprimir('${p.id}')">🖨️ Imprimir programación</button>
+      <div class="flex" style="flex-wrap:wrap;gap:6px">
+        ${(typeof PROG_PDF_PER_CATALEG!=="undefined" && PROG_PDF_PER_CATALEG[p.catalogoKey]||[]).map((f,i)=>`<a class="chip" style="text-decoration:none" href="docs/programacions/${f}" target="_blank" rel="noopener">📄 ${i?"Proposta pedagògica (PDF)":"Document original (PDF)"}</a>`).join("")}
+        <button class="ghost" style="border:1px solid var(--line)" onclick="progImprimir('${p.id}')">🖨️ Imprimir programación</button>
+      </div>
     </div>
     <h2 style="font-size:16px;margin-top:10px">${esc(p.nombre)}</h2>
     <p class="sub" style="margin:0">${esc(cat.materia)} · ${esc(cat.curso)}</p>

@@ -1337,3 +1337,12 @@ const PROG_DOCUMENTS_PDF=[
   ["PP_2026-27_FiQ_ESO.pdf","Proposta pedagògica · ESO"],
   ["PP_2026-27_Batxillerat.pdf","Proposta pedagògica · Batxillerat"]
 ];
+/* PDF original (PA i proposta pedagògica) de cada catàleg, per a enllaçar-los des de la programació oberta. */
+const PROG_PDF_PER_CATALEG={
+  FiQ_2ESO:["PA_2026-27_FiQ_2n_ESO.pdf","PP_2026-27_FiQ_ESO.pdf"],
+  FiQ_3ESO:["PA_2026-27_FiQ_3r_ESO.pdf","PP_2026-27_FiQ_ESO.pdf"],
+  FiQ_4ESO:["PA_2026-27_FiQ_4t_ESO.pdf","PP_2026-27_FiQ_ESO.pdf"],
+  FiQ_1BAT:["PA_2026-27_FiQ_1r_Batx.pdf","PP_2026-27_Batxillerat.pdf"],
+  QUI_2BAT:["PA_2026-27_Quimica_2n_Batx.pdf","PP_2026-27_Batxillerat.pdf"],
+  FIS_2BAT:["PA_2026-27_Fisica_2n_Batx.pdf","PP_2026-27_Batxillerat.pdf"]
+};
