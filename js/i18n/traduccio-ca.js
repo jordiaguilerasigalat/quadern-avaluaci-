@@ -90,6 +90,7 @@
       const t=traduirText(v); if(t!==v) x.nodeValue=t;
     }
   }
+  window.traduirNode=traduirNode;
   let ocupat=false;
   const obs=new MutationObserver(muts=>{
     if(ocupat) return; ocupat=true;

@@ -75,7 +75,7 @@ function renderPlano(grupo){
   tc.innerHTML=`
   <div class="card">
     <div class="flex" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-      <h2 style="font-size:15px">🪑 Plano de aula — ${esc(grupo.nombre)}</h2>
+      <h2 style="font-size:15px">🪑 Plànol d'aula — ${esc(grupo.nombre)}</h2>
       <div class="flex" style="flex-wrap:wrap">
         <label style="font-size:12.5px;color:var(--mut);display:flex;align-items:center;gap:5px">Filas
           <input type="number" id="planoFilasInput" class="in" style="width:56px" min="1" max="15" value="${plano.filas}">
@@ -178,11 +178,11 @@ window.planoImprimir=()=>{
     filasHTML+=`<tr>${cols}</tr>`;
   }
   const body=`
-    <h1>Plano de aula — ${esc(grupo.nombre)}</h1>
+    <h1>Plànol d'aula — ${esc(grupo.nombre)}</h1>
     <p style="text-align:center;color:#666;font-size:12px;margin-top:-10px">Vista desde la pizarra · ${esc(getCatalogo(grupo.catalogoKey).materia)}</p>
     <table style="width:100%;border-collapse:separate;border-spacing:4px;margin-top:18px">${filasHTML}</table>
   `;
-  abrirVentanaInforme("Plano de aula",body);
+  abrirVentanaInforme("Plànol d'aula",body);
 };
 function renderAlumnos(grupo){
   const c=document.getElementById("tabContent");

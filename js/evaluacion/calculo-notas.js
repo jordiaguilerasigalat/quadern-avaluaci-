@@ -176,16 +176,21 @@ function extraAplicadoActividad(grupo,alId,a){
   return notaActividadSinExtra(grupo,alId,a)==null?0:pts;
 }
 
-function notaActividad(grupo,alId,a){
-  const v=notaActividadSinExtra(grupo,alId,a);
+/* fins (opcional): últim trimestre les recuperacions del qual compten. Així una
+   recuperació feta en la 2a avaluació no canvia la nota (ja tancada) de la 1a,
+   però sí que compta per a la nota final. Sense fins, compten totes. */
+function notaActividad(grupo,alId,a,fins){
+  const v=notaActividadSinExtra(grupo,alId,a,fins);
   return _sumarExtra(v,extraAplicadoActividad(grupo,alId,a));
 }
 /* Nota de la actividad con la recuperación ya aplicada, pero sin puntos extra. */
-function notaActividadSinExtra(grupo,alId,a){
+function _recCompta(r,fins){ return fins==null || r.trimestre==null || !(Number(r.trimestre)>Number(fins)); }
+function notaActividadSinExtra(grupo,alId,a,fins){
   if(a.recupera) return null; // la recuperación no cuenta sola: actúa sobre sus originales
   let v=notaActividadBase(grupo,alId,a);
   for(const r of recuperacionesDe(grupo,a.id)){
     if(marcaDe(grupo,alId,r.id)==="EX") continue;
+    if(!_recCompta(r,fins)) continue;
     let rv=notaActividadBase(grupo,alId,r);
     if(rv==null) continue;
     const tope=r.recupera.tope;
@@ -221,11 +226,12 @@ function pesoActividadEnBloque(grupo,act,bloqueId){
   const n=grupo.actividades.filter(a=>a.trimestre===act.trimestre && actEnBloque(a,bid) && !a.recupera).length;
   return n>0? 100/n : 100;
 }
-function notaBloque(grupo,alId,bloqueId,trim){
+function notaBloque(grupo,alId,bloqueId,trim,fins){
+  if(fins==null) fins=trim;
   const acts=grupo.actividades.filter(a=>a.trimestre===trim && actEnBloque(a,bloqueId));
   let sw=0,sv=0;
   for(const a of acts){
-    const v=notaActividad(grupo,alId,a); if(v==null) continue;
+    const v=notaActividad(grupo,alId,a,fins); if(v==null) continue;
     const w=pesoActividadEnBloque(grupo,a,bloqueId); if(w<=0) continue;
     sw+=w; sv+=v*w;
   }
@@ -252,13 +258,13 @@ function avisoBloquesHTML(grupo,alId,trim){
   const f=bloquesSinNota(grupo,alId,trim); if(!f.length) return "";
   return ` <span title="Sin ninguna nota en: ${esc(f.join(", "))}. Su nota de ${TRIMESTRES[trim]} se calcula solo con el resto de bloques. Pon la nota que falte, o márcalo como NP (cuenta 0) o Exento." style="cursor:help;color:#b45309">⚠️</span>`;
 }
-function notaTrimestre(grupo,alId,trim){
-  const _m=_estructura(grupo).memo, _k="nt|"+trim+"|"+alId;
+function notaTrimestre(grupo,alId,trim,fins){
+  const _m=_estructura(grupo).memo, _k="nt|"+trim+"|"+(fins==null?"":fins)+"|"+alId;
   if(_m.has(_k)) return _m.get(_k);
-  const _v=_notaTrimestreSinCache(grupo,alId,trim); _m.set(_k,_v); return _v;
+  const _v=_notaTrimestreSinCache(grupo,alId,trim,fins); _m.set(_k,_v); return _v;
 }
-function _notaTrimestreSinCache(grupo,alId,trim){
-  return _sumarExtra(notaTrimestreSinExtra(grupo,alId,trim),ptsExtraEval(grupo,alId,trim));
+function _notaTrimestreSinCache(grupo,alId,trim,fins){
+  return _sumarExtra(notaTrimestreSinExtra(grupo,alId,trim,fins),ptsExtraEval(grupo,alId,trim));
 }
 /* =================================================================
    FiQ · MODE DE QUALIFICACIÓ
@@ -320,11 +326,11 @@ function notaPorCE(grupo,alId,trims){
 function trimsFinsA(t){ return [0,1,2].filter(x=>x<=t); }
 
 /* Media ponderada de los bloques, sin el extra de la evaluación. */
-function notaTrimestreSinExtra(grupo,alId,trim){
+function notaTrimestreSinExtra(grupo,alId,trim,fins){
   if(modoNotaGrupo(grupo)==="ce") return notaPorCE(grupo,alId,trimsFinsA(trim));
   let sw=0,sv=0;
   for(const b of grupo.bloques){
-    const v=notaBloque(grupo,alId,b.id,trim); if(v==null) continue;
+    const v=notaBloque(grupo,alId,b.id,trim,fins); if(v==null) continue;
     sw+=b.peso; sv+=v*b.peso;
   }
   return sw>0? sv/sw : null;
@@ -340,11 +346,12 @@ function notaFinal(grupo,alId){
 /* Media ponderada de las evaluaciones (cada una ya con su extra), sin el extra de la nota final. */
 function notaFinalSinExtra(grupo,alId){
   if(modoNotaGrupo(grupo)==="ce") return notaPorCE(grupo,alId,[0,1,2]);
-  const disponibles=[0,1,2].filter(t=>notaTrimestre(grupo,alId,t)!=null);
+  /* En la nota final sí que compten totes les recuperacions (fins=2). */
+  const disponibles=[0,1,2].filter(t=>notaTrimestre(grupo,alId,t,2)!=null);
   if(!disponibles.length) return null;
   let sw=0,sv=0;
   for(const t of disponibles){
-    const v=notaTrimestre(grupo,alId,t);
+    const v=notaTrimestre(grupo,alId,t,2);
     const w=pesoTrimestreEfectivo(grupo,t,disponibles);
     sw+=w; sv+=v*w;
   }

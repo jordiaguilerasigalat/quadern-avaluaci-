@@ -25,6 +25,13 @@ function _adaptarCSSImprimible(css){
 function mostrarImprimible(docHtml,titulo){
   cerrarImprimible();
   let doc; try{ doc=new DOMParser().parseFromString(docHtml,"text/html"); }catch(e){ doc=null; }
+  /* Els documents imprimibles es pinten dins d'un shadow DOM, on no arriba el
+     traductor automàtic: es tradueixen ací (també el fitxer que es guarda). */
+  if(doc && typeof window.traduirNode==="function"){
+    try{ window.traduirNode(doc.body); if(window.traduirText) doc.title=window.traduirText(doc.title); if(doc.documentElement) doc.documentElement.lang="ca";
+      docHtml="<!DOCTYPE html>"+doc.documentElement.outerHTML; }catch(e){}
+  }
+  if(typeof window.traduirText==="function" && titulo) titulo=window.traduirText(titulo);
   const estilos=doc?[...doc.querySelectorAll("style")].map(x=>x.textContent).join("\n"):"";
   const cuerpo=doc?doc.body.innerHTML:docHtml;
   const {css,paginas}=_adaptarCSSImprimible(estilos);

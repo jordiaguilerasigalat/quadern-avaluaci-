@@ -252,7 +252,7 @@ window.mbAlternarPlano=()=>{
   const x=_mbCtx(); if(!x) return;
   const pos=(x.grupo.plano&&x.grupo.plano.posiciones)||{}, L=mbLetras(x.act), n=L.length;
   const alumnos=_mbConExamenGeneral(x), conSitio=alumnos.filter(al=>pos[al.id]), sinSitio=alumnos.filter(al=>!pos[al.id]);
-  if(!conSitio.length){ mostrarAviso("Todavía no hay nadie colocado en el plano de aula de este grupo (pestaña «Plano de aula»). Usa «Alternar por lista»."); return; }
+  if(!conSitio.length){ mostrarAviso("Encara no hi ha ningú col·locat en el plànol d'aula d'este grup (pestanya «Plànol d'aula»). Usa «Alternar per llista»."); return; }
   const rep={};
   conSitio.forEach(al=>{ const f=Number(pos[al.id].fila)||0, c=Number(pos[al.id].col)||0; rep[al.id]=L[(((n===2?f+c:2*f+c))%n+n)%n]; });
   sinSitio.forEach((al,i)=>{ rep[al.id]=L[i%n]; });

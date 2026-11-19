@@ -96,9 +96,6 @@ function render(){
   const innerScrolls = mismaVista? [...document.querySelectorAll(".scroll")].map(el=>el.scrollTop) : [];
 
   const tabs=document.getElementById("groupTabs"), bar=document.getElementById("backupBar"), header=document.getElementById("appHeader");
-  // Botó flotant «🏠 Inici»: sempre a mà en qualsevol pantalla que no siga Inici.
-  const homeFab=document.getElementById("homeFab");
-  if(homeFab) homeFab.style.display=(_mostrarBienvenida||state.ui.appMode==="inicio")?"none":"";
   try{
     if(_mostrarBienvenida){
       if(header) header.style.display="none";

@@ -122,7 +122,9 @@ function renderHome(){
   <div class="hero">
     <div class="hero-eyebrow">${esc(materiasEtiqueta())}</div>
     <h1 class="hero-title">Inici</h1>
-    <p class="hero-tag" style="max-width:none">El teu quadern d'avaluació de Física i Química: programació, avaluació per competències i correcció amb rúbriques, més el seguiment diari de l'alumnat (assistència, convivència, famílies, reforç, repetició i NESE). Tot compartix el mateix alumnat i les mateixes notes, i tot ix en informes preparats per a imprimir.</p>
+    <details class="hero-dades" ${(state.cursoEscolarGlobal&&state.profesorNombreGlobal&&state.centroNombre)?"":"open"}>
+      <summary style="cursor:pointer;color:rgba(255,255,255,.85);font-size:13px;font-weight:600;margin-top:4px">${state.profesorNombreGlobal?esc(state.profesorNombreGlobal)+" · ":""}${esc(state.cursoEscolarGlobal||"")}${state.centroNombre?" · "+esc(state.centroNombre):""}${(state.cursoEscolarGlobal||state.profesorNombreGlobal)?" — ":""}les meues dades, còpies i ajuda</summary>
+    <p class="hero-tag" style="max-width:none">El teu quadern d'avaluació de Física i Química: programació, seguiment i avaluació, correcció amb rúbriques, més el seguiment diari de l'alumnat (assistència, convivència, famílies, reforç, repetició i NESE). Tot compartix el mateix alumnat i les mateixes notes, i tot ix en informes preparats per a imprimir.</p>
     <div class="flex" style="gap:10px;margin-top:12px;flex-wrap:wrap">
       <label style="font-size:12px;color:rgba(255,255,255,.75);font-weight:500">Curs escolar
         <input class="in" style="display:block;margin-top:3px;width:130px;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);color:#fff" placeholder="2026-2027" value="${esc(state.cursoEscolarGlobal||"")}" onchange="setDatoGlobal('cursoEscolarGlobal',this.value)">
@@ -140,6 +142,7 @@ function renderHome(){
     <p class="hero-tag" style="margin-top:8px;font-size:12px;max-width:none;opacity:.75">Estes dades s'usen en les portades de tots els documents imprimibles. Cada Programació d'Aula pot tindre el seu propi curs escolar i professor/a si cal; si els deixa en blanc, usa estos.</p>
     <div class="flex" style="gap:8px;margin-top:10px;flex-wrap:wrap"><button class="ghost small" style="color:#fff;border:1px solid rgba(255,255,255,.35)" onclick="abrirDiagnostico()">🩺 Revisar les meues dades</button><button class="ghost small" style="color:#fff;border:1px solid rgba(255,255,255,.35)" onclick="abrirCopias()">🛟 Còpies de seguretat</button><button class="ghost small" style="color:#fff;border:1px solid rgba(255,255,255,.35)" onclick="abrirNuevoCurso()" title="Arxiva el curs que acaba i prepara el següent conservant grups, programacions i horari">🎓 Començar curs nou</button></div>
     <p class="hero-tag" style="margin-top:6px;font-size:12.5px;max-width:none;opacity:.85">📶 Afig-la a la pantalla d'inici de l'iPad (Safari → compartir → "Afegir a la pantalla d'inici"). Després d'obrir-la una vegada amb connexió, continua funcionant sense wifi.</p>
+    </details>
   </div>
   ${homeGrupsActiusHTML()}
   ${novedadesHTML()}

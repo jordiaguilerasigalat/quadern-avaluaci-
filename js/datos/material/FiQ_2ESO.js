@@ -163,7 +163,7 @@ window.MATERIAL_TEMES["FiQ_2ESO"]={
    "f": "tema-07/presentacio-forca-pressio.pdf",
    "t": "Presentació · Força i pressió",
    "tipus": "presentacio",
-   "kb": 6321
+   "kb": 1647
   },
   {
    "f": "tema-07/exercicis-forca-pressio.docx",
@@ -225,7 +225,7 @@ window.MATERIAL_TEMES["FiQ_2ESO"]={
    "f": "tema-08/presentacio-treball-energia.pdf",
    "t": "Presentació · Treball i energia",
    "tipus": "presentacio",
-   "kb": 3619
+   "kb": 873
   },
   {
    "f": "tema-08/teoria-treball-energia.docx",

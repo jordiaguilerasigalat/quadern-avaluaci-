@@ -167,7 +167,7 @@ window.MATERIAL_TEMES["FiQ_1BAT"]={
    "f": "tema-06/presentacio-cinematica.pdf",
    "t": "Presentació · Cinemàtica del punt material",
    "tipus": "presentacio",
-   "kb": 13400
+   "kb": 1791
   }
  ],
  "7": [
@@ -187,7 +187,7 @@ window.MATERIAL_TEMES["FiQ_1BAT"]={
    "f": "tema-07/presentacio-dinamica.pdf",
    "t": "Presentació · Dinàmica",
    "tipus": "presentacio",
-   "kb": 13860
+   "kb": 1974
   }
  ],
  "8": [

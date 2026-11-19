@@ -16,7 +16,7 @@ function renderAjustes(grupo){
     <h2>Datos del grupo</h2>
     <div class="flex">
       <input class="in" id="gpNombre" value="${esc(grupo.nombre)}" style="min-width:220px">
-      <button class="btn" onclick="renombrarGrupo()">Guardar nombre</button>
+      <button class="btn" onclick="renombrarGrupo()">Guardar el nom</button>
       <button class="ghost" onclick="duplicarGrupo()">Duplicar estructura (sin alumnado)</button>
       <button class="ghost" onclick="exportarGrupo()">Exportar solo este grupo (.json)</button>
       <button class="btn danger" onclick="borrarGrupo()">Eliminar este grupo</button>

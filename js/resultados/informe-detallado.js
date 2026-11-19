@@ -148,12 +148,12 @@ function desgloseBloqueHTML(grupo,al,b,trim){
     return `<div class="dsg-bloque"><div class="dsg-bloque-head"><span>${esc(b.label)}</span><span class="dsg-muted">Sin actividades este periodo</span></div></div>`;
   }
   const filas=acts.map(a=>{
-    const va=notaActividadSinExtra(grupo,al.id,a);
+    const va=notaActividadSinExtra(grupo,al.id,a,trim);
     const vb=notaActividadBase(grupo,al.id,a);
     const ex=extraAplicadoActividad(grupo,al.id,a), exE=extraActividad(grupo,al.id,a.id);
     const w=pesoActividadEnBloque(grupo,a,b.id);
     const m=marcaDe(grupo,al.id,a.id);
-    const recs=recuperacionesDe(grupo,a.id).filter(r=>notaActividadBase(grupo,al.id,r)!=null);
+    const recs=recuperacionesDe(grupo,a.id).filter(r=>notaActividadBase(grupo,al.id,r)!=null && _recCompta(r,trim));
     const conRec=recs.length && va!=null && (vb==null || Math.abs(va-vb)>1e-9);
     let celda=m==="EX"?"Exento":(conRec?`${vb==null?"—":fmt(vb)} → <strong>${fmt(va)}</strong>`:(va==null?"—":fmt(va)))+(m==="NP"?" (NP)":"");
     if(ex) celda+=` + ${fmtPts(ex)} extra = <strong>${fmt(notaActividad(grupo,al.id,a))}</strong>`;
