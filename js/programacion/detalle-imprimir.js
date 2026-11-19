@@ -30,6 +30,7 @@ function progDetalleHTML(root){
       </div>
     </div>
     <h2 style="font-size:16px;margin-top:10px">${esc(p.nombre)}</h2>
+    ${typeof materialGlobalsHTML==="function"? materialGlobalsHTML(p) : ""}
     <p class="sub" style="margin:0">${esc(cat.materia)} · ${esc(cat.curso)}</p>
     <div class="flex" style="flex-wrap:wrap;gap:10px;margin-top:12px">
       <label style="font-size:12.5px;color:var(--mut);font-weight:500;flex:1;min-width:140px">Curso escolar
@@ -108,6 +109,7 @@ function progDetalleHTML(root){
           ${abierta?"":`<span class="sub" style="font-size:12px;white-space:nowrap">${esc(s.sesionesPrevistas||0)} sesiones${(s.saberesIds||[]).length?` · ${(s.saberesIds||[]).length} saberes`:""}${(s.recursos||[]).length?` · ${(s.recursos||[]).length} recursos`:""}</span>`}
           <button class="ghost danger" onclick="progEliminarSda('${s.id}')">Eliminar</button>
         </div>
+        ${typeof materialTemaHTML==="function"? materialTemaHTML(p,s) : ""}
         ${abierta?`
         <div class="flex" style="margin-top:10px;flex-wrap:wrap;gap:10px">
           <label style="font-size:12.5px;color:var(--mut);font-weight:500;flex:1;min-width:140px">Sesiones previstas

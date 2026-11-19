@@ -2,15 +2,16 @@
    Quadern d'avaluació · Documents del departament (Inici → Organització)
    js/inicio/documents-inici.js
 
-   Requadre amb pestanyes: Programacions, Propostes pedagògiques, Temporització
-   i les que afija el professorat. Cada pestanya mostra els PDF del departament
+   Requadre amb pestanyes: Programacions, Propostes pedagògiques, Temporització,
+   Material i les que afija el professorat. Cada pestanya mostra els PDF del departament
    que li toquen i, a més, enllaços propis (Drive, web del centre…) que es
    guarden en state.documentsInici.
    ============================================================================ */
 const DOCS_PESTANYES_FIXES=[
   {id:"prog",nom:"📘 Programacions"},
   {id:"pp",nom:"🧭 Propostes pedagògiques"},
-  {id:"temp",nom:"🗓️ Temporització"}
+  {id:"temp",nom:"🗓️ Temporització"},
+  {id:"mat",nom:"📎 Material"}
 ];
 function docsDades(){
   if(!state.documentsInici || typeof state.documentsInici!=="object") state.documentsInici={};
@@ -62,6 +63,7 @@ function docsContingutFix(id){
       : `<p class="sub" style="margin:0">Encara no tens cap programació en el Quadern. Crea-la des de la pestanya «Programacions» i ací podràs obrir la seua planificació temporal (sessions de cada SdA repartides en el calendari del curs).</p>`;
     return `<p class="sub" style="margin:0 0 4px">Temporització de cada programació: quantes sessions té cada Situació d'Aprenentatge i en quines setmanes cau.</p>${llista}`;
   }
+  if(id==="mat") return typeof materialDocumentsHTML==="function"? materialDocumentsHTML() : "";
   return "";
 }
 function docsEnllacosHTML(id){
