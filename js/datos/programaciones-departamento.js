@@ -1346,3 +1346,20 @@ const PROG_PDF_PER_CATALEG={
   QUI_2BAT:["PA_2026-27_Quimica_2n_Batx.pdf","PP_2026-27_Batxillerat.pdf"],
   FIS_2BAT:["PA_2026-27_Fisica_2n_Batx.pdf","PP_2026-27_Batxillerat.pdf"]
 };
+
+/* Separa els títols de les programacions del departament en tema + situació d'aprenentatge. */
+function progSepararTitol(titol,ordre){
+  titol=String(titol||"").trim();
+  let m=titol.match(/^(?:Unitat|UD|U)\s*(\d+)\.\s*(.+?)(?::\s*«(.+)»)?$/);
+  if(m) return {tema:`Tema ${m[1]}.- ${m[2].trim()}`, titulo:(m[3]||"").trim()};
+  m=titol.match(/^(.+?)\s*\(([^()]+)\)$/);
+  if(m) return {tema:`Tema ${ordre}.- ${m[2].trim()}`, titulo:m[1].trim()};
+  return {tema:"", titulo:titol};
+}
+function progMigrarTemes(st){
+  (st.programaciones||[]).forEach(p=>{
+    if(!p.origenDepartamento || p.temesFiq) return;
+    (p.sdas||[]).forEach((s,i)=>{ if(s.tema) return; const r=progSepararTitol(s.titulo,i+1); s.tema=r.tema; s.titulo=r.titulo; });
+    p.temesFiq=1;
+  });
+}

@@ -111,7 +111,7 @@ window.planTempImportarSdas=async (progId)=>{
   (seedBase.units||[]).forEach(u=>{ existentesPorNombre[planTempL0(u.name).trim().toLowerCase()] = u; });
   const ordenadas=[...p.sdas].sort((a,b)=>(a.trimestre||0)-(b.trimestre||0));
   seedBase.units = ordenadas.map(s=>{
-    const nombre=(s.titulo||"Situación sin título").trim();
+    const nombre=(sdaNom(s)||"Situación sin título").trim();
     const prev = existentesPorNombre[nombre.toLowerCase()];
     return {name:{es:nombre,va:nombre}, sessions: Number(s.sesionesPrevistas)||(prev?prev.sessions:6), fixed: prev?!!prev.fixed:false};
   });
@@ -125,7 +125,7 @@ window.planTempAplicarAProgramacion=async (progId)=>{
   if(!sched||!sched.length){ mostrarAviso("Todavía no hay datos calculados en la Planificación temporal para aplicar. Abre esa pestaña y comprueba que tiene situaciones con fechas."); return; }
   const nuevasPrevias=sched.filter(u=>{
     const nombre=(u.name||"").trim().toLowerCase();
-    return nombre && !p.sdas.some(s=>(s.titulo||"").trim().toLowerCase()===nombre);
+    return nombre && !p.sdas.some(s=>sdaNom(s).trim().toLowerCase()===nombre);
   }).length;
   const msg=nuevasPrevias
     ? `Esto actualizará las sesiones previstas y el trimestre de las Situaciones de Aprendizaje que ya existan en la Programación con el mismo nombre, y creará ${nuevasPrevias} nueva(s) que hay en la Planificación temporal pero todavía no están en la Programación. ¿Continuar?`
@@ -137,7 +137,7 @@ window.planTempAplicarAProgramacion=async (progId)=>{
     const nombre=(u.name||"").trim();
     if(!nombre) return;
     const trimestre=(u.trimestres && u.trimestres.length && TRIM_DESDE_PT[u.trimestres[0]]!==undefined) ? TRIM_DESDE_PT[u.trimestres[0]] : 0;
-    let sda=p.sdas.find(s=>(s.titulo||"").trim().toLowerCase()===nombre.toLowerCase());
+    let sda=p.sdas.find(s=>sdaNom(s).trim().toLowerCase()===nombre.toLowerCase());
     if(sda){
       sda.sesionesPrevistas = u.sessions;
       sda.trimestre = trimestre;
@@ -157,6 +157,7 @@ window.planTempAplicarAProgramacion=async (progId)=>{
 };
 
 function renderProgramacionApp(){
+  if(typeof progMigrarTemes==="function") progMigrarTemes(state);
   const app=document.getElementById("app");
   app.innerHTML=`<div class="card" style="padding:12px 16px">
     <div class="flex" style="justify-content:space-between">

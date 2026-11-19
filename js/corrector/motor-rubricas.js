@@ -198,7 +198,7 @@ function cxAvisoCriteriosBadgeHTML(grupo,act){
 /* Nombres de las SdA que abarca el examen (si viene de la Programación). */
 function cxSdasDeExamen(grupo,act){
   const ref=cxProgActDe(grupo,act); if(!ref) return [];
-  return (ref.progAct.sdaIds||[]).map(sid=>ref.prog.sdas.find(s=>s.id===sid)).filter(Boolean).map(s=>s.titulo||"(SdA sin título)");
+  return (ref.progAct.sdaIds||[]).map(sid=>ref.prog.sdas.find(s=>s.id===sid)).filter(Boolean).map(s=>sdaNom(s)||"(SdA sin título)");
 }
 /* Selector de criterios agrupado por CE (para crear examen y para editar los previstos). */
 function cxSelectorCriteriosHTML(catalogoKey,seleccion,onchange){

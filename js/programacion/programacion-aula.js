@@ -26,6 +26,8 @@ const PROG_RECURSOS_OPCIONES=[
   {id:"salidasCampo", label:"Salidas de campo / visitas"},
   {id:"prensaActualidad", label:"Prensa y actualidad"},
 ];
+/* Nom complet d'una SdA: «Tema 1.- La mesura de la matèria · Una invitació molt enigmàtica». */
+function sdaNom(s){ if(!s) return ""; const t=(s.tema||"").trim(), n=(s.titulo||"").trim(); return t&&n? t+" · "+n : (t||n); }
 function progPorId(id){ return (state.programaciones||[]).find(p=>p.id===id)||null; }
 function progDeGrupo(grupo){ return grupo&&grupo.programacionId? progPorId(grupo.programacionId) : null; }
 function progSdaDefault(trimestre){ return {id:uid(), titulo:"", trimestre:trimestre??0, sesionesPrevistas:"", saberesIds:[], saberesOtros:"", recursos:[]}; }
@@ -127,7 +129,8 @@ function progDesDeDepartament(key){
   p.criteriosCalifCuantitativa=progTextoAHTML(d.calif||"");
   d.sdas.forEach(s=>{
     const sda=progSdaDefault(s.trimestre);
-    sda.titulo=s.titulo; sda.sesionesPrevistas=s.sesiones==null?"":String(s.sesiones);
+    const tt=progSepararTitol(s.titulo,p.sdas.length+1);
+    sda.tema=tt.tema; sda.titulo=tt.titulo; sda.sesionesPrevistas=s.sesiones==null?"":String(s.sesiones);
     const linies=[];
     if(s.saberes&&s.saberes.length) linies.push("Sabers: "+s.saberes.join("; ")+".");
     if(s.ces&&s.ces.length) linies.push("CE: "+s.ces.join(", ")+".");
@@ -137,11 +140,12 @@ function progDesDeDepartament(key){
     p.sdas.push(sda);
     if(s.criterios&&s.criterios.length){
       const a=progActividadDefault();
-      a.nombre="Criteris de la SdA · "+s.titulo; a.tipo=TIPOS.find(t=>/SdA/.test(t))||TIPOS[0];
+      a.nombre="Criteris · "+(tt.tema||tt.titulo); a.tipo=TIPOS.find(t=>/SdA/.test(t))||TIPOS[0];
       a.sdaIds=[sda.id]; a.criterios=s.criterios.map(c=>({critId:c,peso:100}));
       p.actividades.push(a);
     }
   });
+  p.temesFiq=1;
   if(!Array.isArray(state.programaciones)) state.programaciones=[];
   state.programaciones.push(p);
   return p;

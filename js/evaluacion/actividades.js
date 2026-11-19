@@ -71,7 +71,7 @@ function _renderActividadesLlista(grupo){
     <div class="flex" style="flex-wrap:wrap;gap:8px;align-items:center">
       <select class="in" id="actElegirSda" style="min-width:220px" onchange="actActualizarSelectorActividad()">
         <option value="">— Elige la Situación de Aprendizaje —</option>
-        ${prog.sdas.map(s=>`<option value="${s.id}">${TRIMESTRES[s.trimestre]} · ${esc(s.titulo||"(sin título)")}</option>`).join("")}
+        ${prog.sdas.map(s=>`<option value="${s.id}">${TRIMESTRES[s.trimestre]} · ${esc(sdaNom(s)||"(sin título)")}</option>`).join("")}
         ${prog.actividades.some(a=>!(a.sdaIds||[]).length)?`<option value="__sinsda__">— Actividades sin SdA asignada —</option>`:""}
       </select>
       <select class="in" id="actElegirActividad" style="min-width:220px">

@@ -65,6 +65,7 @@ if(!state.tiposColores || typeof state.tiposColores!=="object") state.tiposColor
 if(!Array.isArray(state.reuniones)) state.reuniones=[];
 if(!Array.isArray(state.plantillasRubrica)) state.plantillasRubrica=[];
 if(typeof sembrarRubriquesFiq==="function") sembrarRubriquesFiq(state);
+if(typeof progMigrarTemes==="function") progMigrarTemes(state);
 if(!Array.isArray(state.plantillasReunion)) state.plantillasReunion=[];
 if(!Array.isArray(state.planesRefuerzo)) state.planesRefuerzo=[];
 state.planesRefuerzo.forEach(p=>{

@@ -19,7 +19,7 @@ function renderDiario(grupo){
   const ordenManual=Array.isArray(grupo.diarioOrden);
   const prog=progDeGrupo(grupo);
   const sdas=prog?prog.sdas:[];
-  const nombreSda=id=>{ const s=sdas.find(x=>x.id===id); return s?(s.titulo||"(sin título)"):""; };
+  const nombreSda=id=>{ const s=sdas.find(x=>x.id===id); return s?(sdaNom(s)||"(sin título)"):""; };
   c.innerHTML=`
   <div class="card">
     <h2 style="font-size:15px">📔 Diario de clase</h2>
@@ -31,7 +31,7 @@ function renderDiario(grupo){
       ${sdas.length?`<label style="font-size:12.5px;color:var(--mut);font-weight:500;max-width:340px">Situación de Aprendizaje (opcional)
         <select class="in" style="width:100%;margin-top:4px" id="diarioUnidadInput">
           <option value="">— Ninguna —</option>
-          ${sdas.map(s=>`<option value="${s.id}" ${entradaActual.unidadId===s.id?"selected":""}>${TRIMESTRES[s.trimestre]} · ${esc(s.titulo||"(sin título)")}</option>`).join("")}
+          ${sdas.map(s=>`<option value="${s.id}" ${entradaActual.unidadId===s.id?"selected":""}>${TRIMESTRES[s.trimestre]} · ${esc(sdaNom(s)||"(sin título)")}</option>`).join("")}
         </select>
       </label>`:`<p class="sub" style="margin:0">${prog?"La Programación vinculada todavía no tiene Situaciones de Aprendizaje.":"Este grupo no tiene una Programación de Aula vinculada (ver Ajustes) — puedes seguir usando el Diario con normalidad."}</p>`}
       <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
@@ -179,7 +179,7 @@ window.diarioImprimir=()=>{
   const cat=getCatalogo(grupo.catalogoKey);
   const prog=progDeGrupo(grupo);
   const sdas=prog?prog.sdas:[];
-  const nombreSda=id=>{ const s=sdas.find(x=>x.id===id); return s?(s.titulo||"(sin título)"):""; };
+  const nombreSda=id=>{ const s=sdas.find(x=>x.id===id); return s?(sdaNom(s)||"(sin título)"):""; };
   const entradas=Array.isArray(grupo.diarioOrden)
     ? diarioFechasOrdenadas(grupo).map(f=>[f,grupo.diario[f]])
     : Object.entries(grupo.diario||{}).sort((a,b)=>a[0].localeCompare(b[0]));

@@ -141,6 +141,7 @@ function renderHome(){
     <div class="flex" style="gap:8px;margin-top:10px;flex-wrap:wrap"><button class="ghost small" style="color:#fff;border:1px solid rgba(255,255,255,.35)" onclick="abrirDiagnostico()">🩺 Revisar les meues dades</button><button class="ghost small" style="color:#fff;border:1px solid rgba(255,255,255,.35)" onclick="abrirCopias()">🛟 Còpies de seguretat</button><button class="ghost small" style="color:#fff;border:1px solid rgba(255,255,255,.35)" onclick="abrirNuevoCurso()" title="Arxiva el curs que acaba i prepara el següent conservant grups, programacions i horari">🎓 Començar curs nou</button></div>
     <p class="hero-tag" style="margin-top:6px;font-size:12.5px;max-width:none;opacity:.85">📶 Afig-la a la pantalla d'inici de l'iPad (Safari → compartir → "Afegir a la pantalla d'inici"). Després d'obrir-la una vegada amb connexió, continua funcionant sense wifi.</p>
   </div>
+  ${homeGrupsActiusHTML()}
   ${novedadesHTML()}
   ${hoyTarjetaHTML()}
   ${coberturaAvisosInicioHTML()}
@@ -263,4 +264,27 @@ function renderHome(){
   ${state.ui.agModalMesGrande ? agModalMesGrandeHTML() : ""}
   ${state.ui.horModalCelda ? horRenderModalHTML() : ""}
   ${state.ui.horModalFranjas ? horFranjasModalHTML() : ""}`;
+}
+
+/* Pestanyetes amb els grups del curs: un clic obri el grup amb tot el seu
+   (alumnat, activitats, rúbriques, programació vinculada…). */
+function homeGrupsActiusHTML(){
+  const gs=state.grupos||[];
+  const chip=g=>{
+    const cat=getCatalogo(g.catalogoKey);
+    const prog=typeof progDeGrupo==="function"?progDeGrupo(g):null;
+    return `<button class="home-grup" onclick="buscarIrGrupo('${escJS(g.id)}')" title="Obrir el grup ${esc(g.nombre)}">
+      <span class="home-grup-nom">${esc(g.nombre)}</span>
+      <span class="home-grup-meta">${esc(cat?cat.materia+" · "+cat.curso:"")}</span>
+      <span class="home-grup-meta">${(g.alumnos||[]).length} alumne${(g.alumnos||[]).length===1?"":"s"}${prog?" · 📘 "+esc(prog.nombre.replace(/ · Programació del departament.*/,"")):""}</span>
+    </button>`;
+  };
+  return `<div class="card">
+    <div class="flex" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+      <h2 style="font-size:15px;margin:0">👥 Els meus grups${state.cursoEscolarGlobal?" · "+esc(state.cursoEscolarGlobal):""}</h2>
+      <button class="ghost small" style="border:1px dashed var(--line)" onclick="state.ui.appMode='competencial';irAGrupo(null)">+ Nou grup</button>
+    </div>
+    ${gs.length?`<div class="home-grups">${gs.map(chip).join("")}</div>`
+      :`<p class="sub" style="margin:0">Encara no tens grups. Crea'n un amb «+ Nou grup».</p>`}
+  </div>`;
 }

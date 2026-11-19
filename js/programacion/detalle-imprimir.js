@@ -98,7 +98,10 @@ function progDetalleHTML(root){
           <button class="ghost" style="padding:2px 8px;min-width:0" title="Subir un puesto" ${iSub===0?"disabled":""} onclick="progMoverSda('${s.id}',-1)">▲</button>
           <button class="ghost" style="padding:2px 8px;min-width:0" title="Bajar un puesto" ${iSub===porTrim[t].length-1?"disabled":""} onclick="progMoverSda('${s.id}',1)">▼</button>
           <button class="ghost" style="padding:2px 8px;min-width:0" title="${abierta?"Contraer":"Expandir"}" onclick="progToggleSdaAbierta('${s.id}')">${abierta?"▾":"▸"}</button>
-          <input class="in" style="flex:1;min-width:200px;font-weight:600" placeholder="Título de la Situación de Aprendizaje…" value="${esc(s.titulo)}" onchange="progSetSdaCampo('${s.id}','titulo',this.value)">
+          <div style="flex:1;min-width:220px;display:flex;flex-direction:column;gap:4px">
+            <input class="in" style="width:100%;font-weight:700" placeholder="Tema (p. ex. Tema 1.- La mesura i la matèria)" aria-label="Tema" value="${esc(s.tema||"")}" onchange="progSetSdaCampo('${s.id}','tema',this.value)">
+            <input class="in" style="width:100%;font-size:13px;margin-left:14px;width:calc(100% - 14px)" placeholder="↳ Situació d'aprenentatge (opcional, p. ex. Una invitació molt enigmàtica)" aria-label="Situació d'aprenentatge" value="${esc(s.titulo||"")}" onchange="progSetSdaCampo('${s.id}','titulo',this.value)">
+          </div>
           <select class="in" style="min-width:140px" onchange="progSetSdaCampo('${s.id}','trimestre',this.value)">
             ${TRIMESTRES.map((tt,i)=>`<option value="${i}" ${s.trimestre===i?"selected":""}>${tt}</option>`).join("")}
           </select>
@@ -306,7 +309,8 @@ window.progImprimir=(id)=>{
       const saberesHTML = saberesTextos.length? `<ul style="margin:4px 0 0 18px">${saberesTextos.map(t2=>`<li>${esc(t2)}</li>`).join("")}</ul>` : "";
       const recursosHTML = (s.recursos||[]).length? `<p style="font-size:13px;margin:6px 0 0"><strong>Recursos:</strong></p><ul style="margin:4px 0 0 18px">${s.recursos.map(r=>`<li>${recursoIconoTipo(r.nombre,r.enlace)} <a href="${esc(r.enlace)}">${esc(r.nombre||"(sin nombre)")}</a></li>`).join("")}</ul>` : "";
       return `<div style="margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e5e5e5">
-        <h3 style="margin:0 0 6px">${esc(s.titulo||"(sin título)")}</h3>
+        <h3 style="margin:0 0 2px">${esc(s.tema||s.titulo||"(sin título)")}</h3>
+        ${s.tema&&s.titulo?`<p style="font-size:13.5px;font-style:italic;margin:0 0 6px">Situació d'aprenentatge: ${esc(s.titulo)}</p>`:""}
         <p style="font-size:12px;color:#666;margin:0 0 6px">Sesiones previstas: ${esc(s.sesionesPrevistas)||"—"}</p>
         ${saberesHTML||s.saberesOtros?`<p style="font-size:13px;margin:6px 0 0"><strong>Saberes básicos:</strong></p>${saberesHTML}${s.saberesOtros?`<p style="font-size:13px;margin:4px 0 0">${esc(s.saberesOtros)}</p>`:""}`:""}
         ${recursosHTML}

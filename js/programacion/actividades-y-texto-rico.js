@@ -220,7 +220,7 @@ function progActividadCardHTML(idx,a,p,grupoId,iAct,totalGrupo){
       <div class="section-eyebrow" style="margin:0 0 4px">Situaciones de Aprendizaje que cubre (marca varias si es un examen conjunto)</div>
       <div class="flex" style="flex-wrap:wrap;gap:10px">
         ${p.sdas.map(s=>`<label style="font-size:12.5px;display:flex;align-items:center;gap:5px">
-          <input type="checkbox" ${(a.sdaIds||[]).includes(s.id)?"checked":""} onchange="progToggleActividadSda('${a.id}','${s.id}',this.checked)"> ${TRIMESTRES[s.trimestre].replace("ª evaluación","ª ev.")} · ${esc(s.titulo||"(sin título)")}
+          <input type="checkbox" ${(a.sdaIds||[]).includes(s.id)?"checked":""} onchange="progToggleActividadSda('${a.id}','${s.id}',this.checked)"> ${TRIMESTRES[s.trimestre].replace("ª evaluación","ª ev.")} · ${esc(sdaNom(s)||"(sin título)")}
         </label>`).join("")||'<span class="sub">Crea antes alguna SdA.</span>'}
       </div>
     </div>
