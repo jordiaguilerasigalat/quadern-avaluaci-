@@ -5,6 +5,7 @@
 
 /* ---------- Actividades ---------- */
 function renderActividades(grupo){
+  if(typeof temesMigrarGrup==="function" && temesMigrarGrup(grupo)) save();
   if(typeof renderSeguimentDinsActivitats==="function" && renderSeguimentDinsActivitats(grupo)) return;
   _renderActividadesLlista(grupo);
   const tc=document.getElementById("tabContent");
@@ -26,7 +27,7 @@ function _renderActividadesLlista(grupo){
     <p class="sub">${editando?"Modifica los datos y guarda los cambios.":`Se crea en ${TRIMESTRES[state.ui.trim]}.`} Marca uno o varios criterios; cada uno con su peso dentro de la actividad. El bloque decide en qué cuenta para la nota cuantitativa.</p>
     <div class="grid" style="margin-bottom:14px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
       <input class="in" id="fN" placeholder="Nombre de la actividad" value="${esc(f.nombre)}">
-      ${prog?"":`<input class="in" id="fSdA" placeholder="Situación de Aprendizaje (opcional, ej. SdA 1)" value="${esc(f.sda||'')}">`}
+      ${prog?`<label style="display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--mut)">Tema${temaSelectHTML(grupo,f.temaId??(state.ui.segTema||((temaActualGrup(grupo)||{}).id)||""),'id="fTema" aria-label="Tema de l\x27activitat" onchange="state.ui.form.temaId=this.value;save()"')}</label>`:`<input class="in" id="fSdA" placeholder="Situación de Aprendizaje (opcional, ej. SdA 1)" value="${esc(f.sda||'')}">`}
     </div>
     <div class="grid" style="margin-bottom:14px">
       <div class="flex">
@@ -99,7 +100,8 @@ function _renderActividadesLlista(grupo){
             <button class="ghost" style="padding:2px 8px;min-width:0" title="Bajar un puesto" aria-label="Bajar ${esc(a.nombre)}" ${iAct===nAct-1?"disabled":""} onclick="moverActividad('${a.id}',1)">▼</button>
           </div>`:""}
           <div style="flex:1;min-width:0">
-            <div style="font-size:14.5px;font-weight:500">${esc(a.nombre)} ${a.sda ? `<span class="badge" style="vertical-align:middle;margin-left:6px">${esc(a.sda)}</span>` : ''}</div>
+            <div style="font-size:14.5px;font-weight:500">${esc(a.nombre)} ${temaBadgeHTML(grupo,a)||(a.sda ? `<span class="badge" style="vertical-align:middle;margin-left:6px">${esc(a.sda)}</span>` : '')}</div>
+            ${prog&&!a.recupera?`<div style="font-size:12.5px;color:var(--mut);margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">Tema: ${temaSelectHTML(grupo,a.temaId||"",`style="padding:2px 6px;font-size:12.5px;max-width:260px" aria-label="Tema de ${esc(a.nombre)}" onchange="setTemaActivitat('${a.id}',this.value)"`)}</div>`:""}
             <div style="font-size:12.5px;color:var(--mut);margin-top:2px">${a.tipo} · ${b?esc(b.label):""} · ${tipoDesc}</div>
             ${a.recupera?`<div style="font-size:12.5px;margin-top:2px;color:var(--accent-texto,#7d5a12);font-weight:600">🔁 ${recResumenTexto(grupo,a)}</div>`:`<div style="font-size:12.5px;color:var(--mut);margin-top:2px">Pes dins del bloc: ${pctEnBloque} %${(a.pesoBloque==null||a.pesoBloque==="")?" (automàtic)":""}</div>`}
             ${!a.recupera && recuperacionesDe(grupo,a.id).length?`<div style="font-size:12.5px;color:var(--mut);margin-top:2px">🔁 Tiene recuperación: ${recuperacionesDe(grupo,a.id).map(r=>esc(r.nombre)).join(", ")}</div>`:""}
@@ -143,7 +145,7 @@ window.toggleCrit=cid=>{ const L=state.ui.form.links; const i=L.findIndex(x=>x.c
   if(i>=0) L.splice(i,1); else L.push({critId:cid,peso:100}); save(); render(); };
 window.setLinkPeso=(cid,v)=>{ const l=state.ui.form.links.find(x=>x.critId===cid); if(l){ l.peso=v; save(); } };
 window.editarActividad=id=>{ const grupo=grupoActual(); const a=grupo.actividades.find(x=>x.id===id); if(!a) return;
-  state.ui.form={editId:id,nombre:a.nombre,tipo:a.tipo,esExamen:a.esExamen,bloqueId:a.bloqueId,pesoBloque:a.pesoBloque??"",links:a.criterios.map(l=>({...l})),sda:a.sda||""};
+  state.ui.form={editId:id,nombre:a.nombre,tipo:a.tipo,esExamen:a.esExamen,bloqueId:a.bloqueId,pesoBloque:a.pesoBloque??"",links:a.criterios.map(l=>({...l})),sda:a.sda||"",temaId:a.temaId||""};
   save(); render(); window.scrollTo(0,0); };
 window.cancelarEdicionActividad=()=>{ state.ui.form={editId:null,nombre:"",tipo:TIPOS[0],esExamen:false,bloqueId:"",pesoBloque:"",links:[],sda:""}; save(); render(); };
 window.actActualizarSelectorActividad=()=>{
@@ -305,10 +307,11 @@ window.saveActividad=()=>{ const grupo=grupoActual(); const f=state.ui.form;
   const criterios=f.links.map(l=>({critId:l.critId,peso:Number(l.peso)||0}));
   const pesoBloque=(f.pesoBloque===""||f.pesoBloque==null)?"":Number(f.pesoBloque);
   const sdaStr = (f.sda||"").trim();
+  const temaSel=document.getElementById("fTema"); const temaId=temaSel? temaSel.value : (f.temaId||"");
   if(f.editId){
     const a=grupo.actividades.find(x=>x.id===f.editId);
     if(a){
-      a.nombre=f.nombre.trim(); a.tipo=f.tipo; a.bloqueId=f.bloqueId; a.esExamen=f.esExamen; a.criterios=criterios; a.pesoBloque=pesoBloque; a.sda=sdaStr;
+      a.nombre=f.nombre.trim(); a.tipo=f.tipo; a.bloqueId=f.bloqueId; a.esExamen=f.esExamen; a.criterios=criterios; a.pesoBloque=pesoBloque; a.sda=sdaStr; a.temaId=temaId;
       const keep=new Set(criterios.map(l=>l.critId));
       for(const alId in grupo.notas){
         const n=grupo.notas[alId]?.[a.id]; if(!n) continue;
@@ -316,7 +319,7 @@ window.saveActividad=()=>{ const grupo=grupoActual(); const f=state.ui.form;
       }
     }
   }else{
-    grupo.actividades.push({id:uid(),trimestre:state.ui.trim,nombre:f.nombre.trim(),tipo:f.tipo,bloqueId:f.bloqueId,esExamen:f.esExamen,pesoBloque,criterios,sda:sdaStr});
+    grupo.actividades.push({id:uid(),trimestre:state.ui.trim,nombre:f.nombre.trim(),tipo:f.tipo,bloqueId:f.bloqueId,esExamen:f.esExamen,pesoBloque,criterios,sda:sdaStr,temaId});
   }
   state.ui.form={editId:null,nombre:"",tipo:TIPOS[0],esExamen:false,bloqueId:"",pesoBloque:"",links:[],sda:""}; save(); render(); };
 window.delActividad=async id=>{ const grupo=grupoActual(); const a=grupo.actividades.find(x=>x.id===id); if(!a) return;

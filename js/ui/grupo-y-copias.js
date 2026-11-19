@@ -151,7 +151,7 @@ function _procesarArchivoCopiaJSON(file,limpiar){
 window.importarTodo=inp=>{ _procesarArchivoCopiaJSON(inp.files[0],()=>{ inp.value=""; }); };
 
 /* Secciones de un grupo. En pantallas anchas se ven todas como pestañas (.gtabs); en estrechas, en un desplegable. */
-const GRUPO_PESTANAS=[["alumnos","Alumnado"],["plano","Plànol d'aula"],["actividades","Activitats"],["calificar","Calificar"],["resultados","Resultados"],["asistencia","Asistencia"],["convivencia","Convivencia"],["familias","Familias"],["resumen","Resumen"],["diario","Diario"],["cobertura","Cobertura"],["ajustes","Ajustes"]];
+const GRUPO_PESTANAS=[["alumnos","Alumnado"],["plano","Plànol d'aula"],["programa","Programació"],["actividades","Activitats"],["calificar","Calificar"],["resultados","Resultados"],["asistencia","Asistencia"],["convivencia","Convivencia"],["familias","Familias"],["resumen","Resumen"],["diario","Diario"],["cobertura","Cobertura"],["ajustes","Ajustes"]];
 function renderGrupo(grupo){
   const cat=getCatalogo(grupo.catalogoKey);
   const app=document.getElementById("app");
@@ -178,6 +178,7 @@ function renderGrupo(grupo){
   try{
     if(t==="alumnos") renderAlumnos(grupo);
     else if(t==="plano") renderPlano(grupo);
+    else if(t==="programa") renderProgramaGrup(grupo);
     else if(t==="actividades") renderActividades(grupo);
     else if(t==="seguiment"){ state.ui.tab="actividades"; renderActividades(grupo); }
     else if(t==="calificar") renderCalificar(grupo);

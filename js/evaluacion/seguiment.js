@@ -155,6 +155,7 @@ function segApartatsHTML(grupo){
   return `
   <div class="card">
     <h2>Activitats · ${esc(TRIMESTRES[state.ui.trim])}</h2>
+    ${typeof temesDeGrup==="function"&&temesDeGrup(grupo).length?`<label style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13.5px;font-weight:600;margin:4px 0 8px">📚 Tema de les activitats noves: ${temaSelectHTML(grupo,state.ui.segTema??((temaActualGrup(grupo)||{}).id||""),'id="segTema" style="max-width:340px" onchange="state.ui.segTema=this.value;save()"')}</label>`:""}
     <p class="sub" style="margin:0">Exàmens, deures, laboratori, actitud, dossier i treballs. Crea l'activitat en el seu apartat i avalua alumne per alumne: en les rúbriques punxes el nivell (AE, AN, AS, NA) de cada fila i la nota es calcula sola i compta en el seu bloc${modeCE?" i, si l'has vinculada a criteris, en les competències":""}.</p>
     ${modeCE?`<div class="alert-box" style="margin-top:8px">Este grup qualifica per competències específiques: marca a quins criteris correspon cada activitat en crear-la, o no comptarà per a la nota.</div>`:""}
   </div>
@@ -200,8 +201,9 @@ window.segCrear=k=>{
   const crits=[...document.querySelectorAll(".segCrit:checked")].map(x=>x.value).filter(c=>cxCriteriosValidosEnCatalogo(grupo.catalogoKey).has(c));
   if(crits.length) cxItemsFlat(rub).forEach(it=>{ it.links=crits.map(c=>({critId:c,peso:100})); });
   const ids=segBlocsIds(grupo,k);
+  const temaId=(document.getElementById("segTema")||{}).value ?? (state.ui.segTema||"");
   const act={ id:uid(), trimestre:state.ui.trim, nombre:nom, tipo:t.tipo, bloqueId:ids[0]||"", esExamen:true, pesoBloque:"",
-    criterios:[], sda:"", rubrica:rub, escalarA10:true, criteriosPrevistos:crits, seguiment:k };
+    criterios:[], sda:"", rubrica:rub, escalarA10:true, criteriosPrevistos:crits, seguiment:k, temaId:temaId||"" };
   if(ids.length>1) act.bloquesExtra=ids.slice(1);
   cxSyncCriteriosActividad(act);
   grupo.actividades.push(act);

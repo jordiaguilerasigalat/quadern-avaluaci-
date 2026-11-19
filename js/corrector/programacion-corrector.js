@@ -132,7 +132,7 @@ window.cxAnadirRubrica=async actId=>{
 function progCrearActividadEnGrupo(grupo,progAct,trimestre){
   const act={ id:uid(), nombre:progAct.nombre, tipo:progAct.tipo, esExamen:!!progAct.esExamen, bloqueId:defBloque(progAct.tipo,grupo.bloques), pesoBloque:"",
     trimestre, criterios:(progAct.criterios||[]).map(c=>({...c})), sda:"", progActId:progAct.id,
-    criteriosPrevistos:(progAct.criterios||[]).map(c=>c.critId) };
+    criteriosPrevistos:(progAct.criterios||[]).map(c=>c.critId), temaId:(progAct.sdaIds||[])[0]||"" };
   if(act.esExamen){
     act.rubrica=cxRubricaInicial(grupo,act,progAct);
     if(!(Array.isArray(progAct.rubrica)&&progAct.rubrica.length)) act.rubricaSinElegir=true;
