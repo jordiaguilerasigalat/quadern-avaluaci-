@@ -64,6 +64,36 @@ window.rfSetBusqueda=v=>{ state.ui.rfBusqueda=v; save(); render(); };
 window.rfAbrirModalNueva=()=>{ if(!state.grupos.length){ mostrarAviso("Crea primero un grupo con alumnado desde Evaluación por Competencias."); return; } state.ui.rfModalNueva=true; save(); render(); };
 window.rfCerrarModalNueva=()=>{ state.ui.rfModalNueva=false; save(); render(); };
 
+/* Documents del departament per a reforç, NESE i repetició (sense dades
+   d'alumnes), per a descarregar des de la pestanya de plans de reforç. */
+const RF_DOCS_DEPARTAMENT=[
+  {titol:"Plans de reforç NESE (per al professorat)", docs:[
+    {f:"pla-reforc-nese-fiq-2eso-2026-27.docx",t:"FiQ 2n ESO · Word"},
+    {f:"pla-reforc-nese-fiq-3eso-2026-27.docx",t:"FiQ 3r ESO · Word"}]},
+  {titol:"Dossiers de treball per a l'alumnat NESE", docs:[
+    {f:"dossier-alumnat-nese-fiq-2eso.pdf",t:"FiQ 2n ESO · PDF"},
+    {f:"dossier-alumnat-nese-fiq-2eso.docx",t:"FiQ 2n ESO · Word"},
+    {f:"dossier-alumnat-nese-fiq-3eso.pdf",t:"FiQ 3r ESO · PDF"},
+    {f:"dossier-alumnat-nese-fiq-3eso.docx",t:"FiQ 3r ESO · Word"}]},
+  {titol:"Plans específics per a l'alumnat que repetix", docs:[
+    {f:"pla-repeticio-fiq-2eso-2026-27.docx",t:"FiQ 2n ESO · Word"},
+    {f:"pla-repeticio-fiq-3eso-2026-27.docx",t:"FiQ 3r ESO · Word"},
+    {f:"pla-repeticio-fiq-4eso-2026-27.docx",t:"FiQ 4t ESO · Word"}]}
+];
+/* Targeta de descàrrega. quins = índexs de RF_DOCS_DEPARTAMENT a mostrar. */
+function rfDocumentsHTML(quins,text){
+  const grups=quins.map(i=>RF_DOCS_DEPARTAMENT[i]);
+  return `<div class="card" style="padding:12px 16px">
+    <div style="font-weight:600;font-size:14px">📎 Documents del departament</div>
+    <p class="sub" style="margin:2px 0 6px">${text}</p>
+    ${grups.map(g=>`<div style="margin-top:8px">
+      <div style="font-size:12.5px;font-weight:700;color:var(--mut);margin-bottom:4px">${esc(g.titol)}</div>
+      <div class="flex" style="flex-wrap:wrap;gap:6px">${g.docs.map(d=>`<a class="chip" style="text-decoration:none" href="docs/reforc/${esc(d.f)}" ${/\.pdf$/.test(d.f)?'target="_blank" rel="noopener"':"download"}>${/\.pdf$/.test(d.f)?"📕":"📄"} ${esc(d.t)}</a>`).join("")}</div>
+    </div>`).join("")}
+  </div>`;
+}
+const RF_TEXT_REPETICIO="Pla específic per a l'alumnat que repetix (2026-27): mateix nivell que el grup, amb més seguiment i més oportunitats de recuperar. Si l'alumne/a també és NESE, fes servir el pla de reforç NESE (pestanya NESE).";
+const RF_TEXT_NESE="Pla de reforç NESE amb adaptacions per tema i els dossiers de treball per a l'alumnat (2026-27). Descarrega'ls i completa'ls per a cada alumne/a: les fitxes personals no s'han de publicar.";
 function renderRefuerzoApp(){
   const app=document.getElementById("app");
   app.innerHTML=`<div class="card" style="padding:12px 16px">
@@ -71,7 +101,7 @@ function renderRefuerzoApp(){
       <div><strong style="font-size:15px">📈 Plan de Refuerzo</strong><span style="color:var(--mut);font-size:13px"> · seguimiento individualizado</span></div>
       <button class="ghost" style="border:1px solid var(--line)" onclick="irInicio()">🏠 Inicio</button>
     </div>
-  </div><div id="rfRoot"></div>`;
+  </div>${rfDocumentsHTML([2],RF_TEXT_REPETICIO)}<div id="rfRoot"></div>`;
   const root=document.getElementById("rfRoot");
   if(state.ui.rfTab==="detalle" && state.ui.rfId && (state.planesRefuerzo||[]).find(p=>p.id===state.ui.rfId)){
     renderRfDetalleHTML(root);
