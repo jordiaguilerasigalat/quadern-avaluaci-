@@ -1033,7 +1033,7 @@ export const PRUEBAS = [
     await cuadernoConGrupo(p, t.url);
     const r = await p.evaluate(() => {
       const g = state.grupos[0], cr = getCatalogo('FiQ_2ESO').ces[0].criterios.slice(0, 3).map(c => c.id);
-      const pa = { id: 'pa1', nombre: 'Proyecto de investigación', tipo: 'Prueba objetiva / examen', esExamen: true, criterios: cr.map(c => ({ critId: c, peso: 100 })) };
+      const pa = { id: 'pa1', nombre: 'Proyecto de investigación', tipo: TIPO_EXAMEN, esExamen: true, criterios: cr.map(c => ({ critId: c, peso: 100 })) };
       const act = progCrearActividadEnGrupo(g, pa, state.ui.trim); save();
       const viejo = { id: 'old', nombre: 'Examen antiguo', trimestre: state.ui.trim, esExamen: true, bloqueId: g.bloques[0].id, criterios: [], rubrica: cxRubricaDesdeCriterios(cr.map(c => ({ critId: c, peso: 100 })), g.catalogoKey) };
       g.actividades.push(viejo);
@@ -1048,7 +1048,7 @@ export const PRUEBAS = [
     t.ok(await p.locator('table.cxn-editor').count() === 1 && await p.getByText('¿Con qué tipo de rúbrica quieres corregir').count() === 0, 'se ve la tabla y ya no pregunta');
     await p.evaluate(() => cxElegirTipoInicial('old', 'puntos'));
     t.ok(await p.evaluate(() => { const g = state.grupos[0]; return !cxTipoPendiente(g, g.actividades.find(a => a.id === 'old')); }), 'elegir «por puntos» deja de preguntar');
-    await p.evaluate(() => { const g = state.grupos[0]; const pa = { id: 'pa2', nombre: 'Otro', tipo: 'Prueba objetiva / examen', esExamen: true, criterios: [{ critId: getCatalogo('FiQ_2ESO').ces[0].criterios[0].id, peso: 100 }] };
+    await p.evaluate(() => { const g = state.grupos[0]; const pa = { id: 'pa2', nombre: 'Otro', tipo: TIPO_EXAMEN, esExamen: true, criterios: [{ critId: getCatalogo('FiQ_2ESO').ces[0].criterios[0].id, peso: 100 }] };
       const a = progCrearActividadEnGrupo(g, pa, state.ui.trim); g.rubricScores = { [g.alumnos[0].id]: { [a.id]: { [a.rubrica[0].items[0].id]: 5 } } }; window._a2 = a.id; });
     t.ok(await p.evaluate(() => !cxTipoPendiente(state.grupos[0], state.grupos[0].actividades.find(a => a.id === window._a2))), 'si ya hay alumnado corregido, no pregunta');
   } },

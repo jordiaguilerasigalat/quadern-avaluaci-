@@ -141,10 +141,9 @@ function rpRenderModalNuevaHTML(){
         <label style="font-size:12.5px;color:var(--mut);font-weight:500">Cargar modelo del departamento (opcional)
           <select class="in" style="width:100%;margin-top:4px" id="rpNModelo">
             <option value="">Sin modelo — plan en blanco</option>
-            <option value="1">1.º ESO</option>
-            <option value="2">2.º ESO</option>
-            <option value="3">3.º ESO</option>
-            <option value="4">4.º ESO</option>
+            <option value="2">FiQ 2n ESO</option>
+            <option value="3">FiQ 3r ESO</option>
+            <option value="4">FiQ 4t ESO</option>
           </select>
         </label>
         <p class="sub" style="margin:-4px 0 0;font-size:11.5px">Rellena las tres evaluaciones con el dossier de actividades por defecto de ese nivel. Una vez creado el plan, podrás elegir con un clic —desde una lista emergente— las competencias específicas, criterios y competencias clave no conseguidas del curso que repite.</p>

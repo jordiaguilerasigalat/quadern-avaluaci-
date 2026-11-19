@@ -3,424 +3,1054 @@
    js/datos/modelos-nese-refuerzo.js
    ============================================================================ */
 
-const TIPOS=["Actividad diaria de clase","Actividad para casa","Exposición oral","Trabajo / proyecto","Comentario de fuentes","Actitud y hábitos de trabajo","Prueba objetiva / examen"];
+/* Tipus d'activitat de Física i Química. L'últim és sempre el d'examen
+   (TIPO_EXAMEN): el Corrector el fa servir en crear exàmens. */
+const TIPOS=["Activitat de classe","Deures (activitat per a casa)","Resolució de problemes","Pràctica de laboratori / informe","Treball / projecte / SdA","Exposició oral","Qüestionari en línia (Aules)","Quadern / llibreta","Proactivitat i hàbits de treball","Prova escrita / examen"];
+const TIPO_EXAMEN=TIPOS[TIPOS.length-1];
 const ESCALA=[{etq:"Realizada con éxito",v:10},{etq:"Realizada",v:7.5},{etq:"Incompleta",v:5},{etq:"No realizada",v:0}];
 const TRIMESTRES=["1ª evaluación","2ª evaluación","3ª evaluación"];
 const NIVELES_NESE=["1º de Primaria","2º de Primaria","3º de Primaria","4º de Primaria","5º de Primaria","6º de Primaria","1º de ESO","2º de ESO","3º de ESO","4º de ESO","Altas Capacidades"];
-/* Plantillas de seguimiento NESE (3 modelos por ciclo de Primaria), Bloque 3 del
-   currículum de Conocimiento del Medio (Decreto 106/2022, Anexo III), acordadas
-   con el usuario. Cada modelo se copia al crear un plan para un alumno/a. */
+/* Plantilles de seguiment NESE per a Física i Química (5 models, segons el
+   nivell de competència curricular real de l'alumne/a). Les files són sabers i
+   criteris ADAPTATS al nivell de referència, lligats a les CE de Física i
+   Química d'ESO (currículum valencià) perquè l'adequació es fa dins de la
+   matèria. Són una proposta de partida: el departament i l'orientador/a les
+   han de revisar. Cada model es copia en crear el pla d'un alumne/a. */
 const NESE_MODELOS={
   "1":[
-    { titulo:"Bloque 3.1 — Retos del mundo actual (transversal)", filas:[
-      { saber:"Estrategias para la emisión de opiniones sencillas", criterio:"Expresar una opinión sencilla sobre una situación cercana, con apoyo de una pauta", ce:"Transversal", cc:"CCL, CPSAA" },
-      { saber:"Conjeturas y planificación de tareas sencillas", criterio:"Anticipar, con ayuda, los pasos de una tarea sencilla antes de realizarla", ce:"Transversal", cc:"CPSAA, CE" },
-      { saber:"Noción de desigualdad", criterio:"Reconocer una situación sencilla de desigualdad en su entorno cercano y nombrarla", ce:"Transversal", cc:"CC, CPSAA" },
+    { titulo:"Bloc 1 — Observar i preguntar (metodologia de la ciència)", filas:[
+      { saber:"Observació de l'entorn amb els sentits", criterio:"Descriure, amb ajuda, una característica d'un objecte (color, forma, mida, tacte)", ce:"CE1", cc:"CCL, STEM" },
+      { saber:"Preguntes sobre fenòmens quotidians", criterio:"Formular, amb una pauta, una pregunta senzilla sobre allò que observa", ce:"CE3", cc:"CCL, CPSAA" },
+      { saber:"Normes bàsiques de seguretat a l'aula i al laboratori", criterio:"Seguir una norma de seguretat senzilla quan manipula materials, amb recordatori", ce:"CE1", cc:"STEM, CPSAA" },
     ]},
-    { titulo:"Bloque 3.2 — Sociedades en el tiempo (CE6, CE8)", filas:[
-      { saber:"Uso del tiempo y de las formas convencionales para medirlo", criterio:"Utilizar, con apoyo, las unidades de tiempo básicas (día, semana, mes, año) para ordenar hechos cercanos", ce:"CE6", cc:"CCL, CMCT" },
-      { saber:"Nociones básicas de tiempo y unidades de medida", criterio:"Ordenar dos o tres hechos de su propia vida según el orden en que sucedieron", ce:"CE6", cc:"CCL, CMCT" },
-      { saber:"Nociones de causa, consecuencia y empatía", criterio:"Explicar, de forma sencilla, por qué ha ocurrido algo y cómo se siente alguien afectado por ello", ce:"CE6", cc:"CPSAA, CC" },
-      { saber:"Identificación del patrimonio material como elemento del municipio", criterio:"Reconocer y nombrar un elemento destacado del patrimonio de su municipio", ce:"CE8", cc:"CCEC" },
-      { saber:"Propuestas de cuidado del patrimonio a pequeña escala", criterio:"Proponer, con ayuda, una acción sencilla de cuidado de un elemento patrimonial cercano", ce:"CE8", cc:"CC, CCEC" },
-      { saber:"Biografía de personajes relevantes desde una perspectiva coeducativa", criterio:"Conocer y explicar, de forma sencilla, algún dato de una persona relevante de la historia, con ejemplos femeninos y masculinos", ce:"CE6", cc:"CCL, CCEC" },
+    { titulo:"Bloc 2 — La matèria que ens envolta", filas:[
+      { saber:"Materials de l'entorn: fusta, metall, plàstic, vidre", criterio:"Classificar, amb suport visual, objectes quotidians segons el material de què estan fets", ce:"CE9", cc:"STEM" },
+      { saber:"Estats de l'aigua: gel, aigua líquida, vapor", criterio:"Reconéixer en imatges l'aigua en estat sòlid, líquid i gasós", ce:"CE5", cc:"STEM" },
+      { saber:"Mesura amb unitats no convencionals (pams, passes, gots)", criterio:"Comparar, amb ajuda, quin de dos objectes és més llarg o més pesat", ce:"CE7", cc:"STEM" },
     ]},
-    { titulo:"Bloque 3.3 — Alfabetización cívica (CE7)", filas:[
-      { saber:"La familia y la relación entre sus miembros: responsabilidades domésticas", criterio:"Identificar y asumir una responsabilidad doméstica sencilla y explicar para qué sirve", ce:"CE7", cc:"CPSAA, CC" },
-      { saber:"Identificación y uso de los equipamientos básicos del entorno social (educativos, sanitarios, culturales)", criterio:"Reconocer y nombrar los equipamientos básicos de su entorno cercano y para qué se usan", ce:"CE7", cc:"CC" },
-      { saber:"Seguridad vial; la ciudad como espacio de convivencia; normas de circulación básicas", criterio:"Reconocer y respetar una norma básica de seguridad vial o de convivencia en la calle", ce:"CE7", cc:"CC" },
-    ]},
-    { titulo:"Bloque 3.4 — Conciencia ecosocial (CE5)", filas:[
-      { saber:"Uso de planos y mapas sencillos; la Tierra en planos y mapas sencillos", criterio:"Localizar un elemento conocido (su casa, el colegio) en un plano muy sencillo, con ayuda", ce:"CE5", cc:"CMCT" },
-      { saber:"El cambio estacional", criterio:"Reconocer y nombrar la estación del año en curso y alguna característica sencilla", ce:"CE5", cc:"CMCT" },
-      { saber:"El tiempo y el clima: características y diferencias", criterio:"Diferenciar, con ejemplos, si hace sol, lluvia o viento en un momento dado", ce:"CE5", cc:"CMCT" },
-      { saber:"La Tierra en su concepto geológico y geográfico", criterio:"Reconocer que vivimos en un planeta llamado Tierra e identificar tierra y agua en una imagen sencilla", ce:"CE5", cc:"CMCT" },
-      { saber:"El uso responsable del agua como recurso escaso", criterio:"Reconocer y practicar, con recordatorio, un hábito sencillo de ahorro de agua", ce:"CE5", cc:"CC, CPSAA" },
+    { titulo:"Bloc 3 — Energia i forces en la vida diària", filas:[
+      { saber:"Empentes i estirades: els objectes es mouen o es deformen", criterio:"Mostrar, amb un objecte, què passa quan l'empenta o l'estira", ce:"CE11", cc:"STEM" },
+      { saber:"Fonts de llum i de calor de casa i de l'escola", criterio:"Nomenar una font de llum i una de calor del seu entorn", ce:"CE8", cc:"STEM, CCL" },
+      { saber:"Ús responsable de l'aigua i de l'energia", criterio:"Proposar, amb ajuda, un gest senzill per a estalviar aigua o llum", ce:"CE8", cc:"CC, STEM" },
     ]},
   ],
   "2":[
-    { titulo:"Bloque 3.1 — Retos del mundo actual (transversal)", filas:[
-      { saber:"Estrategias para la emisión de opiniones sencillas a partir de una información dada", criterio:"Emitir una opinión razonada, sencilla, a partir de una información que se le facilita", ce:"Transversal", cc:"CCL, CPSAA" },
-      { saber:"Aceptación de otros puntos de vista, asunción de diversos roles, aportación de ideas propias constructivas", criterio:"Participar en un trabajo en equipo aceptando otros puntos de vista y aportando ideas propias", ce:"Transversal", cc:"CPSAA, CC" },
-      { saber:"Noción de desigualdad social y conflicto social", criterio:"Identificar una situación de desigualdad o conflicto social sencilla y describir sus consecuencias", ce:"Transversal", cc:"CC" },
-      { saber:"Noción de diversidad cultural", criterio:"Reconocer y valorar una manifestación de diversidad cultural en su entorno", ce:"Transversal", cc:"CC, CCEC" },
+    { titulo:"Bloc 1 — Experimentar i comunicar (metodologia de la ciència)", filas:[
+      { saber:"Passos d'un experiment senzill: pregunta, prova, resultat", criterio:"Seguir, amb una fitxa guiada, els passos d'un experiment senzill i dir què ha passat", ce:"CE1", cc:"STEM, CPSAA" },
+      { saber:"Registre de dades en taules senzilles", criterio:"Anotar dades en una taula de dues columnes amb un model", ce:"CE7", cc:"STEM, CD" },
+      { saber:"Vocabulari científic bàsic", criterio:"Utilitzar correctament tres o quatre paraules científiques treballades en una explicació oral breu", ce:"CE6", cc:"CCL" },
     ]},
-    { titulo:"Bloque 3.2 — Sociedades en el tiempo (CE6, CE8)", filas:[
-      { saber:"Cronología histórica: periodos y grandes edades de la Historia; unidades de medida (década, siglo)", criterio:"6.1. Reconocer y utilizar las unidades de tiempo, década y siglo, para situar y ordenar cronológicamente hechos relevantes del pasado", ce:"CE6", cc:"CCL, CMCT" },
-      { saber:"Ordenación cronológica de hechos sociales y personas relevantes de la historia reciente, con perspectiva de género", criterio:"6.2. Ordenar cronológicamente hechos sociales y personas relevantes de la historia reciente utilizando herramientas básicas de medida de tiempo e incorporando la perspectiva de género", ce:"CE6", cc:"CCL, CC, CCEC" },
-      { saber:"Hechos especialmente relevantes de la historia de la Comunidad Valenciana", criterio:"6.3. Ordenar temporal y espacialmente algunos hechos especialmente relevantes de la historia de la Comunidad Valenciana", ce:"CE6", cc:"CCL, CMCT" },
-      { saber:"Reconocimiento de las características de las sociedades prehistóricas y de la Antigüedad", criterio:"6.4. Describir algunas formas de vida representativas de los grandes periodos históricos hasta la Edad Antigua", ce:"CE6", cc:"CCL, CCEC" },
-      { saber:"Conocimiento de la cultura griega y la romanización", criterio:"6.5. Explicar y comparar las características principales de los diferentes periodos históricos hasta la Edad Antigua", ce:"CE6", cc:"CCL, CCEC" },
-      { saber:"Reconocimiento de las mujeres como sujetos individuales o colectivos de la historia y su aportación al patrimonio", criterio:"8.1. Identificar y valorar algunos elementos destacados del patrimonio natural, histórico y cultural de la Comunidad Valenciana y describir sus características más destacadas", ce:"CE8", cc:"CC, CCEC" },
-      { saber:"Reconocimiento de otros tipos de patrimonio (inmaterial) y localización de expresiones culturales e históricas próximas", criterio:"8.2. Desarrollar conductas de respeto, cuidado y mantenimiento del patrimonio natural, histórico y cultural del municipio y de la Comunidad Valenciana y proponer acciones para su conservación y difusión", ce:"CE8", cc:"CC, CCEC" },
-      { saber:"Nociones de causa, consecuencia, empatía y simultaneidad e interpretación histórica", criterio:"Establecer relaciones sencillas de causa-consecuencia entre dos hechos históricos próximos", ce:"CE6", cc:"CPSAA, CC" },
+    { titulo:"Bloc 2 — Propietats i canvis de la matèria", filas:[
+      { saber:"Propietats observables: duresa, flexibilitat, transparència, flotabilitat", criterio:"Comprovar, amb material manipulable, si un objecte sura o s'enfonsa i anotar-ho", ce:"CE9", cc:"STEM" },
+      { saber:"Canvis d'estat: fusió, solidificació i evaporació", criterio:"Explicar, amb una seqüència d'imatges, què li passa al gel quan s'escalfa", ce:"CE5", cc:"STEM, CCL" },
+      { saber:"Mescles senzilles: aigua i sal, aigua i arena", criterio:"Separar, amb ajuda, una mescla d'aigua i arena filtrant-la", ce:"CE9", cc:"STEM" },
+      { saber:"Mesura amb regle, balança i got graduat", criterio:"Mesurar la longitud d'un objecte amb un regle i expressar-la en centímetres", ce:"CE7", cc:"STEM" },
     ]},
-    { titulo:"Bloque 3.3 — Alfabetización cívica (CE7)", filas:[
-      { saber:"Economía doméstica: dinero, gastos e ingresos, ahorro, cuenta bancaria, tarjeta de crédito", criterio:"Aplicar nociones básicas de economía doméstica a un supuesto sencillo (gastos, ingresos, ahorro)", ce:"CE7", cc:"CMCT, CE" },
-      { saber:"Reconocimiento de la organización social, política y territorial: las Comunidades Autónomas y España", criterio:"7.2. Distinguir las características y funcionamiento de la estructura política y territorial de su municipio, la provincia y la Comunidad Valenciana", ce:"CE7", cc:"CC" },
-      { saber:"Identificación de los órganos de gobierno del municipio, la provincia y la Comunitat Valenciana", criterio:"7.1. Identificar los principales órganos de gobierno del municipio, de la provincia y de la Comunitat Valenciana e identificar su función y responsabilidad en la mejora de la vida de las personas y de la convivencia social", ce:"CE7", cc:"CC, CCL" },
-      { saber:"Características del sector privado y del sector público; organización de la Administración Pública a través de la Generalitat", criterio:"7.3. Conocer las funciones de la administración del municipio, destacando la importancia y el valor de las mismas para la ciudadanía y la participación ciudadana", ce:"CE7", cc:"CC" },
-      { saber:"Medio urbano y rural de la Comunidad Valenciana", criterio:"Diferenciar, con ejemplos propios, el medio urbano y el medio rural", ce:"CE7", cc:"CMCT, CC" },
-      { saber:"Distribución de la población: natalidad y mortalidad, movimientos migratorios y riesgos naturales", criterio:"Identificar y describir algunos factores demográficos relevantes de la comunidad de la que forma parte (natalidad, mortalidad, movimientos migratorios)", ce:"CE7", cc:"CMCT, CC" },
-    ]},
-    { titulo:"Bloque 3.4 — Conciencia ecosocial (CE5)", filas:[
-      { saber:"Representación cartográfica", criterio:"Utilizar un plano o mapa sencillo para localizar y describir un elemento del entorno", ce:"CE5", cc:"CMCT" },
-      { saber:"Factores climáticos", criterio:"5.1. Relacionar las acciones que realizan las personas en la vida cotidiana y el medio en el que viven, teniendo en cuenta los factores naturales y sociales", ce:"CE5", cc:"CMCT, CC" },
-      { saber:"El cambio climático: toma de conciencia del impacto en el entorno", criterio:"5.2. Argumentar las ventajas y los inconvenientes de una actuación humana relevante y significativa con un fuerte impacto en el medio ambiente y el paisaje próximo", ce:"CE5", cc:"CC, CE" },
-      { saber:"El Sistema Solar", criterio:"Describir, de forma sencilla, la posición de la Tierra en el Sistema Solar", ce:"CE5", cc:"CMCT" },
-      { saber:"Elementos básicos del relieve; elementos del relieve a nivel local y nacional", criterio:"Identificar y nombrar los elementos básicos del relieve de su entorno próximo", ce:"CE5", cc:"CMCT" },
-      { saber:"Conservación y cuidado de los elementos paisajísticos del entorno", criterio:"5.3. Participar activamente en la elaboración y formulación de propuestas de actuación orientadas a la solución de problemas ecológicos presentes en el entorno próximo", ce:"CE5", cc:"CC, CE" },
-      { saber:"El uso responsable del agua como recurso escaso y su conservación", criterio:"5.5. Identificar las acciones propias realizadas diariamente en beneficio del consumo responsable de materiales escolares, alimentos, agua y electricidad", ce:"CE5", cc:"CC, CPSAA" },
+    { titulo:"Bloc 3 — Forces, energia i electricitat", filas:[
+      { saber:"Forces de contacte i a distància: imants", criterio:"Comprovar quins objectes atrau un imant i classificar-los", ce:"CE11", cc:"STEM" },
+      { saber:"Formes d'energia en aparells quotidians", criterio:"Relacionar, amb suport visual, un aparell de casa amb l'energia que usa", ce:"CE8", cc:"STEM" },
+      { saber:"Circuit elèctric senzill: pila, cable i bombeta", criterio:"Muntar, amb ajuda, un circuit amb una pila i una bombeta i encendre-la", ce:"CE1", cc:"STEM, CE" },
     ]},
   ],
   "3":[
-    { titulo:"Bloque 3.1 — Retos del mundo actual (transversal)", filas:[
-      { saber:"Estrategias para la emisión de opiniones y juicios de valor a partir de diferentes tipos de fuentes", criterio:"Emitir un juicio de valor razonado a partir de dos o más fuentes de información distintas", ce:"Transversal", cc:"CCL, CPSAA" },
-      { saber:"Uso de fuentes diversas (primarias y secundarias): textos, fotografías, mapas, obras de arte, edificios históricos, documentos audiovisuales", criterio:"Seleccionar y contrastar información procedente de al menos dos tipos de fuentes distintas sobre un mismo hecho", ce:"Transversal", cc:"CCL, CD" },
-      { saber:"Adquisición de habilidades para la expresión de conclusiones a través de textos expositivos y elementos gráficos", criterio:"Presentar una conclusión sencilla combinando texto y un elemento gráfico (esquema, línea del tiempo, mapa)", ce:"Transversal", cc:"CCL, CCEC" },
-      { saber:"Noción de derechos y libertades; noción de obligaciones", criterio:"Explicar, con ejemplos, la relación entre un derecho y una obligación correspondiente", ce:"Transversal", cc:"CC" },
+    { titulo:"Bloc 1 — El treball científic", filas:[
+      { saber:"Hipòtesi i comprovació experimental", criterio:"Fer una predicció abans d'un experiment i comprovar, amb ajuda, si es complix", ce:"CE1", cc:"STEM, CPSAA" },
+      { saber:"Representació de dades en gràfics de barres", criterio:"Construir un gràfic de barres a partir d'una taula senzilla de dades", ce:"CE7", cc:"STEM, CD" },
+      { saber:"Cerca guiada d'informació científica fiable", criterio:"Trobar, amb preguntes guia, una dada concreta en un text o vídeo científic adaptat", ce:"CE3", cc:"CCL, CD" },
+      { saber:"Treball en equip en el laboratori", criterio:"Complir el rol assignat dins d'un equip durant una pràctica", ce:"CE2", cc:"CPSAA, CC" },
     ]},
-    { titulo:"Bloque 3.2 — Sociedades en el tiempo (CE6, CE8)", filas:[
-      { saber:"Unidades de tiempo: década, lustro, siglo y milenio", criterio:"6.1. Reconocer y utilizar las unidades de tiempo, década, lustro, siglo y milenio, para situar y ordenar cronológicamente hechos relevantes del pasado", ce:"CE6", cc:"CCL, CMCT" },
-      { saber:"Hechos sociales y personas relevantes de la historia de la Comunidad Valenciana y de España, con perspectiva de género", criterio:"6.2. Situar espacial y temporalmente los hechos sociales y personas relevantes de la historia de la Comunidad Valenciana y de España mostrando su interrelación e incorporando la perspectiva de género", ce:"CE6", cc:"CCL, CC, CCEC" },
-      { saber:"Sociedades y culturas de la Época Medieval y Moderna", criterio:"6.3. Situar y ordenar cronológicamente los cambios de mayor relevancia en la humanidad, desde la Edad Media hasta la actualidad", ce:"CE6", cc:"CCL, CMCT" },
-      { saber:"La sociedad del antiguo régimen y la revolución liberal; cambios sociales y económicos en España", criterio:"6.4. Describir la evolución de algunas formas de vida representativas desde la Edad Media hasta la actualidad", ce:"CE6", cc:"CCL, CCEC" },
-      { saber:"Aproximación a la historia reciente (Guerra Civil, dictadura y transición) y a la memoria democrática", criterio:"6.5. Identificar y analizar relaciones de causalidad, simultaneidad y sucesión entre elementos destacados del medio social y cultural desde la Edad Media hasta la actualidad", ce:"CE6", cc:"CPSAA, CC" },
-      { saber:"Tipología, papel social y cultural del patrimonio; elementos patrimoniales aplicando nociones temporales básicas", criterio:"8.1. Identificar y valorar algunos elementos destacados del patrimonio natural, histórico y cultural de España y describir sus características más destacadas, incluyendo su localización geográfica y su origen histórico", ce:"CE8", cc:"CC, CCEC" },
-      { saber:"Emisión de juicios de valor sobre el origen del patrimonio y su relación con los acontecimientos históricos", criterio:"8.2. Desarrollar conductas de respeto, cuidado y mantenimiento del patrimonio natural, histórico y cultural de España y proponer acciones para su conservación y difusión", ce:"CE8", cc:"CC, CCEC" },
-      { saber:"Noción de cambio, continuidad, simultaneidad, duración y evidencia", criterio:"Justificar si dos hechos históricos son simultáneos o sucesivos, aportando evidencias", ce:"CE6", cc:"CPSAA" },
+    { titulo:"Bloc 2 — La matèria i els seus canvis", filas:[
+      { saber:"Massa i volum; unitats bàsiques (g, kg, mL, L)", criterio:"Mesurar la massa amb una balança i el volum amb un got graduat, indicant la unitat", ce:"CE7", cc:"STEM" },
+      { saber:"Substàncies pures i mescles; tècniques de separació", criterio:"Triar, d'entre dues opcions, la tècnica adequada per a separar una mescla senzilla", ce:"CE9", cc:"STEM" },
+      { saber:"Canvis físics i canvis químics quotidians (combustió, oxidació)", criterio:"Diferenciar, amb exemples de la vida diària, un canvi físic d'un canvi químic", ce:"CE10", cc:"STEM, CCL" },
     ]},
-    { titulo:"Bloque 3.3 — Alfabetización cívica (CE7)", filas:[
-      { saber:"La Constitución Española; identificación de la organización social de España", criterio:"Explicar, de forma sencilla, qué es la Constitución Española y su papel como norma fundamental", ce:"CE7", cc:"CC, CCL" },
-      { saber:"Instituciones de gobierno municipales, autonómicas y estatales; aproximación a la Unión Europea", criterio:"7.1. Identificar y describir los elementos, estructura y funciones de los principales órganos de gobierno del municipio, la provincia, la Comunidad Valenciana, España y la Unión Europea", ce:"CE7", cc:"CC, CCL" },
-      { saber:"Reconocimiento de la organización política y territorial de España", criterio:"7.2. Distinguir las características y funcionamiento de la estructura política y territorial del municipio, la Comunidad Valenciana, España y la Unión Europea", ce:"CE7", cc:"CC" },
-      { saber:"La monarquía parlamentaria; diferenciación entre regímenes democráticos y autoritarios", criterio:"7.3. Distinguir las funciones de la administración del municipio y de la Comunidad Valenciana, destacando la importancia y el valor de las mismas para la ciudadanía, la participación ciudadana y el desarrollo de los principios del funcionamiento democrático", ce:"CE7", cc:"CC" },
-      { saber:"Movimientos migratorios en la Comunidad Valenciana, España y Europa", criterio:"Explicar una causa y una consecuencia de un movimiento migratorio estudiado", ce:"CE7", cc:"CC, CPSAA" },
-      { saber:"Identificación de las características demográficas de países desarrollados y subdesarrollados", criterio:"Comparar una característica demográfica entre dos países con distinto nivel de desarrollo", ce:"CE7", cc:"CMCT, CC" },
-      { saber:"Reconocimiento y respeto por la diversidad cultural y lingüística de España", criterio:"Reconocer y valorar la diversidad lingüística de España, citando alguna de sus lenguas oficiales", ce:"CE7", cc:"CCL, CCEC" },
-    ]},
-    { titulo:"Bloque 3.4 — Conciencia ecosocial (CE5)", filas:[
-      { saber:"Representación cartográfica (mayor complejidad)", criterio:"Interpretar un mapa temático sencillo (físico, político o climático)", ce:"CE5", cc:"CMCT" },
-      { saber:"Factores climáticos: distribución de los climas", criterio:"5.1. Analizar y explicar las relaciones que se producen en un ecosistema o un paisaje significativo para el alumnado teniendo en cuenta los factores naturales y sociales", ce:"CE5", cc:"CMCT, CC" },
-      { saber:"El cambio climático: acciones de afrontamiento", criterio:"5.2. Analizar críticamente el impacto que supone la acción humana en el medio tanto a nivel local como global", ce:"CE5", cc:"CC, CE" },
-      { saber:"El Universo", criterio:"Describir, de forma sencilla, los principales componentes del Universo", ce:"CE5", cc:"CMCT" },
-      { saber:"Elementos del relieve a nivel europeo; redes de transporte y comunicaciones", criterio:"Localizar en un mapa un elemento del relieve o una vía de comunicación a nivel europeo", ce:"CE5", cc:"CMCT" },
-      { saber:"Reconocimiento de los paisajes agropecuarios y turísticos; turismo sostenible", criterio:"5.3. Participar activamente en la elaboración y formulación de propuestas de actuación razonadas, viables y sostenibles orientadas a la conservación y cuidado del medio ambiente y el paisaje", ce:"CE5", cc:"CC, CE" },
-      { saber:"Identificación y justificación de acciones de consumo responsable de bienes y servicios", criterio:"5.5. Identificar y justificar las acciones propias realizadas habitualmente en el entorno próximo en beneficio del consumo responsable de bienes y servicios", ce:"CE5", cc:"CC, CPSAA" },
+    { titulo:"Bloc 3 — Energia, forces i moviment", filas:[
+      { saber:"Fonts d'energia renovables i no renovables", criterio:"Classificar, amb suport visual, fonts d'energia en renovables i no renovables", ce:"CE8", cc:"STEM, CC" },
+      { saber:"La força i els seus efectes: canvi de moviment i deformació", criterio:"Explicar, amb un exemple, que una força pot canviar el moviment o la forma d'un cos", ce:"CE11", cc:"STEM, CCL" },
+      { saber:"Llum i so: propagació i propietats bàsiques", criterio:"Reconéixer, en una situació quotidiana, la reflexió de la llum o l'eco del so", ce:"CE5", cc:"STEM" },
     ]},
   ],
   "4":[
-    { titulo:"Bloque 1 — Tiempo histórico y fuentes: Prehistoria y primeras civilizaciones (CE1, CE2, CE3)", filas:[
-      { saber:"Nociones de Prehistoria e Historia: qué son las fuentes históricas y arqueológicas", criterio:"Diferenciar, con ejemplos, la Prehistoria de la Historia a partir de la existencia o no de escritura", ce:"CE1", cc:"CCL, CC" },
-      { saber:"Etapas de la Prehistoria: Paleolítico y Neolítico", criterio:"Reconocer y ordenar, con apoyo de una línea del tiempo, las etapas básicas de la Prehistoria y una característica de cada una", ce:"CE1", cc:"CCL, CC" },
-      { saber:"Las primeras civilizaciones fluviales: Mesopotamia y Egipto", criterio:"Identificar, con ayuda de un mapa, el río y el territorio donde se desarrolló una civilización fluvial estudiada", ce:"CE3", cc:"CCL, CC" },
-      { saber:"La civilización griega: la polis y la vida cotidiana", criterio:"Describir, de forma sencilla, una característica de la organización social o política de la antigua Grecia", ce:"CE1", cc:"CCL, CCEC" },
-      { saber:"Búsqueda guiada de información en fuentes sencillas (textos adaptados, imágenes, mapas)", criterio:"Extraer, con apoyo de preguntas guía, un dato relevante de una fuente histórica sencilla", ce:"CE2", cc:"CCL, CD" },
+    { titulo:"Bloc 1 — Metodologia de la ciència (CE1, CE2, CE6, CE7)", filas:[
+      { saber:"Magnituds i unitats del Sistema Internacional", criterio:"Identificar la magnitud i la unitat del SI de longitud, massa, temps i volum", ce:"CE7", cc:"STEM" },
+      { saber:"Canvis d'unitats senzills (m↔cm, kg↔g, L↔mL)", criterio:"Fer, amb una taula de suport, canvis d'unitats senzills", ce:"CE7", cc:"STEM" },
+      { saber:"Material i normes de seguretat del laboratori", criterio:"Reconéixer el material bàsic de laboratori i una norma de seguretat associada", ce:"CE1", cc:"STEM, CPSAA" },
+      { saber:"Resolució de problemes guiada", criterio:"Resoldre un problema senzill seguint una pauta de passos (dades, fórmula, resultat amb unitat)", ce:"CE2", cc:"STEM, CPSAA" },
     ]},
-    { titulo:"Bloque 2 — El espacio geográfico: el planeta Tierra, el relieve y el clima (CE5)", filas:[
-      { saber:"El planeta Tierra: los continentes y los océanos en el mapa", criterio:"Reconocer, sobre un planisferio, los continentes y océanos", ce:"CE5", cc:"STEM" },
-      { saber:"El relieve terrestre: formas básicas (montaña, llanura, meseta)", criterio:"Identificar, con apoyo visual, una forma básica de relieve en una imagen o mapa", ce:"CE5", cc:"STEM" },
-      { saber:"El clima: elementos y factores básicos (temperatura, precipitaciones)", criterio:"Diferenciar, con ejemplos, dos tipos de clima estudiados a partir de su temperatura y sus precipitaciones", ce:"CE5", cc:"STEM, CC" },
-      { saber:"Los paisajes naturales y la acción humana sobre ellos", criterio:"Reconocer un elemento natural y otro humanizado en un paisaje conocido", ce:"CE5", cc:"STEM, CC" },
-      { saber:"El uso responsable de los recursos naturales", criterio:"Proponer, con ayuda, una acción sencilla de cuidado del medio ambiente", ce:"CE5", cc:"CC, CPSAA" },
+    { titulo:"Bloc 2 — La matèria (CE5, CE9)", filas:[
+      { saber:"Propietats de la matèria: massa, volum i densitat (qualitativa)", criterio:"Explicar, amb un experiment de flotació, que materials diferents tenen densitats diferents", ce:"CE9", cc:"STEM" },
+      { saber:"Estats d'agregació i canvis d'estat", criterio:"Nomenar els canvis d'estat i associar-los a escalfar o refredar", ce:"CE5", cc:"STEM, CCL" },
+      { saber:"Substàncies pures, mescles i tècniques de separació", criterio:"Proposar, amb ajuda, una tècnica per a separar una mescla quotidiana", ce:"CE9", cc:"STEM" },
     ]},
-    { titulo:"Bloque 3 — Sociedad, identidad y convivencia (CE4, CE6, CE7, CE8)", filas:[
-      { saber:"La organización social en las primeras civilizaciones y en Grecia", criterio:"Reconocer un grupo social de una civilización estudiada y explicar, de forma sencilla, su función", ce:"CE6", cc:"CC" },
-      { saber:"Identidad personal y grupal: semejanzas y diferencias con otras culturas", criterio:"Identificar una semejanza y una diferencia entre su propia forma de vida y la de una civilización estudiada", ce:"CE4", cc:"CC, CCEC" },
-      { saber:"Convivencia y trabajo cooperativo en el aula", criterio:"Participar en una tarea de grupo asumiendo un papel sencillo y respetando el turno de palabra", ce:"CE8", cc:"CPSAA, CC" },
-      { saber:"Problemas sociales cercanos y actitud crítica", criterio:"Reconocer una situación sencilla de desigualdad o injusticia y expresar una opinión respetuosa al respecto", ce:"CE7", cc:"CC, CPSAA" },
-    ]},
-    { titulo:"Bloque 4 — Patrimonio cultural y natural (CE9)", filas:[
-      { saber:"El patrimonio arqueológico e histórico: monumentos y restos", criterio:"Reconocer, mediante imágenes, un monumento o resto arqueológico de una civilización estudiada", ce:"CE9", cc:"CCEC" },
-      { saber:"El patrimonio natural y cultural cercano", criterio:"Nombrar un elemento del patrimonio natural o cultural de su localidad o comarca", ce:"CE9", cc:"CCEC, CC" },
-      { saber:"Actitudes de respeto y cuidado del patrimonio", criterio:"Proponer, con ayuda, una acción sencilla de cuidado de un bien patrimonial cercano", ce:"CE9", cc:"CC, CCEC" },
+    { titulo:"Bloc 3 — Energia i interaccions (CE8, CE11)", filas:[
+      { saber:"L'energia: formes, transformacions i fonts", criterio:"Identificar la transformació d'energia en un aparell quotidià", ce:"CE8", cc:"STEM" },
+      { saber:"Les forces i els seus efectes", criterio:"Representar una força amb una fletxa i dir quin efecte produïx", ce:"CE11", cc:"STEM" },
+      { saber:"Moviment: posició, temps i velocitat", criterio:"Calcular, amb la fórmula donada, la velocitat d'un mòbil en una situació senzilla", ce:"CE11", cc:"STEM" },
     ]},
   ],
   "5":[
-    { titulo:"Bloque 1 — Tiempo histórico y fuentes: Roma y la Edad Media (CE1, CE2, CE3)", filas:[
-      { saber:"La Antigua Roma: expansión y romanización", criterio:"Reconocer, sobre un mapa, el territorio ocupado por el Imperio romano en su época de mayor extensión", ce:"CE1", cc:"CCL, CC" },
-      { saber:"El legado romano en la vida actual", criterio:"Identificar un elemento de origen romano presente en la actualidad (lengua, derecho, obra pública)", ce:"CE3", cc:"CCL, CC" },
-      { saber:"Al-Ándalus y los reinos cristianos peninsulares", criterio:"Diferenciar, con apoyo de un mapa, el territorio de Al-Ándalus y el de los reinos cristianos en un momento estudiado", ce:"CE1", cc:"CCL, CC" },
-      { saber:"La sociedad feudal: reyes, nobleza, clero y campesinado", criterio:"Reconocer y nombrar un grupo social de la sociedad feudal y una característica básica de su forma de vida", ce:"CE3", cc:"CCL, CC" },
-      { saber:"Búsqueda guiada de información en fuentes históricas sencillas (textos, mapas, imágenes de arte)", criterio:"Extraer, con apoyo de preguntas guía, un dato relevante de una fuente histórica o artística sencilla", ce:"CE2", cc:"CCL, CD" },
+    { titulo:"Bloc 1 — Metodologia de la ciència (CE1, CE2, CE3, CE6, CE7)", filas:[
+      { saber:"Treball experimental guiat i informe de pràctiques", criterio:"Completar un informe de pràctiques senzill amb objectiu, material, procediment i conclusió", ce:"CE1", cc:"STEM, CCL" },
+      { saber:"Taules de dades i gràfiques lineals", criterio:"Construir una gràfica a partir d'una taula de dades amb els eixos ja indicats", ce:"CE7", cc:"STEM, CD" },
+      { saber:"Fonts d'informació fiables i pseudociència", criterio:"Distingir, amb ajuda, una afirmació científica d'una que no ho és en un exemple quotidià", ce:"CE3", cc:"CCL, CD, CC" },
+      { saber:"Llenguatge científic", criterio:"Explicar oralment un fenomen treballat utilitzant el vocabulari bàsic de la unitat", ce:"CE6", cc:"CCL" },
     ]},
-    { titulo:"Bloque 2 — El espacio geográfico: población, ciudad y actividades económicas (CE5)", filas:[
-      { saber:"La población: conceptos básicos (natalidad, mortalidad, migración)", criterio:"Explicar, de forma sencilla, qué es un movimiento migratorio y citar un motivo por el que se produce", ce:"CE5", cc:"STEM, CC" },
-      { saber:"La ciudad y el mundo rural: diferencias básicas", criterio:"Reconocer, con apoyo visual, una diferencia entre un paisaje urbano y uno rural", ce:"CE5", cc:"STEM, CC" },
-      { saber:"Los sectores de actividad económica (primario, secundario, terciario)", criterio:"Clasificar, con ejemplos sencillos y con ayuda, una actividad económica en su sector correspondiente", ce:"CE5", cc:"STEM, CE" },
-      { saber:"El uso sostenible de los recursos en el medio urbano y rural", criterio:"Proponer, con ayuda, una acción sencilla de consumo responsable en su vida cotidiana", ce:"CE5", cc:"CC, CPSAA" },
+    { titulo:"Bloc 2 — La matèria i els canvis químics (CE5, CE9, CE10)", filas:[
+      { saber:"Model cineticocorpuscular i estats de la matèria", criterio:"Representar amb dibuixos de partícules els tres estats de la matèria", ce:"CE5", cc:"STEM" },
+      { saber:"Dissolucions i concentració", criterio:"Preparar, amb un guió, una dissolució senzilla i indicar el solut i el dissolvent", ce:"CE9", cc:"STEM" },
+      { saber:"Reaccions químiques quotidianes i conservació de la massa", criterio:"Identificar reactius i productes en una reacció quotidiana (combustió, oxidació)", ce:"CE10", cc:"STEM, CCL" },
     ]},
-    { titulo:"Bloque 3 — Sociedad, identidad y convivencia (CE4, CE6, CE7, CE8)", filas:[
-      { saber:"Desigualdades sociales en la Edad Media y en la actualidad", criterio:"Comparar, con un ejemplo sencillo, una desigualdad social de la Edad Media con otra actual", ce:"CE6", cc:"CC" },
-      { saber:"La diversidad cultural y religiosa en la Península Ibérica medieval", criterio:"Reconocer y respetar la existencia de distintas culturas y religiones conviviendo en un mismo territorio (Al-Ándalus)", ce:"CE4", cc:"CC, CCEC" },
-      { saber:"Convivencia y trabajo cooperativo en el aula", criterio:"Participar en una tarea de grupo asumiendo un papel sencillo y respetando las aportaciones de los demás", ce:"CE8", cc:"CPSAA, CC" },
-      { saber:"Problemas sociales actuales y valores democráticos", criterio:"Reconocer una situación sencilla de desigualdad o conflicto social y proponer, con ayuda, una actitud de respeto ante ella", ce:"CE7", cc:"CC, CPSAA" },
-    ]},
-    { titulo:"Bloque 4 — Patrimonio cultural y natural (CE9)", filas:[
-      { saber:"El patrimonio artístico medieval: prerrománico, románico y mudéjar", criterio:"Reconocer, mediante imágenes, un edificio o elemento artístico de la época medieval estudiada", ce:"CE9", cc:"CCEC" },
-      { saber:"El patrimonio histórico y cultural cercano de época medieval", criterio:"Nombrar un elemento del patrimonio medieval de su localidad o comarca (castillo, muralla, iglesia)", ce:"CE9", cc:"CCEC, CC" },
-      { saber:"Actitudes de respeto y cuidado del patrimonio", criterio:"Proponer, con ayuda, una acción sencilla de cuidado o difusión de un bien patrimonial cercano", ce:"CE9", cc:"CC, CCEC" },
+    { titulo:"Bloc 3 — Energia, forces i moviment (CE8, CE11)", filas:[
+      { saber:"Calor i temperatura", criterio:"Diferenciar calor i temperatura amb un exemple quotidià", ce:"CE8", cc:"STEM" },
+      { saber:"Moviment rectilini uniforme i gràfiques posició-temps", criterio:"Interpretar una gràfica posició-temps senzilla i dir si el mòbil està parat o es mou", ce:"CE11", cc:"STEM" },
+      { saber:"Forces, pes i deformacions", criterio:"Calcular el pes d'un cos a partir de la massa amb la fórmula donada", ce:"CE11", cc:"STEM" },
+      { saber:"Electricitat i circuits", criterio:"Muntar i dibuixar un circuit en sèrie senzill amb el símbol de cada element", ce:"CE1", cc:"STEM, CE" },
     ]},
   ],
 };
-/* Descripciones de las competencias específicas citadas en los modelos, agrupadas
-   por familia curricular para evitar que coincidan códigos iguales (p. ej. "CE5")
-   de currículums distintos: Bloque 3 de Conocimiento del Medio (Primaria, modelos
-   1-3) y Geografía e Historia de ESO (modelos 4-5, Decreto 107/2022). */
-const NESE_CE_PRIMARIA={
-  CE5:"Identificar, analizar y proponer soluciones a los problemas generados por la acción humana en el entorno, tanto a nivel local como de manera global, derivados de los factores demográficos, históricos, económicos, tecnológicos y ambientales.",
-  CE6:"Situar cronológica y espacialmente los acontecimientos que marcan el inicio y el final de los grandes periodos históricos mediante el uso de diferentes fuentes históricas y unidades de tiempo, e identificar y explicar los principales procesos de cambio subyacentes y su interrelación.",
-  CE7:"Identificar y describir la organización y estructura política y territorial municipal, de la Comunidad Valenciana, de España y de Europa, así como las características más destacadas de sus principales instituciones y funciones.",
-  CE8:"Reconocer algunos elementos destacados del patrimonio natural, histórico y cultural de la Comunidad Valenciana y España, y explorar y formular propuestas para promover su reconocimiento y protección."
+/* Enunciats de les competències específiques de Física i Química d'ESO
+   (currículum valencià) citades en els models NESE. */
+const NESE_CE_ESO_FQ={
+ "CE1": "Resoldre problemes científics abordables en l’àmbit escolar a partir de treballs d’investigació de caràcter experimental.",
+ "CE2": "Analitzar i resoldre situacions problemàtiques de l’àmbit de la física i la química utilitzant la lògica científica i alternant les estratègies del treball individual amb el treball en equip.",
+ "CE3": "Utilitzar el coneixement científic com a instrument del pensament crític, interpretant i comunicant missatges científics, desenvolupant argumentacions i accedint a fonts fiables, per a distingir la informació contrastada de les faules i opinions.",
+ "CE4": "Justificar la validesa del model científic com a producte dinàmic que es va revisant i reconstruint sota la influència del context social i històric, atenent la importància de la ciència en l’avanç de les societats, així com els riscos d’un ús inadequat o interessat dels coneixements i les seues limitacions.",
+ "CE5": "Utilitzar models de física i química per a identificar, caracteritzar i analitzar alguns fenòmens naturals, així com per a explicar altres fenòmens de característiques similars.",
+ "CE6": "Utilitzar adequadament el llenguatge científic propi de la física i la química en la interpretació i transmissió d’informació.",
+ "CE7": "Interpretar correctament la informació presentada en diferents formats de representació gràfica i simbòlica utilitzats habitualment en la física i la química.",
+ "CE8": "Distingir les diferents manifestacions de l’energia i identificar les seues formes de transmissió i la seua conservació i dissipació en contextos pròxims.",
+ "CE9": "Identificar i caracteritzar les substàncies a partir de les seues propietats físiques per a relacionar els materials del nostre entorn amb l’ús que se’n fa.",
+ "CE10": "Caracteritzar els canvis químics com a transformació d’unes substàncies en altres de diferents, i reconéixer la importància de les transformacions químiques en activitats i processos quotidians.",
+ "CE11": "Identificar les interaccions com a causa de les transformacions que tenen."
 };
-const NESE_CE_ESO_GH={
-  CE1:"Describir y contextualizar en el tiempo y el espacio los acontecimientos y procesos más relevantes de la historia propia y universal, identificando referentes de la evolución hacia la sociedad actual y valorando su diversidad.",
-  CE2:"Buscar, identificar y seleccionar la información referente a hechos históricos, geográficos y artísticos a partir de diferentes fuentes documentales, realizando un tratamiento correcto en cuanto a investigación, clasificación, recogida, organización, crítica y respeto.",
-  CE3:"Explicar las nociones básicas de cambio y continuidad en la historia empleando una perspectiva causal y contextualizada, reconociendo en el pasado el origen y evolución de las cuestiones más relevantes del mundo actual y expresando juicios y opiniones sobre el presente y el futuro.",
-  CE4:"Contrastar las identidades individuales con las colectivas, identificando las aportaciones decisivas en su construcción, reconociendo y valorando las actuaciones de tolerancia y respeto.",
-  CE5:"Explicar las interrelaciones económicas fundamentales entre los elementos del espacio físico y las actividades de las sociedades humanas, así como su repercusión en la sostenibilidad.",
-  CE6:"Contrastar los principales modelos de ocupación territorial y de organización política y económica que explican la desigualdad entre los seres humanos, tanto a escala local como global.",
-  CE7:"Dar argumentos desde una perspectiva crítica, fundamentada en conocimientos históricos y geográficos acerca de problemas sociales relevantes, asumiendo valores democráticos y pronunciándose en su defensa.",
-  CE8:"Promover y participar en proyectos cooperativos de convivencia, tomando como base la construcción histórica de la Unión Europea, que favorezcan un entorno más justo y solidario mediante la aplicación de valores y procedimientos democráticos.",
-  CE9:"Identificar el origen y reconocer el valor del patrimonio cultural y natural, especialmente de sus elementos geográficos, históricos y artísticos, tanto a escala local como a escala global, participando en la elaboración y difusión de propuestas que favorezcan su preservación y puesta en valor."
-};
-const NESE_CE={ "1":NESE_CE_PRIMARIA, "2":NESE_CE_PRIMARIA, "3":NESE_CE_PRIMARIA, "4":NESE_CE_ESO_GH, "5":NESE_CE_ESO_GH };
-/* Etiquetas legibles de cada modelo/ciclo de plan NESE, usadas en badges e informes. */
-const NE_MODELO_LABELS={ "1":"1er ciclo de Primaria (1º-2º)", "2":"2º ciclo de Primaria (3º-4º)", "3":"3er ciclo de Primaria (5º-6º)", "4":"1º de ESO", "5":"2º de ESO" };
-/* Modelos de Plan de Refuerzo (1º-3º ESO) y Plan de Repetición (1º-4º ESO),
-   generados a partir de las propuestas pedagógicas de departamento: objetivos
-   = criterios de evaluación (con CE y competencia clave), medidas = saberes
-   básicos por CE + dossier de actividades, repartidos en 3 evaluaciones
-   (CE1-3 / CE4-6 / CE7-9). Compartido entre ambos tipos de plan. */
+const NESE_CE={ "1":NESE_CE_ESO_FQ, "2":NESE_CE_ESO_FQ, "3":NESE_CE_ESO_FQ, "4":NESE_CE_ESO_FQ, "5":NESE_CE_ESO_FQ };
+/* Etiquetes de cada model de pla NESE (nivell de competència curricular de referència). */
+const NE_MODELO_LABELS={ "1":"Nivell de 1r cicle de Primària (1r-2n)", "2":"Nivell de 2n cicle de Primària (3r-4t)", "3":"Nivell de 3r cicle de Primària (5é-6é)", "4":"Nivell de 1r d'ESO", "5":"Nivell de 2n d'ESO" };
+/* Models de Pla de Reforç i de Pla de Repetició de Física i Química (2n, 3r i
+   4t d'ESO), generats a partir del currículum precarregat: objectius = criteris
+   d'avaluació (amb CE i competències clau), repartits en 3 avaluacions
+   (CE1-4 / CE5-8 / CE9-11) + dossier d'activitats. Compartit pels dos plans. */
+const RFRP_DOSSIER_DEFECTO="Elaboració d'un dossier d'activitats d'avaluació i consolidació dels sabers bàsics no assolits.";
 const RFRP_MODELOS={
-  "1":[
-    { gruposCE:[
-      { ce:"CE1", cc:"CCL, CPSAA, CC, CCEC", criterios:[
-        { texto:"1.1. Construir un relato cronológicamente ordenado y coherente sobre hechos y personajes relevantes del pasado y sobre su relación con el presente.", trabajado:false },
-        { texto:"1.2. Reconocer la distinta relevancia otorgada a unos hechos históricos sobre otros en diferentes momentos del pasado y en el presente.", trabajado:false },
-        { texto:"1.3. Manifestar interés y respeto por la diversidad histórica y cultural de las sociedades humanas.", trabajado:false },
-      ]},
-      { ce:"CE2", cc:"CCL, CD, CPSAA", criterios:[
-        { texto:"2.1. Comparar la información obtenida con sus ideas previas, desterrando posibles prejuicios.", trabajado:false },
-        { texto:"2.2. Seleccionar y utilizar la información más relevante para explicar determinados hechos históricos, geográficos y artísticos contenida en diferentes fuentes documentales.", trabajado:false },
-        { texto:"2.3. Identificar la información contenida en diferentes fuentes documentales de hechos históricos, geográficos y artísticos.", trabajado:false },
-        { texto:"2.4. Formular y comunicar sus propias conclusiones sobre hechos históricos, geográficos y artísticos, representándolas de una manera textual, gráfica o audiovisual.", trabajado:false },
-      ]},
-      { ce:"CE3", cc:"CCL, CC", criterios:[
-        { texto:"3.1. Reconocer causas y consecuencias respecto de los hechos y procesos históricos más relevantes de diferentes épocas.", trabajado:false },
-        { texto:"3.2. Contextualizar y valorar decisiones históricamente relevantes tomadas por personas representativas del pasado, tanto en el contexto propio como en otros contextos sociales, políticos y culturales.", trabajado:false },
-        { texto:"3.3. Producir opiniones y manifestar actitudes de tolerancia y respeto hacia otras culturas y cosmovisiones.", trabajado:false },
-      ]},
-    ], actividades:["Elaboración de un dossier de actividades de evaluación y consolidación de los saberes básicos no conseguidos."], calificacion:"", valoracion:"", justificacion:"" },
-    { gruposCE:[
-      { ce:"CE4", cc:"CCL, CC, CCEC", criterios:[
-        { texto:"4.1. Identificar los elementos definitorios más significativos de las identidades individuales y colectivas del propio entorno.", trabajado:false },
-        { texto:"4.2. Expresar opiniones de respeto y tolerancia hacia otras identidades, tanto individuales como colectivas.", trabajado:false },
-        { texto:"4.3. Mostrar actitudes de interés y respeto hacia otras identidades, tanto individuales como colectivas.", trabajado:false },
-      ]},
-      { ce:"CE5", cc:"STEM, CPSAA, CC, CCEC", criterios:[
-        { texto:"5.1. Ubicar las actividades económicas y los recursos naturales más importantes en el espacio geográfico.", trabajado:false },
-        { texto:"5.2. Detectar los problemas territoriales y medioambientales más importantes, tanto a escala global como local, y hacer propuestas con criterios de sostenibilidad.", trabajado:false },
-        { texto:"5.3. Identificar y describir el impacto sobre el territorio de las principales actividades económicas, diferenciando entre las que son sostenibles y las que no lo son.", trabajado:false },
-      ]},
-      { ce:"CE6", cc:"CCL, CPSAA, CC, CCEC", criterios:[
-        { texto:"6.1. Identificar y localizar los principales modelos de organización territorial, política y económica.", trabajado:false },
-        { texto:"6.2. Distinguir las entidades políticas y formas de organización económica más importantes dentro de los principales modelos de organización territorial, política y económica, y explicar cómo inciden en la vida cotidiana de sus habitantes.", trabajado:false },
-        { texto:"6.3. Señalar los principales problemas territoriales, políticos y económicos, así como los agentes sociales que intervienen a escala local, regional, estatal y supraestatal.", trabajado:false },
-      ]},
-    ], actividades:["Elaboración de un dossier de actividades de evaluación y consolidación de los saberes básicos no conseguidos."], calificacion:"", valoracion:"", justificacion:"" },
-    { gruposCE:[
-      { ce:"CE7", cc:"CC, CE", criterios:[
-        { texto:"7.1. Identificar los problemas sociales más relevantes de la actualidad, utilizando como guía los Objetivos de Desarrollo Sostenible.", trabajado:false },
-        { texto:"7.2. Establecer relaciones causales entre las acciones humanas y el origen de los problemas sociales más relevantes de la actualidad.", trabajado:false },
-        { texto:"7.3. Mostrar interés por los problemas sociales más relevantes y proponer soluciones a los mismos fundamentadas en saberes geográficos e históricos.", trabajado:false },
-      ]},
-      { ce:"CE8", cc:"CC, CCEC", criterios:[
-        { texto:"8.1. Participar en proyectos cooperativos, asumiendo varios roles con responsabilidad y reconociendo las aportaciones de sus iguales.", trabajado:false },
-        { texto:"8.2. Denunciar las situaciones injustas y de exclusión en cualquier ámbito, tomando como ejemplo la historia de Europa.", trabajado:false },
-        { texto:"8.3. Aplicar los principios democráticos y el diálogo para resolver los conflictos.", trabajado:false },
-      ]},
-      { ce:"CE9", cc:"CC, CCEC", criterios:[
-        { texto:"9.1. Identificar bienes patrimoniales históricos, geográficos y artísticos, tanto a escala global como local.", trabajado:false },
-        { texto:"9.2. Elaborar trabajos de síntesis sobre el patrimonio más cercano que reconozcan su variedad e importancia como elemento identitario.", trabajado:false },
-      ]},
-    ], actividades:["Elaboración de un dossier de actividades de evaluación y consolidación de los saberes básicos no conseguidos."], calificacion:"", valoracion:"", justificacion:"" },
-  ],
-  "2":[
-    { gruposCE:[
-      { ce:"CE1", cc:"CCL, CPSAA, CC, CCEC", criterios:[
-        { texto:"1.1. Construir un relato cronológicamente ordenado y coherente sobre hechos y personajes relevantes del pasado y sobre su relación con el presente.", trabajado:false },
-        { texto:"1.2. Reconocer la distinta relevancia otorgada a unos hechos históricos sobre otros en diferentes momentos del pasado y en el presente.", trabajado:false },
-        { texto:"1.3. Manifestar interés y respeto por la diversidad histórica y cultural de las sociedades humanas.", trabajado:false },
-      ]},
-      { ce:"CE2", cc:"CCL, CD, CPSAA", criterios:[
-        { texto:"2.1. Comparar la información obtenida con sus ideas previas, desterrando posibles prejuicios.", trabajado:false },
-        { texto:"2.2. Seleccionar y utilizar la información más relevante para explicar determinados hechos históricos, geográficos y artísticos contenida en diferentes fuentes documentales.", trabajado:false },
-        { texto:"2.3. Identificar la información contenida en diferentes fuentes documentales de hechos históricos, geográficos y artísticos.", trabajado:false },
-        { texto:"2.4. Formular y comunicar sus propias conclusiones sobre hechos históricos, geográficos y artísticos, representándolas de una manera textual, gráfica o audiovisual.", trabajado:false },
-      ]},
-      { ce:"CE3", cc:"CCL, CC", criterios:[
-        { texto:"3.1. Reconocer causas y consecuencias respecto de los hechos y procesos históricos más relevantes de diferentes épocas.", trabajado:false },
-        { texto:"3.2. Contextualizar y valorar decisiones históricamente relevantes tomadas por personas representativas del pasado, tanto en el contexto propio como en otros contextos sociales, políticos y culturales.", trabajado:false },
-        { texto:"3.3. Producir opiniones y manifestar actitudes de tolerancia y respeto hacia otras culturas y cosmovisiones.", trabajado:false },
-      ]},
-    ], actividades:["Elaboración de un dossier de actividades de evaluación y consolidación de los saberes básicos no conseguidos."], calificacion:"", valoracion:"", justificacion:"" },
-    { gruposCE:[
-      { ce:"CE4", cc:"CCL, CC, CCEC", criterios:[
-        { texto:"4.1. Identificar los elementos definitorios más significativos de las identidades individuales y colectivas del propio entorno.", trabajado:false },
-        { texto:"4.2. Expresar opiniones de respeto y tolerancia hacia otras identidades, tanto individuales como colectivas.", trabajado:false },
-        { texto:"4.3. Mostrar actitudes de interés y respeto hacia otras identidades, tanto individuales como colectivas.", trabajado:false },
-      ]},
-      { ce:"CE5", cc:"STEM, CPSAA, CC, CCEC", criterios:[
-        { texto:"5.1. Ubicar las actividades económicas y los recursos naturales más importantes en el espacio geográfico.", trabajado:false },
-        { texto:"5.2. Detectar los problemas territoriales y medioambientales más importantes, tanto a escala global como local, y hacer propuestas con criterios de sostenibilidad.", trabajado:false },
-        { texto:"5.3. Identificar y describir el impacto sobre el territorio de las principales actividades económicas, diferenciando entre las que son sostenibles y las que no lo son.", trabajado:false },
-      ]},
-      { ce:"CE6", cc:"CCL, CPSAA, CC, CCEC", criterios:[
-        { texto:"6.1. Identificar y localizar los principales modelos de organización territorial, política y económica.", trabajado:false },
-        { texto:"6.2. Distinguir las entidades políticas y formas de organización económica más importantes dentro de los principales modelos de organización territorial, política y económica, y explicar cómo inciden en la vida cotidiana de sus habitantes.", trabajado:false },
-        { texto:"6.3. Señalar los principales problemas territoriales, políticos y económicos, así como los agentes sociales que intervienen a escala local, regional, estatal y supraestatal.", trabajado:false },
-      ]},
-    ], actividades:["Elaboración de un dossier de actividades de evaluación y consolidación de los saberes básicos no conseguidos."], calificacion:"", valoracion:"", justificacion:"" },
-    { gruposCE:[
-      { ce:"CE7", cc:"CC, CE", criterios:[
-        { texto:"7.1. Identificar los problemas sociales más relevantes de la actualidad, utilizando como guía los Objetivos de Desarrollo Sostenible.", trabajado:false },
-        { texto:"7.2. Establecer relaciones causales entre las acciones humanas y el origen de los problemas sociales más relevantes de la actualidad.", trabajado:false },
-        { texto:"7.3. Mostrar interés por los problemas sociales más relevantes y proponer soluciones a los mismos fundamentadas en saberes geográficos e históricos.", trabajado:false },
-      ]},
-      { ce:"CE8", cc:"CC, CCEC", criterios:[
-        { texto:"8.1. Participar en proyectos cooperativos, asumiendo varios roles con responsabilidad y reconociendo las aportaciones de sus iguales.", trabajado:false },
-        { texto:"8.2. Denunciar las situaciones injustas y de exclusión en cualquier ámbito, tomando como ejemplo la historia de Europa.", trabajado:false },
-        { texto:"8.3. Aplicar los principios democráticos y el diálogo para resolver los conflictos.", trabajado:false },
-      ]},
-      { ce:"CE9", cc:"CC, CCEC", criterios:[
-        { texto:"9.1. Identificar bienes patrimoniales históricos, geográficos y artísticos, tanto a escala global como local.", trabajado:false },
-        { texto:"9.2. Elaborar trabajos de síntesis sobre el patrimonio más cercano que reconozcan su variedad e importancia como elemento identitario.", trabajado:false },
-      ]},
-    ], actividades:["Elaboración de un dossier de actividades de evaluación y consolidación de los saberes básicos no conseguidos."], calificacion:"", valoracion:"", justificacion:"" },
-  ],
-  "3":[
-    { gruposCE:[
-      { ce:"CE1", cc:"CCL, CPSAA, CC, CCEC", criterios:[
-        { texto:"1.1. Construir un relato o una síntesis, cronológicamente ordenada, coherente y empleando la terminología adecuada, sobre hechos, procesos y personajes relevantes del pasado y su relación con el presente.", trabajado:false },
-        { texto:"1.2. Aportar posibles motivos sobre la distinta relevancia otorgada a unos hechos históricos sobre otros en diferentes momentos del pasado y en el presente.", trabajado:false },
-        { texto:"1.3. Debatir sobre situaciones históricas de intolerancia y formular argumentos que fomenten la tolerancia y el respeto hacia la diversidad histórica y cultural de las sociedades humanas.", trabajado:false },
-      ]},
-      { ce:"CE2", cc:"CCL, CD, CPSAA", criterios:[
-        { texto:"2.1. Contrastar la información seleccionada para comprender hechos históricos, geográficos y artísticos procedente de diferentes fuentes con la proveniente de organismos oficiales o emisores de prestigio reconocido.", trabajado:false },
-        { texto:"2.2. Identificar y rechazar prejuicios y estereotipos, distinguiendo opiniones no fundamentadas en hechos y saberes y comparándolas con información obtenida a partir de fuentes fiables.", trabajado:false },
-        { texto:"2.3. Utilizar la información contenida en diferentes fuentes documentales para explicar hechos históricos, geográficos y artísticos relacionándolos con su época.", trabajado:false },
-        { texto:"2.4. Formular y comunicar de manera textual, gráfica o audiovisual conclusiones y valoraciones propias sobre hechos históricos, geográficos y artísticos, mostrando un dominio adecuado de los conceptos y la metodología de trabajo de este ámbito de conocimiento.", trabajado:false },
-      ]},
-      { ce:"CE3", cc:"CCL, CC", criterios:[
-        { texto:"3.1. Explicar las dinámicas de cambio y continuidad en los procesos históricos más relevantes de diferentes épocas identificando relaciones causales complejas y entre factores de distinto ámbito.", trabajado:false },
-        { texto:"3.2. Contextualizar y valorar decisiones tomadas por personas del pasado y/o de contextos sociales, políticos y culturales diferentes del propio, y debatir sobre los motivos de sus acciones.", trabajado:false },
-        { texto:"3.3. Producir opiniones y juicios de valor coherentes sobre cuestiones sociales y políticas del pasado y del presente, manifestando actitudes de tolerancia, respeto e interés hacia otras culturas y cosmovisiones.", trabajado:false },
-      ]},
-    ], actividades:["Elaboración de un dossier de actividades de evaluación y consolidación de los saberes básicos no conseguidos."], calificacion:"", valoracion:"", justificacion:"" },
-    { gruposCE:[
-      { ce:"CE4", cc:"CCL, CC, CCEC", criterios:[
-        { texto:"4.1. Identificar los elementos definitorios de las identidades individuales y colectivas más significativas del presente estableciendo su conexión con hechos del pasado.", trabajado:false },
-        { texto:"4.2. Argumentar a favor de las actitudes tolerantes, respetuosas y de interés hacia otras identidades, tanto individuales como colectivas.", trabajado:false },
-        { texto:"4.3. Promover y ejercer propuestas prácticas de convivencia en el aula y en el propio entorno social.", trabajado:false },
-      ]},
-      { ce:"CE5", cc:"STEM, CPSAA, CC, CCEC", criterios:[
-        { texto:"5.1. Identificar y describir las interrelaciones entre los grupos y las sociedades humanas y el medio ambiente que han dado lugar a problemas y conflictos por el acceso a los recursos naturales.", trabajado:false },
-        { texto:"5.2. Explicar las causas de problemas y conflictos territoriales y medioambientales, diferenciando y relacionando las distintas variables que intervienen.", trabajado:false },
-        { texto:"5.3. Plantear alternativas sostenibles argumentadas a los problemas e impactos ocasionados por las actividades humanas.", trabajado:false },
-      ]},
-      { ce:"CE6", cc:"CCL, CPSAA, CC, CCEC", criterios:[
-        { texto:"6.1. Describir las principales características de los diferentes modelos de organización territorial, política y económica.", trabajado:false },
-        { texto:"6.2. Exponer razonadamente las desigualdades generadas por los modelos de organización territorial, política y económica y explicar sus causas.", trabajado:false },
-        { texto:"6.3. Explicar los principales problemas territoriales, políticos y económicos generados por las desigualdades y cómo afectan a la vida cotidiana de las personas.", trabajado:false },
-      ]},
-    ], actividades:["Elaboración de un dossier de actividades de evaluación y consolidación de los saberes básicos no conseguidos."], calificacion:"", valoracion:"", justificacion:"" },
-    { gruposCE:[
-      { ce:"CE7", cc:"CC, CE", criterios:[
-        { texto:"7.1. Justificar cómo las acciones personales incides directamente en los problemas sociales relevantes.", trabajado:false },
-        { texto:"7.2. Proporcionar argumentos propios, fundamentados en la historia y en la geografía, sobre los problemas sociales más relevantes, reconociendo la incidencia que su resolución tendrá en la mejora de las condiciones de vida de las personas.", trabajado:false },
-        { texto:"7.3. Proponer soluciones para los problemas basadas en argumentos históricos y geográficos que consideren los Objetivos de Desarrollo Sostenible (ODS).", trabajado:false },
-      ]},
-      { ce:"CE8", cc:"CC, CCEC", criterios:[
-        { texto:"8.1. Participar en proyectos cooperativos, asumiendo varios roles con eficacia y responsabilidad, apoyando a compañeros y compañeras y demostrando empatía.", trabajado:false },
-        { texto:"8.2. Denunciar las situaciones injustas y de exclusión, argumentando a favor del diálogo y la inclusión como formas de superarlas.", trabajado:false },
-        { texto:"8.3. Argumentar y aplicar los principios democráticos y el diálogo para plantear la resolución de los conflictos, tanto en el ámbito cotidiano como a escala global, utilizando especialmente el referente de la construcción histórica de la Unión Europea.", trabajado:false },
-      ]},
-      { ce:"CE9", cc:"CC, CCEC", criterios:[
-        { texto:"9.1. Identificar las características de los elementos patrimoniales, relacionándolas con estilos artísticos, época histórica y entorno geográfico.", trabajado:false },
-        { texto:"9.2. Elaborar y exponer propuestas argumentadas que contribuyan a la preservación del patrimonio y su puesta en valor, y que lo reconozcan como bien social.", trabajado:false },
-      ]},
-    ], actividades:["Elaboración de un dossier de actividades de evaluación y consolidación de los saberes básicos no conseguidos."], calificacion:"", valoracion:"", justificacion:"" },
-  ],
-  "4":[
-    { gruposCE:[
-      { ce:"CE1", cc:"CCL, CPSAA, CC, CCEC", criterios:[
-        { texto:"1.1. Construir un relato o una síntesis, cronológicamente ordenada, coherente y empleando la terminología adecuada, sobre hechos, procesos y personajes relevantes del pasado y su relación con el presente.", trabajado:false },
-        { texto:"1.2. Aportar posibles motivos sobre la distinta relevancia otorgada a unos hechos históricos sobre otros en diferentes momentos del pasado y en el presente.", trabajado:false },
-        { texto:"1.3. Debatir sobre situaciones históricas de intolerancia y formular argumentos que fomenten la tolerancia y el respeto hacia la diversidad histórica y cultural de las sociedades humanas.", trabajado:false },
-      ]},
-      { ce:"CE2", cc:"CCL, CD, CPSAA", criterios:[
-        { texto:"2.1. Contrastar la información seleccionada para comprender hechos históricos, geográficos y artísticos procedente de diferentes fuentes con la proveniente de organismos oficiales o emisores de prestigio reconocido.", trabajado:false },
-        { texto:"2.2. Identificar y rechazar prejuicios y estereotipos, distinguiendo opiniones no fundamentadas en hechos y saberes y comparándolas con información obtenida a partir de fuentes fiables.", trabajado:false },
-        { texto:"2.3. Utilizar la información contenida en diferentes fuentes documentales para explicar hechos históricos, geográficos y artísticos relacionándolos con su época.", trabajado:false },
-        { texto:"2.4. Formular y comunicar de manera textual, gráfica o audiovisual conclusiones y valoraciones propias sobre hechos históricos, geográficos y artísticos, mostrando un dominio adecuado de los conceptos y la metodología de trabajo de este ámbito de conocimiento.", trabajado:false },
-      ]},
-      { ce:"CE3", cc:"CCL, CC", criterios:[
-        { texto:"3.1. Explicar las dinámicas de cambio y continuidad en los procesos históricos más relevantes de diferentes épocas identificando relaciones causales complejas y entre factores de distinto ámbito.", trabajado:false },
-        { texto:"3.2. Contextualizar y valorar decisiones tomadas por personas del pasado y/o de contextos sociales, políticos y culturales diferentes del propio, y debatir sobre los motivos de sus acciones.", trabajado:false },
-        { texto:"3.3. Producir opiniones y juicios de valor coherentes sobre cuestiones sociales y políticas del pasado y del presente, manifestando actitudes de tolerancia, respeto e interés hacia otras culturas y cosmovisiones.", trabajado:false },
-      ]},
-    ], actividades:["Elaboración de un dossier de actividades de evaluación y consolidación de los saberes básicos no conseguidos."], calificacion:"", valoracion:"", justificacion:"" },
-    { gruposCE:[
-      { ce:"CE4", cc:"CCL, CC, CCEC", criterios:[
-        { texto:"4.1. Identificar los elementos definitorios de las identidades individuales y colectivas más significativas del presente estableciendo su conexión con hechos del pasado.", trabajado:false },
-        { texto:"4.2. Argumentar a favor de las actitudes tolerantes, respetuosas y de interés hacia otras identidades, tanto individuales como colectivas.", trabajado:false },
-        { texto:"4.3. Promover y ejercer propuestas prácticas de convivencia en el aula y en el propio entorno social.", trabajado:false },
-      ]},
-      { ce:"CE5", cc:"STEM, CPSAA, CC, CCEC", criterios:[
-        { texto:"5.1. Identificar y describir las interrelaciones entre los grupos y las sociedades humanas y el medio ambiente que han dado lugar a problemas y conflictos por el acceso a los recursos naturales.", trabajado:false },
-        { texto:"5.2. Explicar las causas de problemas y conflictos territoriales y medioambientales, diferenciando y relacionando las distintas variables que intervienen.", trabajado:false },
-        { texto:"5.3. Plantear alternativas sostenibles argumentadas a los problemas e impactos ocasionados por las actividades humanas.", trabajado:false },
-      ]},
-      { ce:"CE6", cc:"CCL, CPSAA, CC, CCEC", criterios:[
-        { texto:"6.1. Describir las principales características de los diferentes modelos de organización territorial, política y económica.", trabajado:false },
-        { texto:"6.2. Exponer razonadamente las desigualdades generadas por los modelos de organización territorial, política y económica y explicar sus causas.", trabajado:false },
-        { texto:"6.3. Explicar los principales problemas territoriales, políticos y económicos generados por las desigualdades y cómo afectan a la vida cotidiana de las personas.", trabajado:false },
-      ]},
-    ], actividades:["Elaboración de un dossier de actividades de evaluación y consolidación de los saberes básicos no conseguidos."], calificacion:"", valoracion:"", justificacion:"" },
-    { gruposCE:[
-      { ce:"CE7", cc:"CC, CE", criterios:[
-        { texto:"7.1. Justificar cómo las acciones personales incides directamente en los problemas sociales relevantes.", trabajado:false },
-        { texto:"7.2. Proporcionar argumentos propios, fundamentados en la historia y en la geografía, sobre los problemas sociales más relevantes, reconociendo la incidencia que su resolución tendrá en la mejora de las condiciones de vida de las personas.", trabajado:false },
-        { texto:"7.3. Proponer soluciones para los problemas basadas en argumentos históricos y geográficos que consideren los Objetivos de Desarrollo Sostenible (ODS).", trabajado:false },
-      ]},
-      { ce:"CE8", cc:"CC, CCEC", criterios:[
-        { texto:"8.1. Participar en proyectos cooperativos, asumiendo varios roles con eficacia y responsabilidad, apoyando a compañeros y compañeras y demostrando empatía.", trabajado:false },
-        { texto:"8.2. Denunciar las situaciones injustas y de exclusión, argumentando a favor del diálogo y la inclusión como formas de superarlas.", trabajado:false },
-        { texto:"8.3. Argumentar y aplicar los principios democráticos y el diálogo para plantear la resolución de los conflictos, tanto en el ámbito cotidiano como a escala global, utilizando especialmente el referente de la construcción histórica de la Unión Europea.", trabajado:false },
-      ]},
-      { ce:"CE9", cc:"CC, CCEC", criterios:[
-        { texto:"9.1. Identificar las características de los elementos patrimoniales, relacionándolas con estilos artísticos, época histórica y entorno geográfico.", trabajado:false },
-        { texto:"9.2. Elaborar y exponer propuestas argumentadas que contribuyan a la preservación del patrimonio y su puesta en valor, y que lo reconozcan como bien social.", trabajado:false },
-      ]},
-    ], actividades:["Elaboración de un dossier de actividades de evaluación y consolidación de los saberes básicos no conseguidos."], calificacion:"", valoracion:"", justificacion:"" },
-  ],
+ "2": [
+  {
+   "gruposCE": [
+    {
+     "ce": "CE1",
+     "cc": "CCL, CP, STEM, CD, CPSAA, CE",
+     "criterios": [
+      {
+       "texto": "1.1. Analitzar i resoldre problemes associats a la mesura de sòlids irregulars.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.2. Esbrinar, mitjançant dissenys experimentals, la influència de factors com la temperatura o la concentració en la velocitat de les reaccions químiques.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.3. Investigar la substància que correspon a un determinat sòlid problema.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.4. Dur a terme estudis experimentals sobre diferents tipus de reaccions.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.5. Comprovar que es compleix la llei de conservació de la massa en experiències de caràcter pràctic.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.6. Dur a terme experiències en les quals es produïsquen reaccions químiques de diferents tipus (descomposició, precipitació, síntesi, combustió, neutralització), identificant reactius i productes per les seues diferents propietats característiques, i, en el cas de les reaccions àcid-base, utilitzant l’escala de pH per a identificar el caràcter àcid o bàsic de les substàncies implicades.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.7. Dur a terme experiències senzilles de preparació de dissolucions, i descriure el procediment seguit i el material utilitzat, així com determinar-ne la concentració.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.8. Resoldre situacions problemàtiques relacionades amb el moviment dels cossos en situacions quotidianes.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE2",
+     "cc": "CCL, STEM, CD, CPSAA, CC, CE",
+     "criterios": [
+      {
+       "texto": "2.1. Analitzar els enunciats de les situacions plantejades i descriure la situació a la qual es pretén donar resposta, identificant les variables que hi intervenen.",
+       "trabajado": false
+      },
+      {
+       "texto": "2.2. Triar, en resoldre un determinat problema, el tipus d’estratègia més adequada, i justificar-ne adequadament l’elecció.",
+       "trabajado": false
+      },
+      {
+       "texto": "2.3. Buscar i seleccionar la informació necessària per a la resolució de la situació en problemes suficientment delimitats.",
+       "trabajado": false
+      },
+      {
+       "texto": "2.4. Expressar, utilitzant el llenguatge matemàtic adequat al seu nivell, el procediment que s’ha seguit en la resolució d’un problema.",
+       "trabajado": false
+      },
+      {
+       "texto": "2.5. Comprovar i interpretar les solucions trobades.",
+       "trabajado": false
+      },
+      {
+       "texto": "2.6. Participar en equips de treball per a resoldre els problemes plantejats assumint diversos rols amb eficàcia i responsabilitat.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE3",
+     "cc": "CCL, CP, STEM, CD, CPSAA, CC, CCEC",
+     "criterios": [
+      {
+       "texto": "3.1. Buscar i seleccionar informació a partir d’una estratègia de filtrat i de forma contrastada en mitjans digitals, i identificar les fonts de les quals procedeix.",
+       "trabajado": false
+      },
+      {
+       "texto": "3.2. Exposar les idees d’una manera clara i ordenada, utilitzant un llenguatge precís i adequat.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE4",
+     "cc": "STEM, CPSAA, CC",
+     "criterios": [
+      {
+       "texto": "4.1. Aportar exemples d’utilització del coneixement científic i relacionar-los amb les conseqüències que han tingut per a l’ésser humà i el desenvolupament de la societat.",
+       "trabajado": false
+      },
+      {
+       "texto": "4.2. Explicar la necessitat de sistematitzar d’una manera o d’una altra la nomenclatura química i la formulació de les substàncies.",
+       "trabajado": false
+      },
+      {
+       "texto": "4.3. Explicar el paper de les institucions científiques del segle XIX en el desenvolupament de les ciències fisicoquímiques. Analitzar la quantitat de dones presents i explicar-ne les causes.",
+       "trabajado": false
+      },
+      {
+       "texto": "4.4. Descriure les dificultats per a establir una classificació dels elements químics i explicar la classificació de Mendeleiev, la seua originalitat i les seues limitacions.",
+       "trabajado": false
+      }
+     ]
+    }
+   ],
+   "actividades": [
+    RFRP_DOSSIER_DEFECTO
+   ],
+   "calificacion": "",
+   "valoracion": "",
+   "justificacion": ""
+  },
+  {
+   "gruposCE": [
+    {
+     "ce": "CE5",
+     "cc": "CCL, STEM, CPSAA",
+     "criterios": [
+      {
+       "texto": "5.1. Utilitzar el model cineticocorpuscular per a explicar els estats de la matèria i els seus canvis, així com la variació de la densitat en els canvis d’estat.",
+       "trabajado": false
+      },
+      {
+       "texto": "5.2. Utilitzar el model del canvi químic per a explicar la transformació d’unes substàncies en unes altres de diferents propietats.",
+       "trabajado": false
+      },
+      {
+       "texto": "5.3. Utilitzar el model d'interacció per explicar els canvis en la velocitat dels cossos o les seues deformacions.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE6",
+     "cc": "CCL, CP, STEM, CD",
+     "criterios": [
+      {
+       "texto": "6.1. Reconéixer la terminologia conceptual pròpia de l’àrea i utilitzar-la correctament en activitats orals i escrites.",
+       "trabajado": false
+      },
+      {
+       "texto": "6.2. Llegir textos d’extensió breu en formats diversos propis de l’àrea utilitzant les estratègies de comprensió lectora per a obtindre informació i aplicar-la en la reflexió sobre el contingut.",
+       "trabajado": false
+      },
+      {
+       "texto": "6.3. Escriure textos descriptius i explicatius propis de l’àrea en diversos formats i suports, cuidant els seus aspectes formals, aplicant les normes de correcció ortogràfica i gramatical, per a transmetre de manera organitzada els seus coneixements amb un llenguatge no discriminatori.",
+       "trabajado": false
+      },
+      {
+       "texto": "6.4. Expressar oralment textos prèviament planificats, propis de l’àrea, en exposicions de curta duració, per a transmetre de manera organitzada els seus coneixements amb un llenguatge no discriminatori.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE7",
+     "cc": "CCL, STEM, CD",
+     "criterios": [
+      {
+       "texto": "7.1. Reconéixer la importància de normalització del sistema d’unitats i utilitzar adequadament les mesures del sistema internacional.",
+       "trabajado": false
+      },
+      {
+       "texto": "7.2. Fer canvis d’unitats de massa, longitud, superfície i volum.",
+       "trabajado": false
+      },
+      {
+       "texto": "7.3. Construir taules de parelles de valors massavolum de substàncies sòlides i líquides.",
+       "trabajado": false
+      },
+      {
+       "texto": "7.4. Construir els gràfics representatius. Predir i interpretar representacions V = f (T); P = f (V); P = f (T).",
+       "trabajado": false
+      },
+      {
+       "texto": "7.5. Reconéixer el significat de fórmula química emprant símbols químics. Distingir entre l’ús de fórmules químiques quan s’utilitzen per a representar molècules i quan s’utilitzen per a representar estructures cristal·lines polimèriques.",
+       "trabajado": false
+      },
+      {
+       "texto": "7.6. Interpretar les corbes de solubilitat de diferents substàncies.",
+       "trabajado": false
+      },
+      {
+       "texto": "7.7. Construir i interpretar gràfics espai-temps i velocitattemps en casos d'acceleració constant.",
+       "trabajado": false
+      }
+     ]
+    }
+   ],
+   "actividades": [
+    RFRP_DOSSIER_DEFECTO
+   ],
+   "calificacion": "",
+   "valoracion": "",
+   "justificacion": ""
+  },
+  {
+   "gruposCE": [
+    {
+     "ce": "CE9",
+     "cc": "STEM, CPSAA, CCEC",
+     "criterios": [
+      {
+       "texto": "9.1. Utilitzar les propietats característiques de les substàncies per a proposar mètodes de separació de mescles, i descriure el material de laboratori adequat.",
+       "trabajado": false
+      },
+      {
+       "texto": "9.2. Classificar materials per les seues propietats, relacionant les propietats dels materials del nostre entorn amb l’ús que se’n fa.",
+       "trabajado": false
+      },
+      {
+       "texto": "9.3. Comparar les densitats de diferents substàncies (sòlids, líquids i gasos).",
+       "trabajado": false
+      },
+      {
+       "texto": "9.4. Distingir entre sistemes materials d’ús quotidià per a classificar-los en substàncies pures i mescles, i diferenciar-los entre els seus diferents tipus.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE10",
+     "cc": "STEM, CPSAA, CCEC",
+     "criterios": [
+      {
+       "texto": "10.1. Reconéixer situacions de la vida quotidiana en les quals es produeixen reaccions químiques i predir com la influència d’uns certs factors pot servir per a controlar aquests processos, alentint-los o accelerant-los per a solucionar problemes que afecten la nostra qualitat de vida.",
+       "trabajado": false
+      },
+      {
+       "texto": "10.2. Descriure reaccions d’interés industrial i els usos dels productes obtinguts, així com les reaccions de combustió, per a justificar la seua importància en la producció d’energia elèctrica i altres reaccions d’importància biològica o industrial.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE11",
+     "cc": "STEM, CPSAA, CCEC",
+     "criterios": [
+      {
+       "texto": "11.1. Reconèixer les diferents forces que apareixen a la natura i els diferents fenòmens associats a elles.",
+       "trabajado": false
+      },
+      {
+       "texto": "11.2. Relacionar les forces amb els efectes que produeixen i comprovar aquesta relació experimentalment, registrant-ne els resultats en taules i representacions gràfiques.",
+       "trabajado": false
+      }
+     ]
+    }
+   ],
+   "actividades": [
+    RFRP_DOSSIER_DEFECTO
+   ],
+   "calificacion": "",
+   "valoracion": "",
+   "justificacion": ""
+  }
+ ],
+ "3": [
+  {
+   "gruposCE": [
+    {
+     "ce": "CE1",
+     "cc": "CCL, CP, STEM, CD, CPSAA, CE",
+     "criterios": [
+      {
+       "texto": "1.1. Esbrinar, mitjançant dissenys experimentals, com mesurar la massa i el volum ocupats per un gas que s’ha després en reaccions químiques.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.2. Fer investigacions per a esbrinar les relacions entre la pressió, el volum i la temperatura dels gasos.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.3. Investigar el metall de què està feta una peça problema.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.4. Dur a terme estudis experimentals de caràcter quantitatiu sobre reaccions d’interés especial.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.5. Utilitzar adequadament aparells de mesura de la intensitat i la diferència de potencial entre dos punts d’un circuit.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.6. Dur a terme una investigació sobre la mesura de la resistència d’un component en un circuit.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.7. Comprovar que es compleix la llei de conservació de la massa en experiències de caràcter pràctic que incloguen substàncies en estat gasós.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE2",
+     "cc": "CCL, STEM, CD, CPSAA, CC, CE",
+     "criterios": [
+      {
+       "texto": "2.1. Analitzar els enunciats de les situacions plantejades i descriure la situació a la qual es pretén donar resposta, identificant les variables que hi intervenen.",
+       "trabajado": false
+      },
+      {
+       "texto": "2.2. Triar, en resoldre un determinat problema, el tipus d’estratègia més adequada, i justificar-ne adequadament l’elecció.",
+       "trabajado": false
+      },
+      {
+       "texto": "2.3. Buscar i seleccionar la informació necessària per a la resolució de la situació en problemes amb alguns graus d’obertura.",
+       "trabajado": false
+      },
+      {
+       "texto": "2.4. Expressar, utilitzant el llenguatge matemàtic adequat al seu nivell, el procediment que s’ha seguit en la resolució d’un problema.",
+       "trabajado": false
+      },
+      {
+       "texto": "2.5. Comprovar i interpretar les solucions trobades.",
+       "trabajado": false
+      },
+      {
+       "texto": "2.6. Participar en equips de treball per a resoldre els problemes plantejats, donar suport a companys i companyes, demostrant empatia i reconeixent les seues aportacions, i utilitzar el diàleg igualitari per a resoldre conflictes i discrepàncies. lecció de la situació problemàtica, que serà.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE3",
+     "cc": "CCL, CP, STEM, CD, CPSAA, CC, CCEC",
+     "criterios": [
+      {
+       "texto": "3.1. Identificar algunes de les fal·làcies més utilitzades en els discursos pseudocientífics.",
+       "trabajado": false
+      },
+      {
+       "texto": "3.2. Identificar els elements representatius d’un text científic argumentatiu.",
+       "trabajado": false
+      },
+      {
+       "texto": "3.3. Elaborar seqüències argumentatives consistents, coherents i congruents, utilitzant els connectors lògics adequats.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE4",
+     "cc": "STEM, CPSAA, CC",
+     "criterios": [
+      {
+       "texto": "4.1. Analitzar les polèmiques relatives a les lleis de combinació en la química.",
+       "trabajado": false
+      },
+      {
+       "texto": "4.2. Descriure les conseqüències de la introducció de noves tècniques en la descomposició de compostos i anàlisi de substàncies per al desenvolupament de la ciència química.",
+       "trabajado": false
+      },
+      {
+       "texto": "4.3. Descriure les implicacions de la incorporació generalitzada de l’energia elèctrica a la nostra societat.",
+       "trabajado": false
+      }
+     ]
+    }
+   ],
+   "actividades": [
+    RFRP_DOSSIER_DEFECTO
+   ],
+   "calificacion": "",
+   "valoracion": "",
+   "justificacion": ""
+  },
+  {
+   "gruposCE": [
+    {
+     "ce": "CE5",
+     "cc": "CCL, STEM, CPSAA",
+     "criterios": [
+      {
+       "texto": "5.1. Utilitzar el model d’energia per a explicar el seu paper en les transformacions que tenen lloc en el nostre entorn.",
+       "trabajado": false
+      },
+      {
+       "texto": "5.2. Utilitzar el model de Dalton per a explicar les lleis ponderals.",
+       "trabajado": false
+      },
+      {
+       "texto": "5.3. Utilitzar el model de càrrega i interacció elèctrica per a explicar els fenòmens d’atracció/repulsió elèctriques.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE6",
+     "cc": "CCL, CP, STEM, CD",
+     "criterios": [
+      {
+       "texto": "6.1. Reconéixer la terminologia conceptual pròpia de l’àrea i utilitzar-la correctament en activitats orals i escrites en formats digitals.",
+       "trabajado": false
+      },
+      {
+       "texto": "6.2. Llegir textos, tant argumentatius com expositius, en formats diversos propis de l’àrea, utilitzant les estratègies de comprensió lectora per a obtindre informació i aplicar-la en la reflexió sobre el contingut.",
+       "trabajado": false
+      },
+      {
+       "texto": "6.3. Escriure textos argumentatius propis de l’àrea en diversos formats i suports, cuidant els seus aspectes formals, aplicant les normes de correcció ortogràfica i gramatical, per a transmetre de manera organitzada els seus coneixements amb un llenguatge no discriminatori.",
+       "trabajado": false
+      },
+      {
+       "texto": "6.4. Expressar oralment textos prèviament planificats, propis de l’àrea, per a transmetre de manera organitzada els seus coneixements amb un llenguatge no discriminatori.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE7",
+     "cc": "CCL, STEM, CD",
+     "criterios": [
+      {
+       "texto": "7.1. Elaborar i interpretar gràfics i models senzills sobre les relacions pressió-volumtemperatura dels ga.",
+       "trabajado": false
+      },
+      {
+       "texto": "7.2. Diferenciar una mescla i una substància pura mitjançant representacions segons el model de partícula.",
+       "trabajado": false
+      },
+      {
+       "texto": "7.3. Utilitzar els símbols químics per a representar una reacció química i explicar el que significa una equació química ajustada. Reconéixer el significat submicroscòpic de les relacions que hi ha entre els coeficients que acompanyen cada fórmula química.",
+       "trabajado": false
+      },
+      {
+       "texto": "7.4. Utilitzar esquemes/dibuixos en els quals s’indique la distribució de càrregues per a explicar els fenòmens d’atracció/repulsió elèctriques. o.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE8",
+     "cc": "STEM, CD, CPSAA, CCEC",
+     "criterios": [
+      {
+       "texto": "8.1. Identificar els diferents tipus d’energia posats de manifest en fenòmens quotidians i en experiències senzilles dutes a terme en el laboratori.",
+       "trabajado": false
+      },
+      {
+       "texto": "8.2. Identificar la calor com un procés de transferència d’energia entre els cossos a diferent temperatura i descriure casos reals en els quals es posa de manifest.",
+       "trabajado": false
+      },
+      {
+       "texto": "8.3. Justificar la transformació d’energia en els sistemes aplicant el principi de conservació de l’energia i valorant la limitació que el fenomen de la degradació de l’energia suposa per a l’optimització dels processos d’obtenció d’energia.",
+       "trabajado": false
+      },
+      {
+       "texto": "8.4. Relacionar els conceptes d’energia, calor i temperatura, en termes de la teoria cineticocorpuscular, i descriure els mecanismes pels quals es transfereix l’energia tèrmica en diferents situacions quotidianes.",
+       "trabajado": false
+      },
+      {
+       "texto": "8.5. Raonar avantatges i inconvenients de les diferents fonts energètiques. Enumerar mesures que contribueixen a l’estalvi col·lectiu o individual d’energia. Explicar per què l’energia no pot reutilitzar-se sense límits.",
+       "trabajado": false
+      },
+      {
+       "texto": "8.6. Explicar el fenomen físic del corrent elèctric i interpretar el significat de les magnituds: intensitat de corrent, diferència de potencial i resistència, així com les relacions entre aquestes.",
+       "trabajado": false
+      },
+      {
+       "texto": "8.7. Quantificar l’energia i analitzar el consum energètic utilitzant les dades subministrades pels electrodomèstics.",
+       "trabajado": false
+      },
+      {
+       "texto": "8.8. Calcular l’energia necessària per a mantindre’s un dia complet, així com la dieta alimentosa corresponent a aquesta energia, a partir de taules de la despesa calòrica corresponent a diverses activitats corporals i del valor energètic de diferents aliments.",
+       "trabajado": false
+      },
+      {
+       "texto": "8.9. Reconéixer la importància i les repercussions per a la societat i el medi ambient de les diferents fonts d’energia renovables i no renovables.",
+       "trabajado": false
+      }
+     ]
+    }
+   ],
+   "actividades": [
+    RFRP_DOSSIER_DEFECTO
+   ],
+   "calificacion": "",
+   "valoracion": "",
+   "justificacion": ""
+  },
+  {
+   "gruposCE": [
+    {
+     "ce": "CE9",
+     "cc": "STEM, CPSAA, CCEC",
+     "criterios": [
+      {
+       "texto": "9.1. Diferenciar el dissolvent del solut en analitzar la composició de mescles homogènies d’interés especial. Efectuar correctament càlculs numèrics senzills sobre la seua composició.",
+       "trabajado": false
+      },
+      {
+       "texto": "9.2. Predir la variació que experimentarà la densitat d’un gas en variar la temperatura (canvis de T o de P).",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE10",
+     "cc": "STEM, CPSAA, CCEC",
+     "criterios": [
+      {
+       "texto": "10.1. Utilitzar els símbols químics per a representar una reacció química com a alternativa a la simbologia emprada per Dalton.",
+       "trabajado": false
+      },
+      {
+       "texto": "10.2. Explicar el significat d’una equació química ajustada, interpretant el significat submicroscòpic de les relacions que hi ha entre els coeficients que acompanyen cada fórmula química.",
+       "trabajado": false
+      },
+      {
+       "texto": "10.3. Aplicar les lleis de Lavoisier i de Proust en el càlcul de masses en reaccions químiques senzilles aplicades a processos que ocorren en la vida quotidiana.",
+       "trabajado": false
+      },
+      {
+       "texto": "10.4. Justificar l’elaboració del model atòmic de Dalton a partir de les lleis de les reaccions químiques.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE11",
+     "cc": "STEM, CPSAA, CCEC",
+     "criterios": [
+      {
+       "texto": "11.1. Descriure els tipus de càrregues elèctriques, el paper que tenen en la constitució de la matèria i les característiques de les forces que es manifesten entre si.",
+       "trabajado": false
+      },
+      {
+       "texto": "11.2. Interpretar fenòmens elèctrics mitjançant el model de càrrega elèctrica, i valorar la importància de l’electricitat en la vida quotidiana.",
+       "trabajado": false
+      },
+      {
+       "texto": "11.3. Reconéixer les diferents forces que hi ha en la naturalesa i els diferents fenòmens associats a aquestes.",
+       "trabajado": false
+      },
+      {
+       "texto": "11.4. Justificar qualitativament fenòmens magnètics i valorar la contribució del magnetisme en el desenvolupament tecnològic.",
+       "trabajado": false
+      },
+      {
+       "texto": "11.5. Comparar els diferents tipus d’imants, analitzar-ne el comportament i deduir, mitjançant experiències, les característiques de les forces magnètiques posades de manifest, així com la seua relació amb el corrent elèctric.",
+       "trabajado": false
+      }
+     ]
+    }
+   ],
+   "actividades": [
+    RFRP_DOSSIER_DEFECTO
+   ],
+   "calificacion": "",
+   "valoracion": "",
+   "justificacion": ""
+  }
+ ],
+ "4": [
+  {
+   "gruposCE": [
+    {
+     "ce": "CE1",
+     "cc": "CCL, CP, STEM, CD, CPSAA, CE",
+     "criterios": [
+      {
+       "texto": "1.1. Investigar si una substància és simple o composta a partir de les reaccions de descomposició o síntesi a què dona lloc. Investigar experimentalment el comportament de substàncies orgàniques.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.2. Realitzar en el laboratori síntesi de polímers.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.3. Realitzar dissenys experimentals per al càlcul de la velocitat i l’acceleració d’un mòbil.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.4. Realitzar dissenys experimentals per a l’estudi de la caiguda de greus.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.5. Investigar experimentalment processos ondulatoris com la reflexió i refracció de la llum.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.6. Realitzar investigacions sobre l’equilibri dels cossos rígids basant-se en la noció de centre de gravetat.",
+       "trabajado": false
+      },
+      {
+       "texto": "1.7. Construir dispositius de transformació energètica, com motors o piles.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE2",
+     "cc": "CCL, STEM, CD, CPSAA, CC, CE",
+     "criterios": [
+      {
+       "texto": "2.1. Analitzar els enunciats de les situacions plantejades i descriure la situació a la qual es pretén donar resposta, identificant les variables que hi intervenen així com el seu caràcter escalar o vectorial.",
+       "trabajado": false
+      },
+      {
+       "texto": "2.2. Triar, a l’hora de resoldre un determinat problema, el tipus d’estratègia més adequada, justificant-ne adequadament l’elecció.",
+       "trabajado": false
+      },
+      {
+       "texto": "2.3. Buscar i seleccionar la informació necessària per a la resolució de la situació en problemes amb alguns graus d’obertura.",
+       "trabajado": false
+      },
+      {
+       "texto": "2.4. Expressar, utilitzant el llenguatge matemàtic adequat al seu nivell, el procediment que s’ha seguit en la resolució d’un problema.",
+       "trabajado": false
+      },
+      {
+       "texto": "2.5. Comprovar i interpretar les solucions trobades.",
+       "trabajado": false
+      },
+      {
+       "texto": "2.6. Participar en equips de treball per a resoldre els problemes plantejats, donar suport a companys i companyes demostrant empatia i reconeixent les seues aportacions i utilitzar el diàleg igualitari per a resoldre conflictes i discrepàncies.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE3",
+     "cc": "CCL, CP, STEM, CD, CPSAA, CC, CCEC",
+     "criterios": [
+      {
+       "texto": "3.1. Aportar arguments consistents, coherents i congruents per a defensar una postura davant del plantejament de determinades controvèrsies científiques.",
+       "trabajado": false
+      },
+      {
+       "texto": "3.2. Aportar raons a favor i en contra d’una conclusió determinada. Explicitar els criteris pels quals unes teories ofereixen una millor interpretació que unes altres davant d’un fenomen determinat.",
+       "trabajado": false
+      },
+      {
+       "texto": "3.3. Utilitzar estratègies de filtratge per a seleccionar informació en mitjans digitals, identificant les fonts de les quals procedeix i aportant raons per a descartar les fonts no fiables.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE4",
+     "cc": "STEM, CPSAA, CC",
+     "criterios": [
+      {
+       "texto": "4.1. Descriure les causes per les quals es produeix en el segle XX un moment propici per al desenvolupament dels models atòmics.",
+       "trabajado": false
+      },
+      {
+       "texto": "4.2. Descriure el desenvolupament i la importància de les societats científiques i el seu reconeixement social.",
+       "trabajado": false
+      },
+      {
+       "texto": "4.3. Descriure el paper dels i les científiques en els conflictes bèl·lics, establint com afecten aquests al desenvolupament de la ciència i discutint postures ètiques.",
+       "trabajado": false
+      }
+     ]
+    }
+   ],
+   "actividades": [
+    RFRP_DOSSIER_DEFECTO
+   ],
+   "calificacion": "",
+   "valoracion": "",
+   "justificacion": ""
+  },
+  {
+   "gruposCE": [
+    {
+     "ce": "CE5",
+     "cc": "CCL, STEM, CPSAA",
+     "criterios": [
+      {
+       "texto": "5.1. Utilitzar el model atòmic de Thomson per a explicar els fenòmens d’electrització i la formació d’ions.",
+       "trabajado": false
+      },
+      {
+       "texto": "5.2. Utilitzar el model atòmic de Rutherford per a explicar l’existència d’isòtops i alguns fenòmens radioactius.",
+       "trabajado": false
+      },
+      {
+       "texto": "5.3. Utilitzar el model d’interacció física per a explicar les forces i els canvis en el moviment.",
+       "trabajado": false
+      },
+      {
+       "texto": "5.4. Utilitzar el model d’energia per a explicar alguns fenòmens ondulatoris.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE6",
+     "cc": "CCL, CP, STEM, CD",
+     "criterios": [
+      {
+       "texto": "6.1. Reconéixer la terminologia conceptual pròpia de l’àrea i utilitzar-la correctament en activitats orals i escrites.",
+       "trabajado": false
+      },
+      {
+       "texto": "6.2. Llegir textos, tant argumentatius com expositius, en formats diversos propis de l’àrea utilitzant les estratègies de comprensió lectora per a obtindre informació i aplicar-la en la reflexió sobre el contingut.",
+       "trabajado": false
+      },
+      {
+       "texto": "6.3. Escriure textos argumentatius propis de l’àrea en diversos formats i suports, cuidant els seus aspectes formals, aplicant les normes de correcció ortogràfica i gramatical, per a transmetre de forma organitzada els seus coneixements amb un llenguatge no discriminatori.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE7",
+     "cc": "CCL, STEM, CD",
+     "criterios": [
+      {
+       "texto": "7.1. Representar gràficament les forces que actuen sobre un cos en una dimensió.",
+       "trabajado": false
+      },
+      {
+       "texto": "7.2. Relacionar les magnituds de velocitat, acceleració i força amb una expressió matemàtica i aplicar correctament les principals equacions.",
+       "trabajado": false
+      },
+      {
+       "texto": "7.3. Distingir clarament entre les unitats de velocitat i acceleració, així com entre magnituds lineals i angulars.",
+       "trabajado": false
+      },
+      {
+       "texto": "7.4. Utilitzar un sistema de referència per a representar els elements del moviment mitjançant vectors, justificant la relativitat del moviment i classificant els moviments per les seues característiques.",
+       "trabajado": false
+      },
+      {
+       "texto": "7.5. Emprar les representacions gràfiques de posició i velocitat en funció del temps per a deduir la velocitat mitjana i instantània i justificar si un moviment és accelerat o no.",
+       "trabajado": false
+      },
+      {
+       "texto": "7.6. Emprar les representacions gràfiques d’espai i velocitat en funció del temps per a deduir la velocitat mitjana i instantània i justificar si un moviment és accelerat o no.",
+       "trabajado": false
+      },
+      {
+       "texto": "7.7. Representar mitjançant equacions les transformacions de la matèria de manera consistent amb el principi de conservació de la matèria.",
+       "trabajado": false
+      },
+      {
+       "texto": "7.8. Escriure fórmules senzilles dels compostos de carboni.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE8",
+     "cc": "STEM, CD, CPSAA, CCEC",
+     "criterios": [
+      {
+       "texto": "8.1. Diferenciar entre treball mecànic i treball fisiològic. Explicar que el treball consisteix en la transmissió d’energia d’un cos a un altre mitjançant una força que desplaça el seu punt d’aplicació. Identificar la potència amb la rapidesa amb què es fa un treball i explicar la importància d’aquesta magnitud en la indústria i la tecnologia.",
+       "trabajado": false
+      },
+      {
+       "texto": "8.2. Relacionar la variació d’energia mecànica que ha tingut lloc en un procés amb el treball amb què s’ha realitzat. Aplicar de manera correcta el principi de conservació de l’energia en l’àmbit de la mecànica.",
+       "trabajado": false
+      },
+      {
+       "texto": "8.3. Explicar les característiques fonamentals dels moviments ondulatoris. Identificar fets reals en els quals es manifeste un moviment ondulatori.",
+       "trabajado": false
+      },
+      {
+       "texto": "8.4. Relacionar la formació d’una ona amb la propagació de la pertorbació que l’origina.",
+       "trabajado": false
+      },
+      {
+       "texto": "8.5. Indicar les característiques que han de tindre els sons per a ser audibles. Descriure la naturalesa de l’emissió sonora.",
+       "trabajado": false
+      }
+     ]
+    }
+   ],
+   "actividades": [
+    RFRP_DOSSIER_DEFECTO
+   ],
+   "calificacion": "",
+   "valoracion": "",
+   "justificacion": ""
+  },
+  {
+   "gruposCE": [
+    {
+     "ce": "CE9",
+     "cc": "STEM, CPSAA, CCEC",
+     "criterios": [
+      {
+       "texto": "9.1. Identificar hidrocarburs senzills i representar-los mitjançant la seua fórmula molecular, descrivint les seues aplicacions, i reconéixer els grups funcionals presents en molècules d’especial interés.",
+       "trabajado": false
+      },
+      {
+       "texto": "9.2. Justificar la gran quantitat de compostos orgànics existents, així com la formació de macromolècules i la seua importància en els éssers vius.",
+       "trabajado": false
+      },
+      {
+       "texto": "9.3. Descriure algunes de les principals substàncies químiques aplicades en diversos àmbits de la societat: agrícola, alimentari, construcció i industrial.",
+       "trabajado": false
+      },
+      {
+       "texto": "9.4. Explicar les característiques bàsiques de compostos químics d’interés social: petroli i derivats, i fàrmacs. Explicar els perills de l’ús inadequat dels medicaments.",
+       "trabajado": false
+      },
+      {
+       "texto": "9.5. Explicar les característiques bàsiques dels processos radioactius, la seua perillositat i les seues aplicacions.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE10",
+     "cc": "STEM, CPSAA, CCEC",
+     "criterios": [
+      {
+       "texto": "10.1. Explicar els processos d’oxidació i combustió, i analitzar la seua incidència en el medi ambient.",
+       "trabajado": false
+      },
+      {
+       "texto": "10.2. Explicar les característiques dels àcids i de les bases i realitzar experiències de neutralització.",
+       "trabajado": false
+      },
+      {
+       "texto": "10.3. Utilitzar la noció de quantitat de substància per a realitzar càlculs en reaccions químiques.",
+       "trabajado": false
+      }
+     ]
+    },
+    {
+     "ce": "CE11",
+     "cc": "STEM, CPSAA, CCEC",
+     "criterios": [
+      {
+       "texto": "11.1. Utilitzar les nocions bàsiques de l’estàtica de fluids per a descriure les seues aplicacions.",
+       "trabajado": false
+      },
+      {
+       "texto": "11.2. Explicar com actuen els fluids sobre els cossos que hi suren o estan submergits aplicant el principi d’Arquímedes.",
+       "trabajado": false
+      },
+      {
+       "texto": "11.3. Identificar les forces que actuen sobre un cos, generen acceleracions o no.",
+       "trabajado": false
+      },
+      {
+       "texto": "11.4. Descriure els principis de la dinàmica i aportar a partir d’aquests una explicació científica als moviments quotidians. Determinar la importància de la força de fregament en la vida real.",
+       "trabajado": false
+      },
+      {
+       "texto": "11.5. Identificar les forces implicades en fenòmens quotidians assenyalant les interaccions del cos en relació amb altres cossos.",
+       "trabajado": false
+      },
+      {
+       "texto": "11.6. Identificar el caràcter universal de la força de la gravitació i vincular-lo a una visió del món subjecte a lleis que s’expressen en forma matemàtica.",
+       "trabajado": false
+      }
+     ]
+    }
+   ],
+   "actividades": [
+    RFRP_DOSSIER_DEFECTO
+   ],
+   "calificacion": "",
+   "valoracion": "",
+   "justificacion": ""
+  }
+ ]
 };
 const RFRP_CE_LEGEND=[
-  { ce:"CE1", enunciado:"Describir y contextualizar en el tiempo y el espacio los acontecimientos y procesos más relevantes de la historia propia y universal, identificando referentes de la evolución hacia la sociedad actual y valorando su diversidad." },
-  { ce:"CE2", enunciado:"Buscar, identificar y seleccionar la información referente a hechos históricos, geográficos y artísticos a partir de diferentes fuentes documentales, realizando un tratamiento correcto en cuanto a investigación, clasificación, recogida, organización, crítica y respeto." },
-  { ce:"CE3", enunciado:"Explicar las nociones básicas de cambio y continuidad en la historia empleando una perspectiva causal y contextualizada, reconociendo en el pasado el origen y evolución de las cuestiones más relevantes del mundo actual y expresando juicios y opiniones sobre el presente y el futuro." },
-  { ce:"CE4", enunciado:"Contrastar las identidades individuales con las colectivas, identificando las aportaciones decisivas en su construcción, reconociendo y valorando las actuaciones de tolerancia y respeto." },
-  { ce:"CE5", enunciado:"Explicar las interrelaciones económicas fundamentales entre los elementos del espacio físico y las actividades de las sociedades humanas, así como su repercusión en la sostenibilidad." },
-  { ce:"CE6", enunciado:"Contrastar los principales modelos de ocupación territorial y de organización política y económica que explican la desigualdad entre los seres humanos, tanto a escala local como global." },
-  { ce:"CE7", enunciado:"Dar argumentos desde una perspectiva crítica, fundamentada en conocimientos históricos y geográficos acerca de problemas sociales relevantes, asumiendo valores democráticos y pronunciándose en su defensa." },
-  { ce:"CE8", enunciado:"Promover y participar en proyectos cooperativos de convivencia, tomando como base la construcción histórica de la Unión Europea, que favorezcan un entorno más justo y solidario mediante la aplicación de valores y procedimientos democráticos." },
-  { ce:"CE9", enunciado:"Identificar el origen y reconocer el valor del patrimonio cultural y natural, especialmente de sus elementos geográficos, históricos y artísticos, tanto a escala local como a escala global, participando en la elaboración y difusión de propuestas que favorezcan su preservación y puesta en valor." },
+ {
+  "ce": "CE1",
+  "enunciado": "Resoldre problemes científics abordables en l’àmbit escolar a partir de treballs d’investigació de caràcter experimental."
+ },
+ {
+  "ce": "CE2",
+  "enunciado": "Analitzar i resoldre situacions problemàtiques de l’àmbit de la física i la química utilitzant la lògica científica i alternant les estratègies del treball individual amb el treball en equip."
+ },
+ {
+  "ce": "CE3",
+  "enunciado": "Utilitzar el coneixement científic com a instrument del pensament crític, interpretant i comunicant missatges científics, desenvolupant argumentacions i accedint a fonts fiables, per a distingir la informació contrastada de les faules i opinions."
+ },
+ {
+  "ce": "CE4",
+  "enunciado": "Justificar la validesa del model científic com a producte dinàmic que es va revisant i reconstruint sota la influència del context social i històric, atenent la importància de la ciència en l’avanç de les societats, així com els riscos d’un ús inadequat o interessat dels coneixements i les seues limitacions."
+ },
+ {
+  "ce": "CE5",
+  "enunciado": "Utilitzar models de física i química per a identificar, caracteritzar i analitzar alguns fenòmens naturals, així com per a explicar altres fenòmens de característiques similars."
+ },
+ {
+  "ce": "CE6",
+  "enunciado": "Utilitzar adequadament el llenguatge científic propi de la física i la química en la interpretació i transmissió d’informació."
+ },
+ {
+  "ce": "CE7",
+  "enunciado": "Interpretar correctament la informació presentada en diferents formats de representació gràfica i simbòlica utilitzats habitualment en la física i la química."
+ },
+ {
+  "ce": "CE8",
+  "enunciado": "Distingir les diferents manifestacions de l’energia i identificar les seues formes de transmissió i la seua conservació i dissipació en contextos pròxims."
+ },
+ {
+  "ce": "CE9",
+  "enunciado": "Identificar i caracteritzar les substàncies a partir de les seues propietats físiques per a relacionar els materials del nostre entorn amb l’ús que se’n fa."
+ },
+ {
+  "ce": "CE10",
+  "enunciado": "Caracteritzar els canvis químics com a transformació d’unes substàncies en altres de diferents, i reconéixer la importància de les transformacions químiques en activitats i processos quotidians."
+ },
+ {
+  "ce": "CE11",
+  "enunciado": "Identificar les interaccions com a causa de les transformacions que tenen."
+ }
 ];
 const RFRP_CC_LEGEND=[
   { sigla:"CCL", nombre:"Competencia en comunicación lingüística" },
   { sigla:"CP", nombre:"Competencia plurilingüe" },
-  { sigla:"CMCT", nombre:"Competencia matemática, ciencia y tecnológica" },
+  { sigla:"STEM", nombre:"Competència matemàtica i competència en ciència, tecnologia i enginyeria" },
   { sigla:"CD", nombre:"Competencia digital" },
   { sigla:"CPSAA", nombre:"Competencia personal, social y de aprender a aprender" },
   { sigla:"CC", nombre:"Competencia ciudadana" },
@@ -484,7 +1114,6 @@ const RFRP_VALORACION_PN=[
 function rfrpValoracionPNInfo(id){ return RFRP_VALORACION_PN.find(v=>v.id===id)||RFRP_VALORACION_PN[0]; }
 function rfrpMotivosDefault(){ const o={}; RFRP_MOTIVOS.forEach(m=>o[m.id]=false); o.otrosTexto=""; return o; }
 function rpMedidasDefault(lista){ const o={}; lista.forEach(m=>o[m.id]=false); o.otrosTexto=""; return o; }
-const RFRP_DOSSIER_DEFECTO="Elaboración de un dossier de actividades de evaluación y consolidación de los saberes básicos no conseguidos.";
 function rfrpTrimestreVacio(){ return {gruposCE:[],actividades:[RFRP_DOSSIER_DEFECTO],calificacion:"",valoracion:"",justificacion:""}; }
 function rfrpGrupoCEVacio(){ return {ce:"",cc:"",criterios:[{texto:"",trabajado:false}]}; }
 function rfrpTrimestresIniciales(nivelModelo){

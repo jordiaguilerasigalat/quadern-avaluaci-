@@ -245,7 +245,7 @@ function cxCriteriosValidosEnCatalogo(catalogoKey){
 window.cxCrearExamen=()=>{
   const grupo=grupoActual(); const f=state.ui.corForm;
   if(!f.nombre.trim()) return;
-  if(!f.bloqueId) f.bloqueId=defBloque("Prueba objetiva / examen",grupo.bloques);
+  if(!f.bloqueId) f.bloqueId=defBloque(TIPO_EXAMEN,grupo.bloques);
   const critsForm=(f.criterios||[]).filter(c=>cxCriteriosValidosEnCatalogo(grupo.catalogoKey).has(c));
   let rubricaInicial= f.tipoRub==="niveles"? cxnRubricaNueva(critsForm.map(c=>({critId:c,peso:100})),grupo.catalogoKey)
     : critsForm.length? cxRubricaDesdeCriterios(critsForm.map(c=>({critId:c,peso:100})),grupo.catalogoKey)
@@ -256,7 +256,7 @@ window.cxCrearExamen=()=>{
       rubricaInicial=cxClonarRubrica(plantilla.rubrica,grupo.catalogoKey);
     }
   }
-  const act={ id:uid(), trimestre:state.ui.trim, nombre:f.nombre.trim(), tipo:"Prueba objetiva / examen",
+  const act={ id:uid(), trimestre:state.ui.trim, nombre:f.nombre.trim(), tipo:TIPO_EXAMEN,
     bloqueId:f.bloqueId, esExamen:true, pesoBloque:"", criterios:[], sda:(f.sda||"").trim(),
     rubrica:rubricaInicial, escalarA10:true, criteriosPrevistos:critsForm };
   cxSyncCriteriosActividad(act);

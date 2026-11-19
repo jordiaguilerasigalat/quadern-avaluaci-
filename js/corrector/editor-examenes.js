@@ -242,8 +242,8 @@ window.exImportarPaquete=()=>{
       }
     }
     const ok=cxCriteriosValidosEnCatalogo(grupo.catalogoKey), mapaVar=[];
-    const act={ id:uid(), trimestre:state.ui.trim, nombre:String(p.nombre||"Examen importado"), tipo:"Prueba objetiva / examen",
-      bloqueId:defBloque("Prueba objetiva / examen",grupo.bloques), esExamen:true, pesoBloque:"", criterios:[], sda:"",
+    const act={ id:uid(), trimestre:state.ui.trim, nombre:String(p.nombre||"Examen importado"), tipo:TIPO_EXAMEN,
+      bloqueId:defBloque(TIPO_EXAMEN,grupo.bloques), esExamen:true, pesoBloque:"", criterios:[], sda:"",
       rubrica:cxClonarRubrica(p.rubrica,grupo.catalogoKey), escalarA10:p.escalarA10!==false, criteriosPrevistos:(p.criteriosPrevistos||[]).filter(c=>ok.has(c)) };
     const vs=(p.variantes||[]).map(v=>{ const nv={id:uid(),nombre:v.nombre||"Adaptada",rubrica:cxClonarRubrica(v.rubrica,grupo.catalogoKey),escalarA10:v.escalarA10!==false,alumnos:[]}; if(v.tipo==="ausencia") nv.tipo="ausencia"; mapaVar.push([v.id,nv.id]); return nv; });
     if(vs.length) act.variantes=vs;

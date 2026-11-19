@@ -80,7 +80,7 @@ function generarPortadaHTML(titulo,subtitulos,indiceItems){
   const indice=(indiceItems||[]).filter(Boolean);
   return `<div style="min-height:85vh;display:flex;flex-direction:column;justify-content:center;page-break-after:always">
     <div style="background:linear-gradient(135deg,#152a44,#25456b);color:#fff;padding:26px 30px;border-radius:12px;text-align:center">
-      <div style="font-size:1.15rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em">${esc(state.centroNombre)||"Cuaderno del profesor"}</div>
+      <div style="font-size:1.15rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em">${esc(state.centroNombre)||"Quadern d'avaluació"}</div>
       ${state.centroCodigo?`<div style="font-size:.8rem;color:rgba(255,255,255,.7);margin-top:2px">Cód. Centro: ${esc(state.centroCodigo)}</div>`:""}
       <div style="margin-top:22px;font-size:1.6rem;font-weight:700">${esc(titulo)}</div>
       ${subt}

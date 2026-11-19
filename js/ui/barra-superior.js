@@ -5,7 +5,7 @@
 
 function renderTopBar(){
   const h1=document.getElementById("pageH1");
-  if(h1){ const t=materiasEtiqueta(); const txt=t==="Cuaderno del profesor"?t:"Cuaderno · "+t; if(h1.textContent!==txt) h1.textContent=txt; }
+  if(h1){ const t=materiasEtiqueta(); const txt=t==="Quadern d'avaluació"?t:"Quadern · "+t; if(h1.textContent!==txt) h1.textContent=txt; }
   const tabs=document.getElementById("groupTabs");
   tabs.innerHTML = state.grupos.map(g=>{
     const cat=getCatalogo(g.catalogoKey);

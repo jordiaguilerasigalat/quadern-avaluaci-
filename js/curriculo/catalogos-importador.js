@@ -502,11 +502,17 @@ function pesoCEenCC(grupo,ceId,cc){
   return 100/idx.cat.ces.filter(ce=>ce.cc.includes(cc)).length;
 }
 function defBloque(tipo,bloques){
-  const t=tipo.toLowerCase();
-  const byKw=kw=>bloques.find(b=>b.label.toLowerCase().includes(kw));
+  /* Bloc proposat per a un tipus d'activitat, buscant paraules clau en el nom
+     dels blocs de FiQ (proves, laboratori, quadern, proactivitat…). Si no
+     n'hi ha cap que encaixe, el bloc amb més pes. */
+  const t=String(tipo||"").toLowerCase();
+  const byKw=(...kws)=>bloques.find(b=>kws.some(kw=>b.label.toLowerCase().includes(kw)));
   let b=null;
-  if(t.includes("diaria")||t.includes("casa")) b=byKw("diario")||byKw("casa");
-  if(!b && t.includes("actitud")) b=byKw("actitud")||byKw("hábito")||byKw("habito");
+  if(t.includes("examen")||t.includes("prova")||t.includes("prueba")) b=byKw("prova","examen","prueba");
+  else if(t.includes("laboratori")||t.includes("pràctica")) b=byKw("laboratori","experimental");
+  else if(t.includes("quadern")||t.includes("llibreta")) b=byKw("quadern","llibreta","activitats");
+  else if(t.includes("proactivitat")||t.includes("actitud")||t.includes("hàbit")) b=byKw("proactivitat","actitud","altres activitats");
+  else if(t.includes("deures")||t.includes("classe")||t.includes("problemes")||t.includes("qüestionari")||t.includes("diaria")||t.includes("casa")) b=byKw("activitats","quadern","llibreta","diari");
   if(!b) b=bloques.reduce((max,cur)=>cur.peso>max.peso?cur:max,bloques[0]);
   return b.id;
 }
