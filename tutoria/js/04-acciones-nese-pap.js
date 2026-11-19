@@ -78,7 +78,7 @@ function updateField(nivel, grupo, idx, field, value) {
     const sh = tw.parentElement;
     if (sh) {
       const meta = sh.querySelector('.section-meta');
-      if (meta) meta.textContent = `${data[nivel][grupo].length} alumno${data[nivel][grupo].length===1?'':'s'} registrado${data[nivel][grupo].length===1?'':'s'}`;
+      if (meta) meta.textContent = `${data[nivel][grupo].length} alumne${data[nivel][grupo].length===1?'':'s'} registrat${data[nivel][grupo].length===1?'':'s'}`;
     }
   }
   // Re-render table rows for visual fields (row color, badges, trend)

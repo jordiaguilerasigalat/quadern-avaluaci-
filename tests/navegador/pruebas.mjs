@@ -61,7 +61,7 @@ export const PRUEBAS = [
   { nombre: 'tutoria-guardado', descripcion: 'Tutoría: alta de alumnado, guardado y recarga', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     await tutoriaConAlumnos(p, t.url, '1º ESO', 'A', ['García López, Ana', 'Pérez Ruiz, Luis']);
-    t.ok(await p.evaluate(() => /2 alumnos registrados/.test(document.body.innerText)), 'el contador dice «2 alumnos registrados»');
+    t.ok(await p.evaluate(() => /2 alumnes registrats/.test(document.body.innerText)), 'el contador dice «2 alumnes registrats»');
     t.ok(await p.evaluate(() => document.querySelector('table[id^="tbl-"] thead th:not(.cb-col)').textContent.includes('Alumno')), '«Alumno / a» es la primera columna');
     await p.reload(); await esperar(1500);
     t.ok((await p.evaluate(() => data['1º ESO'].A.map(a => a.nombre))).length === 2, 'tras recargar sigue el alumnado');

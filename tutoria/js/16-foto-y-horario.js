@@ -425,7 +425,7 @@ function printObservacionesGrupo() {
   </div>
 
   <div class="info-row">
-    <span class="info-pill">👥 ${total} alumnos</span>
+    <span class="info-pill">👥 ${total} alumnes</span>
     ${nese > 0 ? `<span class="info-pill" style="background:#f5f3ff;color:#5b21b6;border-color:#c4b5fd;">NESE: ${nese}</span>` : ''}
     ${rep  > 0 ? `<span class="info-pill" style="background:#fff7ed;color:#c2410c;border-color:#fed7aa;">Repetidores: ${rep}</span>`  : ''}
   </div>

@@ -116,7 +116,7 @@ function confirmRenameGrupo() {
 async function confirmDeleteGrupo(nivel, grupo) {
   const alumnos = data[nivel][grupo].length;
   const msg = alumnos > 0
-    ? `¿Eliminar el grupo ${nivel} ${grupo}? Contiene ${alumnos} alumno${alumnos!==1?'s':''} y se perderán todos sus datos.`
+    ? `¿Eliminar el grupo ${nivel} ${grupo}? Contiene ${alumnos} alumne${alumnos!==1?'s':''} y se perderán todos sus datos.`
     : `¿Eliminar el grupo ${nivel} ${grupo}?`;
 
   if (!await confirmar(msg)) return;
@@ -623,7 +623,7 @@ function executeJsonImport() {
   closeJsonImportModal();
   renderAll();
   const totalAl = Object.values(data).reduce((s,nv)=>s+Object.values(nv).reduce((s2,gr)=>s2+gr.length,0),0);
-  showToast(`✓ JSON importado (${mode==='overwrite'?'sobrescrito':'combinado'}) — ${totalAl} alumnos`);
+  showToast(`✓ JSON importado (${mode==='overwrite'?'sobrescrito':'combinado'}) — ${totalAl} alumnes`);
   markDirty();
 }
 
@@ -697,23 +697,23 @@ function renderResumen() {
     <div class="kpi-card" style="${kpiColor('var(--purple)')}">
       <div class="kpi-label">NESE</div>
       <div class="kpi-value" style="color:var(--purple)">${totalNese}</div>
-      ${totalAl ? `<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(totalNese/totalAl*100)}% del alumnado</div>` : ''}
+      ${totalAl ? `<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(totalNese/totalAl*100)}% de l'alumnat</div>` : ''}
     </div>
     <div class="kpi-card" style="${kpiColor('var(--orange)')}">
       <div class="kpi-label">Compensatoria</div>
       <div class="kpi-value" style="color:var(--orange)">${totalComp}</div>
-      ${totalAl ? `<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(totalComp/totalAl*100)}% del alumnado</div>` : ''}
+      ${totalAl ? `<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(totalComp/totalAl*100)}% de l'alumnat</div>` : ''}
     </div>
     <div class="kpi-card" style="${kpiColor('var(--yellow)')}">
       <div class="kpi-label">Repetidores</div>
       <div class="kpi-value" style="color:var(--yellow)">${totalRep}</div>
-      ${totalAl ? `<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(totalRep/totalAl*100)}% del alumnado</div>` : ''}
+      ${totalAl ? `<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(totalRep/totalAl*100)}% de l'alumnat</div>` : ''}
     </div>
     ${totalAbandono > 0 ? `
     <div class="kpi-card" style="${kpiColor('#9aa3bb')}">
       <div class="kpi-label">🚪 Abandono</div>
       <div class="kpi-value" style="color:#9aa3bb">${totalAbandono}</div>
-      ${totalAl ? `<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(totalAbandono/totalAl*100)}% del alumnado</div>` : ''}
+      ${totalAl ? `<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(totalAbandono/totalAl*100)}% de l'alumnat</div>` : ''}
     </div>` : ''}
     <div class="kpi-card" style="${kpiColor('var(--orange)')}">
       <div class="kpi-label">FPB · II Eval.</div>
@@ -727,13 +727,13 @@ function renderResumen() {
     <div class="kpi-card" style="${kpiColor('var(--yellow)')}">
       <div class="kpi-label">📚 Pend. III Eval.</div>
       <div class="kpi-value" style="color:var(--yellow)">${totalConPendIII}</div>
-      ${totalAl ? `<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(totalConPendIII/totalAl*100)}% del alumnado</div>` : ''}
+      ${totalAl ? `<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(totalConPendIII/totalAl*100)}% de l'alumnat</div>` : ''}
     </div>` : ''}
     ${totalConPendExtr > 0 ? `
     <div class="kpi-card" style="${kpiColor('var(--orange)')}">
       <div class="kpi-label">📚 Pend. Extr.</div>
       <div class="kpi-value" style="color:var(--orange)">${totalConPendExtr}</div>
-      ${totalAl ? `<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(totalConPendExtr/totalAl*100)}% del alumnado</div>` : ''}
+      ${totalAl ? `<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(totalConPendExtr/totalAl*100)}% de l'alumnat</div>` : ''}
     </div>` : ''}
   </div>`;
 
@@ -861,7 +861,7 @@ function renderResumen() {
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           ${positiveStat}
           <span class="semaforo ${nivSemClass}">${nivSemLabel}</span>
-          <span class="nivel-summary-meta">${tot} alumnos · ${grupos.length} grupo${grupos.length>1?'s':''}</span>
+          <span class="nivel-summary-meta">${tot} alumnes · ${grupos.length} grup${grupos.length>1?'s':''}</span>
         </div>
       </div>
       <div class="nivel-summary-rows">${rows}</div>
@@ -920,7 +920,7 @@ function renderResumen() {
     return `<div class="nivel-summary-card">
       <div class="nivel-summary-header">
         <span class="nivel-summary-name">${_tEsc(nivel)}</span>
-        <span class="nivel-summary-meta">${tot} alumnos · ${cast+val} votos emitidos</span>
+        <span class="nivel-summary-meta">${tot} alumnes · ${cast+val} vots emesos</span>
       </div>
       <div class="nivel-summary-rows">
         <div class="nivel-summary-row">
@@ -954,19 +954,19 @@ function renderResumen() {
       <div class="kpi-card" style="${kpiColor('var(--accent)')}">
         <div class="kpi-label">Castellano</div>
         <div class="kpi-value" style="color:var(--accent)">${lenguaTotCast}</div>
-        ${totalAl?`<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(lenguaTotCast/totalAl*100)}% del alumnado</div>`:''}
+        ${totalAl?`<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(lenguaTotCast/totalAl*100)}% de l'alumnat</div>`:''}
         ${_promoLine(castPromo, castNoPromo, lenguaTotCast)}
       </div>
       <div class="kpi-card" style="${kpiColor('var(--green)')}">
         <div class="kpi-label">Valenciano</div>
         <div class="kpi-value" style="color:var(--green)">${lenguaTotVal}</div>
-        ${totalAl?`<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(lenguaTotVal/totalAl*100)}% del alumnado</div>`:''}
+        ${totalAl?`<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(lenguaTotVal/totalAl*100)}% de l'alumnat</div>`:''}
         ${_promoLine(valPromo, valNoPromo, lenguaTotVal)}
       </div>
       <div class="kpi-card" style="${kpiColor('var(--text3)')}">
         <div class="kpi-label">No vota / Sin datos</div>
         <div class="kpi-value" style="color:var(--text3)">${lenguaTotNV}</div>
-        ${totalAl?`<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(lenguaTotNV/totalAl*100)}% del alumnado</div>`:''}
+        ${totalAl?`<div style="font-size:10px;color:var(--text3);margin-top:4px">${Math.round(lenguaTotNV/totalAl*100)}% de l'alumnat</div>`:''}
         ${_promoLine(nvPromo, nvNoPromo, lenguaTotNV)}
       </div>
     </div>
@@ -1027,7 +1027,7 @@ function renderResumen() {
       <div class="fpb-panel-header" style="background:${color}18;border-color:${color}4d;color:${color};flex-wrap:wrap;gap:6px;">
         <span>${icon} ${_tEsc(destino)} — ${label}</span>
         <span style="display:flex;align-items:center;gap:6px;margin-left:auto;">
-          <span style="font-size:11px;font-weight:400;color:var(--text2)">${list.length} alumno${list.length!==1?'s':''}</span>
+          <span style="font-size:11px;font-weight:400;color:var(--text2)">${list.length} alumne${list.length!==1?'s':''}</span>
           ${printBtn}
         </span>
       </div>
@@ -1131,30 +1131,30 @@ function renderResumen() {
   })();
 
   html += `<div class="resumen-block">
-    <div class="resumen-block-title">🎓 Alumnado propuesto para FPB</div>
+    <div class="resumen-block-title">🎓 Alumnat proposat per a FPB</div>
     <div class="fpb-grid">
-      ${fpbPanel('propuesta2','Propuesta II Evaluación')}
-      ${fpbPanel('promociona','Decisión Final')}
+      ${fpbPanel('propuesta2','Proposta II Avaluació')}
+      ${fpbPanel('promociona','Decisió Final')}
     </div>
   </div>`;
 
   // ── PAC section ──
   const _pac = '2 PAC';
-  const _pac2 = destinoPanel('propuesta2','Propuesta II Evaluaci\xF3n',_pac,'\uD83D\uDCD8','var(--accent)');
-  const _pac3 = destinoPanel('promociona','Decisi\xF3n Final',_pac,'\uD83D\uDCD8','var(--accent)');
-  html += '<div class="resumen-block"><div class="resumen-block-title">\uD83D\uDCD8 Alumnado propuesto para PAC</div><div class="fpb-grid">' + _pac2 + _pac3 + '</div></div>';
+  const _pac2 = destinoPanel('propuesta2','Proposta II Avaluaci\xF3',_pac,'\uD83D\uDCD8','var(--accent)');
+  const _pac3 = destinoPanel('promociona','Decisi\xF3 Final',_pac,'\uD83D\uDCD8','var(--accent)');
+  html += '<div class="resumen-block"><div class="resumen-block-title">\uD83D\uDCD8 Alumnat proposat per a PAC</div><div class="fpb-grid">' + _pac2 + _pac3 + '</div></div>';
 
   // ── 3 PDC section ──
   const _3pdc = '3\xBA PDC';
-  const _3pdc2 = destinoPanel('propuesta2','Propuesta II Evaluaci\xF3n',_3pdc,'\uD83D\uDCD7','var(--green)');
-  const _3pdc3 = destinoPanel('promociona','Decisi\xF3n Final',_3pdc,'\uD83D\uDCD7','var(--green)');
-  html += '<div class="resumen-block"><div class="resumen-block-title">\uD83D\uDCD7 Alumnado propuesto para 3\xBA PDC</div><div class="fpb-grid">' + _3pdc2 + _3pdc3 + '</div></div>';
+  const _3pdc2 = destinoPanel('propuesta2','Proposta II Avaluaci\xF3',_3pdc,'\uD83D\uDCD7','var(--green)');
+  const _3pdc3 = destinoPanel('promociona','Decisi\xF3 Final',_3pdc,'\uD83D\uDCD7','var(--green)');
+  html += '<div class="resumen-block"><div class="resumen-block-title">\uD83D\uDCD7 Alumnat proposat per a 3r PDC</div><div class="fpb-grid">' + _3pdc2 + _3pdc3 + '</div></div>';
 
   // ── 4 PDC section ──
   const _4pdc = '4\xBA PDC';
-  const _4pdc2 = destinoPanel('propuesta2','Propuesta II Evaluaci\xF3n',_4pdc,'\uD83D\uDCD9','var(--purple)');
-  const _4pdc3 = destinoPanel('promociona','Decisi\xF3n Final',_4pdc,'\uD83D\uDCD9','var(--purple)');
-  html += '<div class="resumen-block"><div class="resumen-block-title">\uD83D\uDCD9 Alumnado propuesto para 4\xBA PDC</div><div class="fpb-grid">' + _4pdc2 + _4pdc3 + '</div></div>';
+  const _4pdc2 = destinoPanel('propuesta2','Proposta II Avaluaci\xF3',_4pdc,'\uD83D\uDCD9','var(--purple)');
+  const _4pdc3 = destinoPanel('promociona','Decisi\xF3 Final',_4pdc,'\uD83D\uDCD9','var(--purple)');
+  html += '<div class="resumen-block"><div class="resumen-block-title">\uD83D\uDCD9 Alumnat proposat per a 4t PDC</div><div class="fpb-grid">' + _4pdc2 + _4pdc3 + '</div></div>';
 
   // ── 4º ESO Titulación — desglose por destino (Bach Científico / Bach HS / CFGM) ──
   (function() {
@@ -1186,11 +1186,11 @@ function renderResumen() {
               <span class="badge badge-gray" style="font-size:10px;margin-left:4px">${_tEsc(a._grupo)}</span>
               <span class="grupo-link" style="margin-left:auto" onclick="selectNivel('${jsAttr(n4)}');currentGrupos['${jsAttr(n4)}']='${jsAttr(a._grupo)}';renderAll();">Ver grupo</span>
             </div>`).join('')
-          : `<div class="fpb-empty">Sin alumnos → ${_tEsc(dest)}</div>`;
+          : `<div class="fpb-empty">Sense alumnes → ${_tEsc(dest)}</div>`;
         return `<div class="fpb-panel" style="--destino-color:${color}">
           <div class="fpb-panel-header" style="background:${color}18;border-color:${color}4d;color:${color}">
             <span>${icon} ${_tEsc(dest)} — ${evalLabel}</span>
-            <span style="font-size:11px;font-weight:400;color:var(--text2);margin-left:auto">${list.length} alumno${list.length!==1?'s':''}</span>
+            <span style="font-size:11px;font-weight:400;color:var(--text2);margin-left:auto">${list.length} alumne${list.length!==1?'s':''}</span>
           </div>
           <div class="fpb-list">${rows}</div>
         </div>`;
@@ -1198,12 +1198,12 @@ function renderResumen() {
 
       // Show sinDestino only if any exist
       const sinDestinoHtml = sinDestino.length ? `<div style="margin-top:8px;padding:8px 12px;background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.3);border-radius:8px;font-size:12px;color:var(--yellow);">
-        ⚠ ${sinDestino.length} alumno${sinDestino.length!==1?'s':''} con Titulación pero sin destino asignado
+        ⚠ ${sinDestino.length} alumne${sinDestino.length!==1?'s':''} con Titulación pero sin destino asignado
       </div>` : '';
 
       return `<div>
         <div style="font-size:11px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding:6px 10px;background:rgba(124,92,252,0.1);border-radius:6px;">
-          🎓 Titulación ${evalLabel} — ${titulanAll.length} alumno${titulanAll.length!==1?'s':''} en total
+          🎓 Titulació ${evalLabel} — ${titulanAll.length} alumne${titulanAll.length!==1?'s':''} en total
         </div>
         <div class="fpb-grid">${panels}</div>
         ${sinDestinoHtml}
@@ -1213,8 +1213,8 @@ function renderResumen() {
     html += `<div class="resumen-block">
       <div class="resumen-block-title">🎓 4º ESO — Titulación por destino (Bach. Científico / Bach. HS / CFGM)</div>
       <div style="display:flex;flex-direction:column;gap:20px;">
-        ${titulaDestPanel('propuesta2', 'II Evaluación')}
-        ${titulaDestPanel('promociona', 'Decisión Final')}
+        ${titulaDestPanel('propuesta2', 'II Avaluació')}
+        ${titulaDestPanel('promociona', 'Decisió Final')}
       </div>
     </div>`;
   })();
@@ -1278,7 +1278,7 @@ function renderResumen() {
         <div style="padding:9px 14px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
           <span style="font-size:13px;font-weight:700;color:var(--text)">${_tEsc(n)}</span>
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-            <span style="font-size:11px;color:var(--text3)">${conPend} alumno${conPend!==1?'s':''} con pendientes · ${sorted.length} materia${sorted.length!==1?'s':''}</span>
+            <span style="font-size:11px;color:var(--text3)">${conPend} alumne${conPend!==1?'s':''} con pendientes · ${sorted.length} materia${sorted.length!==1?'s':''}</span>
             <button onclick="printPendientesNivel('${jsAttr(n)}')" style="padding:3px 12px;border-radius:6px;border:1px solid var(--yellow);background:rgba(245,200,66,0.1);color:var(--yellow);font-family:inherit;font-size:10px;font-weight:700;cursor:pointer;">🖨 Informe ${_tEsc(n)}</button>
           </div>
         </div>
@@ -1483,7 +1483,7 @@ function renderVacantes() {
       return `<div class="nivel-summary-card">
         <div class="nivel-summary-header">
           <span class="nivel-summary-name">${_tEsc(r.target)}</span>
-          <span class="nivel-summary-meta">${r.total} alumnos · <strong style="color:${color}">${unidades} unidad${unidades!==1?'es':''}</strong>${r.divUnits?` (+1 ${r.divLabel})`:''}</span>
+          <span class="nivel-summary-meta">${r.total} alumnes · <strong style="color:${color}">${unidades} unitat${unidades!==1?'s':''}</strong>${r.divUnits?` (+1 ${r.divLabel})`:''}</span>
         </div>
         <div style="padding:7px 14px 2px;font-size:11px;color:var(--text2);display:flex;gap:12px;flex-wrap:wrap">
           <span>↑ ${r.promueven} promocionan de ${_tEsc(r.prevNivel)}</span>
@@ -1519,7 +1519,7 @@ function renderVacantes() {
     const primCard = `<div class="nivel-summary-card">
       <div class="nivel-summary-header">
         <span class="nivel-summary-name">${_tEsc(p.target)}</span>
-        <span class="nivel-summary-meta">${p.total} alumnos · <strong style="color:${color}">${u1} unidad${u1!==1?'es':''}</strong></span>
+        <span class="nivel-summary-meta">${p.total} alumnes · <strong style="color:${color}">${u1} unitat${u1!==1?'s':''}</strong></span>
       </div>
       <div style="padding:7px 14px 2px;font-size:11px;color:var(--text2);display:flex;gap:12px;flex-wrap:wrap">
         <span>🏫 ${p.nuCast + p.nuVal} nueva entrada (manual)</span>
@@ -1544,7 +1544,7 @@ function renderVacantes() {
     const bachCard = (esp, d, col, icon) => `<div class="nivel-summary-card">
       <div class="nivel-summary-header">
         <span class="nivel-summary-name">${icon} 1º Bach. ${esp}</span>
-        <span class="nivel-summary-meta">${d.total} alumnos · <strong style="color:${col}">${d.units} unidad${d.units!==1?'es':''}</strong></span>
+        <span class="nivel-summary-meta">${d.total} alumnes · <strong style="color:${col}">${d.units} unidad${d.units!==1?'es':''}</strong></span>
       </div>
       <div class="nivel-summary-rows">
         <div class="nivel-summary-row"><span class="ns-label">🎓 Titulan de 4º ESO</span><span class="ns-num" style="color:${col}">${d.tit}</span><span class="ns-pct"></span></div>
@@ -1558,7 +1558,7 @@ function renderVacantes() {
     const seg2Card = (esp, d, col, icon) => `<div class="nivel-summary-card">
       <div class="nivel-summary-header">
         <span class="nivel-summary-name">${icon} 2º Bach. ${esp}</span>
-        <span class="nivel-summary-meta">${d.total} alumnos · <strong style="color:${col}">${d.units} unidad${d.units!==1?'es':''}</strong></span>
+        <span class="nivel-summary-meta">${d.total} alumnes · <strong style="color:${col}">${d.units} unidad${d.units!==1?'es':''}</strong></span>
       </div>
       <div class="nivel-summary-rows">
         <div class="nivel-summary-row"><span class="ns-label">↑ Promocionan de 1º Bach.</span><span class="ns-num" style="color:${col}">${d.prom}</span><span class="ns-pct"></span></div>

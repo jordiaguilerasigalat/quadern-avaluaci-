@@ -74,7 +74,7 @@ function printPropuestasFinales() {
     return `<section class="nivel-block">
       <div class="nivel-head">
         <h2>${esc(nivel)}</h2>
-        <span class="nivel-meta">${nTot} alumno${nTot!==1?'s':''}</span>
+        <span class="nivel-meta">${nTot} alumne${nTot!==1?'s':''}</span>
       </div>
       <div class="chips">
         ${chip('Promocionan',nPromo,'#1a9d6b')}
@@ -368,7 +368,7 @@ function _buildPromocionaGroupSection(nivel, grupo) {
 
   <div class="footer">
     <span>Gestor de Tutoría — ${esc(iesName)}</span>
-    <span>Generado el ${new Date().toLocaleDateString('es-ES')} · ${total} alumno${total!==1?'s':''}</span>
+    <span>Generado el ${new Date().toLocaleDateString('es-ES')} · ${total} alumne${total!==1?'s':''}</span>
   </div>
   </section>`;
 }
@@ -478,7 +478,7 @@ function printDestinoList(propField, destino, icon, label, color) {
 <body>
   <h1>${icon} ${label} → ${_tEsc(destino)}</h1>
   <div class="meta">
-    ${_tEsc(iesName)} &nbsp;·&nbsp; ${dateStr} &nbsp;·&nbsp; <strong>${list.length} alumno${list.length!==1?'s':''}</strong>
+    ${_tEsc(iesName)} &nbsp;·&nbsp; ${dateStr} &nbsp;·&nbsp; <strong>${list.length} alumne${list.length!==1?'s':''}</strong>
   </div>
   <table>
     <thead>
@@ -564,7 +564,7 @@ function printPendientesNivel(nivel) {
   const rankRows = rankSorted.map(([m,c],i) =>
     `<tr><td style="text-align:center;color:#888;font-size:9pt">${i+1}</td>
      <td>${_tEsc(m)}</td>
-     <td style="text-align:center;font-weight:700;color:#b45309">${_tEsc(c)} alumno${c!==1?'s':''}</td></tr>`
+     <td style="text-align:center;font-weight:700;color:#b45309">${_tEsc(c)} alumne${c!==1?'s':''}</td></tr>`
   ).join('');
 
   const html = `<!DOCTYPE html>
@@ -680,7 +680,7 @@ function printPendientesReport() {
       <div class="nivel-section">
         <div class="nivel-header">
           <span>${_tEsc(n)}</span>
-          <span class="nivel-count">${todosAlumnos.length} alumno${todosAlumnos.length!==1?'s':''} con materias pendientes</span>
+          <span class="nivel-count">${todosAlumnos.length} alumne${todosAlumnos.length!==1?'s':''} con materias pendientes</span>
         </div>
         <table>
           <thead>
@@ -812,7 +812,7 @@ function printPendientesReport() {
     <div class="doc-meta">
       <span>🏫 ${_tEsc(iesName)}</span>
       <span>📅 ${dateStr}</span>
-      <span>👥 ${totalAlumnosConPend} alumnos con materias pendientes</span>
+      <span>👥 ${totalAlumnosConPend} alumnes con materias pendientes</span>
     </div>
   </div>
 
@@ -1074,7 +1074,7 @@ function openPendientesPanel(e, nivel, grupo, idx, field) {
         })()}
       </div>
       <div class="pendientes-footer">
-        <span style="font-size:11px;color:var(--text3)">${materias.length} materias</span>
+        <span style="font-size:11px;color:var(--text3)">${materias.length} matèries</span>
         <div style="display:flex;gap:6px;">
           <button class="btn btn-ghost btn-sm" onclick="
             this.closest('.pendientes-panel').querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);

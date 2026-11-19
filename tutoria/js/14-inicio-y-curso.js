@@ -29,9 +29,9 @@ function syncDateInputs() {
     `<span style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">
        📅 ${_tEsc(nivel)} — Fechas de evaluación:
      </span>` +
-    inp('dateEval1', d.eval1, 'var(--accent)', 'I Evaluación',  'eval1') +
-    inp('dateEval2', d.eval2, 'var(--green)',  'II Evaluación', 'eval2') +
-    inp('dateEval3', d.eval3, 'var(--orange)', 'III Evaluación','eval3') +
+    inp('dateEval1', d.eval1, 'var(--accent)', 'I Avaluació',  'eval1') +
+    inp('dateEval2', d.eval2, 'var(--green)',  'II Avaluació', 'eval2') +
+    inp('dateEval3', d.eval3, 'var(--orange)', 'III Avaluació','eval3') +
     `<span style="font-size:11px;color:var(--text3);margin-left:auto;">La edad se calcula en la fecha de cada sesión de evaluación</span>`;
 }
 
@@ -463,7 +463,7 @@ function renderICStep() {
 
     body.innerHTML = `
       <div class="ic-summary">
-        <span class="ic-pill blue">📄 ${icState.rows.length} alumnos en CSV</span>
+        <span class="ic-pill blue">📄 ${icState.rows.length} alumnes en CSV</span>
         <span class="ic-pill blue">📋 ${icState.plan.length} grupos detectados</span>
         <span class="ic-pill green">✓ ${ok} grupos listos</span>
         ${create ? `<span class="ic-pill yellow">⚡ ${create} grupos por crear</span>` : ''}
@@ -496,7 +496,7 @@ function renderICStep() {
       <button class="btn btn-ghost" onclick="icState.step=1;renderICStep()">← Atrás</button>
       <button class="btn btn-primary" onclick="icExecute()"
         ${importable.length===0?'disabled style="opacity:0.5;cursor:not-allowed"':''}>
-        🏫 Importar ${total} alumnos en ${importable.length} grupos
+        🏫 Importar ${total} alumnes en ${importable.length} grupos
       </button>
     `;
 
@@ -699,5 +699,5 @@ function icExecute() {
   renderICStep();
   renderAll();
   markDirty();
-  showToast(`✅ ${result.reduce((s,r)=>s+r.count,0)} alumnos importados en ${result.length} grupos`);
+  showToast(`✅ ${result.reduce((s,r)=>s+r.count,0)} alumnes importados en ${result.length} grupos`);
 }

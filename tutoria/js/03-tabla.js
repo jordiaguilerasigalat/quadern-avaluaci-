@@ -49,7 +49,7 @@ function renderNivelTabs() {
     });
     const progressClass = !totalAl ? 'empty' : pendAl === 0 ? 'complete' : 'partial';
     const progressLabel = !totalAl ? '—' : pendAl === 0 ? '✓' : `${pendAl}⚠`;
-    const progressBadge = `<span class="tab-progress ${progressClass}" title="${pendAl === 0 ? 'Todas las decisiones tomadas' : pendAl + ' pendientes'}">${progressLabel}</span>`;
+    const progressBadge = `<span class="tab-progress ${progressClass}" title="${pendAl === 0 ? 'Todas las decisiones tomadas' : pendAl + ' pendents'}">${progressLabel}</span>`;
     return `
     <div class="nivel-tab ${n === currentNivel ? 'active' : ''}" onclick="selectNivel('${jsAttr(n)}')" style="display:flex;align-items:center;gap:6px;">
       <span>${_tEsc(n)}</span>
@@ -137,7 +137,7 @@ function renderMain() {
     if (grupos.length > 1) {
       const delBtn = document.createElement('button');
       delBtn.className = 'grupo-tab-del';
-      delBtn.title = `Eliminar grupo ${g}`;
+      delBtn.title = `Eliminar el grup ${g}`;
       delBtn.dataset.nivel = nivel;
       delBtn.dataset.grupo = g;
       delBtn.textContent = '✕';
@@ -236,7 +236,7 @@ function renderGrupoContent(mc, grupoBlock, nivel, grupo, alumnos) {
   sh.innerHTML = `
     <div>
       <div class="section-title">📋 Tabla de Evaluación — ${_tEsc(nivel)} ${_tEsc(grupo)}</div>
-      <div class="section-meta">${alumnos.length} alumno${alumnos.length===1?'':'s'} registrado${alumnos.length===1?'':'s'}</div>
+      <div class="section-meta">${alumnos.length} alumne${alumnos.length===1?'':'s'} registrat${alumnos.length===1?'':'s'}</div>
     </div>
     <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
       <div style="display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:8px 14px;">
@@ -759,7 +759,7 @@ function openColManager(e, nivel, grupo) {
     return Object.values(panelSel).filter(Boolean).length;
   }
 
-  const evalTabLabel = { eval1: 'I Evaluación', eval2: 'II Evaluación', eval3: 'Evaluación Final' }[evalTab];
+  const evalTabLabel = { eval1: 'I Avaluació', eval2: 'II Avaluació', eval3: 'Avaluació Final' }[evalTab];
 
   function renderPanel() {
     const hiddenCount = cs.visible.filter((v, i) => !v && !cs.deleted[i]).length;
@@ -945,7 +945,7 @@ function updateTable(nivel, grupo) {
   const rawAlumnos = data[nivel][grupo];
   // Contador de la cabecera de la sección («N alumnos registrados»), también al añadir o quitar.
   const _meta = tw.parentElement && tw.parentElement.querySelector('.section-meta');
-  if (_meta) _meta.textContent = `${rawAlumnos.length} alumno${rawAlumnos.length===1?'':'s'} registrado${rawAlumnos.length===1?'':'s'}`;
+  if (_meta) _meta.textContent = `${rawAlumnos.length} alumne${rawAlumnos.length===1?'':'s'} registrat${rawAlumnos.length===1?'':'s'}`;
 
   // Render filter bar
   renderFilterBar(nivel, grupo);
@@ -959,7 +959,7 @@ function updateTable(nivel, grupo) {
   if (frc) {
     const fs = getFilterState(key);
     if (Object.keys(fs).length) {
-      frc.textContent = `${filtered.length} de ${rawAlumnos.length} alumnos`;
+      frc.textContent = `${filtered.length} de ${rawAlumnos.length} alumnes`;
       frc.style.display = '';
     } else {
       frc.textContent = '';
@@ -1315,7 +1315,7 @@ function updateTable(nivel, grupo) {
       ? ` | <span style="color:var(--red);font-weight:600">⚠ ${pendienteCount} sin decisión final</span>`
       : ` | <span style="color:var(--green);font-weight:600">✓ Todas las decisiones tomadas</span>`;
     criticalStr = criticalCount > 0
-      ? ` | <span style="color:var(--red);font-weight:700">🚨 ${criticalCount} alumno${criticalCount>1?'s':''} crítico${criticalCount>1?'s':''}</span>`
+      ? ` | <span style="color:var(--red);font-weight:700">🚨 ${criticalCount} alumne${criticalCount>1?'s':''} crític${criticalCount>1?'s':''}</span>`
       : '';
     const conPendTotal = rawAlumnos.filter(a=>(a.pendientesIII||[]).length+(a.pendientesExtr||[]).length>0).length;
     pendientesFooterStr = conPendTotal > 0
@@ -1333,7 +1333,7 @@ function updateTable(nivel, grupo) {
 
   html += `</tbody></table></div>
     <div class="table-footer">
-      <span>${rawAlumnos.length} alumnos | ${rawAlumnos.filter(a=>a.nese==='Sí').length} NESE | ${rawAlumnos.filter(a=>a.compensatoria==='Sí').length} Comp.${pendienteStr}${criticalStr}${abandonoFooterStr}${pendientesFooterStr}</span>
+      <span>${rawAlumnos.length} alumnes | ${rawAlumnos.filter(a=>a.nese==='Sí').length} NESE | ${rawAlumnos.filter(a=>a.compensatoria==='Sí').length} Comp.${pendienteStr}${criticalStr}${abandonoFooterStr}${pendientesFooterStr}</span>
       <span style="display:flex;align-items:center;gap:6px;">
         <span style="font-size:10px;color:var(--text3)">${pctDecision}% decidido</span>
         <div class="decision-progress-bar">
@@ -1637,7 +1637,7 @@ function _updateBulkBar() {
   if (count > 0) {
     bar.style.display = 'flex';
     if (countEl) countEl.textContent = count;
-    if (labelEl) labelEl.textContent = `alumno${count !== 1 ? 's' : ''} seleccionado${count !== 1 ? 's' : ''}`;
+    if (labelEl) labelEl.textContent = `alumne${count !== 1 ? 's' : ''} seleccionat${count !== 1 ? 's' : ''}`;
   } else {
     bar.style.display = 'none';
   }
@@ -1685,7 +1685,7 @@ function applyBulkEdit(field, value) {
   withUndo(nivel, grupo, () => {
     indices.forEach(idx => updateField(nivel, grupo, idx, field, value));
   });
-  showToast(`✅ ${indices.length} alumno${indices.length !== 1 ? 's' : ''} actualizados`);
+  showToast(`✅ ${indices.length} alumne${indices.length !== 1 ? 's' : ''} actualizados`);
 }
 
 // Bulk edit for propuesta/promociona fields (object with tipo + destino)
@@ -1713,7 +1713,7 @@ function applyBulkEditPropTipo(field, tipo) {
     updateTabProgress(nivel, grupo);
     if (currentNivel === '__home__') { clearTimeout(_resumenDebounce); _resumenDebounce = setTimeout(renderResumen, 400); }
   }
-  showToast(`✅ ${indices.length} alumno${indices.length !== 1 ? 's' : ''} actualizados`);
+  showToast(`✅ ${indices.length} alumne${indices.length !== 1 ? 's' : ''} actualizados`);
 }
 
 // Bulk edit destino for propuesta/promociona fields (keeps existing tipo)
@@ -1741,7 +1741,7 @@ function applyBulkEditPropDestino(field, destino) {
     if (currentNivel === '__home__') { clearTimeout(_resumenDebounce); _resumenDebounce = setTimeout(renderResumen, 400); }
   }
   const destLabel = destino || 'sin destino';
-  showToast(`✅ Destino "${destLabel}" → ${indices.length} alumno${indices.length !== 1 ? 's' : ''}`);
+  showToast(`✅ Destino "${destLabel}" → ${indices.length} alumne${indices.length !== 1 ? 's' : ''}`);
 }
 
 // Fill the bulk "Destino" dropdowns (I, II y Final) with the same options as the per-student panel
@@ -1873,7 +1873,7 @@ function updateStats(nivel, grupo) {
 
   const comp = alumnos.filter(a => a.compensatoria === 'Sí').length;
   html += card('Con NESE', nese, 'yellow');
-  if (comp > 0) html += card('Compensatoria', comp, 'orange', `${Math.round(comp/total*100)}% del grupo`);
+  if (comp > 0) html += card('Compensatoria', comp, 'orange', `${Math.round(comp/total*100)}% del grup`);
   html += card('Repetidores curso', rep, 'orange');
   if (abandonan > 0) html += card('Abandono', abandonan, 'gray');
   html += card('Ø Mat. I Eval.', avgE1, 'blue');
@@ -1883,8 +1883,8 @@ function updateStats(nivel, grupo) {
   // Pendientes
   const conPendIII  = alumnos.filter(a => (a.pendientesIII ||[]).length > 0).length;
   const conPendExtr = alumnos.filter(a => (a.pendientesExtr||[]).length > 0).length;
-  if (conPendIII > 0)  html += card('Con pend. III Ev.', conPendIII,  'yellow', `${Math.round(conPendIII /total*100)}% del grupo`);
-  if (conPendExtr > 0) html += card('Con pend. Extr.',   conPendExtr, 'orange', `${Math.round(conPendExtr/total*100)}% del grupo`);
+  if (conPendIII > 0)  html += card('Con pend. III Ev.', conPendIII,  'yellow', `${Math.round(conPendIII /total*100)}% del grup`);
+  if (conPendExtr > 0) html += card('Con pend. Extr.',   conPendExtr, 'orange', `${Math.round(conPendExtr/total*100)}% del grup`);
 
   el.innerHTML = html;
 }
@@ -2128,7 +2128,7 @@ function _updateChartsInner(nivel, grupo) {
         responsive: true, maintainAspectRatio: false, cutout: '65%',
         plugins: {
           legend: { position: 'bottom', labels: { ...defaults, padding: 14, boxWidth: 12 } },
-          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} alumnos` } }
+          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} alumnes` } }
         }
       },
       plugins: [{
@@ -2165,7 +2165,7 @@ function _updateChartsInner(nivel, grupo) {
         responsive: true, maintainAspectRatio: false, cutout: '65%',
         plugins: {
           legend: { position: 'bottom', labels: { ...defaults, padding: 14, boxWidth: 12 } },
-          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} alumnos` } }
+          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} alumnes` } }
         }
       },
       plugins: [{

@@ -20,7 +20,7 @@ window.closeEquipoDocente = function() {
 
 function _eqRefrescarSubtitulo(d, nivel, grupo) {
   const sub = document.getElementById('eqDocenteSubtitle');
-  if (sub) sub.textContent = `${nivel} — Grupo ${grupo} · ${d.profesores.length} profesor${d.profesores.length !== 1 ? 'es' : ''} registrado${d.profesores.length !== 1 ? 's' : ''}`;
+  if (sub) sub.textContent = `${nivel} — Grupo ${grupo} · ${d.profesores.length} profesor${d.profesores.length !== 1 ? 'es' : ''} registrat${d.profesores.length !== 1 ? 's' : ''}`;
 }
 
 function renderEquipoDocenteBody() {

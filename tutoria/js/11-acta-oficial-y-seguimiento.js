@@ -252,7 +252,7 @@ function openActaOficial(nivel, grupo, evalNum) {
   let evolucion = null;
   if (evalNum >= 2 && total > 0) {
     const prevField = evalNum === 2 ? 'eval1' : 'eval2';
-    const prevLabel = evalNum === 2 ? 'I Evaluación' : 'II Evaluación';
+    const prevLabel = evalNum === 2 ? 'I Avaluació' : 'II Avaluació';
     const promPrev = alumnos.reduce((s, a) => s + (+a[prevField] || 0), 0) / total;
     const promAct  = alumnos.reduce((s, a) => s + (+a[evalField] || 0), 0) / total;
     evolucion = { prevLabel, promPrev, promAct, delta: promAct - promPrev };
@@ -753,9 +753,9 @@ function _aoExportarWord() {
 // Mapea cada fuente de pendientes a sus campos de nota y propuesta asociados,
 // para poder construir el PDF de Estadísticas de cualquier evaluación.
 const INFORME_PDF_CAMPOS = {
-  pendientes1:    { campoEval: 'eval1',    campoPend: 'pendientes1',    campoProp: 'propuesta1', tituloEval: 'I Evaluación' },
-  pendientes2:    { campoEval: 'eval2',    campoPend: 'pendientes2',    campoProp: 'propuesta2', tituloEval: 'II Evaluación' },
-  pendientesIII:  { campoEval: 'eval3',    campoPend: 'pendientesIII',  campoProp: 'promociona', tituloEval: 'Evaluación Final' },
+  pendientes1:    { campoEval: 'eval1',    campoPend: 'pendientes1',    campoProp: 'propuesta1', tituloEval: 'I Avaluació' },
+  pendientes2:    { campoEval: 'eval2',    campoPend: 'pendientes2',    campoProp: 'propuesta2', tituloEval: 'II Avaluació' },
+  pendientesIII:  { campoEval: 'eval3',    campoPend: 'pendientesIII',  campoProp: 'promociona', tituloEval: 'Avaluació Final' },
   pendientesExtr: { campoEval: 'evalExtr', campoPend: 'pendientesExtr', campoProp: 'promociona', tituloEval: 'Evaluación Extraordinaria' },
 };
 
@@ -829,7 +829,7 @@ function exportStatsPDF(fuente) {
     <div class="card" style="margin-bottom:14px;page-break-inside:avoid;">
       <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
         <div style="font-size:12pt;font-weight:700;color:#1a3a6b">${esc(g.nivel)} ${esc(g.grupo)}</div>
-        <div style="font-size:9pt;color:#666">Tutor/a: ${esc(g.tutor)} &nbsp;·&nbsp; ${g.total} alumno${g.total!==1?'s':''}</div>
+        <div style="font-size:9pt;color:#666">Tutor/a: ${esc(g.tutor)} &nbsp;·&nbsp; ${g.total} alumne${g.total!==1?'s':''}</div>
       </div>
       <div class="kpi-row" style="margin-bottom:10px;">
         <div class="kpi"><div class="kpi-val">${g.avgEval}</div><div class="kpi-lab">Nota media</div></div>
@@ -877,7 +877,7 @@ function exportStatsPDF(fuente) {
   </style>
   </head><body>
   <h1>📊 Estadísticas de Evaluación — ${esc(cfg.tituloEval)}</h1>
-  <div class="subtitle">${esc(iesName)} &nbsp;·&nbsp; ${dateStr} &nbsp;·&nbsp; ${totalAlumnos} alumnos en ${statsGrupos.length} grupo${statsGrupos.length!==1?'s':''}</div>
+  <div class="subtitle">${esc(iesName)} &nbsp;·&nbsp; ${dateStr} &nbsp;·&nbsp; ${totalAlumnos} alumnes en ${statsGrupos.length} grupo${statsGrupos.length!==1?'s':''}</div>
 
   ${statsGrupos.map(grupoCard).join('')}
 
@@ -1208,7 +1208,7 @@ function printSeguimientoAlumno(nivel, grupo, idx) {
   <div class="section">
     <div class="section-title">📊 Resultados curso actual (${_tCursoActual("-",true)})</div>
     <div class="eval-grid">
-      ${[['I Evaluación','eval1'],['II Evaluación','eval2'],['III Evaluación','eval3']].map(([lbl, fld]) => {
+      ${[['I Avaluació','eval1'],['II Avaluació','eval2'],['III Avaluació','eval3']].map(([lbl, fld]) => {
         const v = +alumno[fld] || 0;
         const cls = v===0?'green-cell':v>=5?'red-cell':v>=3?'yellow-cell':'blue-cell';
         return `<div class="eval-cell ${cls}">

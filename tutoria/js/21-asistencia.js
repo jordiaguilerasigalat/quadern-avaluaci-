@@ -55,7 +55,7 @@ function openAsistencia(nivel, grupo) {
   _asistCtx = { nivel, grupo, evalKey: 'eval1' };
   const d = _getAsistenciaData(nivel, grupo);
   document.getElementById('asistTitle').textContent = `👥 Asistencia a la sesión`;
-  document.getElementById('asistSubtitle').textContent = `${nivel} — Grupo ${grupo} · ${d.profesores.length} profesor${d.profesores.length !== 1 ? 'es' : ''} registrado${d.profesores.length !== 1 ? 's' : ''}`;
+  document.getElementById('asistSubtitle').textContent = `${nivel} — Grupo ${grupo} · ${d.profesores.length} profesor${d.profesores.length !== 1 ? 'es' : ''} registrat${d.profesores.length !== 1 ? 's' : ''}`;
   renderAsistTabs();
   renderAsistBody();
   document.getElementById('asistOverlay').classList.add('open');
@@ -67,8 +67,8 @@ function closeAsistencia() {
 
 function renderAsistTabs() {
   const tabs = [
-    { key: 'eval1', label: 'I Evaluación' },
-    { key: 'eval2', label: 'II Evaluación' },
+    { key: 'eval1', label: 'I Avaluació' },
+    { key: 'eval2', label: 'II Avaluació' },
     { key: 'eval3', label: 'Eval. Final' },
     { key: '__profs__', label: '⚙ Equipo docente' },
   ];
@@ -118,7 +118,7 @@ function renderAsistBody() {
   }
 
   // Attendance for an evaluation
-  const evalLabels = { eval1: 'I Evaluación', eval2: 'II Evaluación', eval3: 'Evaluación Final' };
+  const evalLabels = { eval1: 'I Avaluació', eval2: 'II Avaluació', eval3: 'Avaluació Final' };
   const sesiones = d.sesiones[evalKey] || [];
 
   // Sync sesiones length with profesores
@@ -270,7 +270,7 @@ window._asistUpdateProf = function(idx, field, val) {
   // Update subtitle
   const d = _getAsistenciaData(nivel, grupo);
   const sub = document.getElementById('asistSubtitle');
-  if (sub) sub.textContent = `${nivel} — Grupo ${grupo} · ${d.profesores.length} profesor${d.profesores.length !== 1 ? 'es' : ''} registrado${d.profesores.length !== 1 ? 's' : ''}`;
+  if (sub) sub.textContent = `${nivel} — Grupo ${grupo} · ${d.profesores.length} profesor${d.profesores.length !== 1 ? 'es' : ''} registrat${d.profesores.length !== 1 ? 's' : ''}`;
 };
 
 window._asistImportTutor = function() {
@@ -304,7 +304,7 @@ function exportAsistenciaPDF() {
   const esc = s => _tEsc(s||'');
 
   const evalKeys  = ['eval1','eval2','eval3'];
-  const evalNames = ['I Evaluación','II Evaluación','Evaluación Final'];
+  const evalNames = ['I Avaluació','II Avaluació','Avaluació Final'];
 
   let tableHtml = '';
   evalKeys.forEach((key, ei) => {

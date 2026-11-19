@@ -171,7 +171,7 @@ function _tImpCuadernoModal(o,nombreArchivo){
   const opcNivel=NIVELES.map(n=>`<option ${n===nivelSug?'selected':''}>${_tEsc(n)}</option>`).join('');
   ov.innerHTML=`<div class="tdlg-box" role="dialog" aria-modal="true" aria-labelledby="impCT" style="max-width:560px">
     <h2 id="impCT">📥 Suspensos de ${_tEsc(o.materia)} — ${_tEsc(o.grupo)}</h2>
-    <div class="tdlg-msg" style="font-size:13px">${[o.alumnos.length+' alumnos', o.profesor?_tEsc(o.profesor):'', 'generado el '+_tEsc(new Date(o.generado).toLocaleDateString('es-ES'))].filter(Boolean).join(' · ')}. Elige a qué grupo de Tutoría corresponde:</div>
+    <div class="tdlg-msg" style="font-size:13px">${[o.alumnos.length+' alumnes', o.profesor?_tEsc(o.profesor):'', 'generado el '+_tEsc(new Date(o.generado).toLocaleDateString('es-ES'))].filter(Boolean).join(' · ')}. Elige a qué grupo de Tutoría corresponde:</div>
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
       <select id="impCNivel" class="tdlg-in" style="width:auto;margin:0">${opcNivel}</select>
       <select id="impCGrupo" class="tdlg-in" style="width:auto;margin:0"></select>
@@ -196,7 +196,7 @@ function _tImpCuadernoModal(o,nombreArchivo){
     const p=plan(); const mats=getMateriasParaNivel(selN.value, selG.value)||[];
     ov.querySelector('#impCResumen').innerHTML=
       (mats.length && !mats.some(m=>_tNorm(m)===_tNorm(inM.value))?`<div style="color:#f59e0b">⚠️ «${_tEsc(inM.value)}» no está en la lista de materias de ${_tEsc(selN.value)}. Elige la equivalente en el desplegable.</div>`:'')+
-      `<div>✓ ${p.emparejados.length} alumnos encontrados en ${_tEsc(selN.value)} ${_tEsc(selG.value)} · ${p.cambios} cambios en sus pendientes.</div>`+
+      `<div>✓ ${p.emparejados.length} alumnes encontrados en ${_tEsc(selN.value)} ${_tEsc(selG.value)} · ${p.cambios} cambios en sus pendientes.</div>`+
       (p.propuestas.length?`<div style="margin-top:8px"><strong>¿Son la misma persona?</strong> El nombre no coincide exactamente:</div>`+
         p.propuestas.map((pr,k)=>`<label style="display:flex;gap:8px;align-items:center;margin-top:4px;cursor:pointer"><input type="checkbox" data-prop="${k}" ${confirmados.get(pr.nombre)===pr.idx?'checked':''}> <span>«${_tEsc(pr.nombre)}» (Cuaderno) → «${_tEsc(pr.nombreTutoria)}» (Tutoría)</span></label>`).join(''):'')+
       (p.noEncontrados.filter(n=>!p.propuestas.some(pr=>pr.nombre===n)).length?`<div style="color:#f59e0b;margin-top:6px">⚠️ Sin encontrar: ${p.noEncontrados.filter(n=>!p.propuestas.some(pr=>pr.nombre===n)).map(_tEsc).join(', ')}. Comprueba que el nombre coincide («Apellidos, Nombre»).</div>`:'');
@@ -207,7 +207,7 @@ function _tImpCuadernoModal(o,nombreArchivo){
   const cerrar=()=>ov.remove();
   ov.querySelector('.tdlg-no').onclick=cerrar;
   ov.querySelector('#impCOk').onclick=()=>{ const p=plan(); if(!p.emparejados.length){ mostrarAviso('No se ha encontrado a ningún alumno/a de este archivo en ese grupo.'); return; } _tImpCuadernoAplicar(p); cerrar();
-    showToast(`✓ ${o.materia}: ${p.cambios} cambios en ${p.emparejados.length} alumnos${p.noEncontrados.length?` · ${p.noEncontrados.length} sin encontrar`:''}`); };
+    showToast(`✓ ${o.materia}: ${p.cambios} cambios en ${p.emparejados.length} alumnes${p.noEncontrados.length?` · ${p.noEncontrados.length} sin encontrar`:''}`); };
   ov.addEventListener('keydown',e=>{ if(e.key==='Escape'){ e.stopPropagation(); cerrar(); } });
   setTimeout(()=>selN.focus(),20);
 }

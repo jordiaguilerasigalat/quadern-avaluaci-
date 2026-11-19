@@ -455,7 +455,7 @@ function renderMaterias() {
           <div>
             <div style="font-size:15px;font-weight:700;color:var(--text)">${_tEsc(nivel)}</div>
             <div style="font-size:11px;color:var(--text3);margin-top:2px">
-              ${mats.length} materias ·
+              ${mats.length} matèries ·
               ${custom
                 ? `<span style="color:var(--yellow)">⚙ Plantilla personalizada</span>`
                 : `<span style="color:var(--text3)">Plantilla por defecto</span>`}
@@ -494,7 +494,7 @@ function renderMaterias() {
     return `
     <button class="mat-level-tab ${n === currentEditLevel ? 'active' : ''}"
       id="matLevelTab-${n.replace(/[^a-zA-Z0-9]/g,'_')}"
-      title="${noCreado ? 'Este nivel no está creado como pestaña, pero su plantilla de materias sigue disponible como referencia (p. ej. para marcar "Pend. Ant." en niveles posteriores)' : ''}"
+      title="${noCreado ? 'Este nivell no està creat com a pestanya, però la seua plantilla de matèries continua disponible com a referència (p. ex. per a marcar «Pend. Ant.» en nivells posteriors)' : ''}"
       onclick="document.querySelectorAll('.mat-level-tab').forEach(t=>t.classList.remove('active'));this.classList.add('active');document.getElementById('matEditorArea').innerHTML=window._buildMatEditor('${jsAttr(n)}');window._initMatDrag('${jsAttr(n)}');">
       ${_tEsc(n)}${isCustom(n) ? ' <span style="color:var(--yellow);font-size:10px">⚙</span>' : ''}${noCreado ? ' <span style="color:var(--text3);font-size:10px">○</span>' : ''}
     </button>`;

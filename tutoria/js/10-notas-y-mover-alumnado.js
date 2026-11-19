@@ -240,7 +240,7 @@ function openBulkMovePanel() {
 
   overlay.innerHTML = `
     <div class="modal" style="width:360px">
-      <div class="modal-title">↗ Mover ${sel.size} alumno${sel.size !== 1 ? 's' : ''}</div>
+      <div class="modal-title">↗ Mover ${sel.size} alumne${sel.size !== 1 ? 's' : ''}</div>
       <div class="modal-field">
         <label class="modal-label">Nivel destino</label>
         <select class="modal-input" id="bulkMoveNivel" onchange="
@@ -314,7 +314,7 @@ function executeBulkMove(nivelOrig, grupoOrig) {
 
   if (currentNivel === '__home__') { clearTimeout(_resumenDebounce); _resumenDebounce = setTimeout(renderResumen, 400); }
 
-  showToast(`✅ ${moved.length} alumno${moved.length !== 1 ? 's' : ''} movido${moved.length !== 1 ? 's' : ''} a ${targetNivel} ${targetGrupo}`);
+  showToast(`✅ ${moved.length} alumne${moved.length !== 1 ? 's' : ''} movido${moved.length !== 1 ? 's' : ''} a ${targetNivel} ${targetGrupo}`);
 }
 
 // ===================== INFORME BACHILLERATO =====================

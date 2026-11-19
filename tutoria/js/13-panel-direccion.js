@@ -225,7 +225,7 @@ function buildDistEtapa(alist, field, sectionId, canvasPrefix, sinLabel) {
           <div style="display:flex;align-items:center;gap:7px;">
             <span style="font-size:15px">${icon}</span>
             <span style="font-size:13px;font-weight:700;color:var(--text)">${titulo}</span>
-            <span style="font-size:10px;color:var(--text3)">${tot} alumno${tot !== 1 ? 's' : ''}</span>
+            <span style="font-size:10px;color:var(--text3)">${tot} alumne${tot !== 1 ? 's' : ''}</span>
           </div>
           <div style="display:flex;align-items:baseline;gap:6px;">
             <span style="font-family:inherit;font-size:20px;font-weight:800;color:var(--green);line-height:1">${pctProm}%</span>
@@ -339,8 +339,8 @@ function renderDashboard() {
           const critGrupos = grupoGrid.filter(g=>g.crit>0);
           alertas.push({
             icon:'🚨', color:'var(--red)',
-            title:`${totalCrit} alumno${totalCrit>1?'s':''} con ≥5 suspensos sin decisión`,
-            sub: critGrupos.map(g=>`${g.n} ${g.g}: ${g.crit} crítico${g.crit>1?'s':''}`).join(' · ')
+            title:`${totalCrit} alumne${totalCrit>1?'s':''} con ≥5 suspensos sin decisión`,
+            sub: critGrupos.map(g=>`${g.n} ${g.g}: ${g.crit} crític${g.crit>1?'s':''}`).join(' · ')
           });
         }
 
@@ -362,7 +362,7 @@ function renderDashboard() {
         if (abando > 0) {
           alertas.push({
             icon:'🚪', color:'#9aa3bb',
-            title:`${abando} alumno${abando>1?'s':''} en situación de abandono`,
+            title:`${abando} alumne${abando>1?'s':''} en situación de abandono`,
             sub:'Requieren atención y seguimiento'
           });
         }
@@ -424,7 +424,7 @@ function renderDashboard() {
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;flex-wrap:wrap;gap:6px;">
             <div style="display:flex;align-items:center;gap:10px;">
               <span style="font-size:13px;font-weight:700;color:var(--text);min-width:120px;">${_tEsc(n)}</span>
-              <span style="font-size:10px;color:var(--text3)">${tot} alumnos</span>
+              <span style="font-size:10px;color:var(--text3)">${tot} alumnes</span>
               ${crit>0?`<span style="font-size:10px;color:var(--red);font-weight:700;background:rgba(247,110,110,0.1);border-radius:4px;padding:1px 6px">🚨 ${crit} críticos</span>`:''}
             </div>
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -454,7 +454,7 @@ function renderDashboard() {
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
             <div>
               <div style="font-size:13px;font-weight:700;color:var(--text)">${_tEsc(n)} ${_tEsc(g)}</div>
-              <div style="font-size:10px;color:var(--text3);margin-top:1px">${tot} alumnos · ${_tEsc(tutor)}</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:1px">${tot} alumnes · ${_tEsc(tutor)}</div>
             </div>
             <span style="font-size:18px">${semaforo(pct)}</span>
           </div>
@@ -465,7 +465,7 @@ function renderDashboard() {
             <span style="font-size:10px;color:var(--text2)">${dec}/${tot} decididos</span>
             <span style="font-size:11px;font-weight:700;color:${pctColor(pct)}">${pct}%</span>
           </div>
-          ${crit>0?`<div style="margin-top:5px;font-size:10px;color:var(--red);font-weight:600">🚨 ${crit} alumno${crit>1?'s':''} crítico${crit>1?'s':''}</div>`:''}
+          ${crit>0?`<div style="margin-top:5px;font-size:10px;color:var(--red);font-weight:600">🚨 ${crit} alumne${crit>1?'s':''} crític${crit>1?'s':''}</div>`:''}
         </div>`).join('')}
     </div>
   `)}

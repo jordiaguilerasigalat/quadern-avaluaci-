@@ -199,7 +199,7 @@ function exportAllCSV() {
   const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
   const year = new Date().getFullYear();
   triggerDownload(blob, `evaluaciones_completo_${year}.csv`);
-  showToast(`✅ CSV exportado — ${rows.length} alumnos`);
+  showToast(`✅ CSV exportado — ${rows.length} alumnes`);
 }
 
 // ===================== EXPORT =====================
@@ -605,7 +605,7 @@ function renderImportStep() {
     actions.innerHTML = `
       <button class="btn btn-ghost" onclick="setImportStep(3)">← Atrás</button>
       <button class="btn btn-ghost" onclick="closeImportModal()">Cancelar</button>
-      ${ok > 0 ? `<button class="btn btn-green" onclick="executeImport()">✓ Importar ${ok} alumno${ok!==1?'s':''}</button>` : ''}
+      ${ok > 0 ? `<button class="btn btn-green" onclick="executeImport()">✓ Importar ${ok} alumne${ok!==1?'s':''}</button>` : ''}
     `;
   }
 }
@@ -910,6 +910,6 @@ function executeImport() {
   setTimeout(() => { updateStats2(targetNivel, targetGrupo); }, 80);
 
   // Show success toast
-  showToast(`✓ ${valid.length} alumnos importados en ${targetNivel} ${targetGrupo}`);
+  showToast(`✓ ${valid.length} alumnes importados en ${targetNivel} ${targetGrupo}`);
   markDirty();
 }

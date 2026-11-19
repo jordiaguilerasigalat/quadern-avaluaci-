@@ -12,9 +12,9 @@ function renderCalendario() {
   // ── Collect all sessions from evalDates ──
   const sessions = []; // {date, nivel, tipo, label, color}
   const tipoMeta = {
-    eval1: { label: 'I Evaluación',   color: 'var(--accent)',  dot: '#4f8ef7' },
-    eval2: { label: 'II Evaluación',  color: 'var(--green)',   dot: '#2dd4a0' },
-    eval3: { label: 'III Evaluación', color: 'var(--orange)',  dot: '#f79d4f' },
+    eval1: { label: 'I Avaluació',   color: 'var(--accent)',  dot: '#4f8ef7' },
+    eval2: { label: 'II Avaluació',  color: 'var(--green)',   dot: '#2dd4a0' },
+    eval3: { label: 'III Avaluació', color: 'var(--orange)',  dot: '#f79d4f' },
   };
   NIVELES.forEach(n => {
     const d = getDates(n);
@@ -140,7 +140,7 @@ function renderCalendario() {
         <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;">
           <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">${_tEsc(n)}</div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-            ${[['eval1','I Evaluación','var(--accent)'],['eval2','II Evaluación','var(--green)'],['eval3','III Evaluación','var(--orange)']].map(([k,lbl,col])=>`
+            ${[['eval1','I Avaluació','var(--accent)'],['eval2','II Avaluació','var(--green)'],['eval3','III Avaluació','var(--orange)']].map(([k,lbl,col])=>`
               <div>
                 <label style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;font-weight:700;display:block;margin-bottom:4px">
                   <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${col};margin-right:4px"></span>${lbl}
@@ -429,7 +429,7 @@ function drawConvivCharts() {
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow)">
           <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px;">
             <span>${_tEsc(n)}</span>
-            <span style="font-size:10px;color:var(--text3);font-weight:500">${(GRUPOS_POR_NIVEL[n] || []).length} grupo(s)</span>
+            <span style="font-size:10px;color:var(--text3);font-weight:500">${(GRUPOS_POR_NIVEL[n] || []).length} grup(s)</span>
           </div>
           <div style="position:relative;height:220px;"><canvas id="convivLvl_${i}"></canvas></div>
         </div>`).join('')}
@@ -457,7 +457,7 @@ function drawConvivCharts() {
 function exportConvivenciaInforme(evalKey) {
   const esTotal = evalKey === 'total';
   const evalsIncluidas = esTotal ? ['eval1','eval2','eval3'] : [evalKey];
-  const tituloEval = { eval1: 'I Evaluación', eval2: 'II Evaluación', eval3: 'Evaluación Final', total: 'Informe Final del Curso (acumulado)' }[evalKey];
+  const tituloEval = { eval1: 'I Avaluació', eval2: 'II Avaluació', eval3: 'Avaluació Final', total: 'Informe Final del Curso (acumulado)' }[evalKey];
 
   const nivelesConv = NIVELES.filter(n => (GRUPOS_POR_NIVEL[n] || []).length);
   const gruposInfo = [];
@@ -517,7 +517,7 @@ function exportConvivenciaInforme(evalKey) {
     <div class="card" style="margin-bottom:14px;page-break-inside:avoid;">
       <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
         <div style="font-size:12pt;font-weight:700;color:#1a3a6b">${esc(g.nivel)} ${esc(g.grupo)}</div>
-        <div style="font-size:9pt;color:#666">Tutor/a: ${esc(g.tutor)} &nbsp;·&nbsp; ${g.total} alumno${g.total!==1?'s':''}</div>
+        <div style="font-size:9pt;color:#666">Tutor/a: ${esc(g.tutor)} &nbsp;·&nbsp; ${g.total} alumne${g.total!==1?'s':''}</div>
       </div>
       <div class="kpi-row">${kpiBlock(g.totales)}</div>
     </div>`;
@@ -540,7 +540,7 @@ function exportConvivenciaInforme(evalKey) {
   </style>
   </head><body>
   <h1>🤝 Informe de Convivencia — ${esc(tituloEval)}</h1>
-  <div class="subtitle">${esc(iesName)} &nbsp;·&nbsp; ${dateStr} &nbsp;·&nbsp; ${todosAlumnos.length} alumnos en ${statsGrupos.length} grupo${statsGrupos.length!==1?'s':''}</div>
+  <div class="subtitle">${esc(iesName)} &nbsp;·&nbsp; ${dateStr} &nbsp;·&nbsp; ${todosAlumnos.length} alumnes en ${statsGrupos.length} grupo${statsGrupos.length!==1?'s':''}</div>
 
   <div class="grid2">
     ${CONVIV_METRICS.map(m => `
@@ -709,9 +709,9 @@ function renderConvivencia() {
 //   · pendientesIII  → materias suspensas en la Evaluación Final (antes "Ordinaria III Eval.")
 //   · pendientesExtr → materias suspensas tras la Evaluación Extraordinaria (solo Bachillerato)
 const INFORME_FUENTES = {
-  pendientes1:    { label: 'I Evaluación',            corto: 'I Eval.',   campoPropuesta: 'propuesta1', soloBach: false },
-  pendientes2:    { label: 'II Evaluación',           corto: 'II Eval.',  campoPropuesta: 'propuesta2', soloBach: false },
-  pendientesIII:  { label: 'Evaluación Final',        corto: 'Ev. Final', campoPropuesta: 'promociona', soloBach: false },
+  pendientes1:    { label: 'I Avaluació',            corto: 'I Eval.',   campoPropuesta: 'propuesta1', soloBach: false },
+  pendientes2:    { label: 'II Avaluació',           corto: 'II Eval.',  campoPropuesta: 'propuesta2', soloBach: false },
+  pendientesIII:  { label: 'Avaluació Final',        corto: 'Ev. Final', campoPropuesta: 'promociona', soloBach: false },
   pendientesExtr: { label: 'Evaluación Extraordinaria', corto: 'Extraord.', campoPropuesta: null,        soloBach: true  },
 };
 let _informeFuente = 'pendientesIII';
@@ -862,11 +862,11 @@ function renderInformeAcademico() {
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:18px;box-shadow:var(--shadow)">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
           <div style="font-size:16px;font-weight:800;color:var(--text);font-family:inherit">${esc(s.nivel)}</div>
-          <div style="font-size:11px;color:var(--text3)">${s.N} alumno${s.N !== 1 ? 's' : ''} · ${s.subjects.length} materias</div>
+          <div style="font-size:11px;color:var(--text3)">${s.N} alumne${s.N !== 1 ? 's' : ''} · ${s.subjects.length} matèries</div>
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;">
           ${kpi('% Aprobados (global)', s.pctAprobGlobal + '%', s.pctAprobGlobal >= 80 ? 'var(--green)' : s.pctAprobGlobal >= 60 ? 'var(--yellow)' : 'var(--red)')}
-          ${kpi('Suspensos totales', s.totalSusp, 'var(--red)', `${s.promSuspAlumno.toFixed(1)} por alumno`)}
+          ${kpi('Suspensos totales', s.totalSusp, 'var(--red)', `${s.promSuspAlumno.toFixed(1)} per alumne`)}
           ${kpi('Materia con más suspensos', masSusp, 'var(--red)', masSuspSub)}
           ${kpi('Materia con menos suspensos', menosSusp, 'var(--green)', menosSuspSub)}
         </div>
@@ -890,7 +890,7 @@ function renderInformeAcademico() {
   const _colPendNombre = { pendientes1:'I Pend.', pendientes2:'II Pend.', pendientesIII:'Pend. Próx. Curso', pendientesExtr:'Pend. Extr.' };
   const avisoSinDatos = totalSuspCentro === 0
     ? `<div style="background:rgba(79,142,247,0.08);border:1px solid rgba(79,142,247,0.3);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:12px;color:var(--text2);line-height:1.5">
-        ℹ️ No se han registrado materias suspensas en <strong>${fuenteLabel}</strong>. El detalle por materia se obtiene de las listas de <strong>pendientes</strong> de cada alumno (columna “${_colPendNombre[fuente]}”). Rellénalas en cada grupo para ver las estadísticas.
+        ℹ️ No se han registrado materias suspensas en <strong>${fuenteLabel}</strong>. El detalle por materia se obtiene de las listas de <strong>pendents</strong> de cada alumno (columna “${_colPendNombre[fuente]}”). Rellénalas en cada grupo para ver las estadísticas.
       </div>` : '';
 
   mc.innerHTML = `
@@ -898,7 +898,7 @@ function renderInformeAcademico() {
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:12px;">
         <div>
           <div style="font-family:inherit;font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.5px">🎓 Informe Académico</div>
-          <div style="font-size:12px;color:var(--text2);margin-top:4px">Aprobados y suspensos por materia y nivel · ${fuenteLabel}${filtroActivo ? ` · <strong style="color:#22d3ee">${esc(filtroNivel)} ${esc(filtroGrupo)}</strong>` : ''}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:4px">Aprovats i suspesos per matèria i nivell · ${fuenteLabel}${filtroActivo ? ` · <strong style="color:#22d3ee">${esc(filtroNivel)} ${esc(filtroGrupo)}</strong>` : ''}</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
           <button class="conviv-mbtn ${fuente === 'pendientes1' ? 'active' : ''}" onclick="setInformeFuente('pendientes1')">I Evaluación</button>
