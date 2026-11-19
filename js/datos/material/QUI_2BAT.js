@@ -14,6 +14,21 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
    "tipus": "presentacio"
   },
   {
+   "f": "tema-00/apunts-magnituds-i-mesures.pdf",
+   "t": "Apunts: Magnituds i mesures (tècniques de laboratori)",
+   "tipus": "teoria"
+  },
+  {
+   "f": "tema-00/apunts-masses-i-volums.pdf",
+   "t": "Apunts: Masses i volums (tècniques de laboratori)",
+   "tipus": "teoria"
+  },
+  {
+   "f": "tema-00/activitat-phet-gasos-ideals.pdf",
+   "t": "Activitat PhET: gasos ideals",
+   "tipus": "exercicis"
+  },
+  {
    "f": "tema-00/exercicis-pau-tema-0.pdf",
    "t": "Exercicis PAU: estequiometria i dissolucions",
    "tipus": "exercicis"
@@ -65,6 +80,26 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
    "tipus": "presentacio"
   },
   {
+   "f": "tema-03/apunts-termoquimica.pdf",
+   "t": "Apunts: Termoquímica",
+   "tipus": "teoria"
+  },
+  {
+   "f": "tema-03/apunts-calorimetria.pdf",
+   "t": "Apunts: Calorimetria",
+   "tipus": "teoria"
+  },
+  {
+   "f": "tema-03/apunts-espontaneitat.pdf",
+   "t": "Apunts: Espontaneïtat",
+   "tipus": "teoria"
+  },
+  {
+   "f": "tema-03/apunts-energia-i-treball.pdf",
+   "t": "Apunts: Energia i treball",
+   "tipus": "teoria"
+  },
+  {
    "f": "tema-03/exercicis-pau-tema-3.pdf",
    "t": "Exercicis PAU: termodinàmica",
    "tipus": "exercicis"
@@ -80,6 +115,11 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
    "f": "tema-04/presentacio-cinetica-quimica.pdf",
    "t": "Presentació: Cinètica química",
    "tipus": "presentacio"
+  },
+  {
+   "f": "tema-04/practiques-cinetica-quimica.pdf",
+   "t": "Experiències de cinètica química (laboratori)",
+   "tipus": "exercicis"
   },
   {
    "f": "tema-04/exercicis-pau-tema-4.pdf",
@@ -129,6 +169,11 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
    "f": "tema-06/presentacio-acid-base.pdf",
    "t": "Presentació: Reaccions de transferència de protons",
    "tipus": "presentacio"
+  },
+  {
+   "f": "tema-06/apunts-equilibris-acid-base-laboratori.pdf",
+   "t": "Apunts: Equilibris àcid-base (tècniques de laboratori)",
+   "tipus": "teoria"
   },
   {
    "f": "tema-06/practica-aspirina.pdf",
