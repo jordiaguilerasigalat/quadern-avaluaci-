@@ -83,7 +83,7 @@ function _renderActividadesLlista(grupo){
   </div>`;
   c.innerHTML=(editando||!prog?formularioLibreHTML:selectorProgramacionHTML)+`
   <div class="card">
-    <h2>Actividades de ${TRIMESTRES[state.ui.trim]}</h2>
+    <h2>Activitats de ${TRIMESTRES[state.ui.trim]}</h2>
     ${actsTrim(grupo).length>1?`<p class="sub" style="margin:4px 0 0">Ordénalas a tu gusto: arrastra una actividad por ⠿ o usa ▲▼. El orden se usa también en Calificar, Resultados e informes.</p>`:""}
     ${actsTrim(grupo).length? `<div class="grid" style="margin-top:8px">${actsTrim(grupo).map((a,iAct,lista)=>{
       const b=grupo.bloques.find(x=>x.id===a.bloqueId);

@@ -328,6 +328,16 @@
   .alert-box{background:var(--warning-soft);border:1px solid var(--warning);border-radius:12px;padding:10px 14px;font-size:13px;color:var(--warning-ink);display:block;line-height:1.5}
   @media(max-width:560px){ h1{font-size:17px} main{padding:14px} .hero-title{font-size:27px} .hero{padding:22px 20px 18px} }
 
+  /* Botó flotant «Inici» (a l'esquerra; el cronòmetre va a la dreta) */
+  .home-fab{
+    position:fixed; left:18px; bottom:18px; z-index:500;
+    height:46px; padding:0 18px; border-radius:23px;
+    background:var(--card); color:var(--ink); border:1px solid var(--border-soft);
+    font-size:14.5px; font-weight:700; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,.22);
+    display:flex; align-items:center; gap:6px;
+  }
+  .home-fab:hover{ background:var(--accent); color:var(--accent-ink) }
+  @media print{ .home-fab{ display:none !important } }
   /* Cronómetro flotante — vive fuera de #app, visible en cualquier sección */
   .crono-fab{
     position:fixed; right:18px; bottom:18px; z-index:500;
