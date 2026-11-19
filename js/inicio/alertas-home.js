@@ -221,7 +221,8 @@ function renderHome(){
       <div class="gcard-count">S'obri en la seua pròpia carpeta</div>
       <div class="gcard-actions"><a class="btn" href="tutoria/index.html" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center">Obrir</a></div>
     </div>
-  </div>`:""}
+  </div>
+  ${typeof renderDocumentsIniciHTML==="function"?renderDocumentsIniciHTML():""}`:""}
 
   ${homeSeccionHeaderHTML("calendario","Calendari i el meu horari")}
   ${homeSecciones.calendario?`<div class="card" style="margin-top:0;padding-bottom:10px">

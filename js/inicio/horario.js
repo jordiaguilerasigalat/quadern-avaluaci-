@@ -32,6 +32,7 @@ const HOR_TIPOS=[
   {id:"guardia",label:"Guardia",color:"#b45309"},
   {id:"complementaria",label:"Complementaria",color:"#7c3aed"},
   {id:"reduccion",label:"Reducción",color:"#0d9488"},
+  {id:"directiva",label:"Funcions directives",color:"#0e7490"},
   {id:"reunion",label:"Reunión",color:"#be185d"},
   {id:"atencionFamilias",label:"Atención a Familias",color:"#15803d"},
   {id:"recreo",label:"Recreo",color:"#64748b"},
@@ -196,7 +197,9 @@ function horRenderGridHTML(){
     <div class="flex" style="justify-content:space-between;align-items:center;margin-bottom:10px">
       <h2 style="font-size:15px">🗓️ Mi horario semanal</h2>
       <div class="flex" style="gap:6px"><button class="ghost" style="border:1px solid var(--line)" onclick="horAbrirFranjas()">⚙️ Franjas horarias</button>
-      <button class="ghost" style="border:1px solid var(--line)" onclick="horImprimir()">🖨️ Imprimir horario</button></div>
+      <button class="ghost" style="border:1px solid var(--line)" onclick="horImprimir()">🖨️ Imprimir horario</button>
+      <button class="ghost" style="border:1px solid var(--line)" onclick="horExportar()">📤 Exportar horari</button>
+      <label class="ghost" style="border:1px solid var(--line);cursor:pointer;display:inline-flex;align-items:center;padding:6px 12px;border-radius:10px">📥 Importar horari<input type="file" accept=".json,application/json" style="display:none" onchange="horImportarArxiu(this)"></label></div>
     </div>
     ${bannerCopia}
     <div class="hor-grid">${cabecera}${filas}</div>
@@ -412,3 +415,32 @@ function homeSeccionHeaderHTML(key,titulo){
     <span class="section-eyebrow" style="margin:0">${titulo}</span>
   </button>`;
 }
+
+/* Exportar / importar només l'horari (franges i caselles) en un .json, per a
+   passar-lo a un altre dispositiu o carregar-ne un de preparat. */
+window.horExportar=()=>{
+  const dades={tipus:"quadern-horari",versio:1,horari:{filas:horFilas().map(f=>({...f})),celdas:(state.horario&&state.horario.celdas)||{}}};
+  guardarArchivo(new Blob([JSON.stringify(dades,null,1)],{type:"application/json"}),"horari.json");
+};
+window.horImportarArxiu=async (inp)=>{
+  const f=inp.files&&inp.files[0]; inp.value=""; if(!f) return;
+  let d; try{ d=JSON.parse(await f.text()); }catch(e){ mostrarAviso("L'arxiu no és un horari vàlid."); return; }
+  const h=d&&d.tipus==="quadern-horari"&&d.horari;
+  if(!h||!h.celdas||typeof h.celdas!=="object"){ mostrarAviso("L'arxiu no és un horari exportat des del Quadern."); return; }
+  const tenia=Object.values((state.horario&&state.horario.celdas)||{}).some(c=>c&&c.tipo&&c.tipo!=="recreo");
+  if(tenia && !await confirmar("Substituir el teu horari actual pel de l'arxiu?")) return;
+  const valids=new Set(HOR_TIPOS.map(t=>t.id));
+  const celdas={};
+  Object.entries(h.celdas).forEach(([k,c])=>{
+    if(!/^\d+-[LMXJV]$/.test(k)||!c||typeof c!=="object") return;
+    const cel={tipo:valids.has(c.tipo)?c.tipo:"otro",materia:String(c.materia||""),nivelGrupo:String(c.nivelGrupo||""),aula:String(c.aula||""),nota:String(c.nota||""),grupoId:""};
+    // Enllaça amb un grup del Quadern si el nom coincidix (sense espais ni guions).
+    const net=x=>String(x||"").toLowerCase().replace(/[\s_\-·º]/g,"");
+    if(cel.tipo==="clase"&&cel.nivelGrupo){ const g=state.grupos.find(g=>net(g.nombre)===net(cel.nivelGrupo)); if(g) cel.grupoId=g.id; }
+    celdas[k]=cel;
+  });
+  state.horario={celdas};
+  if(Array.isArray(h.filas)&&h.filas.length) state.horario.filas=h.filas.filter(f=>f&&/^\d\d:\d\d$/.test(f.inicio)&&/^\d\d:\d\d$/.test(f.fin)).map(f=>({inicio:f.inicio,fin:f.fin,recreo:!!f.recreo}));
+  save(); render();
+  mostrarToast("✓ Horari carregat");
+};

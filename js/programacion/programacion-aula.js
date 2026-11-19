@@ -114,6 +114,14 @@ window.progCargarDepartamento=async (key)=>{
   const d=PROG_DEPARTAMENTO[key], cat=getCatalogo(key); if(!d||!cat) return;
   const ja=(state.programaciones||[]).find(p=>p.origenDepartamento===key);
   if(ja && !await confirmar(`Ja tens una programació creada des de la del departament per a ${cat.materia} · ${cat.curso} («${ja.nombre}»). Vols crear-ne una altra còpia?`)) return;
+  const p=progDesDeDepartament(key);
+  state.ui.progTab="detalle"; state.ui.progId=p.id;
+  save(); render();
+  mostrarToast(`✓ Programació del departament carregada: ${d.sdas.length} SdA`);
+};
+/* Crea (sense navegar ni guardar) la còpia editable de la programació del departament «key». */
+function progDesDeDepartament(key){
+  const d=PROG_DEPARTAMENTO[key];
   const p=progNueva(d.nombre,key);
   p.origenDepartamento=key; p.cursoEscolar="2026-2027";
   p.criteriosCalifCuantitativa=progTextoAHTML(d.calif||"");
@@ -136,9 +144,15 @@ window.progCargarDepartamento=async (key)=>{
   });
   if(!Array.isArray(state.programaciones)) state.programaciones=[];
   state.programaciones.push(p);
-  state.ui.progTab="detalle"; state.ui.progId=p.id;
+  return p;
+}
+window.progCargarTotesDepartament=()=>{
+  const falten=Object.keys(PROG_DEPARTAMENTO).filter(k=>getCatalogo(k) && !(state.programaciones||[]).some(p=>p.origenDepartamento===k));
+  if(!falten.length){ mostrarAviso("Ja tens totes les programacions del departament en el Quadern."); return; }
+  falten.forEach(k=>progDesDeDepartament(k));
+  state.ui.progTab="lista"; state.ui.progId="";
   save(); render();
-  mostrarToast(`✓ Programació del departament carregada: ${d.sdas.length} SdA`);
+  mostrarToast(`✓ ${falten.length} programaci${falten.length===1?"ó carregada":"ons carregades"}`);
 };
 window.progExportar=(id)=>{
   const p=progPorId(id); if(!p) return;
@@ -251,11 +265,16 @@ function progListaHTML(root){
     <div style="margin-top:10px">
       <p class="sub" style="margin:0 0 6px"><strong>📥 Programació del departament (2026-2027):</strong> crea una còpia editable amb les situacions d'aprenentatge, sessions, CE i criteris de cada curs.</p>
       <div class="flex" style="flex-wrap:wrap;gap:6px">
+        <button class="chip" style="font-weight:700" onclick="progCargarTotesDepartament()">📥 Carregar totes les que falten</button>
         ${Object.keys(PROG_DEPARTAMENTO).filter(k=>getCatalogo(k)).map(k=>`<button class="chip" onclick="progCargarDepartamento('${escJS(k)}')">${esc(getCatalogo(k).materia)} · ${esc(getCatalogo(k).curso)}</button>`).join("")}
       </div>
-      <p class="sub" style="margin:10px 0 6px"><strong>📄 Documents originals (PDF, sense noms ni dades dels grups):</strong></p>
+      <p class="sub" style="margin:10px 0 6px"><strong>📄 Programacions d'aula originals (PDF, sense noms ni dades dels grups):</strong></p>
       <div class="flex" style="flex-wrap:wrap;gap:6px">
-        ${PROG_DOCUMENTS_PDF.map(([f,t])=>`<a class="chip" style="text-decoration:none" href="docs/programacions/${f}" target="_blank" rel="noopener">${esc(t)}</a>`).join("")}
+        ${PROG_DOCUMENTS_PDF.filter(([f])=>/^PA_/.test(f)).map(([f,t])=>`<a class="chip" style="text-decoration:none" href="docs/programacions/${f}" target="_blank" rel="noopener">${esc(t)}</a>`).join("")}
+      </div>
+      <p class="sub" style="margin:10px 0 6px"><strong>🧭 Propostes pedagògiques (PDF):</strong></p>
+      <div class="flex" style="flex-wrap:wrap;gap:6px">
+        ${PROG_DOCUMENTS_PDF.filter(([f])=>/^PP_/.test(f)).map(([f,t])=>`<a class="chip" style="text-decoration:none" href="docs/programacions/${f}" target="_blank" rel="noopener">${esc(t)}</a>`).join("")}
       </div>
     </div>
     <p class="sub" style="margin:8px 0 0">Importar añade la programación del archivo a tu lista, sin tocar ni sobrescribir ninguna de las que ya tengas.</p>
@@ -268,7 +287,7 @@ function progListaHTML(root){
           <div>
             <strong style="font-size:14.5px">${esc(p.nombre)}</strong>
             <div class="sub" style="margin:2px 0 0">${esc(cat.materia)} · ${esc(cat.curso)} · ${p.sdas.length} SdA · ${p.actividades.length} actividad${p.actividades.length===1?"":"es"}</div>
-            <div class="sub" style="margin:2px 0 0">${gruposVinculados.length? "Vinculada a: "+gruposVinculados.map(esc).join(", ") : "Sin grupos vinculados todavía"}</div>
+            <div class="sub" style="margin:2px 0 0">${gruposVinculados.length? "Vinculada a: "+gruposVinculados.map(esc).join(", ") : "Encara sense grups vinculats"}</div>
           </div>
           <div class="flex" onclick="event.stopPropagation()">
             <button class="ghost" style="border:1px solid var(--line)" onclick="progExportar('${p.id}')">Exportar (.json)</button>
