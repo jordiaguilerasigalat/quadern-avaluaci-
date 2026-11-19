@@ -51,7 +51,7 @@ function renderCalificar(grupo){
         ${grupo.alumnos.map(al=>{
           const vc=act.esExamen? grupo.notasCuant?.[al.id]?.[act.id] : null;
           return `<tr>
-          <td style="font-weight:500">${esc(al.nombre)}${neseBadgeHTML(al)}${extraBadgeHTML(grupo,al.id,act)}</td>
+          <td style="font-weight:500">${nomFitxaHTML(al)}${neseBadgeHTML(al)}${extraBadgeHTML(grupo,al.id,act)}</td>
           <td><select class="in" style="font-size:14px;padding:5px 6px" onchange="setMarca('${al.id}','${act.id}',this.value)">
             <option value="">—</option><option value="NP" ${marcaDe(grupo,al.id,act.id)==="NP"?"selected":""}>NP</option><option value="EX" ${marcaDe(grupo,al.id,act.id)==="EX"?"selected":""}>Exento</option>
           </select></td>

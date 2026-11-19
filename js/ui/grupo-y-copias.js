@@ -190,6 +190,10 @@ function renderGrupo(grupo){
     else if(t==="familias") renderFamilias(grupo);
     else if(t==="diario") renderDiario(grupo);
     else if(t==="ajustes") renderAjustes(grupo);
+    /* Fitxa única de l'alumne/a: s'obri des de qualsevol pestanya tocant el nom. */
+    if(state.ui.fichaAlumnoId && grupo.alumnos.some(x=>x.id===state.ui.fichaAlumnoId)){
+      const tc=document.getElementById("tabContent"); if(tc) tc.insertAdjacentHTML("beforeend",fichaAlumnoModalHTML(grupo,state.ui.fichaAlumnoId));
+    }
   }catch(err){
     const tc=document.getElementById("tabContent");
     if(tc) tc.innerHTML=`<div class="card" style="border-color:var(--danger)">

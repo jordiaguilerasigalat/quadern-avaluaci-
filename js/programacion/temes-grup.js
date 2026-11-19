@@ -138,3 +138,29 @@ function renderProgramaGrup(g){
     </div>
     ${[0,1,2].map(t=>{ const ts=temes.filter(s=>s.trimestre===t); return ts.length?`<div class="section-eyebrow" style="margin-top:14px">${esc(TRIMESTRES[t])}</div>${ts.map(cardTema).join("")}`:""; }).join("")}`;
 }
+
+/* Activitats del període que tenen notes posades però encara no de tot l'alumnat. */
+function perCorregirGrup(g){
+  const trim=typeof state.ui.trim==="number"? state.ui.trim : 0;
+  return (g.actividades||[]).filter(a=>!a.recupera && a.trimestre===trim).map(a=>{
+    const n=g.alumnos.filter(al=>notaActividad(g,al.id,a)!=null || (typeof marcaDe==="function"&&marcaDe(g,al.id,a.id))).length;
+    return {a,n,falten:g.alumnos.length-n};
+  }).filter(x=>x.n>0 && x.falten>0);
+}
+/* Línia «Avui» d'una classe: tema actual, sessió, material i el que queda per corregir. */
+function avuiClasseHTML(g){
+  const s=typeof temaActualGrup==="function"? temaActualGrup(g) : null;
+  const p=progDeGrupo(g);
+  const pc=perCorregirGrup(g);
+  const parts=[];
+  if(s){
+    const fets=progSesionesReales(g,s.id), prev=Number(s.sesionesPrevistas)||0;
+    const det=(s.sessionsDetall||[])[fets];
+    parts.push(`<span>📚 <strong>${esc(temaNomCurt(s))}</strong> · sessió ${fets+1}${prev?" de "+prev:""}${det&&det.contingut?` <span class="sub" style="margin:0">(${esc(String(det.contingut).slice(0,90))}${String(det.contingut).length>90?"…":""})</span>`:""}</span>`);
+    const mat=p&&typeof materialDe==="function"? materialDe(p.catalogoKey) : null;
+    const n=mat&&typeof materialNumTema==="function"? (mat[materialNumTema(s)]||[]).length : 0;
+    if(n) parts.push(`<button class="ghost small" style="border:1px solid var(--line)" onclick="state.ui.progTemaObert='${escJS(s.id)}';hoyIr('${escJS(g.id)}','programa')">📎 Material (${n})</button>`);
+  } else if(!p) parts.push(`<span class="sub" style="margin:0">Sense programació vinculada</span>`);
+  if(pc.length) parts.push(`<button class="ghost small" style="border:1px solid var(--line)" title="${esc(pc.map(x=>x.a.nombre+": falten "+x.falten).join(" · "))}" onclick="hoyIr('${escJS(g.id)}','calificar')">✍️ ${pc.length} per acabar de corregir</button>`);
+  return parts.length? `<div class="flex" style="gap:8px;flex-wrap:wrap;align-items:center;font-size:12.5px;margin-top:4px;width:100%">${parts.join("")}</div>` : "";
+}

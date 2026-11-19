@@ -222,7 +222,7 @@ function renderAsistencia(grupo){
 
   const resumenFilas=grupo.alumnos.length?grupo.alumnos.map(al=>{
     const cnt=asistContarPeriodo(grupo,al.id,desde,hasta);
-    return `<tr><td>${esc(al.nombre)}</td>
+    return `<tr><td>${nomFitxaHTML(al)}</td>
       <td style="text-align:center">${cnt.falta_justificada||"—"}</td>
       <td style="text-align:center">${cnt.falta_no_justificada||"—"}</td>
       <td style="text-align:center">${cnt.retraso||"—"}</td>
@@ -361,7 +361,7 @@ window.asistImprimirResumen=()=>{
   const desde=state.ui.asistDesde||rangoDef.desde, hasta=state.ui.asistHasta||rangoDef.hasta;
   const filas=grupo.alumnos.map(al=>{
     const cnt=asistContarPeriodo(grupo,al.id,desde,hasta);
-    return `<tr><td>${esc(al.nombre)}</td><td style="text-align:center">${cnt.falta_justificada}</td><td style="text-align:center">${cnt.falta_no_justificada}</td><td style="text-align:center">${cnt.retraso}</td></tr>`;
+    return `<tr><td>${nomFitxaHTML(al)}</td><td style="text-align:center">${cnt.falta_justificada}</td><td style="text-align:center">${cnt.falta_no_justificada}</td><td style="text-align:center">${cnt.retraso}</td></tr>`;
   }).join("");
   const body=`
     <h1>Resumen de asistencia</h1>

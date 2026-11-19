@@ -266,7 +266,7 @@ function renderAlumnos(grupo){
           </td>`:""}
           ${alumColVisible("edad")?`<td style="text-align:center;font-size:12.5px;color:${edad==null?"var(--mut)":"var(--ink)"}">${edad==null?"—":edad+" años"}</td>`:""}
           ${alumColVisible("familia")?(()=>{ const ok=familiaCorreos(a).length, mal=(a.familia||[]).some(f=>f.email&&!emailValido(f.email)); return `<td style="text-align:center;font-size:12.5px"><button class="ghost small" style="padding:3px 7px;${mal?"color:#dc2626":""}" title="${mal?"Hay un correo mal escrito":ok?familiaCorreos(a).join(", "):"Sin correo de la familia"}" onclick="abrirFichaAlumno('${a.id}')">${mal?"⚠️":ok?"✉️ "+ok:"—"}</button></td>`; })():""}
-          <td><button class="ghost" onclick="abrirFichaAlumno('${a.id}')">Editar</button></td>
+          <td><button class="ghost" onclick="abrirFichaAlumno('${a.id}')">📋 Fitxa</button></td>
           <td><button class="ghost" onclick="toggleObservacion('${a.id}')">${abierto===a.id?"Ocultar obs.":(a.observaciones?"Ver obs.":"+ Obs.")}</button></td>
           <td><button class="ghost" onclick="delAlumno('${a.id}')">Eliminar</button></td>
         </tr>
@@ -322,7 +322,7 @@ function renderAlumnos(grupo){
         </div>`).join("")}
     </div>
   </div>` : ""}
-  ${state.ui.fichaAlumnoId?fichaAlumnoModalHTML(grupo,state.ui.fichaAlumnoId):""}`;
+`;
   const iAp=document.getElementById("alApellidos");
   const iNo=document.getElementById("alNombreP");
   iAp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); iNo.focus(); } });
@@ -564,11 +564,12 @@ function fichaAlumnoModalHTML(grupo,alumnoId){
   if(!a) return "";
   const edad=calcularEdad(a.fechaNacimiento);
   return `<div class="modal-overlay" onclick="if(event.target===this) cerrarFichaAlumno()">
-    <div class="modal-box" style="max-width:520px">
+    <div class="modal-box" style="max-width:640px">
       <div class="flex" style="justify-content:space-between;align-items:center">
-        <h2 style="font-size:16px">Ficha de ${esc(a.nombre)}</h2>
-        <button class="ghost" onclick="cerrarFichaAlumno()">✕</button>
+        <h2 style="font-size:16px">Fitxa de ${esc(a.nombre)} <span class="sub" style="font-weight:400;font-size:12.5px">· ${esc(grupo.nombre)}</span></h2>
+        <button class="ghost" aria-label="Tancar la fitxa" onclick="cerrarFichaAlumno()">✕</button>
       </div>
+      ${typeof fitxaResumHTML==="function"? fitxaResumHTML(grupo,a).replace("<details>",state.ui.tab==="alumnos"?"<details open>":"<details>") : "<details open><summary>Dades</summary>"}
       <div class="grid" style="gap:10px;margin-top:10px">
         <div class="flex" style="gap:10px">
           <label style="font-size:12.5px;color:var(--mut);font-weight:500;flex:1">Apellidos
@@ -616,6 +617,7 @@ function fichaAlumnoModalHTML(grupo,alumnoId){
           <textarea class="in" style="width:100%;margin-top:4px;min-height:70px;resize:vertical" onchange="setObservacion('${a.id}',this.value)">${esc(a.observaciones||"")}</textarea>
         </label>
       </div>
+      </details></div>
       <div class="flex" style="justify-content:flex-end;margin-top:16px">
         <button class="btn" onclick="cerrarFichaAlumno()">Listo</button>
       </div>

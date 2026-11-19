@@ -628,3 +628,8 @@
   .cxn-mini{display:inline-flex;flex-wrap:wrap;gap:4px;vertical-align:middle;margin-right:4px}
   .cxn-mini-btn{font:inherit;font-size:12.5px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);border-left:4px solid var(--cxn);background:var(--surface);color:var(--ink);cursor:pointer}
   .cxn-mini-btn.on{background:var(--cxn);color:var(--cxn-tinta);border-color:var(--cxn-tinta);font-weight:700}
+
+/* Nom d'alumne/a que obri la fitxa única */
+.nom-fitxa{background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;cursor:pointer;text-align:left;text-decoration:underline dotted 1px;text-underline-offset:3px}
+.nom-fitxa:hover{color:var(--accent-texto,#7d5a12)}
+@media print{ .nom-fitxa{text-decoration:none} }

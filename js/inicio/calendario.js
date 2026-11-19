@@ -715,7 +715,7 @@ function agEventoDiaFilaHTML(e){
 }
 function agHorarioDelDia(fecha){
   const d=new Date(fecha+"T00:00:00");
-  const diaId=AG_DIAS[(d.getDay()+6)%7];
+  const diaId=["L","M","X","J","V","S","D"][(d.getDay()+6)%7]; // ids del horari (no les etiquetes)
   if(!HOR_DIAS.find(x=>x.id===diaId)) return [];
   const out=[];
   horFilas().forEach((f,i)=>{

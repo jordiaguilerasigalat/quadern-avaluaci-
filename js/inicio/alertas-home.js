@@ -144,9 +144,9 @@ function renderHome(){
     <p class="hero-tag" style="margin-top:6px;font-size:12.5px;max-width:none;opacity:.85">📶 Afig-la a la pantalla d'inici de l'iPad (Safari → compartir → "Afegir a la pantalla d'inici"). Després d'obrir-la una vegada amb connexió, continua funcionant sense wifi.</p>
     </details>
   </div>
+  ${hoyTarjetaHTML()}
   ${homeGrupsActiusHTML()}
   ${novedadesHTML()}
-  ${hoyTarjetaHTML()}
   ${coberturaAvisosInicioHTML()}
   ${typeof ccAvisoInicioHTML==="function"?ccAvisoInicioHTML():""}
   ${queMeFaltaHTML()}

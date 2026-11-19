@@ -211,7 +211,7 @@ function renderResultados(grupo){
   c.innerHTML=htmlClase+`
   <div class="card">
     <div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
-      <div><h2>Informe de ${esc(al.nombre)}${neseBadgeHTML(al)}</h2><p class="sub" style="margin:0">${TRIMESTRES[trim]}</p></div>
+      <div><h2>Informe de ${nomFitxaHTML(al)}${neseBadgeHTML(al)}</h2><p class="sub" style="margin:0">${TRIMESTRES[trim]}</p></div>
       <div class="flex">
         <button class="ghost" style="border:1px solid var(--line)" onclick="irAAlumnoResultados('')">← Ver toda la clase</button>
         <button class="ghost" style="border:1px solid var(--line)" onclick="exportarInformeFinalAlumno('${al.id}')">Exportar informe final de curso</button>

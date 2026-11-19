@@ -367,12 +367,12 @@ function hoyTarjetaHTML(){
         <button class="${estado==="ahora"?"btn":"ghost"} small" style="${estado==="ahora"?"":"border:1px solid var(--line)"}" onclick="hoyIr('${g.id}','asistencia')">✅ Lista</button>
         <button class="ghost small" style="border:1px solid var(--line)" onclick="hoyIr('${g.id}','diario')">📝 Diario</button>
         <button class="ghost small" style="border:1px solid var(--line)" onclick="hoyIr('${g.id}','calificar')">✍️ Calificar</button>
-        <button class="ghost small" style="border:1px solid var(--line)" onclick="hoyIr('${g.id}','plano')">🪑 Plano</button>
+        <button class="ghost small" style="border:1px solid var(--line)" onclick="hoyIr('${g.id}','programa')">📚 Programació</button>
       </div>`
       : (h.celda.tipo==="clase"?`<button class="ghost small" style="border:1px dashed var(--line)" onclick="homeTabActual='horario';horAbrirModal(${h.fila},'${h.dia}')">🔗 Enlazar a un grupo</button>`:"");
     return `<div class="flex" style="gap:12px;align-items:center;padding:8px 10px;border-radius:10px;flex-wrap:wrap;${estado==="ahora"?"background:var(--surface-2);box-shadow:inset 3px 0 0 var(--accent)":""}${min>=fin?";opacity:.55":""}">
       <div style="width:92px;flex-shrink:0;font-variant-numeric:tabular-nums;font-size:13px;font-weight:600">${esc(h.inicio)}–${esc(h.fin)}${estado==="ahora"?'<div style="font-size:11px;color:var(--accent-texto)">● ahora</div>':estado==="proxima"?'<div style="font-size:11px;color:var(--mut)">siguiente</div>':""}</div>
-      <div style="flex:1;min-width:160px"><span class="ag-dot" style="background:${info.color};display:inline-block;margin-right:6px"></span><strong style="font-size:13.5px">${detalle||info.label}</strong></div>
+      <div style="flex:1;min-width:160px"><span class="ag-dot" style="background:${info.color};display:inline-block;margin-right:6px"></span><strong style="font-size:13.5px">${detalle||info.label}</strong>${g&&typeof avuiClasseHTML==="function"?avuiClasseHTML(g):""}</div>
       ${acciones}
     </div>`;
   }).join("");
@@ -380,12 +380,12 @@ function hoyTarjetaHTML(){
     const info=agTipoInfo(e.tipo); const gl=agGruposLabelEvento(e);
     return `<span class="ag-hoy-chip" style="border-color:${info.color}55;background:${info.color}14" onclick="agAbrirModal('${e.fecha}','${e.id}')"><span class="ag-dot" style="background:${info.color}"></span>${e.hora?esc(e.hora)+" · ":""}${esc(e.titulo)}${gl?` · ${esc(gl)}`:""}</span>`;
   }).join("");
-  const fechaLarga=ahora.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long"});
+  const fechaLarga=ahora.toLocaleDateString("ca-ES",{weekday:"long",day:"numeric",month:"long"});
   const finde=[0,6].includes(ahora.getDay());
   const vacio=festivo?`🎉 Hoy es festivo${festivo.etiqueta?": "+esc(festivo.etiqueta):""}.`:finde?"Fin de semana: no hay clases.":hayHorario?"Hoy no tienes nada en tu horario.":"";
   return `<div class="card" style="border-left:4px solid var(--accent);padding:14px 18px">
     <div class="flex" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-      <strong style="font-size:14.5px;color:var(--accent-texto)">📌 Hoy · ${esc(fechaLarga.charAt(0).toUpperCase()+fechaLarga.slice(1))}</strong>
+      <strong style="font-size:14.5px;color:var(--accent-texto)">📌 Avui · ${esc(fechaLarga.charAt(0).toUpperCase()+fechaLarga.slice(1))}</strong>
       ${hayHorario?"":`<button class="ghost small" style="border:1px solid var(--line)" onclick="homeTabActual='horario';homeSecciones.calendario=true;render()">🗓️ Rellena tu horario para ver aquí tus clases</button>`}
     </div>
     ${chips?`<div class="flex" style="gap:8px;margin-top:10px;flex-wrap:wrap">${chips}</div>`:""}
