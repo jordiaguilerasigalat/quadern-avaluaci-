@@ -279,8 +279,8 @@ async function pintarCopias(){
   cuerpo.innerHTML=`
     <p class="sub" style="margin-top:6px">Además de la copia que exportas tú, la app guarda <strong>copias automáticas</strong> dentro del propio dispositivo: las 12 más recientes y una por día durante 30 días. Si algo sale mal (un borrado, una importación equivocada…), restaura desde aquí.</p>
     ${avisoPersist}
-    ${uso&&uso.usage?`<p class="sub" style="margin:0 0 8px">Espacio usado por la app en este dispositivo: ${_fmtBytes(uso.usage)}.</p>`:""}
-    <p class="sub" style="margin:0 0 8px">Tus datos ocupan ${_fmtBytes(saveState.bytesLS||0)} y se guardan en la base de datos del dispositivo (IndexedDB), sin el límite de 5 MB que tenía antes.${saveState.ok?"":" Ahora mismo no caben en la copia rápida de localStorage (lo ocupa otra aplicación de esta misma dirección): no pasa nada, solo tarda un instante más en abrir."}</p>
+    ${uso&&uso.usage?`<p class="sub" style="margin:0 0 8px">Espai usat per l'app en este dispositiu: ${_fmtBytes(uso.usage)}.</p>`:""}
+    <p class="sub" style="margin:0 0 8px">Les teues dades ocupen ${_fmtBytes(saveState.bytesLS||0)} i es guarden en la base de dades del dispositiu (IndexedDB), sense el límit de 5 MB que tenia abans.${saveState.ok?"":" Ara mateix no caben en la còpia ràpida de localStorage (l'ocupa una altra aplicació d'esta mateixa adreça): no passa res, només tarda un instant més a obrir-se."}</p>
     ${typeof ccSeccionHTML==="function"?ccSeccionHTML():""}
     ${typeof bloqueoSeccionHTML==="function"?bloqueoSeccionHTML():""}
     <div class="flex" style="gap:8px;margin-bottom:10px;flex-wrap:wrap">

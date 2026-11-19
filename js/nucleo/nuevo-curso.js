@@ -101,7 +101,7 @@ window.abrirNuevoCurso=()=>{
       <label class="nc-op"><input type="checkbox" id="ncHorario" checked> <span><strong>El horario semanal</strong> y sus franjas.</span></label>
       <label class="nc-op"><input type="checkbox" id="ncFestivos"> <span><strong>Los festivos</strong> del calendario (normalmente cambian cada curso).</span></label>
       <p class="sub" style="margin:10px 0 0">Se conservan siempre las materias propias, las plantillas de rúbrica y de reunión, los datos del centro y los ajustes. <strong>Se vacía</strong> lo que es de un solo curso: actividades, notas, asistencia, diario, convivencia, contactos con familias, reuniones, planes de refuerzo, repetición y NESE, y los eventos del calendario.</p>
-      ${cifradoDisponible()?`<label class="nc-op" style="margin-top:10px"><input type="checkbox" id="ncCifrar"> <span>🔒 <strong>Cifrar el archivo</strong> del curso con una contraseña (recomendado si va a salir del dispositivo).</span></label>`:""}
+      ${cifradoDisponible()?`<label class="nc-op" style="margin-top:10px"><input type="checkbox" id="ncCifrar"> <span>🔒 <strong>Xifrar l'arxiu</strong> del curs amb una contrasenya (recomanat si ha d'eixir del dispositiu).</span></label>`:""}
       <div class="flex" style="justify-content:flex-end;gap:8px;margin-top:16px">
         <button class="ghost" style="border:1px solid var(--line)" onclick="ncCerrar()">Cancelar</button>
         <button class="btn" onclick="ncPreparar()">Preparar el archivo del curso →</button>

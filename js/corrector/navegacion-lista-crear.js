@@ -146,7 +146,7 @@ function cxPendientesHTML(grupo){
     <p class="sub" style="margin:0 0 8px">Al añadirles rúbrica se crea una inicial con un ítem por cada criterio marcado (o la que tengas guardada en la Programación), lista para ajustar.</p>
     <div class="grid" style="gap:8px">
       ${sinRub.map(a=>`<div class="row" style="justify-content:space-between;border:1px solid var(--line);border-radius:8px;padding:8px 12px">
-        <span style="font-size:14px">${esc(a.nombre)} <span style="font-size:12.5px;color:var(--mut)">· en Evaluación${cxActTieneNotas(grupo,a)?" · ya tiene notas":""}</span></span>
+        <span style="font-size:14px">${esc(a.nombre)} <span style="font-size:12.5px;color:var(--mut)">· en Avaluació${cxActTieneNotas(grupo,a)?" · ja té notes":""}</span></span>
         <button class="btn small" onclick="cxAnadirRubrica('${a.id}')">🖊️ Añadir rúbrica</button>
       </div>`).join("")}
       ${deProg.map(pa=>{ const t=trimDe(pa); return `<div class="row" style="justify-content:space-between;border:1px dashed var(--line);border-radius:8px;padding:8px 12px">

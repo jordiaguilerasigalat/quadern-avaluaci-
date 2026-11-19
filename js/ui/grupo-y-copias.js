@@ -31,8 +31,8 @@ function renderLanding(){
   const hayGrupos=state.grupos.length>0;
   app.innerHTML=`
   <div class="hero">
-    <div class="hero-eyebrow">Avaluació per competències (LOMLOE) · Física i Química</div>
-    <h1 class="hero-title">Avaluació per competències</h1>
+    <div class="hero-eyebrow">Física i Química · LOMLOE</div>
+    <h1 class="hero-title">Seguiment i avaluació</h1>
     <p class="hero-tag">Qualitativa i quantitativa, criteri a criteri, trimestre a trimestre. Inclou de sèrie el currículum de Física i Química de 2n, 3r i 4t d'ESO, i de 1r i 2n de Batxillerat (Física i Química), i et permet importar el de qualsevol altra matèria (més avall). Funciona en local: sense compte, sense connexió, sense que cap dada isca d'este dispositiu.</p>
     <div class="timeline">
       <div class="pt"><span class="dot"></span><span class="lbl">1a avaluació</span></div>

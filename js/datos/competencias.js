@@ -7,13 +7,13 @@
    Diccionario de competencias clave (LOMLOE)
    ================================================================= */
 const COMP_CLAVE = {
-  CCL:"Competencia en comunicación lingüística",
-  CP:"Competencia plurilingüe",
-  STEM:"Competencia matemática y en ciencia, tecnología e ingeniería",
-  CD:"Competencia digital",
-  CPSAA:"Competencia personal, social y de aprender a aprender",
-  CC:"Competencia ciudadana",
-  CE:"Competencia emprendedora",
-  CCEC:"Competencia en conciencia y expresión culturales"
+  CCL:"Competència en comunicació lingüística",
+  CP:"Competència plurilingüe",
+  STEM:"Competència matemàtica i competència en ciència, tecnologia i enginyeria",
+  CD:"Competència digital",
+  CPSAA:"Competència personal, social i d'aprendre a aprendre",
+  CC:"Competència ciutadana",
+  CE:"Competència emprenedora",
+  CCEC:"Competència en consciència i expressió culturals"
 };
 

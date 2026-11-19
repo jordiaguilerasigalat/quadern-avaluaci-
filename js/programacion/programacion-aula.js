@@ -293,7 +293,7 @@ function progListaHTML(root){
         <div class="flex" style="justify-content:space-between;align-items:flex-start">
           <div>
             <strong style="font-size:14.5px">${esc(p.nombre)}</strong>
-            <div class="sub" style="margin:2px 0 0">${esc(cat.materia)} · ${esc(cat.curso)} · ${p.sdas.length} SdA · ${p.actividades.length} actividad${p.actividades.length===1?"":"es"}</div>
+            <div class="sub" style="margin:2px 0 0">${esc(cat.materia)} · ${esc(cat.curso)} · ${p.sdas.length} SdA · ${p.actividades.length} activitat${p.actividades.length===1?"":"s"}</div>
             <div class="sub" style="margin:2px 0 0">${gruposVinculados.length? "Vinculada a: "+gruposVinculados.map(esc).join(", ") : "Encara sense grups vinculats"}</div>
           </div>
           <div class="flex" onclick="event.stopPropagation()">

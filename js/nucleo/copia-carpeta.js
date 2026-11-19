@@ -223,7 +223,7 @@ function ccSeccionHTML(){
     <button class="btn small" onclick="ccCompartirCopia()">📤 Compartir copia</button></div>`;
   const aviso=_ccClave
     ? `<p class="sub" style="margin:6px 0 0">🔒 Las copias se guardan <strong>cifradas</strong> con tu contraseña. En otro dispositivo, «Importar copia» te la pedirá.</p>`
-    : `<p class="sub" style="margin:6px 0 0">La copia se guarda <strong>sin cifrar</strong>, igual que «Exportar copia». Contiene datos del alumnado: usa una carpeta de tu cuenta del centro o de tu ordenador, no una compartida${cifradoDisponible()?", o pulsa «🔒 Cifrar las copias»":""}.</p>`;
+    : `<p class="sub" style="margin:6px 0 0">La còpia es guarda <strong>sense xifrar</strong>, igual que «Exportar còpia». Conté dades de l'alumnat: usa una carpeta del teu compte del centre o del teu ordinador, no una de compartida${cifradoDisponible()?", o prem «🔒 Xifrar les còpies»":""}.</p>`;
   if(_ccEstado==="no" || !_ccHandle) return `<div class="card" style="margin:0 0 10px;padding:12px 14px">
     <strong style="font-size:13.5px">☁️ Copia automática en una carpeta</strong>
     <p class="sub" style="margin:4px 0 8px">Elige una carpeta y la app guardará sola una copia unos minutos después de cada cambio. Si es una carpeta de Drive, OneDrive o iCloud sincronizada en este ordenador, la copia llega a tus otros equipos y, al abrir allí la app, te ofrecerá cargarla.</p>

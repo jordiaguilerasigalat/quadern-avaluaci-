@@ -189,7 +189,7 @@ function renderAlumnos(grupo){
   const abierto=state.ui.alumAbierto;
   const pap=grupo.papelera.alumnos;
   c.innerHTML=`<div class="card">
-    <h2>Alumnado de ${esc(grupo.nombre)}</h2>
+    <h2>Alumnat de ${esc(grupo.nombre)}</h2>
     <p class="sub">Protección de datos: usa iniciales o número de expediente en lugar del nombre completo. Puedes editar apellidos y nombre por separado, marcar si un alumno/a es NESE (necesidad específica de apoyo educativo) e indicar el nivel de referencia en la materia, añadir observaciones internas o eliminar a cada alumno/a. Las observaciones son solo para ti: no se imprimen en ningún informe (para comentarios que sí se impriman, usa "Comentarios a la calificación" en la pestaña Resultados).</p>
     <div class="flex" style="margin-bottom:16px;align-items:flex-end">
       <div style="flex:1;min-width:160px">

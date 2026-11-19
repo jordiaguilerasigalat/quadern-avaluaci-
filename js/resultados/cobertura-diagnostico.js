@@ -118,7 +118,7 @@ function pintarDiagnostico(){
   const fila=(x,icono)=>`<div style="padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px;line-height:1.45">${icono} <strong>${esc(x.donde)}</strong> — ${esc(x.texto)}</div>`;
   _diagModalEl.innerHTML=`<div class="modal-box" style="max-width:680px">
     <div class="flex" style="justify-content:space-between;align-items:center"><h2 style="font-size:17px">🩺 Revisión de tus datos</h2><button class="modal-close" onclick="cerrarDiagnostico()" aria-label="Cerrar">×</button></div>
-    ${!r.length||(!arreglos.length&&!avisos.length)?`<p style="font-size:14.5px;color:#1e7a44;font-weight:600;margin:10px 0">✓ Todo en orden: no hay nada que arreglar.</p>`:`<p class="sub">${arreglos.length} cosa(s) que se pueden arreglar solas · ${avisos.length} aviso(s) para que lo revises tú.</p>`}
+    ${!r.length||(!arreglos.length&&!avisos.length)?`<p style="font-size:14.5px;color:#1e7a44;font-weight:600;margin:10px 0">✓ Todo en orden: no hay nada que arreglar.</p>`:`<p class="sub">${arreglos.length} cosa/es que es poden arreglar soles · ${avisos.length} avís/os perquè ho revises tu.</p>`}
     <div class="scroll" style="max-height:52vh">
       ${arreglos.length?`<div class="section-eyebrow" style="margin-top:8px">Se pueden arreglar automáticamente</div>${arreglos.map(x=>fila(x,"🔧")).join("")}`:""}
       ${avisos.length?`<div class="section-eyebrow" style="margin-top:12px">Para revisar tú</div>${avisos.map(x=>fila(x,"⚠️")).join("")}`:""}

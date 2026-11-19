@@ -153,17 +153,10 @@ function renderHome(){
   ${homeSecciones.evaluacion?`<div class="gcard-grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">
     <div class="gcard">
       <div style="font-size:28px;margin-bottom:4px">📊</div>
-      <div class="gcard-title">Avaluació per Competències</div>
-      <div class="gcard-meta">Alumnat, activitats, competències específiques i clau, informes per trimestre.</div>
-      <div class="gcard-count">${nGrupos} grup${nGrupos===1?"":"s"} · ${nAlumnos} alumne${nAlumnos===1?"":"s"}</div>
-      <div class="gcard-actions"><button class="btn" onclick="irModo('competencial')">Obrir</button></div>
-    </div>
-    <div class="gcard">
-      <div style="font-size:28px;margin-bottom:4px">📘</div>
-      <div class="gcard-title">Programació d'Aula</div>
-      <div class="gcard-meta">El pla de Situacions d'Aprenentatge del curs, amb les seues activitats i criteris (reutilitzable d'any en any), d'on es recullen les activitats per avaluar. Inclou les programacions del departament 2026-2027.</div>
-      <div class="gcard-count">${nProgramaciones} programaci${nProgramaciones===1?"ó":"ons"}</div>
-      <div class="gcard-actions"><button class="btn" onclick="irModo('programacion')">Obrir</button></div>
+      <div class="gcard-title">Seguiment i avaluació</div>
+      <div class="gcard-meta">Els teus grups (alumnat, activitats, rúbriques, qualificacions i informes) i les programacions d'aula per temes i situacions d'aprenentatge, amb la seua temporització. Inclou les programacions del departament 2026-2027.</div>
+      <div class="gcard-count">${nGrupos} grup${nGrupos===1?"":"s"} · ${nAlumnos} alumne${nAlumnos===1?"":"s"} · ${nProgramaciones} programaci${nProgramaciones===1?"ó":"ons"}</div>
+      <div class="gcard-actions" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="irModo('competencial')">👥 Grups</button><button class="btn" onclick="irModo('programacion')">📘 Programacions</button></div>
     </div>
     <div class="gcard">
       <div style="font-size:28px;margin-bottom:4px">🖊️</div>

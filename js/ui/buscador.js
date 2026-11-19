@@ -47,7 +47,7 @@ function buscarFilaHTML(titulo,meta,onclick){
 function buscarNavItems(){
   const items=[
     {label:"🏠 Inicio", modo:"inicio"},
-    {label:"📊 Evaluación por Competencias", modo:"competencial"},
+    {label:"📊 Seguiment i avaluació", modo:"competencial"},
     {label:"📘 Programación de Aula", modo:"programacion"},
     {label:"🖊️ Corrector de Exámenes", modo:"corrector"},
     {label:"🗂️ Reuniones", modo:"reuniones"},

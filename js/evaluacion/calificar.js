@@ -72,7 +72,7 @@ function renderCalificar(grupo){
     <div class="flex" style="justify-content:space-between; margin-bottom:12px">
       <div>
         <h2>Calificar actividad</h2>
-        <p class="sub" style="margin:0">Elige una actividad y asigna la valoración. Haz clic en ⚡ en modo tabla para calificar masivamente a los que no tengan nota. ${act.esExamen?"Los exámenes tienen una nota cuantitativa propia (cuenta para la nota numérica) además de la calificación de cada criterio (cuenta para las competencias).":""}</p>
+        <p class="sub" style="margin:0">Elige una actividad y asigna la valoración. Haz clic en ⚡ en modo tabla para calificar masivamente a los que no tengan nota. ${act.esExamen?"Els exàmens tenen una nota quantitativa pròpia (compta per a la nota numèrica) a més de la qualificació de cada criteri (compta per a les competències).":""}</p>
       </div>
       <div class="flex" style="background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:4px">
          <button class="ghost ${!isTable?'on':''}" style="${!isTable?'background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.05);border-radius:4px':''}" onclick="setCalView('cards')">Tarjetas</button>

@@ -89,7 +89,7 @@ function _renderActividadesLlista(grupo){
       const b=grupo.bloques.find(x=>x.id===a.bloqueId);
       const pctEnBloque=pesoActividadEnBloque(grupo,a).toFixed(0);
       const tipoDesc = a.rubrica ? "examen con rúbrica: nota cuantitativa + % por criterio (gestionado desde el Corrector)"
-        : a.esExamen ? "examen: nota cuantitativa + escala de 4 niveles por criterio" : "escala de 4 niveles";
+        : a.esExamen ? "examen: nota quantitativa + escala de 4 nivells per criteri" : "escala de 4 nivells";
       const nAct=lista.length;
       return `<div class="act-row" ${nAct>1?`ondragstart="actDragStart(event,'${a.id}')" ondragend="actDragEnd()" ondragover="actDragOver(event,this)" ondragleave="this.classList.remove('act-drop')" ondrop="actDrop(event,'${a.id}')"`:""} data-actid="${a.id}" style="border:1px solid var(--line);border-radius:8px;padding:10px 12px">
         <div style="display:flex;justify-content:space-between;gap:8px;align-items:start">
@@ -101,7 +101,7 @@ function _renderActividadesLlista(grupo){
           <div style="flex:1;min-width:0">
             <div style="font-size:14.5px;font-weight:500">${esc(a.nombre)} ${a.sda ? `<span class="badge" style="vertical-align:middle;margin-left:6px">${esc(a.sda)}</span>` : ''}</div>
             <div style="font-size:12.5px;color:var(--mut);margin-top:2px">${a.tipo} · ${b?esc(b.label):""} · ${tipoDesc}</div>
-            ${a.recupera?`<div style="font-size:12.5px;margin-top:2px;color:var(--accent-texto,#7d5a12);font-weight:600">🔁 ${recResumenTexto(grupo,a)}</div>`:`<div style="font-size:12.5px;color:var(--mut);margin-top:2px">Peso dentro del bloque: ${pctEnBloque} %${(a.pesoBloque==null||a.pesoBloque==="")?" (automático)":""}</div>`}
+            ${a.recupera?`<div style="font-size:12.5px;margin-top:2px;color:var(--accent-texto,#7d5a12);font-weight:600">🔁 ${recResumenTexto(grupo,a)}</div>`:`<div style="font-size:12.5px;color:var(--mut);margin-top:2px">Pes dins del bloc: ${pctEnBloque} %${(a.pesoBloque==null||a.pesoBloque==="")?" (automàtic)":""}</div>`}
             ${!a.recupera && recuperacionesDe(grupo,a.id).length?`<div style="font-size:12.5px;color:var(--mut);margin-top:2px">🔁 Tiene recuperación: ${recuperacionesDe(grupo,a.id).map(r=>esc(r.nombre)).join(", ")}</div>`:""}
             ${cxAvisoCriteriosBadgeHTML(grupo,a)}
             <div style="font-size:12.5px;color:var(--mut);margin-top:4px">Criterios: ${a.criterios.length?a.criterios.map(l=>`${critLinkHTML(grupo.catalogoKey,l.critId)} (${l.peso})`).join(" · "):"ninguno todavía"}</div>
