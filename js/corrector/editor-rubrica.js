@@ -1,0 +1,610 @@
+/* ============================================================================
+   Cuaderno del profesor · Editor de rúbrica y rúbricas adaptadas (NESE)
+   js/corrector/editor-rubrica.js
+   ============================================================================ */
+
+/* ---------- Editor de rúbrica ---------- */
+const CX_NOMBRE_NIVEL=["Apartado","Subapartado","Sub-subapartado"];
+const CX_NOMBRE_TIPO={apartado:"Apartado",pregunta:"Pregunta",subpregunta:"Subpregunta"};   // bloques importados del Diseño
+function cxFmtPts(v){ return String(Math.round((Number(v)||0)*100)/100).replace(".",","); }
+function renderCorEditor(grupo){
+  const c=document.getElementById("tabContent");
+  const act=grupo.actividades.find(a=>a.id===state.ui.corExamId);
+  if(!act || !act.rubrica){ state.ui.corTab="lista"; renderCorLista(grupo); return; }
+  if(state.ui.corVarId && !cxVariantes(act).some(v=>v.id===state.ui.corVarId)) state.ui.corVarId="";
+  const variante=cxVarEditando(act);
+  const rub=cxRubEd(act);
+  const esNiv=cxEsNiveles(rub);
+  const escalar=variante? variante.escalarA10!==false : !!act.escalarA10;
+  const maxTotal=cxMaxTotal(rub);
+  const totalOk=Math.abs(maxTotal-10)<0.01;
+  const progRef=cxProgActDe(grupo,act);
+  const enVariantes=new Set(cxVariantes(act).flatMap(v=>v.alumnos||[]));
+  const nGeneral=grupo.alumnos.filter(al=>!enVariantes.has(al.id)).length;
+  const prevCrit=cxCriteriosPrevistos(grupo,act);
+  _cxCritPermitidos = prevCrit && !state.ui.corVerTodosCrit ? new Set(prevCrit) : null;
+  _cxHayPrevistos = !!prevCrit;
+  _cxPrevistosSet = prevCrit ? new Set(prevCrit) : null;
+  const pestanas=`<div class="flex" style="flex-wrap:wrap;gap:6px;margin-top:12px;align-items:center">
+      <button class="tab ${!variante?"on":""}" onclick="cxElegirVariante('')">Rúbrica general · ${nGeneral} alumno${nGeneral===1?"":"s"}</button>
+      ${cxVariantes(act).map(v=>`<button class="tab ${variante&&variante.id===v.id?"on":""}" onclick="cxElegirVariante('${v.id}')">${v.tipo==="ausencia"?"📅 ":""}${esc(v.nombre||"Examen alternativo")}${v.fecha?" · "+esc(cxFechaCorta(v.fecha)):""} · ${(v.alumnos||[]).length} alumno${(v.alumnos||[]).length===1?"":"s"}</button>`).join("")}
+      <button class="ghost" style="border:1px dashed var(--line)" title="Examen con otras preguntas para uno o varios alumnos/as (quien no vino el día del examen, o el alumnado NESE): se corrigen con su propia rúbrica y el resto con la general" onclick="cxNuevoAlternativo()">+ Examen alternativo</button>
+    </div>`;
+  const panelVariante=variante? `<div class="card" style="border-left:4px solid var(--accent)">
+    <div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <label style="font-size:12.5px;color:var(--mut);font-weight:500;flex:1;min-width:200px">Nombre de este examen alternativo
+        <input class="in" style="width:100%;margin-top:4px" value="${esc(variante.nombre||"")}" onchange="cxSetVarianteNombre(this.value)">
+      </label>
+      <label style="font-size:12.5px;color:var(--mut);font-weight:500">Tipo
+        <select class="in" style="display:block;margin-top:4px" onchange="cxSetVarianteTipo(this.value)">
+          <option value="ausencia" ${variante.tipo==="ausencia"?"selected":""}>📅 Otro día (no vino al examen)</option>
+          <option value="nese" ${variante.tipo!=="ausencia"?"selected":""}>🧩 Adaptado (NESE)</option>
+        </select>
+      </label>
+      <label style="font-size:12.5px;color:var(--mut);font-weight:500">Fecha
+        <input class="in" type="date" style="display:block;margin-top:4px" value="${esc(variante.fecha||"")}" onchange="cxSetVarianteFecha(this.value)">
+      </label>
+      <div class="flex" style="align-items:flex-end">
+        <button class="ghost" style="border:1px solid var(--line)" title="Sustituye la rúbrica de este examen alternativo por una copia de la general" onclick="cxCopiarGeneralEnVariante()">Copiar la rúbrica general aquí</button>
+        <button class="ghost danger" onclick="cxEliminarVariante()">Eliminar examen alternativo</button>
+      </div>
+    </div>
+    <div class="section-eyebrow" style="margin:12px 0 6px">Alumnado que hace este examen</div>
+    <div class="flex" style="flex-wrap:wrap;gap:6px 16px">
+      ${[...grupo.alumnos].sort((a,b)=>Number(!!b.nese)-Number(!!a.nese)).map(al=>{
+        const otra=cxVarianteDeAlumno(act,al.id);
+        const aqui=otra&&otra.id===variante.id;
+        const bloqueado=otra&&!aqui;
+        return `<label style="font-size:13px;display:flex;align-items:center;gap:6px;${bloqueado?"opacity:.55":""}" ${bloqueado?`title="Ya hace «${esc(otra.nombre||"otra rúbrica adaptada")}»"`:""}>
+          <input type="checkbox" ${aqui?"checked":""} ${bloqueado?"disabled":""} onchange="cxToggleAlumnoVariante('${al.id}',this.checked)"> ${esc(al.nombre)}${neseBadgeHTML(al)}
+        </label>`;
+      }).join("")||'<span class="sub">Este grupo todavía no tiene alumnado.</span>'}
+    </div>
+    <p class="sub" style="margin:8px 0 0">Quien esté marcado aquí se corrige con esta rúbrica y no con la general; su nota cuenta en el mismo examen, con el mismo peso.</p>
+  </div>` : "";
+  c.innerHTML=`
+  <div class="card">
+    <div class="flex" style="justify-content:space-between;align-items:flex-start;flex-wrap:wrap">
+      <input class="in" id="cxNombre" aria-label="Nombre del examen" value="${esc(act.nombre)}" style="font-size:15px;font-weight:600;min-width:240px;flex:1">
+      <div class="flex">
+        <select class="in" id="cxBloque" aria-label="Bloque de calificación">${grupo.bloques.map(b=>`<option value="${b.id}" ${b.id===act.bloqueId?"selected":""}>${esc(b.label)}</option>`).join("")}</select>
+        <input class="in" id="cxSda" placeholder="SdA (opcional)" value="${esc(act.sda||'')}" style="width:160px">
+        <button class="ghost" style="border:1px solid var(--line)" onclick="cxIrLista()">← Exámenes</button>
+      </div>
+    </div>
+    <div class="flex" style="margin-top:10px;align-items:center">
+      <label style="font-size:12.5px;color:var(--mut);display:flex;align-items:center;gap:6px">Peso dentro del bloque
+        <input class="in miniw" type="number" min="0" style="width:70px" value="${act.pesoBloque??''}" placeholder="auto" onchange="cxSetPesoBloque(this.value)">%
+      </label>
+    </div>
+    ${pestanas}
+  </div>
+  ${variante?"":cxElegirTipoHTML(grupo,act)}
+  ${cxAvisoNeseHTML(grupo,act)}
+  ${panelVariante}
+  ${cxPanelPrevistosHTML(grupo,act,rub,variante)}
+  ${esNiv? cxnEditorHTML(grupo,act,rub,variante,escalar) : `  <div class="card">
+    <p class="sub" style="margin:0">Organiza el examen como necesites: <strong>apartados</strong> con sus preguntas o ítems y, si hace falta, <strong>subapartados</strong> dentro (hasta ${CX_MAX_NIVELES} niveles). Cada ítem tiene su puntuación máxima, descriptores opcionales y los criterios de evaluación que trabaja. Si el alumnado elige (p. ej. «responda UNA de las dos opciones»), indica en ese apartado cuántos cuentan. Al importar desde el Diseño, la rúbrica copia su estructura (apartado → pregunta → subpregunta) con los puntos de cada parte.</p>
+    <div class="flex" style="margin-top:10px;align-items:center">
+      <span class="pill" style="background:${totalOk?'#dcece0':'#f3dcdc'};color:${totalOk?'#1e5631':'#912525'}">Suma de puntos${variante?" (rúbrica adaptada)":""}: ${maxTotal.toFixed(2)} / 10</span>
+
+      ${!totalOk?`<label style="font-size:12.5px;color:var(--ink);display:inline-flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" ${escalar?"checked":""} onchange="cxSetEscalarA10(this.checked)"> Convertir la puntuación a nota sobre 10 ${maxTotal>0?`(p. ej. ${cxFmtPts(maxTotal/2)} puntos → 5)`:""}</label>
+        ${escalar?"":'<span style="font-size:12.5px;color:var(--danger,#b91c1c)">Sin convertir, la nota será la suma de puntos (máximo 10).</span>'}`:''}
+      <span style="flex:1"></span>
+      <button class="ghost small" style="border:1px solid var(--line)" onclick="cxPlegarTodo(true)">▸ Plegar todo</button>
+      <button class="ghost small" style="border:1px solid var(--line)" onclick="cxPlegarTodo(false)">▾ Desplegar todo</button>
+    </div>
+  </div>
+  ${rub.map((sec,sIdx)=>renderCxNodoHTML(grupo,sec,0,sIdx,rub.length)).join("")}`}
+  <div class="flex">
+    ${esNiv?"":`<button class="btn" onclick="cxAddSeccion()">+ Añadir apartado</button>`}
+    ${!esNiv&&rub.length===1&&!rub[0].sinTitulo&&!cxElegirEf(rub[0])&&(!rub[0].tipo||rub[0].tipo==="apartado")?`<button class="ghost" style="border:1px solid var(--line)" title="Mostrar solo las preguntas, sin cabecera de apartado" onclick="cxOcultarApartado('${rub[0].id}')">Sin apartado</button>`:""}
+    ${!variante?`<button class="ghost" style="border:1px solid var(--line)" onclick="cxGuardarComoPlantilla('${act.id}')">💾 Guardar como plantilla</button>`:""}
+    <button class="ghost" style="border:1px solid var(--line)" title="Sustituye esta rúbrica por una de tus plantillas guardadas (sirven para cualquier grupo)" onclick="cxCargarPlantilla()">📂 Cargar plantilla</button>
+    <button class="ghost" style="border:1px solid var(--line)" title="${esNiv?"Convierte las categorías en preguntas con puntos":"Convierte las preguntas en categorías de una tabla de niveles de logro"}" onclick="cxCambiarTipoRubrica()">⇄ ${esNiv?"Pasar a rúbrica por puntos":"Pasar a rúbrica por niveles"}</button>
+    ${progRef&&!variante?`<button class="ghost" style="border:1px solid var(--line)" title="Guarda esta rúbrica en el examen de la Programación &quot;${esc(progRef.prog.nombre)}&quot;: los demás grupos y los cursos siguientes la recibirán ya hecha al traer el examen" onclick="cxGuardarRubricaEnProgramacion('${act.id}')">📌 ${(progRef.progAct.rubrica||[]).length?"Actualizar la rúbrica de la Programación":"Guardar en la Programación"}</button>`:""}
+    <button class="ghost" style="border:1px solid var(--line)" onclick="cxIrCorregir('${act.id}')">Ir a corregir →</button>
+  </div>`;
+  document.getElementById("cxNombre").addEventListener("change",e=>{ act.nombre=e.target.value.trim()||act.nombre;
+    const evVinc=(state.eventos||[]).find(ev=>ev.examId===act.id); if(evVinc) evVinc.titulo=act.nombre;
+    save(); });
+  document.getElementById("cxBloque").addEventListener("change",e=>{ act.bloqueId=e.target.value; save(); });
+  document.getElementById("cxSda").addEventListener("change",e=>{ act.sda=e.target.value.trim(); save(); });
+  c.querySelectorAll("textarea.cx-autogrow").forEach(cxAutoGrow);
+  // Tras el primer pintado (fuentes y anchos ya aplicados) se reajusta para que no quede texto cortado.
+  requestAnimationFrame(()=>c.querySelectorAll("textarea.cx-autogrow").forEach(cxAutoGrow));
+}
+function cxAutoGrow(t){ if(!t.offsetParent) return; t.style.height="auto"; t.style.height=(t.scrollHeight+2)+"px"; }
+function renderCxPlanoHTML(grupo,sec){
+  const items=sec.items||[], subs=sec.subs||[];
+  return `<div class="card" data-cxnodo="${sec.id}">
+    <div class="flex" style="justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+      <span class="section-eyebrow" style="margin:0">Preguntas · ${cxFmtPts(cxMaxNodo(sec))} pts</span>
+      <button class="ghost small" style="border:1px solid var(--line)" title="Agrupar las preguntas bajo un apartado con título (también permite «a elegir»)" onclick="cxMostrarApartado('${sec.id}')">Usar apartado</button>
+    </div>
+    ${items.length?`<div class="grid" style="margin-top:10px;gap:10px">${items.map((it,i)=>renderCxItemHTML(grupo,sec,it,i)).join("")}</div>`:""}
+    ${subs.map((x,i)=>renderCxNodoHTML(grupo,x,1,i,subs.length)).join("")}
+    <div class="flex" style="margin-top:10px;gap:6px">
+      <button class="ghost" style="border:1px solid var(--line)" onclick="cxAddItem('${sec.id}')">+ Pregunta / ítem</button>
+      <button class="ghost" style="border:1px solid var(--line)" onclick="cxAddSub('${sec.id}')">+ ${CX_NOMBRE_NIVEL[1]}</button>
+    </div>
+  </div>`;
+}
+window.cxMostrarApartado=id=>{ const x=cxCtxEd(), n=x&&cxFindNodo(x.rub,id); if(!n) return; n.sinTitulo=false; if(!(n.title||"").trim()) n.title="Apartado 1"; save(); render(); };
+window.cxOcultarApartado=id=>{ const x=cxCtxEd(), n=x&&cxFindNodo(x.rub,id); if(!n) return; n.sinTitulo=true; save(); render(); };
+function renderCxNodoHTML(grupo,sec,depth,sIdx,nHermanos){
+  if(depth===0 && sec.sinTitulo && !cxElegirEf(sec)) return renderCxPlanoHTML(grupo,sec);
+  const items=sec.items||[], subs=sec.subs||[];
+  const nHijos=items.length+subs.length;
+  const k=cxElegirEf(sec);
+  const nivel=CX_NOMBRE_TIPO[sec.tipo]||CX_NOMBRE_NIVEL[depth]||"Subapartado";
+  const estilo= depth===0 ? "" : `margin:10px 0 0;padding:12px 12px 12px 14px;border:1px solid var(--line);border-left:4px solid ${depth===1?"var(--accent)":"var(--brand-3,#7a8fb3)"};border-radius:10px;background:var(--surface-2,transparent)`;
+  const abre= depth===0 ? `<div class="card" data-cxnodo="${sec.id}">` : `<div style="${estilo}" data-cxnodo="${sec.id}">`;
+  const plegado=cxEstaPlegado(sec.id);
+  const nomSub=(sec.tipo==="apartado"?"pregunta":sec.tipo==="pregunta"?"subpregunta":(CX_NOMBRE_NIVEL[depth+1]||"Subapartado")).toLowerCase();
+  const nomItem=(sec.tipo==="pregunta"||sec.tipo==="subpregunta")?"subpregunta":"pregunta";
+  const resumen=[items.length?`${items.length} ${nomItem}${items.length===1?"":"s"}`:"", subs.length?`${subs.length} ${nomSub}${subs.length===1?"":"s"}`:""].filter(Boolean).join(" · ");
+  const cabecera=`<div class="flex" style="justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+      <button class="ghost" style="display:flex;align-items:center;gap:8px;padding:2px 6px;margin-left:-6px;text-align:left;flex:1;min-width:0;justify-content:flex-start" title="${plegado?"Desplegar":"Plegar"}" aria-expanded="${!plegado}" onclick="cxTogglePlegado('${sec.id}')">
+        <span style="display:inline-block;width:14px;transition:transform .15s;transform:rotate(${plegado?0:90}deg);color:var(--mut)">▶</span>
+        <span class="section-eyebrow" style="margin:0">${nivel} · ${cxFmtPts(cxMaxNodo(sec))} pts${k?` · cuentan ${k} de ${nHijos}`:""}${plegado&&resumen?` · ${resumen}`:""}</span>
+      </button>
+      <div class="flex" style="gap:4px">`;
+  if(plegado){
+    const titulo=(sec.title||"").trim();
+    return `${abre}
+    ${cabecera}
+        <button class="ghost small" title="Subir" ${sIdx===0?"disabled":""} onclick="cxMoveSeccion('${sec.id}',-1)">↑</button>
+        <button class="ghost small" title="Bajar" ${sIdx===nHermanos-1?"disabled":""} onclick="cxMoveSeccion('${sec.id}',1)">↓</button>
+      </div>
+    </div>
+    <div onclick="cxTogglePlegado('${sec.id}')" style="cursor:pointer;margin-top:4px;font-weight:600;font-size:${depth===0?"14.5px":"13.5px"};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${titulo?"":"color:var(--mut);font-weight:400;font-style:italic"}">${titulo?esc(titulo.split("\n")[0]):"(sin título)"}</div>
+  </div>`;
+  }
+  return `${abre}
+    ${cabecera}
+        <button class="ghost small" title="Subir" ${sIdx===0?"disabled":""} onclick="cxMoveSeccion('${sec.id}',-1)">↑</button>
+        <button class="ghost small" title="Bajar" ${sIdx===nHermanos-1?"disabled":""} onclick="cxMoveSeccion('${sec.id}',1)">↓</button>
+        <button class="ghost danger small" onclick="cxDelSeccion('${sec.id}')">Eliminar ${nivel.toLowerCase()}</button>
+      </div>
+    </div>
+    <textarea class="in cx-autogrow" rows="1" style="display:block;width:100%;box-sizing:border-box;margin-top:6px;font-weight:600;resize:vertical;overflow:auto;min-height:38px;line-height:1.45;font-size:${depth===0?"14.5px":"13.5px"}" placeholder="${sec.tipo==="pregunta"||sec.tipo==="subpregunta"?"Enunciado de la "+sec.tipo:depth===0?"Título y enunciado del apartado (p. ej. II. Comentario de fuente histórica — elija UNA de las dos fuentes)":"Título y enunciado del subapartado (p. ej. 2.1. Describa el tipo de fuente, analice el contenido…)"}" oninput="cxAutoGrow(this)" onchange="cxSetSeccionTitle('${sec.id}',this.value)">${esc(sec.title||"")}</textarea>
+    ${nHijos>=2?`<label style="font-size:12.5px;color:var(--mut);display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap">El alumnado responde
+      <select class="in" style="padding:4px 8px" onchange="cxSetNodoElegir('${sec.id}',this.value)">
+        <option value="0" ${!k?"selected":""}>todo (${nHijos} de ${nHijos})</option>
+        ${Array.from({length:nHijos-1},(_,i)=>i+1).map(n=>`<option value="${n}" ${k===n?"selected":""}>solo ${n} de ${nHijos}, a elegir</option>`).join("")}
+      </select>
+      ${k?`<span>· al corregir, puntúa solo lo que haya respondido: ${k===1?"cuenta la mejor":`cuentan las ${k} mejores`}.</span>`:""}
+    </label>`:""}
+    ${items.length?`<div class="grid" style="margin-top:10px;gap:10px">
+      ${items.map((it,iIdx)=>renderCxItemHTML(grupo,sec,it,iIdx)).join("")}
+    </div>`:""}
+    ${subs.map((s,i)=>renderCxNodoHTML(grupo,s,depth+1,i,subs.length)).join("")}
+    <div class="flex" style="margin-top:10px;gap:6px">
+      <button class="ghost" style="border:1px solid var(--line)" onclick="cxAddItem('${sec.id}')">+ Pregunta / ítem</button>
+      ${depth<CX_MAX_NIVELES-1?`<button class="ghost" style="border:1px solid var(--line)" onclick="cxAddSub('${sec.id}')">+ ${sec.tipo==="apartado"?"Pregunta con subpreguntas":sec.tipo==="pregunta"?"Subpregunta con partes":CX_NOMBRE_NIVEL[depth+1]}</button>`:""}
+    </div>
+  </div>`;
+}
+function cxEstaPlegado(id){ return !!(state.ui.corPlegados&&state.ui.corPlegados[id]); }
+function cxDesplegar(id){ if(state.ui.corPlegados) delete state.ui.corPlegados[id]; }
+window.cxTogglePlegado=id=>{
+  if(!state.ui.corPlegados||typeof state.ui.corPlegados!=="object") state.ui.corPlegados={};
+  if(state.ui.corPlegados[id]) delete state.ui.corPlegados[id]; else state.ui.corPlegados[id]=true;
+  save(); render();
+  // Mantener a la vista el apartado que se acaba de plegar o desplegar.
+  const el=document.querySelector(`[data-cxnodo="${id}"]`);
+  if(el){ const r=el.getBoundingClientRect(); if(r.top<80||r.top>window.innerHeight-60) el.scrollIntoView({block:"start",behavior:"auto"}); if(el.getBoundingClientRect().top<90) window.scrollBy(0,-110); }
+};
+window.cxPlegarTodo=plegar=>{
+  const x=cxCtxEd(); if(!x) return;
+  if(!state.ui.corPlegados||typeof state.ui.corPlegados!=="object") state.ui.corPlegados={};
+  cxNodosFlat(x.rub).forEach(({n})=>{ if(plegar) state.ui.corPlegados[n.id]=true; else delete state.ui.corPlegados[n.id]; });
+  save(); render();
+};
+function renderCxItemHTML(grupo,sec,it,iIdx){
+  const abierto=state.ui.corItemAbierto===it.id;
+  const nCrit=(it.links||[]).length;
+  return `<div style="border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--surface,#fff)">
+    <div class="flex" style="align-items:flex-start">
+      ${it.unico?`<span style="flex:1;min-width:180px;font-size:12.5px;color:var(--mut)">Puntuación de la pregunta</span>`:`<textarea class="in cx-autogrow" rows="1" placeholder="Pregunta / enunciado / criterio de corrección" style="flex:1;min-width:180px;box-sizing:border-box;resize:vertical;overflow:auto;min-height:38px;line-height:1.45;font-family:inherit" oninput="cxAutoGrow(this)" onchange="cxSetItemLabel('${sec.id}','${it.id}',this.value)">${esc(it.label)}</textarea>`}
+      <span class="flex" style="gap:4px;align-items:center">
+        <input class="in miniw" type="text" inputmode="decimal" autocomplete="off" value="${String(it.max).replace('.',',')}" style="width:70px" onchange="cxSetItemMax('${sec.id}','${it.id}',this.value)">
+        <span style="font-size:12.5px;color:var(--mut)">pts</span>
+      </span>
+      <button class="ghost small" ${iIdx===0?"disabled":""} onclick="cxMoveItem('${sec.id}','${it.id}',-1)">↑</button>
+      <button class="ghost small" ${iIdx===(sec.items||[]).length-1?"disabled":""} onclick="cxMoveItem('${sec.id}','${it.id}',1)">↓</button>
+      <button class="ghost danger" onclick="cxDelItem('${sec.id}','${it.id}')">Eliminar</button>
+    </div>
+    <textarea id="cxd_${it.id}" class="in cx-autogrow" style="width:100%;box-sizing:border-box;margin-top:6px;min-height:44px;resize:vertical;font-size:13px;text-align:justify" placeholder="Descriptores (opcional). Una línea por cada uno, p. ej. «• Identifica el tipo de fuente y su autor (0,5)». Usa los botones de abajo para viñeta, subviñeta, negrita, cursiva y subrayado." oninput="cxAutoGrow(this);cxDescPreview(this)" onkeydown="cxDescKey(event,this)" onchange="cxSetItemDesc('${sec.id}','${it.id}',this.value)">${esc(cxDescATexto(it))}</textarea>
+    <div class="flex" style="gap:4px;margin-top:4px;align-items:center;flex-wrap:wrap" role="toolbar" aria-label="Formato de los descriptores">
+      <button type="button" class="ghost small" style="border:1px solid var(--line)" title="Convierte las líneas seleccionadas en viñeta (punto negro)" onclick="cxDescNivelSel(document.getElementById('cxd_${it.id}'),0)">• Viñeta</button>
+      <button type="button" class="ghost small" style="border:1px solid var(--line)" title="Convierte las líneas seleccionadas en subviñeta (punto sin relleno) · Tab al principio de la línea" onclick="cxDescNivelSel(document.getElementById('cxd_${it.id}'),1)">◦ Subviñeta</button>
+      <button type="button" class="ghost small" style="border:1px solid var(--line)" title="Quita la viñeta y deja las líneas seleccionadas como texto normal" onclick="cxDescNivelSel(document.getElementById('cxd_${it.id}'),-1)">Sin viñeta</button>
+      <span style="width:1px;align-self:stretch;background:var(--line);margin:0 2px"></span>
+      <button type="button" class="ghost small" style="border:1px solid var(--line);min-width:30px" title="Negrita (Ctrl+B)" onclick="cxDescFmt(document.getElementById('cxd_${it.id}'),'b')"><b>N</b></button>
+      <button type="button" class="ghost small" style="border:1px solid var(--line);min-width:30px" title="Cursiva (Ctrl+I)" onclick="cxDescFmt(document.getElementById('cxd_${it.id}'),'i')"><i>C</i></button>
+      <button type="button" class="ghost small" style="border:1px solid var(--line);min-width:30px" title="Subrayado (Ctrl+U)" onclick="cxDescFmt(document.getElementById('cxd_${it.id}'),'u')"><u>S</u></button>
+    </div>
+    <div id="cxdp_${it.id}" class="sub" style="margin:4px 0 0;font-size:12px;${cxDescATexto(it).trim()?"":"display:none"}"><span style="color:var(--mut)">Así se verá:</span>${cxDescHTML(cxDescLineas(cxDescATexto(it)),"var(--mut)","var(--ink)")}</div>
+    <button class="ghost" style="border:1px solid var(--line);margin-top:6px" onclick="cxToggleItemCriterios('${it.id}')">${abierto?"Ocultar":"Vincular"} criterios${nCrit?` (${nCrit})`:""}</button>
+    ${abierto?cxCritPickerHTML(grupo,sec,it):""}
+  </div>`;
+}
+/* Lista de criterios para vincular a un ítem (o a una categoría de una rúbrica por niveles), con su peso. */
+function cxCritPickerHTML(grupo,sec,it){
+  const idx=catIndex(grupo.catalogoKey);
+  const linkados=new Set((it.links||[]).map(l=>l.critId));
+  const visible=cr=> !_cxCritPermitidos || _cxCritPermitidos.has(cr.id) || linkados.has(cr.id);
+  const ces=idx.cat.ces.map(ce=>({...ce,criterios:ce.criterios.filter(visible)})).filter(ce=>ce.criterios.length);
+  const nota= _cxHayPrevistos
+    ? `<div class="flex" style="justify-content:space-between;align-items:center;margin:2px 0 4px;gap:8px"><span class="sub" style="margin:0;font-size:12px">${_cxCritPermitidos?"Solo se muestran los criterios previstos para este examen.":"Se muestran todos los criterios de la materia."}</span><button class="ghost small" style="padding:2px 8px" onclick="cxToggleVerTodosCrit()">${_cxCritPermitidos?"Ver todos":"Ver solo los previstos"}</button></div>`
+    : `<div class="sub" style="margin:2px 0 4px;font-size:12px">Este examen no tiene criterios previstos, así que se muestran todos.</div>`;
+  return `<div class="scroll" style="margin-top:8px;max-height:260px">${nota}
+  ${ces.map(ce=>`
+    <div style="font-size:12px;color:var(--mut);font-weight:500;margin:6px 0 3px">${ce.id} · ${esc(ce.titulo)}</div>
+    ${ce.criterios.map(cr=>{
+      const l=(it.links||[]).find(x=>x.critId===cr.id);
+      return `<div class="critbox ${l?"sel":""}">
+        <label style="display:flex;align-items:center;gap:9px;flex:1;cursor:pointer;font-size:13px">
+          <input type="checkbox" ${l?"checked":""} onchange="cxToggleItemLink('${sec.id}','${it.id}','${cr.id}')">
+          <span><strong>${cr.id}</strong> ${esc(cr.texto)}</span>
+        </label>
+        ${(cxCritNoPrevisto(cr.id)?'<span class="badge" style="background:var(--danger-soft,#f3dcdc);color:var(--danger,#912525)" title="No estaba entre los criterios previstos de este examen">no previsto</span>':"")}
+        ${l?`<span style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--mut)">peso
+          <input class="in miniw" type="number" min="0" value="${l.peso}" onchange="cxSetItemLinkPeso('${it.id}','${cr.id}',this.value)"></span>`:""}
+      </div>`;}).join("")}
+  `).join("")}
+    </div>`;
+}
+let _cxCritPermitidos=null, _cxHayPrevistos=false, _cxPrevistosSet=null;
+function cxCritNoPrevisto(cid){ return !!(_cxPrevistosSet && !_cxPrevistosSet.has(cid)); }
+function cxNuevoItem(max){ return {id:uid(),label:"",max:max??0,desc:[],links:[]}; }
+function cxCtxEd(){ const grupo=grupoActual(); const act=grupo&&grupo.actividades.find(a=>a.id===state.ui.corExamId); return act? {grupo,act,rub:cxRubEd(act)} : null; }
+window.cxSetPesoBloque=v=>{ const x=cxCtxEd(); if(!x) return;
+  x.act.pesoBloque=(v===""||v==null)?"":Number(v); save(); };
+window.cxAddSeccion=()=>{ const x=cxCtxEd(); if(!x) return;
+  x.rub.push({id:uid(),title:"",items:[cxNuevoItem()],subs:[]});
+  save(); render(); };
+window.cxAddSub=secId=>{ const x=cxCtxEd(); if(!x) return;
+  const sec=cxFindNodo(x.rub,secId); if(!sec) return;
+  if(cxNivelNodo(x.rub,secId)>=CX_MAX_NIVELES-1) return;
+  if(!Array.isArray(sec.subs)) sec.subs=[];
+  sec.subs.push({id:uid(),title:"",items:[cxNuevoItem()],subs:[]});
+  cxDesplegar(secId);
+  save(); render(); };
+window.cxDelSeccion=async secId=>{ const x=cxCtxEd(); if(!x) return;
+  const lista=cxListaDeNodo(x.rub,secId); if(!lista) return;
+  if(lista===x.rub && x.rub.length<=1){ mostrarAviso("Debe quedar al menos un apartado. Si quieres vaciarlo, elimina sus ítems o borra el examen entero."); return; }
+  const n=lista.find(s=>s.id===secId);
+  const nItems=cxItemsFlat([n]).length, nSubs=cxNodosFlat([n]).length-1;
+  if(!await confirmar(`¿Eliminar este ${CX_NOMBRE_NIVEL[cxNivelNodo(x.rub,secId)]?.toLowerCase()||"apartado"}${nSubs?`, sus ${nSubs} subapartado${nSubs===1?"":"s"}`:""} y ${nItems===1?"su ítem":`sus ${nItems} ítems`}?`)) return;
+  lista.splice(lista.indexOf(n),1);
+  cxLimpiarPuntuacionesHuerfanas(x.grupo,x.act);
+  save(); render(); };
+window.cxMoveSeccion=(secId,dir)=>{ const x=cxCtxEd(); if(!x) return;
+  const lista=cxListaDeNodo(x.rub,secId); if(!lista) return;
+  const i=lista.findIndex(s=>s.id===secId); const j=i+dir; if(j<0||j>=lista.length) return;
+  [lista[i],lista[j]]=[lista[j],lista[i]]; save(); render(); };
+window.cxSetSeccionTitle=(secId,v)=>{ const x=cxCtxEd(); if(!x) return;
+  const sec=cxFindNodo(x.rub,secId); if(sec){ sec.title=v; save(); } };
+window.cxSetNodoElegir=(secId,v)=>{ const x=cxCtxEd(); if(!x) return;
+  const sec=cxFindNodo(x.rub,secId); if(!sec) return;
+  const k=Number(v)||0; if(k>0) sec.elegir=k; else delete sec.elegir;
+  cxRecalcTodosLosAlumnos(x.grupo,x.act); save(); render(); };
+window.cxAddItem=secId=>{ const x=cxCtxEd(); if(!x) return;
+  const sec=cxFindNodo(x.rub,secId); if(!sec) return;
+  if(!Array.isArray(sec.items)) sec.items=[];
+  sec.items.push(cxNuevoItem()); cxDesplegar(secId); save(); render(); };
+window.cxDelItem=(secId,itemId)=>{ const x=cxCtxEd(); if(!x) return;
+  const sec=cxFindNodo(x.rub,secId); if(!sec) return;
+  if((sec.items||[]).length<=1 && !(sec.subs||[]).length){ mostrarAviso("Debe quedar al menos un ítem (o un subapartado) en el apartado. Si sobra, elimina el apartado entero."); return; }
+  sec.items=sec.items.filter(it=>it.id!==itemId);
+  if(sec.elegir && sec.elegir>=cxNumHijos(sec)) delete sec.elegir;
+  cxLimpiarPuntuacionesHuerfanas(x.grupo,x.act);
+  save(); render(); };
+window.cxMoveItem=(secId,itemId,dir)=>{ const x=cxCtxEd(); if(!x) return;
+  const sec=cxFindNodo(x.rub,secId); if(!sec) return;
+  const i=sec.items.findIndex(it=>it.id===itemId); const j=i+dir; if(j<0||j>=sec.items.length) return;
+  [sec.items[i],sec.items[j]]=[sec.items[j],sec.items[i]]; save(); render(); };
+window.cxSetItemLabel=(secId,itemId,v)=>{ const it=cxFindItem(secId,itemId); if(it){ it.label=v; save(); } };
+window.cxSetEscalarA10=on=>{
+  const x=cxCtxEd(); if(!x) return;
+  const v=cxVarEditando(x.act);
+  if(v) v.escalarA10=!!on; else x.act.escalarA10=!!on;
+  cxRecalcTodosLosAlumnos(x.grupo,x.act); save(); render();
+  mostrarToast(on?"✓ Notas recalculadas sobre 10":"Notas recalculadas como suma de puntos");
+};
+window.cxSetItemMax=(secId,itemId,v)=>{
+  const x=cxCtxEd(); const it=cxFindItem(secId,itemId); if(!it||!x) return;
+  it.max=Math.max(0,Number(String(v??"").replace(",","."))||0);
+  // Si el nuevo máximo queda por debajo de puntuaciones ya guardadas, se reajustan
+  // para no generar porcentajes por encima del 100% ni notas cuantitativas infladas.
+  Object.keys(x.grupo.rubricScores||{}).forEach(alId=>{
+    const val=x.grupo.rubricScores[alId]?.[x.act.id]?.[itemId];
+    if(val!=null && Number(val)>it.max) x.grupo.rubricScores[alId][x.act.id][itemId]=it.max;
+  });
+  cxRecalcTodosLosAlumnos(x.grupo,x.act);
+  save(); render();
+};
+/* Descriptores de la rúbrica. Cada línea de it.desc puede ser:
+     «• texto»      → viñeta (punto negro)
+     «  ◦ texto»    → subviñeta (punto sin relleno; la sangría marca el nivel, 2 espacios por nivel)
+     «texto»        → texto normal, sin viñeta
+   Dentro del texto: **negrita**, *cursiva*, __subrayado__.
+   Compatibilidad: los descriptores guardados antes (it.descFmt distinto de 2) eran todos viñetas, así que
+   se muestran como viñeta; al editarlos se les escribe el «•» y se marcan como formato 2. */
+const CX_MARC=/^[•◦○▪▫·\-–*](\s+|$)/;
+function cxDescNivel(l){ const m=/^[ \t]*/.exec(l)[0].replace(/\t/g,"  ").length; return Math.min(3,Math.floor(m/2)); }
+function cxDescParse(l,antiguo){
+  const t=String(l).trim(), m=CX_MARC.exec(t);
+  return { nivel:cxDescNivel(String(l)), vineta:!!antiguo||!!m, texto:m?t.slice(m[0].length):t };
+}
+const cxDescMarca=nivel=>nivel>0?"◦":"•";
+function cxDescATexto(it){
+  const ls=Array.isArray(it.desc)?it.desc:[];
+  if(it.descFmt===2) return ls.join("\n");
+  return ls.map(l=>{ const d=cxDescParse(l,true); return "  ".repeat(d.nivel)+cxDescMarca(d.nivel)+" "+d.texto; }).join("\n");
+}
+function cxDescLineas(v){ return String(v||"").split("\n").map(s=>s.replace(/\t/g,"  ").replace(/\s+$/,"")).filter(l=>cxDescParse(l,false).texto); }
+function cxDescInline(t){
+  return esc(t).replace(/\*\*(\S(?:.*?\S)?)\*\*/g,"<b>$1</b>").replace(/__(\S(?:.*?\S)?)__/g,"<u>$1</u>").replace(/\*(\S(?:.*?\S)?)\*/g,"<i>$1</i>");
+}
+/* colorTexto: color del texto; marcador: color del punto de la viñeta (negro en papel). */
+function cxDescHTML(desc,colorTexto,marcador,antiguo){
+  const ls=(desc||[]).filter(l=>String(l).trim()); if(!ls.length) return "";
+  const col=colorTexto?`color:${colorTexto}`:"", mk=marcador||"#000";
+  const ul=n=>`<ul style="margin:2px 0 0;padding-left:18px;list-style-type:${n===0?"disc":"circle"};color:${mk};text-align:justify;text-justify:inter-word;hyphens:auto">`;
+  const txt=t=>`<span style="${col}">${cxDescInline(t)}</span>`;
+  let out="", d=0;
+  const cerrar=()=>{ if(d){ out+="</li>"; while(d>1){ out+="</ul></li>"; d--; } out+="</ul>"; d=0; } };
+  ls.forEach(l=>{
+    const x=cxDescParse(l,antiguo);
+    if(!x.vineta){ cerrar(); out+=`<div style="margin-top:2px;text-align:justify;text-justify:inter-word;hyphens:auto;${col}">${cxDescInline(x.texto)}</div>`; return; }
+    const L=Math.min(x.nivel,d);
+    if(L+1>d){ out+=ul(d); d++; } else { out+="</li>"; while(d>L+1){ out+="</ul></li>"; d--; } }
+    out+="<li>"+txt(x.texto); });
+  cerrar();
+  return out;
+}
+window.cxDescPreview=ta=>{ const box=document.getElementById(ta.id.replace("cxd_","cxdp_")); if(!box) return;
+  const ls=cxDescLineas(ta.value);
+  box.style.display=ls.length?"":"none";
+  box.innerHTML='<span style="color:var(--mut)">Así se verá:</span>'+cxDescHTML(ls,"var(--mut)","var(--ink)");
+};
+function cxDescNotificar(ta){ ta.dispatchEvent(new Event("input",{bubbles:true})); ta.dispatchEvent(new Event("change",{bubbles:true})); }
+/* Líneas afectadas por la selección (si hay selección que termina justo al inicio de una línea, esa no cuenta). */
+function cxDescRango(ta){
+  const v=ta.value, s=ta.selectionStart; let e=ta.selectionEnd;
+  if(e>s && v[e-1]==="\n") e--;
+  const ini=v.lastIndexOf("\n",s-1)+1; let fin=v.indexOf("\n",e); if(fin<0) fin=v.length;
+  return { v, s, e, ini, fin };
+}
+function cxDescAplicar(ta,r,nuevo,dS,dT){
+  ta.value=r.v.slice(0,r.ini)+nuevo.join("\n")+r.v.slice(r.fin);
+  ta.focus(); ta.selectionStart=Math.max(r.ini,r.s+dS); ta.selectionEnd=Math.max(ta.selectionStart,r.e+dT);
+  cxDescNotificar(ta);
+}
+/* nivel 0 = viñeta, 1 = subviñeta, -1 = sin viñeta. */
+window.cxDescNivelSel=(ta,nivel)=>{ if(!ta) return;
+  const r=cxDescRango(ta); let dS=0, dT=0;
+  const lineas=r.v.slice(r.ini,r.fin).split("\n");
+  const nuevo=lineas.map((l,i)=>{
+    const x=cxDescParse(l,false); if(!x.texto && lineas.length>1) return l;
+    const r2= nivel<0 ? x.texto : "  ".repeat(nivel)+cxDescMarca(nivel)+" "+x.texto;
+    const dl=r2.length-l.length; if(i===0) dS=dl; dT+=dl; return r2; });
+  cxDescAplicar(ta,r,nuevo,dS,dT);
+};
+/* Cambia un nivel de sangría (Tab / Mayús+Tab) conservando si la línea tiene o no viñeta. */
+function cxDescSangrar(ta,dir){
+  const r=cxDescRango(ta); let dS=0, dT=0;
+  const lineas=r.v.slice(r.ini,r.fin).split("\n");
+  const nuevo=lineas.map((l,i)=>{
+    const x=cxDescParse(l,false); if(!x.texto && lineas.length>1) return l;
+    const niv=Math.max(0,Math.min(3,x.nivel+dir));
+    const r2= x.vineta||!x.texto ? "  ".repeat(niv)+cxDescMarca(niv)+" "+x.texto : x.texto;
+    const dl=r2.length-l.length; if(i===0) dS=dl; dT+=dl; return r2; });
+  cxDescAplicar(ta,r,nuevo,dS,dT);
+}
+/* Negrita / cursiva / subrayado: envuelve (o desenvuelve) la selección con las marcas. */
+window.cxDescFmt=(ta,tipo)=>{ if(!ta) return;
+  const m={b:"**",i:"*",u:"__"}[tipo]; if(!m) return;
+  const v=ta.value, s=ta.selectionStart, e=ta.selectionEnd, n=m.length;
+  ta.focus();
+  if(s===e && v.slice(e,e+n)===m && !(m==="*"&&v[e+1]==="*") && !(s>=n && v.slice(s-n,s)===m)){   // cursor justo antes de la marca de cierre: la salta
+    ta.selectionStart=ta.selectionEnd=e+n; return;
+  }
+  if(s>=n && v.slice(s-n,s)===m && v.slice(e,e+n)===m){        // ya está: quitar marcas
+    ta.value=v.slice(0,s-n)+v.slice(s,e)+v.slice(e+n); ta.selectionStart=s-n; ta.selectionEnd=e-n;
+  } else if(e-s>=2*n && v.slice(s,s+n)===m && v.slice(e-n,e)===m){   // la selección ya incluye las marcas
+    ta.value=v.slice(0,s)+v.slice(s+n,e-n)+v.slice(e); ta.selectionStart=s; ta.selectionEnd=e-2*n;
+  } else {
+    ta.value=v.slice(0,s)+m+v.slice(s,e)+m+v.slice(e);
+    if(s===e){ ta.selectionStart=ta.selectionEnd=s+n; } else { ta.selectionStart=s+n; ta.selectionEnd=e+n; }
+  }
+  cxDescNotificar(ta);
+};
+/* Teclado: Intro mantiene sangría y viñeta (Intro en una viñeta vacía la termina); Tab / Mayús+Tab cambian de nivel solo
+   cuando el cursor está al comienzo de la línea (o hay varias líneas seleccionadas), para no atrapar el teclado;
+   Ctrl+B / Ctrl+I / Ctrl+U aplican negrita, cursiva y subrayado. */
+window.cxDescKey=(ev,ta)=>{
+  if((ev.ctrlKey||ev.metaKey)&&!ev.altKey&&!ev.shiftKey){
+    const t={b:"b",i:"i",u:"u"}[ev.key.toLowerCase()]; if(t){ ev.preventDefault(); cxDescFmt(ta,t); } return; }
+  if(ev.key==="Enter"&&!ev.ctrlKey&&!ev.altKey&&!ev.metaKey&&!ev.shiftKey&&!ev.isComposing){
+    const v=ta.value, s=ta.selectionStart, ini=v.lastIndexOf("\n",s-1)+1, ant=v.slice(ini,s), x=cxDescParse(ant,false);
+    if(!x.vineta) return;
+    ev.preventDefault();
+    if(!x.texto){ ta.setRangeText("",ini,ta.selectionEnd,"end"); }   // viñeta vacía: se acaba la lista
+    else ta.setRangeText("\n"+"  ".repeat(x.nivel)+cxDescMarca(x.nivel)+" ",s,ta.selectionEnd,"end");
+    cxDescNotificar(ta); return; }
+  if(ev.key!=="Tab"||ev.ctrlKey||ev.altKey||ev.metaKey) return;
+  const v=ta.value, s=ta.selectionStart, e=ta.selectionEnd, ini=v.lastIndexOf("\n",s-1)+1, antes=v.slice(ini,s);
+  const alInicio= (s!==e && v.slice(s,e).includes("\n")) || /^[ \t]*([•◦○▪▫·\-–*]\s*)?$/.test(antes);
+  if(!alInicio) return;
+  if(ev.shiftKey && cxDescNivel(v.slice(ini))===0) return;
+  ev.preventDefault(); cxDescSangrar(ta,ev.shiftKey?-1:1);
+};
+window.cxSetItemDesc=(secId,itemId,v)=>{ const it=cxFindItem(secId,itemId); if(it){ it.desc=cxDescLineas(v); it.descFmt=2; save(); } };
+window.cxToggleItemCriterios=itemId=>{ state.ui.corItemAbierto = state.ui.corItemAbierto===itemId? "" : itemId; save(); render(); };
+window.cxToggleItemLink=(secId,itemId,critId)=>{
+  const x=cxCtxEd(); if(!x) return;
+  const it=cxFindItem(secId,itemId); if(!it) return;
+  if(!it.links) it.links=[];
+  const i=it.links.findIndex(l=>l.critId===critId);
+  if(i>=0) it.links.splice(i,1); else it.links.push({critId,peso:100});
+  cxSyncCriteriosActividad(x.act); cxRecalcTodosLosAlumnos(x.grupo,x.act);
+  save(); render(); };
+window.cxSetItemLinkPeso=(itemId,critId,v)=>{
+  const x=cxCtxEd(); if(!x) return;
+  const it=cxItemsFlat(x.rub).find(y=>y.id===itemId); if(!it) return;
+  const l=(it.links||[]).find(y=>y.critId===critId); if(l){ l.peso=Number(v)||0; cxRecalcTodosLosAlumnos(x.grupo,x.act); save(); } };
+/* ---- Exámenes alternativos: adaptados (NESE) y de otro día (quien no vino al examen) ----
+   act.variantes=[{id,nombre,tipo:"nese"|"ausencia",fecha:"AAAA-MM-DD",rubrica,escalarA10,alumnos,enBlanco}].
+   Sin «tipo» es un examen adaptado (NESE), como los de antes. Un examen «ausencia» no recibe alumnado NESE
+   automáticamente: se marca a mano quién lo hace. Todos cuentan en el mismo examen y salen en su lista de corrección. */
+function cxFechaCorta(f){ const m=String(f||"").match(/^(\d{4})-(\d{2})-(\d{2})$/); return m? `${Number(m[3])}/${Number(m[2])}/${m[1]}` : String(f||""); }
+window.cxElegirVariante=id=>{ state.ui.corVarId=id||""; state.ui.corItemAbierto=""; save(); render(); };
+/* Crea una versión adaptada: rúbrica copiada de la general (o la que se pase) y, como alumnado, el NESE del grupo
+   que todavía no hace otra versión ni está marcado como «hace el general». No guarda ni pinta. */
+function cxCrearVariante(grupo,act,datos){
+  if(!Array.isArray(act.variantes)) act.variantes=[];
+  datos=datos||{};
+  const ocupados=new Set([...cxVariantes(act).flatMap(v=>v.alumnos||[]),...(act.neseGeneral||[])]);
+  const ausencia=datos.tipo==="ausencia";
+  // El alumnado: el que se indique (quitándolo de otro examen alternativo) o, en uno adaptado, el NESE libre.
+  let nese;
+  if(Array.isArray(datos.alumnos)){
+    nese=datos.alumnos.filter(id=>grupo.alumnos.some(a=>a.id===id));
+    cxVariantes(act).forEach(v=>{ v.alumnos=(v.alumnos||[]).filter(id=>!nese.includes(id)); });
+    act.neseGeneral=(act.neseGeneral||[]).filter(id=>!nese.includes(id));
+  } else nese=(datos.sinAlumnado||ausencia)?[]:grupo.alumnos.filter(al=>al.nese && !ocupados.has(al.id)).map(al=>al.id);
+  const n=cxVariantes(act).filter(v=>(v.tipo==="ausencia")===ausencia).length+1;
+  const v={id:uid(), nombre:datos.nombre||(ausencia?(n===1?"Otro día":"Otro día "+n):(n===1?"Adaptada (NESE)":"Adaptada "+n)), rubrica:cxClonarRubrica(datos.rubrica||act.rubrica,datos.rubrica?grupo.catalogoKey:null),
+    escalarA10:datos.escalarA10!==false, alumnos:nese};
+  if(ausencia) v.tipo="ausencia";
+  if(datos.fecha) v.fecha=String(datos.fecha);
+  if(datos.enBlanco) v.enBlanco=true;
+  if(datos.progVarId) v.progVarId=datos.progVarId;
+  act.variantes.push(v);
+  nese.forEach(alId=>cxRecalcAlumno(grupo,act,alId));
+  cxSyncCriteriosActividad(act);
+  return v;
+}
+/* Alumnado NESE del grupo que se corrige con la rúbrica general sin que se haya decidido así. */
+function cxNeseSinVersion(grupo,act){
+  if(!act||!act.rubrica) return [];
+  const ocupados=new Set([...cxVariantes(act).flatMap(v=>v.alumnos||[]),...(act.neseGeneral||[])]);
+  return grupo.alumnos.filter(al=>al.nese && !ocupados.has(al.id));
+}
+/* Aviso en Rúbrica, Diseño y Corregir: alumnado NESE que haría el examen general. Se resuelve con un toque. */
+function cxAvisoNeseHTML(grupo,act){
+  const faltan=cxNeseSinVersion(grupo,act); if(!faltan.length) return "";
+  const vs=cxVariantes(act).filter(v=>v.tipo!=="ausencia"), nombres=faltan.map(al=>esc(al.nombre)).join(", "), uno=faltan.length===1;
+  const accion=vs.length
+    ? (vs.length===1
+        ? `<button class="btn small" onclick="cxAnadirNeseAVariante('${escJS(vs[0].id)}')">Añadir a «${esc(vs[0].nombre||"Adaptada")}»</button>`
+        : `<select class="in" style="padding:5px 8px" aria-label="Versión adaptada a la que añadirlo" onchange="if(this.value) cxAnadirNeseAVariante(this.value)"><option value="">Añadir a…</option>${vs.map(v=>`<option value="${esc(v.id)}">${esc(v.nombre||"Adaptada")}</option>`).join("")}</select>`)
+    : `<button class="btn small" onclick="cxNuevaVariante()">+ Crear versión adaptada</button>`;
+  return `<div class="alert-box cx-aviso-nese" style="margin:0 0 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <span style="flex:1;min-width:220px">🧩 <strong>${uno?"Alumno/a NESE":faltan.length+" alumnos/as NESE"} con el examen general:</strong> ${nombres}.${vs.length?"":" Este examen todavía no tiene versión adaptada."}</span>
+    ${accion}
+    <button class="ghost small" style="border:1px solid var(--line)" title="Deja de avisar: ${uno?"hace":"hacen"} el examen general a propósito" onclick="cxNeseHaceGeneral()">${uno?"Hace":"Hacen"} el general</button>
+  </div>`;
+}
+window.cxAnadirNeseAVariante=vid=>{
+  const x=cxCtxEd(); if(!x) return;
+  const v=cxVariantes(x.act).find(y=>y.id===vid); if(!v) return;
+  const faltan=cxNeseSinVersion(x.grupo,x.act);
+  faltan.forEach(al=>{ v.alumnos=v.alumnos||[]; if(!v.alumnos.includes(al.id)) v.alumnos.push(al.id); cxRecalcAlumno(x.grupo,x.act,al.id); });
+  save(); render();
+  mostrarToast(`✓ ${faltan.length} alumno${faltan.length===1?"":"s"} NESE ${faltan.length===1?"pasa":"pasan"} a «${v.nombre||"Adaptada"}»`);
+};
+window.cxNeseHaceGeneral=()=>{
+  const x=cxCtxEd(); if(!x) return;
+  x.act.neseGeneral=[...new Set([...(x.act.neseGeneral||[]),...cxNeseSinVersion(x.grupo,x.act).map(al=>al.id)])];
+  save(); render();
+  mostrarToast("De acuerdo: no se volverá a avisar en este examen","info");
+};
+window.cxNuevaVariante=()=>{
+  const x=cxCtxEd(); if(!x||!x.act.rubrica) return;
+  const v=cxCrearVariante(x.grupo,x.act);
+  state.ui.corVarId=v.id; state.ui.corModelo="";
+  save(); render();
+  const n=v.alumnos.length, enDiseno=state.ui.corTab==="diseno";
+  mostrarToast((enDiseno?"✓ Examen adaptado creado (copia del general)":"✓ Rúbrica adaptada creada (copia de la general)")+(n?` con ${n} alumno${n===1?"":"s"} NESE`:". Marca qué alumnado lo hace en la pestaña Rúbrica"));
+};
+/* «+ Examen alternativo»: tipo (otro día / adaptado NESE), nombre, fecha, alumnado y cómo empieza. */
+window.cxNuevoAlternativo=()=>{
+  const x=cxCtxEd(); if(!x||!x.act.rubrica) return;
+  const {grupo,act}=x, hoy=new Date(), iso=`${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,"0")}-${String(hoy.getDate()).padStart(2,"0")}`;
+  const ocupadoEn=al=>cxVarianteDeAlumno(act,al.id);
+  const div=document.createElement("div"); div.className="modal-overlay"; div.style.zIndex="1500";
+  div.innerHTML=`<div class="modal-box" style="max-width:600px;max-height:88vh;overflow:auto" role="dialog" aria-modal="true" aria-labelledby="altT">
+    <h2 id="altT" style="font-size:17px">+ Examen alternativo</h2>
+    <p class="sub">Un examen con otras preguntas dentro de «${esc(act.nombre)}»: se corrige con su propia rúbrica, sale en la misma lista de corrección y su nota cuenta en este examen.</p>
+    <fieldset style="border:0;padding:0;margin:10px 0 0"><legend class="section-eyebrow" style="margin-bottom:6px">Para quién es</legend>
+      <label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px;margin-bottom:6px"><input type="radio" name="altTipo" value="ausencia" checked> <span><strong>📅 Otro día</strong> · para quien no vino el día del examen</span></label>
+      <label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px"><input type="radio" name="altTipo" value="nese"> <span><strong>🧩 Adaptado (NESE)</strong> · para el alumnado con necesidades específicas</span></label>
+    </fieldset>
+    <div class="flex" style="gap:10px;flex-wrap:wrap;margin-top:12px">
+      <label style="font-size:12.5px;color:var(--mut);font-weight:500;flex:1;min-width:180px">Nombre<input class="in" id="altNombre" style="width:100%;margin-top:4px" value="Otro día"></label>
+      <label style="font-size:12.5px;color:var(--mut);font-weight:500">Fecha (opcional)<input class="in" id="altFecha" type="date" style="display:block;margin-top:4px" value="${iso}"></label>
+    </div>
+    <fieldset style="border:0;padding:0;margin:12px 0 0"><legend class="section-eyebrow" style="margin-bottom:6px">Empieza</legend>
+      <label style="display:inline-flex;gap:6px;align-items:center;font-size:13.5px;margin-right:16px"><input type="radio" name="altInicio" value="copia" checked> Como copia del examen general</label>
+      <label style="display:inline-flex;gap:6px;align-items:center;font-size:13.5px"><input type="radio" name="altInicio" value="blanco"> En blanco</label>
+    </fieldset>
+    <div class="section-eyebrow" style="margin:12px 0 6px">Alumnado que lo hace</div>
+    <div id="altAlumnos" class="flex" style="flex-wrap:wrap;gap:6px 16px">${grupo.alumnos.map(al=>{ const o=ocupadoEn(al);
+      return `<label style="font-size:13px;display:flex;align-items:center;gap:6px" ${o?`title="Ahora hace «${esc(o.nombre||"otro examen alternativo")}»: si lo marcas, pasa a este"`:""}><input type="checkbox" value="${esc(al.id)}" data-nese="${al.nese&&!o&&!(act.neseGeneral||[]).includes(al.id)?1:0}"> ${esc(al.nombre)}${neseBadgeHTML(al)}${o?` <span class="sub" style="margin:0">(${esc(o.nombre||"alternativo")})</span>`:""}</label>`; }).join("")||'<span class="sub">Este grupo todavía no tiene alumnado.</span>'}</div>
+    <div class="flex" style="justify-content:flex-end;gap:8px;margin-top:16px"><button class="ghost" id="altNo" style="border:1px solid var(--line)">Cancelar</button><button class="btn" id="altSi">Crear</button></div>
+  </div>`;
+  document.body.appendChild(div);
+  const nombre=div.querySelector("#altNombre");
+  div.querySelectorAll('input[name="altTipo"]').forEach(r=>r.onchange=()=>{
+    const nese=r.value==="nese"&&r.checked;
+    if(/^(Otro día|Adaptada \(NESE\))$/.test(nombre.value.trim())||!nombre.value.trim()) nombre.value=nese?"Adaptada (NESE)":"Otro día";
+    div.querySelectorAll("#altAlumnos input").forEach(c=>{ c.checked=nese&&c.dataset.nese==="1"; });
+  });
+  div.querySelector("#altNo").onclick=()=>div.remove();
+  div.querySelector("#altSi").onclick=()=>{
+    const tipo=div.querySelector('input[name="altTipo"]:checked').value, alumnos=[...div.querySelectorAll("#altAlumnos input:checked")].map(c=>c.value);
+    const enBlanco=div.querySelector('input[name="altInicio"]:checked').value==="blanco", fecha=div.querySelector("#altFecha").value;
+    div.remove();
+    const v=cxCrearVariante(grupo,act,{tipo,nombre:nombre.value.trim()||undefined,fecha,enBlanco,alumnos});
+    alumnos.forEach(id=>cxRecalcAlumno(grupo,act,id));
+    state.ui.corVarId=v.id; state.ui.corModelo="";
+    save(); render();
+    const n=v.alumnos.length;
+    mostrarToast(`✓ «${v.nombre}» creado${enBlanco?" en blanco":""}`+(n?` para ${n} alumno${n===1?"":"s"}`:". Marca qué alumnado lo hace en la pestaña Rúbrica"));
+  };
+  setTimeout(()=>nombre.focus(),0);
+};
+window.cxSetVarianteTipo=t=>{ const x=cxCtxEd(); const va=x&&cxVarEditando(x.act); if(!va) return; if(t==="ausencia") va.tipo="ausencia"; else delete va.tipo; save(); render(); };
+window.cxSetVarianteFecha=f=>{ const x=cxCtxEd(); const va=x&&cxVarEditando(x.act); if(!va) return; if(f) va.fecha=String(f); else delete va.fecha; save(); render(); };
+window.cxSetVarianteNombre=v=>{ const x=cxCtxEd(); const va=x&&cxVarEditando(x.act); if(!va) return; va.nombre=String(v||"").trim()||va.nombre; save(); render(); };
+window.cxToggleAlumnoVariante=(alId,on)=>{
+  const x=cxCtxEd(); const va=x&&cxVarEditando(x.act); if(!va) return;
+  const tienePuntos=Object.keys(x.grupo.rubricScores?.[alId]?.[x.act.id]||{}).length>0;
+  va.alumnos=(va.alumnos||[]).filter(id=>id!==alId);
+  if(on){ cxVariantes(x.act).forEach(v=>{ v.alumnos=(v.alumnos||[]).filter(id=>id!==alId); }); va.alumnos.push(alId); x.act.neseGeneral=(x.act.neseGeneral||[]).filter(id=>id!==alId); }
+  cxRecalcAlumno(x.grupo,x.act,alId);
+  save(); render();
+  if(tienePuntos) mostrarToast("Ojo: este alumno/a ya estaba corregido con otra rúbrica — revisa su corrección","info");
+};
+window.cxCopiarGeneralEnVariante=async ()=>{
+  const x=cxCtxEd(); const va=x&&cxVarEditando(x.act); if(!va) return;
+  if(!await confirmar("¿Sustituir la rúbrica de este examen alternativo por una copia de la general? Se perderán sus apartados actuales y lo ya corregido con ella.",{ok:"Sí, sustituir"})) return;
+  va.rubrica=cxClonarRubrica(x.act.rubrica,null);
+  cxLimpiarPuntuacionesHuerfanas(x.grupo,x.act);
+  save(); render();
+};
+window.cxEliminarVariante=async ()=>{
+  const x=cxCtxEd(); const va=x&&cxVarEditando(x.act); if(!va) return;
+  if(!await confirmar(`¿Eliminar el examen alternativo «${va.nombre}» (su rúbrica)? ${(va.alumnos||[]).length?"Su alumnado pasará a corregirse con la rúbrica general.":""}`)) return;
+  x.act.variantes=cxVariantes(x.act).filter(v=>v.id!==va.id);
+  state.ui.corVarId="";
+  cxLimpiarPuntuacionesHuerfanas(x.grupo,x.act);
+  save(); render();
+};
+

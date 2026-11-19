@@ -1,0 +1,20 @@
+# Ejecuta las pruebas de navegador (tests/README.md) en cada subida de cambios.
+name: Pruebas
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  pruebas:
+    # Versión fija: «ubuntu-latest» pasó a Ubuntu 26.04 y Playwright 1.56 no instala Chromium ahí.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
