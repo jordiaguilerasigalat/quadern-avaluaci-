@@ -98,7 +98,7 @@ function renderAjustes(grupo){
     <p class="sub">Bloques de la propuesta pedagógica de ${esc(idx.cat.materia)}. Deben sumar 100.</p>
     <p id="sumaBloquesAviso" style="font-size:13px;margin:0 0 8px">${sumaBloquesHTML(grupo)}</p>
     <div class="flex">
-      ${grupo.bloques.map((b,i)=>{ const nAct=(grupo.actividades||[]).filter(x=>x.bloqueId===b.id).length; return `
+      ${grupo.bloques.map((b,i)=>{ const nAct=(grupo.actividades||[]).filter(x=>typeof actEnBloque==="function"? actEnBloque(x,b.id) : x.bloqueId===b.id).length; return `
         <div style="font-size:13.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px;max-width:240px">
           <span style="display:flex;align-items:center;gap:4px">${esc(b.label)} (%)
             <button class="ghost small" style="padding:0 4px;border:0" title="Canviar el nom del bloc" aria-label="Canviar el nom del bloc ${esc(b.label)}" onclick="blocReanomenar(${i})">✏️</button>
@@ -238,13 +238,16 @@ window.blocAfegir=async ()=>{
   const pes=await pedirTexto("Percentatge del bloc (%). Després ajusta els altres perquè sumen 100:","10");
   if(pes==null) return;
   g.bloques.push({id:"b"+uid(),label:String(nom).trim().slice(0,60),peso:Math.max(0,Number(String(pes).replace(",","."))||0)});
+  if(typeof segSincronitzarBlocs==="function") segSincronitzarBlocs(g);
   save(); render();
 };
 window.blocReanomenar=async (i)=>{
   const g=grupoActual(); const b=g.bloques[i]; if(!b) return;
   const nom=await pedirTexto("Nou nom del bloc:",b.label);
   if(nom==null || !String(nom).trim()) return;
-  b.label=String(nom).trim().slice(0,60); save(); render();
+  b.label=String(nom).trim().slice(0,60);
+  if(typeof segSincronitzarBlocs==="function") segSincronitzarBlocs(g);
+  save(); render();
 };
 window.blocEliminar=async (i)=>{
   const g=grupoActual(); const b=g.bloques[i]; if(!b || g.bloques.length<2) return;
@@ -259,7 +262,11 @@ window.blocEliminar=async (i)=>{
   } else if(!await confirmar(`Eliminar el bloc «${b.label}»?`)) return;
   acts.forEach(a=>{ a.bloqueId=desti.id; });
   ((g.papelera&&g.papelera.actividades)||[]).forEach(a=>{ if(a&&a.bloqueId===b.id) a.bloqueId=desti.id; });
-  g.bloques.splice(i,1); save(); render();
+  g.bloques.splice(i,1);
+  if(g.segBlocs) Object.keys(g.segBlocs).forEach(k=>{ const v=[].concat(g.segBlocs[k]||[]).filter(x=>x!==b.id); if(v.length) g.segBlocs[k]=v; else delete g.segBlocs[k]; });
+  g.actividades.forEach(a=>{ if(Array.isArray(a.bloquesExtra)){ a.bloquesExtra=a.bloquesExtra.filter(x=>x!==b.id); if(!a.bloquesExtra.length) delete a.bloquesExtra; } });
+  if(typeof segSincronitzarBlocs==="function") segSincronitzarBlocs(g);
+  save(); render();
 };
 window.setModoNota=v=>{ const g=grupoActual(); g.modoNota=(v==="ce"?"ce":"bloques"); save(); render(); };
 window.setPesoCE=(ceId,v)=>{ const g=grupoActual(); if(!g.pesosCE) g.pesosCE={};

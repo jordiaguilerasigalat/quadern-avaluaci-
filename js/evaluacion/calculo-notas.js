@@ -211,17 +211,22 @@ function notaActividadBase(grupo,alId,a){
   }
   return sw>0? sv/sw : null;
 }
-function pesoActividadEnBloque(grupo,act){
+/* Una activitat compta en el seu bloc (bloqueId) i, si el seu apartat està
+   vinculat a més d'un bloc, també en els de bloquesExtra (amb la nota sencera
+   en cadascun). Dins de cada bloc la nota és la mitjana de les activitats. */
+function actEnBloque(a,bloqueId){ return a.bloqueId===bloqueId || (Array.isArray(a.bloquesExtra) && a.bloquesExtra.includes(bloqueId)); }
+function pesoActividadEnBloque(grupo,act,bloqueId){
   const v=act.pesoBloque; if(v!=null && v!=="") return Number(v);
-  const n=grupo.actividades.filter(a=>a.trimestre===act.trimestre && a.bloqueId===act.bloqueId && !a.recupera).length;
+  const bid=bloqueId||act.bloqueId;
+  const n=grupo.actividades.filter(a=>a.trimestre===act.trimestre && actEnBloque(a,bid) && !a.recupera).length;
   return n>0? 100/n : 100;
 }
 function notaBloque(grupo,alId,bloqueId,trim){
-  const acts=grupo.actividades.filter(a=>a.trimestre===trim && a.bloqueId===bloqueId);
+  const acts=grupo.actividades.filter(a=>a.trimestre===trim && actEnBloque(a,bloqueId));
   let sw=0,sv=0;
   for(const a of acts){
     const v=notaActividad(grupo,alId,a); if(v==null) continue;
-    const w=pesoActividadEnBloque(grupo,a); if(w<=0) continue;
+    const w=pesoActividadEnBloque(grupo,a,bloqueId); if(w<=0) continue;
     sw+=w; sv+=v*w;
   }
   return sw>0? sv/sw : null;
@@ -234,7 +239,7 @@ function bloquesSinNota(grupo,alId,trim){
   const out=[];
   for(const b of grupo.bloques){
     if(!(Number(b.peso)>0)) continue;
-    const acts=grupo.actividades.filter(a=>a.trimestre===trim && a.bloqueId===b.id);
+    const acts=grupo.actividades.filter(a=>a.trimestre===trim && actEnBloque(a,b.id));
     const corregidas=acts.filter(a=>grupo.alumnos.some(x=>notaActividad(grupo,x.id,a)!=null));
     if(!corregidas.length) continue;
     const exento=corregidas.every(a=>marcaDe(grupo,alId,a.id)==="EX");

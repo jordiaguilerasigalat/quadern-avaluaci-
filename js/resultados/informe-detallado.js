@@ -142,7 +142,7 @@ function desgloseNotaActividadHTML(grupo,al,a){
   return `<table class="dsg-mini"><thead><tr><th>Criterio</th><th style="text-align:right">Nota</th><th style="text-align:right">Peso</th></tr></thead><tbody>${filas}</tbody></table>`;
 }
 function desgloseBloqueHTML(grupo,al,b,trim){
-  const acts=grupo.actividades.filter(a=>a.trimestre===trim && a.bloqueId===b.id && !a.recupera);
+  const acts=grupo.actividades.filter(a=>a.trimestre===trim && actEnBloque(a,b.id) && !a.recupera);
   const v=notaBloque(grupo,al.id,b.id,trim);
   if(!acts.length){
     return `<div class="dsg-bloque"><div class="dsg-bloque-head"><span>${esc(b.label)}</span><span class="dsg-muted">Sin actividades este periodo</span></div></div>`;
@@ -151,7 +151,7 @@ function desgloseBloqueHTML(grupo,al,b,trim){
     const va=notaActividadSinExtra(grupo,al.id,a);
     const vb=notaActividadBase(grupo,al.id,a);
     const ex=extraAplicadoActividad(grupo,al.id,a), exE=extraActividad(grupo,al.id,a.id);
-    const w=pesoActividadEnBloque(grupo,a);
+    const w=pesoActividadEnBloque(grupo,a,b.id);
     const m=marcaDe(grupo,al.id,a.id);
     const recs=recuperacionesDe(grupo,a.id).filter(r=>notaActividadBase(grupo,al.id,r)!=null);
     const conRec=recs.length && va!=null && (vb==null || Math.abs(va-vb)>1e-9);
