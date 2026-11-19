@@ -5,6 +5,12 @@
 
 /* ---------- Actividades ---------- */
 function renderActividades(grupo){
+  if(typeof renderSeguimentDinsActivitats==="function" && renderSeguimentDinsActivitats(grupo)) return;
+  _renderActividadesLlista(grupo);
+  const tc=document.getElementById("tabContent");
+  if(tc && typeof segApartatsHTML==="function") tc.insertAdjacentHTML("afterbegin",segApartatsHTML(grupo));
+}
+function _renderActividadesLlista(grupo){
   const idx=catIndex(grupo.catalogoKey);
   const f=state.ui.form;
   if(!f.bloqueId) f.bloqueId=defBloque(f.tipo,grupo.bloques);
