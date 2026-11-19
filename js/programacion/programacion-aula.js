@@ -253,6 +253,10 @@ function progListaHTML(root){
       <div class="flex" style="flex-wrap:wrap;gap:6px">
         ${Object.keys(PROG_DEPARTAMENTO).filter(k=>getCatalogo(k)).map(k=>`<button class="chip" onclick="progCargarDepartamento('${escJS(k)}')">${esc(getCatalogo(k).materia)} · ${esc(getCatalogo(k).curso)}</button>`).join("")}
       </div>
+      <p class="sub" style="margin:10px 0 6px"><strong>📄 Documents originals (PDF, sense noms ni dades dels grups):</strong></p>
+      <div class="flex" style="flex-wrap:wrap;gap:6px">
+        ${PROG_DOCUMENTS_PDF.map(([f,t])=>`<a class="chip" style="text-decoration:none" href="docs/programacions/${f}" target="_blank" rel="noopener">${esc(t)}</a>`).join("")}
+      </div>
     </div>
     <p class="sub" style="margin:8px 0 0">Importar añade la programación del archivo a tu lista, sin tocar ni sobrescribir ninguna de las que ya tengas.</p>
   </div>

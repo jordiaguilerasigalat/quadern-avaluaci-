@@ -1323,3 +1323,17 @@ const PROG_DEPARTAMENTO={
   ]
  }
 };
+
+/* PDF originals del departament (2026-2027), amb els noms del professorat i les
+   dades dels grups retirats. Viuen en docs/programacions/ (no van a la memòria
+   cau de l'app: s'obrin amb connexió). */
+const PROG_DOCUMENTS_PDF=[
+  ["PA_2026-27_FiQ_2n_ESO.pdf","PA · FiQ 2n ESO"],
+  ["PA_2026-27_FiQ_3r_ESO.pdf","PA · FiQ 3r ESO"],
+  ["PA_2026-27_FiQ_4t_ESO.pdf","PA · FiQ 4t ESO"],
+  ["PA_2026-27_FiQ_1r_Batx.pdf","PA · FiQ 1r Batx"],
+  ["PA_2026-27_Quimica_2n_Batx.pdf","PA · Química 2n Batx"],
+  ["PA_2026-27_Fisica_2n_Batx.pdf","PA · Física 2n Batx"],
+  ["PP_2026-27_FiQ_ESO.pdf","Proposta pedagògica · ESO"],
+  ["PP_2026-27_Batxillerat.pdf","Proposta pedagògica · Batxillerat"]
+];
