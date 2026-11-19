@@ -1123,15 +1123,15 @@ function rfrpTrimestresIniciales(nivelModelo){
   return [rfrpTrimestreVacio(),rfrpTrimestreVacio(),rfrpTrimestreVacio()];
 }
 const NIV={
-  excelente:{etq:"Excelente",bg:"#dcece0",fg:"#1e5631"},
-  adecuado:{etq:"Adecuado",bg:"#d9e6f2",fg:"#1d4e74"},
-  enProceso:{etq:"En proceso",bg:"#f6eccf",fg:"#8a5a12"},
-  necesita:{etq:"Necesita mejorar",bg:"#f3dcdc",fg:"#912525"}
+  excelente:{etq:"Excel·lent",bg:"#dcece0",fg:"#1e5631"},
+  adecuado:{etq:"Adequat",bg:"#d9e6f2",fg:"#1d4e74"},
+  enProceso:{etq:"En procés",bg:"#f6eccf",fg:"#8a5a12"},
+  necesita:{etq:"Necessita millorar",bg:"#f3dcdc",fg:"#912525"}
 };
 const NIVCUANT=[
-  {max:4.9,etq:"Insuficiente",bg:"#f3dcdc",fg:"#912525"},
-  {max:5.9,etq:"Suficiente",bg:"#f6eccf",fg:"#8a5a12"},
-  {max:6.9,etq:"Bien",bg:"#d9e6f2",fg:"#1d4e74"},
+  {max:4.9,etq:"Insuficient",bg:"#f3dcdc",fg:"#912525"},
+  {max:5.9,etq:"Suficient",bg:"#f6eccf",fg:"#8a5a12"},
+  {max:6.9,etq:"Bé",bg:"#d9e6f2",fg:"#1d4e74"},
   {max:8.9,etq:"Notable",bg:"#e3f0df",fg:"#3a6b2a"},
-  {max:10,etq:"Sobresaliente",bg:"#dcece0",fg:"#1e5631"}
+  {max:10,etq:"Excel·lent",bg:"#dcece0",fg:"#1e5631"}
 ];

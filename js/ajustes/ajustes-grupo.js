@@ -98,17 +98,23 @@ function renderAjustes(grupo){
     <p class="sub">Bloques de la propuesta pedagógica de ${esc(idx.cat.materia)}. Deben sumar 100.</p>
     <p id="sumaBloquesAviso" style="font-size:13px;margin:0 0 8px">${sumaBloquesHTML(grupo)}</p>
     <div class="flex">
-      ${grupo.bloques.map((b,i)=>`
-        <label style="font-size:13.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px;max-width:220px">${esc(b.label)} (%)
-          <input class="in" type="number" value="${b.peso}" oninput="setBloqueW(${i},this.value)"></label>`).join("")}
+      ${grupo.bloques.map((b,i)=>{ const nAct=(grupo.actividades||[]).filter(x=>x.bloqueId===b.id).length; return `
+        <div style="font-size:13.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px;max-width:240px">
+          <span style="display:flex;align-items:center;gap:4px">${esc(b.label)} (%)
+            <button class="ghost small" style="padding:0 4px;border:0" title="Canviar el nom del bloc" aria-label="Canviar el nom del bloc ${esc(b.label)}" onclick="blocReanomenar(${i})">✏️</button>
+            ${grupo.bloques.length>1?`<button class="ghost small" style="padding:0 4px;border:0" title="Eliminar el bloc" aria-label="Eliminar el bloc ${esc(b.label)}" onclick="blocEliminar(${i})">🗑️</button>`:""}</span>
+          <input class="in" type="number" value="${b.peso}" aria-label="Pes del bloc ${esc(b.label)} (%)" oninput="setBloqueW(${i},this.value)">
+          <span class="sub" style="font-size:11.5px">${nAct} activitat${nAct===1?"":"s"}</span>
+        </div>`; }).join("")}
     </div>
+    <button class="ghost" style="border:1px dashed var(--line);margin-top:10px" onclick="blocAfegir()">+ Afegir un bloc (p. ex. Deures)</button>
   </div>
 
   <div class="card">
     <h2>Cortes de las escalas cualitativas</h2>
-    <p class="sub">Porcentaje mínimo de cada nivel. Por debajo de “En proceso” → Necesita mejorar.</p>
+    <p class="sub">Percentatge mínim de cada nivell. Per davall d’«En procés» → Necessita millorar.</p>
     <div class="flex">
-      ${[["excelente","Excelente ≥"],["adecuado","Adecuado ≥"],["enProceso","En proceso ≥"]].map(([k,l])=>`
+      ${[["excelente","Excel·lent ≥"],["adecuado","Adequat ≥"],["enProceso","En procés ≥"]].map(([k,l])=>`
         <label style="font-size:13.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px">${l}
           <input class="in" style="width:100px" type="number" value="${grupo.umbrales[k]}" oninput="setUmbral('${k}',this.value)"></label>`).join("")}
     </div>
@@ -223,6 +229,38 @@ function sumaBloquesHTML(grupo){
   return `<span style="color:#b45309;font-weight:600">⚠️ Suman ${String(t).replace(".",",")} %.</span> <span class="sub">La nota se calcula igualmente en proporción (cada bloque pesa su parte sobre ${String(t).replace(".",",")}), pero lo normal es que sumen 100.</span>`;
 }
 window.setUmbral=(k,v)=>{ grupoActual().umbrales[k]=Number(v)||0; save(); };
+/* Blocs propis: afegir, canviar el nom i eliminar (les activitats d'un bloc
+   eliminat passen al bloc que tries). */
+window.blocAfegir=async ()=>{
+  const g=grupoActual();
+  const nom=await pedirTexto("Nom del nou bloc de qualificació (p. ex. Deures):","");
+  if(nom==null || !String(nom).trim()) return;
+  const pes=await pedirTexto("Percentatge del bloc (%). Després ajusta els altres perquè sumen 100:","10");
+  if(pes==null) return;
+  g.bloques.push({id:"b"+uid(),label:String(nom).trim().slice(0,60),peso:Math.max(0,Number(String(pes).replace(",","."))||0)});
+  save(); render();
+};
+window.blocReanomenar=async (i)=>{
+  const g=grupoActual(); const b=g.bloques[i]; if(!b) return;
+  const nom=await pedirTexto("Nou nom del bloc:",b.label);
+  if(nom==null || !String(nom).trim()) return;
+  b.label=String(nom).trim().slice(0,60); save(); render();
+};
+window.blocEliminar=async (i)=>{
+  const g=grupoActual(); const b=g.bloques[i]; if(!b || g.bloques.length<2) return;
+  const acts=(g.actividades||[]).filter(x=>x.bloqueId===b.id);
+  const altres=g.bloques.filter(x=>x.id!==b.id);
+  let desti=altres[0];
+  if(acts.length){
+    const nom=await pedirTexto(`El bloc «${b.label}» té ${acts.length} activitat${acts.length===1?"":"s"}. A quin bloc les passe? (${altres.map(x=>x.label).join(", ")})`,altres[0].label);
+    if(nom==null) return;
+    desti=altres.find(x=>x.label.toLowerCase()===String(nom).trim().toLowerCase());
+    if(!desti){ mostrarAviso("No hi ha cap bloc amb eixe nom. No s'ha eliminat res."); return; }
+  } else if(!await confirmar(`Eliminar el bloc «${b.label}»?`)) return;
+  acts.forEach(a=>{ a.bloqueId=desti.id; });
+  ((g.papelera&&g.papelera.actividades)||[]).forEach(a=>{ if(a&&a.bloqueId===b.id) a.bloqueId=desti.id; });
+  g.bloques.splice(i,1); save(); render();
+};
 window.setModoNota=v=>{ const g=grupoActual(); g.modoNota=(v==="ce"?"ce":"bloques"); save(); render(); };
 window.setPesoCE=(ceId,v)=>{ const g=grupoActual(); if(!g.pesosCE) g.pesosCE={};
   const t=String(v).trim(); if(t==="") delete g.pesosCE[ceId]; else g.pesosCE[ceId]=Math.max(0,Number(t.replace(",","."))||0);

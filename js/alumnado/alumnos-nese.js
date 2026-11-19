@@ -12,9 +12,9 @@
    ================================================================= */
 const NE_VALORES=[
   {id:"",label:"—"},
-  {id:"I",label:"Iniciado"},
-  {id:"P",label:"En proceso"},
-  {id:"A",label:"Alcanzado"}
+  {id:"I",label:"Iniciat"},
+  {id:"P",label:"En procés"},
+  {id:"A",label:"Assolit"}
 ];
 function neValorColor(v){ return v==="A"?"#16a34a":v==="P"?"#b45309":v==="I"?"#2563eb":"var(--mut)"; }
 function neAlumno(p){ const g=state.grupos.find(x=>x.id===p.grupoId); if(!g) return null; const al=g.alumnos.find(x=>x.id===p.alumnoId); return al?{al,g}:null; }

@@ -58,14 +58,14 @@ function cxnTextoPosicion(pos,niveles){
   if(!pos) return "";
   const nom=id=>{ const l=niveles.find(x=>x.id===id); return l? (l.nombre||"(sin nombre)") : ""; };
   if(pos.exacto) return nom(pos.exacto);
-  if(pos.entre) return `entre ${nom(pos.entre[0])} y ${nom(pos.entre[1])}`;
+  if(pos.entre) return `entre ${nom(pos.entre[0])} i ${nom(pos.entre[1])}`;
   if(pos.debajo) return `por debajo de ${nom(pos.debajo)}`;
   return nom(pos.encima);
 }
 
 /* ---- Crear y convertir ---- */
 function cxnNivelesPorDefecto(){
-  return [["Experto",4],["Avanzado",3],["Aprendiz",2],["Novel",1]].map(([nombre,valor],i)=>({id:uid(),nombre,valor,color:CXN_COLORES[i]}));
+  return [["Expert",4],["Avançat",3],["Aprenent",2],["Novell",1]].map(([nombre,valor],i)=>({id:uid(),nombre,valor,color:CXN_COLORES[i]}));
 }
 function cxnRubricaNueva(criterios,catalogoKey){
   const crits=(criterios||[]).filter(l=>l&&l.critId);

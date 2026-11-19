@@ -951,7 +951,7 @@ export const PRUEBAS = [
     await p.locator('#cxfBtn').click(); await esperar(300);
     const r0 = await p.evaluate(() => { const a = state.grupos[0].actividades[0]; return { esExamen: a.esExamen, f: a.rubrica[0].formato, niv: a.rubrica[0].niveles.map(l => l.nombre + ':' + l.valor).join(','), cats: a.rubrica[0].items.map(i => i.max + '|' + i.links.map(l => l.critId).join('')), tab: state.ui.corTab }; });
     t.ok(r0.esExamen && r0.f === 'niveles' && r0.tab === 'editor', 'se crea un examen con rúbrica por niveles y se abre el editor');
-    t.ok(r0.niv === 'Experto:4,Avanzado:3,Aprendiz:2,Novel:1', 'niveles por defecto 4-3-2-1', r0.niv);
+    t.ok(r0.niv === 'Expert:4,Avançat:3,Aprenent:2,Novell:1', 'niveles por defecto 4-3-2-1', r0.niv);
     t.ok(r0.cats.length === 2 && r0.cats[0] === '5|' + cr[0] && r0.cats[1] === '5|' + cr[1], 'una categoría por criterio, 50 % cada una y vinculada', r0.cats.join(' '));
     t.ok(await p.locator('table.cxn-editor').count() === 1 && await p.locator('table.cxn-editor tbody textarea').count() === 2 * 5, 'el editor muestra la tabla (nombre + 4 casillas por categoría)');
     await p.locator('table.cxn-editor tbody tr').first().locator('td textarea').first().fill('Habla con un volumen adecuado TEXTO-EXPERTO');
@@ -973,7 +973,7 @@ export const PRUEBAS = [
     await p.locator('table.cxn-corr tbody tr').first().locator('select').selectOption('3.4'); await esperar(200);
     r = await nota();
     t.ok(r.sc[ids.c1] === 3.4 && r.n === 8.4, 'afinar: 3,4 puntos', JSON.stringify(r));
-    t.ok((await p.locator('.cxn-entre').first().textContent()).includes('entre Avanzado y Aprendiz') && await p.locator('td.cxn-op.parcial').count() === 2, 'una nota afinada se ve «entre» dos niveles');
+    t.ok((await p.locator('.cxn-entre').first().textContent()).includes('entre Avançat i Aprenent') && await p.locator('td.cxn-op.parcial').count() === 2, 'una nota afinada se ve «entre» dos niveles');
     // Cambiar el valor de los niveles y el peso: lo corregido sigue en su nivel.
     await p.locator('table.cxn-corr tbody tr').first().locator('td.cxn-op button').nth(1).click(); await esperar(200);
     await p.evaluate(() => { state.ui.corTab = 'editor'; save(); render(); }); await esperar(200);
@@ -991,7 +991,7 @@ export const PRUEBAS = [
     const imp = await p.evaluate(({ A, act }) => { const sal = {}; const o = window.abrirVentanaInforme; window.abrirVentanaInforme = (ti, h) => { sal.h = h; };
       cxImprimirRubrica(A, act); sal.n = sal.h; cxImprimirRubrica(A, act, true); sal.r = sal.h; window.abrirVentanaInforme = o; return sal; }, { A, act: ids.act });
     t.ok(imp.n.includes('cxn-imp-on') && imp.n.includes('TEXTO-EXPERTO') && (imp.n.match(/cxn-imp-on/g) || []).length >= 3, 'la rúbrica impresa marca la casilla de cada categoría');
-    t.ok(imp.r.includes('cxn-imp-chip') && imp.r.includes('Avanzado') && !imp.r.includes('TEXTO-EXPERTO'), 'la resumida dice el nivel sin los descriptores');
+    t.ok(imp.r.includes('cxn-imp-chip') && imp.r.includes('Avançat') && !imp.r.includes('TEXTO-EXPERTO'), 'la resumida dice el nivel sin los descriptores');
     // Corregir por categoría (todo el grupo).
     await p.evaluate(() => { state.ui.corTab = 'corregir'; state.ui.corAlId = ''; state.ui.corModoPreg = true; state.ui.corPregSel = ''; save(); render(); }); await esperar(300);
     t.ok(await p.locator('.cxn-mini-btn').count() === 12, 'por categoría: botones de nivel para cada alumno/a');
