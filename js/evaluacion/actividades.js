@@ -44,7 +44,7 @@ function _renderActividadesLlista(grupo){
       <p class="sub" style="margin:0">Déjalo en blanco para repartir el bloque a partes iguales entre sus actividades (ahora mismo: ${previewPct} %). Ponlo solo si, por ejemplo, un examen debe pesar más que otro dentro del mismo bloque.</p>
     </div>
     <div style="font-size:14px;font-weight:500;margin-bottom:8px">Criterios evaluados</div>
-    ${f.esExamen?'<p class="sub" style="margin:-4px 0 8px">En un examen, el peso de cada criterio solo se usa para la calificación cualitativa (competencias). La nota cuantitativa del examen se introduce aparte, en la pantalla "Calificar", y es la que cuenta para la nota numérica.</p>':''}
+    ${f.esExamen?'<p class="sub" style="margin:-4px 0 8px">En un examen, el pes de cada criteri només s\'usa per a la qualificació qualitativa (competències). La nota quantitativa de l\'examen s\'introduïx a banda, en la pantalla «Qualificar», i és la que compta per a la nota numèrica.</p>':''}
     <div class="scroll">
       ${idx.cat.ces.map(ce=>`
         <div style="font-size:12.5px;color:var(--mut);font-weight:500;margin:6px 0 3px">${ce.id} · ${esc(ce.titulo)}</div>
@@ -110,7 +110,7 @@ function _renderActividadesLlista(grupo){
             <div style="font-size:12.5px;color:var(--mut);margin-top:4px">Criterios: ${a.criterios.length?a.criterios.map(l=>`${critLinkHTML(grupo.catalogoKey,l.critId)} (${l.peso})`).join(" · "):"cap encara"}</div>
           </div>
           <div class="flex">
-            ${a.rubrica?`<button class="ghost" onclick="cxAbrirDesdeOtroModo('${a.id}')">Abrir en el Corrector</button>`:`<button class="ghost" onclick="editarActividad('${a.id}')">Editar</button>${a.esExamen?`<button class="ghost" title="Abre este examen en el Corrector con una rúbrica inicial (un ítem por criterio) para ajustarla y corregir con ella" onclick="cxAnadirRubrica('${a.id}')">🖊️ Añadir rúbrica</button>`:""}`}
+            ${a.rubrica?`<button class="ghost" onclick="cxAbrirDesdeOtroModo('${a.id}')">Obrir en el Corrector</button>`:`<button class="ghost" onclick="editarActividad('${a.id}')">Editar</button>${a.esExamen?`<button class="ghost" title="Obri aquest examen en el Corrector amb una rúbrica inicial (un ítem per criteri) per a ajustar-la i corregir amb ella" onclick="cxAnadirRubrica('${a.id}')">🖊️ Afegir una rúbrica</button>`:""}`}
             <button class="ghost" onclick="duplicarActividad('${a.id}')">Duplicar</button>
             ${a.recupera?`<button class="ghost" onclick="recAbrirModal('${a.id}')">🔁 Recuperació…</button>`:(a.esExamen?`<button class="ghost" title="Crea un examen de recuperación vinculado a este" onclick="recCrear('${a.id}')">🔁 Crear recuperación</button>`:`<button class="ghost" title="Marcar esta activitat com a recuperació d'una altra o d'altres" onclick="recAbrirModal('${a.id}')">🔁</button>`)}
             <button class="ghost" onclick="delActividad('${a.id}')">Eliminar</button>

@@ -49,7 +49,7 @@ function listaPlantillasDatos(){
 window.editarCatalogo=(key)=>{
   const cat=getCatalogo(key); if(!cat) return;
   if(!catalogoEsEditableComoTexto(cat)){
-    mostrarAviso("Esta materia combina varias asignaturas con identificadores compuestos (p. ej. \"GH CE1\") y no se puede editar con este formulario de texto sencillo.");
+    mostrarAviso("Aquesta matèria combina diverses assignatures amb identificadors compostos (p. ex. «GH CE1») i no es pot editar amb aquest formulari de text senzill.");
     return;
   }
   state.ui.catImportTexto=catalogoATexto(key);

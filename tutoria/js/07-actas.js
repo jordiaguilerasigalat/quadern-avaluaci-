@@ -70,8 +70,8 @@ function _actaMostrarAvisoGuardada(savedAt) {
   let fecha = '';
   try {
     const d = new Date(savedAt);
-    fecha = d.toLocaleDateString('es-ES', {day:'numeric',month:'long',year:'numeric'}) + ' a las ' +
-      d.toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'});
+    fecha = d.toLocaleDateString('ca-ES', {day:'numeric',month:'long',year:'numeric'}) + ' a las ' +
+      d.toLocaleTimeString('ca-ES', {hour:'2-digit',minute:'2-digit'});
   } catch (e) {}
   bar.innerHTML = `📂 Continuant una acta guardada${fecha ? ' el ' + fecha : ''} ·
     <a href="#" onclick="resetActa();return false;" style="color:#f5c842;text-decoration:underline;cursor:pointer;">empezar en blanco</a>`;
@@ -237,7 +237,7 @@ function openInforme(nivel, grupo, evalNum, forzarRegenerar) {
   const alumnos = data[nivel][grupo];
   const tutor = tutores[`${nivel}-${grupo}`] || '___________________________';
   const date = new Date();
-  const dateStr = `${date.getDate()} de ${['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][date.getMonth()]} de ${date.getFullYear()}`;
+  const dateStr = date.toLocaleDateString('ca-ES',{day:'numeric',month:'long',year:'numeric'});
 
   // Stats calculated from data
   const totalAl = alumnos.length;

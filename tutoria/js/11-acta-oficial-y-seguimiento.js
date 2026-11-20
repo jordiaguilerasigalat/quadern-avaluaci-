@@ -54,7 +54,7 @@ function openActaOficial(nivel, grupo, evalNum) {
   const evalField   = evalNum === 1 ? 'eval1' : evalNum === 2 ? 'eval2' : 'eval3';
   const materias    = getMateriasParaNivel(nivel, grupo);
   const date        = new Date();
-  const dateStr     = date.toLocaleDateString('es-ES', {year:'numeric', month:'long', day:'numeric'});
+  const dateStr     = date.toLocaleDateString('ca-ES', {year:'numeric', month:'long', day:'numeric'});
   const codigoNivel = nivel.replace(/[^A-Za-z0-9]/g,'');
 
   const isBachNivel = isBach(nivel);
@@ -650,7 +650,7 @@ function _aoGuardar() {
       setTimeout(function(){ if (btn) btn.textContent = original; }, 1600);
     }
   } else {
-    alert('No se puede guardar: se ha perdido la conexión con la ventana principal del Gestor de Tutoría. Vuelve a abrir el Acta Oficial desde allí e inténtalo de nuevo.');
+    alert('No es pot guardar: s’ha perdut la connexió amb la finestra principal del Gestor de Tutoria. Torna a obrir l’Acta oficial des d’allí i intenta-ho de nou.');
   }
 }
 
@@ -783,7 +783,7 @@ function exportStatsPDF(fuente) {
     return;
   }
 
-  const dateStr = new Date().toLocaleDateString('es-ES',{year:'numeric',month:'long',day:'numeric'});
+  const dateStr = new Date().toLocaleDateString('ca-ES',{year:'numeric',month:'long',day:'numeric'});
   const iesName = document.getElementById('headerIesName')?.value || 'Centro Educativo';
   const esc = s => _tEsc(s||'');
 
@@ -901,7 +901,7 @@ function printSeguimientoAlumno(nivel, grupo, idx) {
 
   const iesName  = document.getElementById('headerIesName')?.value || 'IES —';
   const tutor    = tutores[`${nivel}-${grupo}`] || '—';
-  const dateStr  = new Date().toLocaleDateString('es-ES', {year:'numeric', month:'long', day:'numeric'});
+  const dateStr  = new Date().toLocaleDateString('ca-ES', {year:'numeric', month:'long', day:'numeric'});
   const esc = s => _tEsc(s||'');
 
   // ── Helpers ──
@@ -1169,7 +1169,7 @@ function printSeguimientoAlumno(nivel, grupo, idx) {
         </div>
         <div class="alumno-info-item">
           <div class="alumno-info-label">F. Nacimiento</div>
-          <div class="alumno-info-value">${alumno.fecha ? new Date(alumno.fecha).toLocaleDateString('es-ES') : '—'}${edad!==''?` (${edad} anys)`:''}</div>
+          <div class="alumno-info-value">${alumno.fecha ? new Date(alumno.fecha).toLocaleDateString('ca-ES') : '—'}${edad!==''?` (${edad} anys)`:''}</div>
         </div>
         <div class="alumno-info-item">
           <div class="alumno-info-label">Repetidor</div>

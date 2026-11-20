@@ -187,7 +187,7 @@ function barEl(exam, kind, n, total) {
   d.className = 'bar ' + kind + (cfg.rule ? '' : ' norule');
   d.style.fontFamily = fontCss(cfg.font || exam.base.font);
   d.style.fontSize = num(cfg.size, 9) + 'pt'; d.style.color = cfg.color || '#333';
-  const date = new Date().toLocaleDateString('es-ES');
+  const date = new Date().toLocaleDateString('ca-ES');
   const txt = t => esc(t).replace(/\{pagina\}/gi, n).replace(/\{paginas\}/gi, total).replace(/\{fecha\}/gi, date).replace(/\n/g, '<br>');
   const logo = (kind === 'hdr' && cfg.logo) ? `<img alt="" src="${esc(cfg.logo)}" style="height:${num(cfg.logoH, 10)}mm">` : '';
   const zone = (cls, key) => `<div class="${cls}">${(logo && cfg.logoPos === key) ? logo : ''}<span>${txt(cfg[key])}</span></div>`;

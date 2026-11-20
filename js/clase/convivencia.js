@@ -295,7 +295,7 @@ function renderConvivenciaDetalle(grupo){
     <div class="pa-form-card">
       <div class="pa-form-header">
         <div style="flex:1;min-width:200px">
-          <input class="pa-centro-nombre" placeholder="NOMBRE DEL CENTRO (OPCIONAL)" value="${esc(state.centroNombre||"")}" onchange="convSetCentro('nombre',this.value)">
+          <input class="pa-centro-nombre" placeholder="NOM DEL CENTRE (OPCIONAL)" value="${esc(state.centroNombre||"")}" onchange="convSetCentro('nombre',this.value)">
           <input class="pa-centro-codigo" placeholder="Código de centro (opcional)" value="${esc(state.centroCodigo||"")}" onchange="convSetCentro('codigo',this.value)">
         </div>
         <div class="pa-decreto-badge">

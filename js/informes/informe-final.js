@@ -50,7 +50,7 @@ function informeFinalAlumnoBodyHTML(grupo,al,opts){
     : '';
 
   const asistCntFinal=asistContarPeriodo(grupo,al.id,"2000-01-01","2099-12-31");
-  const htmlAsistenciaFinal=`<h2>Asistencia del curso</h2>
+  const htmlAsistenciaFinal=`<h2>Assistència del curs</h2>
     <table><tbody>
       <tr><th style="width:200px">Faltas justificadas</th><td>${asistCntFinal.falta_justificada}</td></tr>
       <tr><th>Faltas no justificadas</th><td>${asistCntFinal.falta_no_justificada}</td></tr>
@@ -152,7 +152,7 @@ window.exportarInformeGrupo=(modo)=>{
     else{ asistConvTitulo=`Asistencia y convivencia (curso completo — sin fechas indicadas para ${TRIMESTRES[trim].toLowerCase()} en Ajustes)`; }
   }
   const body=`
-    <h1>Informe de grupo${esFinal?" · final de curso":""}</h1>
+    <h1>Informe de grup${esFinal?" · final de curs":""}</h1>
     <div class="meta">${esc(cat.materia)} · ${esc(cat.curso)} · Grup ${esc(grupo.nombre)} · ${tituloPeriodo} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     ${resumenHTML}
     <h2>Calificación cuantitativa</h2>

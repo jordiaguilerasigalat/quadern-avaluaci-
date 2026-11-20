@@ -269,7 +269,7 @@ window.cxCambiarTipoRubrica=async()=>{
     const plano=cxNodosFlat(x.rub).length>1||x.rub.some(n=>cxElegirEf(n));
     if(!await confirmar(`Vols passar esta rúbrica a «per nivells d'assoliment»? Cada pregunta o ítem passa a ser una categoria, amb els seus punts com a pes i els seus criteris. Després escrius els nivells i els seus descriptors.${plano?"\n\nCompte: els apartats i subapartats desapareixen (totes les preguntes queden en una sola taula) i es perd el «a triar».":""}\n\nEl que ja s'ha corregit es conserva.`,{ok:"Passar a nivells",peligro:false})) return;
   } else {
-    if(!await confirmar("¿Pasar esta rúbrica a «por puntos» (preguntas e ítems)? Cada categoría pasa a ser un ítem con sus puntos y criterios, y los descriptores de los niveles se guardan como descriptores del ítem.\n\nLo ya corregido se conserva.",{ok:"Pasar a puntos",peligro:false})) return;
+    if(!await confirmar("Vols passar aquesta rúbrica a «per punts» (preguntes i ítems)? Cada categoria passa a ser un ítem amb els seus punts i criteris, i els descriptors dels nivells es guarden com a descriptors de l'ítem.\n\nEl que ja està corregit es conserva.",{ok:"Passar a punts",peligro:false})) return;
   }
   const nueva=aNiv? cxnDesdePuntos(x.rub) : cxnAPuntos(x.rub);
   if(va) va.rubrica=nueva; else { x.act.rubrica=nueva; delete x.act.rubricaSinElegir; }

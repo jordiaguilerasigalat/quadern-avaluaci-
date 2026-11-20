@@ -345,7 +345,7 @@ function openInformeBach(nivel, grupo, evalNum, forzarRegenerar) {
   const alumnos = data[nivel][grupo];
   const tutor = tutores[`${nivel}-${grupo}`] || '___________________________';
   const date = new Date();
-  const dateStr = `${date.getDate()} de ${['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][date.getMonth()]} de ${date.getFullYear()}`;
+  const dateStr = date.toLocaleDateString('ca-ES',{day:'numeric',month:'long',year:'numeric'});
 
   const totalAl = alumnos.length;
   const evalField = evalNum === 1 ? 'eval1' : evalNum === 2 ? 'eval2' : 'eval3';

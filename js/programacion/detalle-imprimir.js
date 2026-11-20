@@ -368,7 +368,7 @@ window.progImprimir=(id)=>{
     <style>
       body{text-align:justify}
       h1,h2,h3,.meta,ul,li,table{text-align:left}
-      @page{ margin:2cm 1.6cm 2.2cm 1.6cm; @bottom-center{ content:"Página " counter(page) " de " counter(pages); font-size:10px; color:#777; } }
+      @page{ margin:2cm 1.6cm 2.2cm 1.6cm; @bottom-center{ content:"Pàgina " counter(page) " de " counter(pages); font-size:10px; color:#777; } }
     </style>
     ${portada}
     ${progLeyendaCEHTML(idx)}

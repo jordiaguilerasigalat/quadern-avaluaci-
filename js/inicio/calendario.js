@@ -13,7 +13,7 @@ const AG_TIPOS=[
   {id:"entrega",label:"Lliurament de treball",color:"#2563eb"},
   {id:"reunion",label:"Reunió",color:"#7c3aed"},
   {id:"cocope",label:"COCOPE",color:"#059669"},
-  {id:"claustro",label:"Claustro",color:"#ea580c"},
+  {id:"claustro",label:"Claustre",color:"#ea580c"},
   {id:"otro",label:"Altre",color:"#64748b"}
 ];
 const AG_DIAS=["Dl","Dt","Dc","Dj","Dv","Ds","Dg"];

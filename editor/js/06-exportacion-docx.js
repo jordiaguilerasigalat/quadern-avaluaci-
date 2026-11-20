@@ -121,7 +121,7 @@ function wordFieldRuns(raw, style) {
   return String(raw ?? '').split(/(\{pagina\}|\{paginas\}|\{fecha\})/gi).map(bit => {
     if (/^\{pagina\}$/i.test(bit)) return '<w:fldSimple w:instr=" PAGE "><w:r>' + wordRPr(style) + '<w:t>1</w:t></w:r></w:fldSimple>';
     if (/^\{paginas\}$/i.test(bit)) return '<w:fldSimple w:instr=" NUMPAGES "><w:r>' + wordRPr(style) + '<w:t>1</w:t></w:r></w:fldSimple>';
-    if (/^\{fecha\}$/i.test(bit)) return wordRun(new Date().toLocaleDateString('es-ES'), style);
+    if (/^\{fecha\}$/i.test(bit)) return wordRun(new Date().toLocaleDateString('ca-ES'), style);
     return wordRun(bit, style);
   }).join('');
 }

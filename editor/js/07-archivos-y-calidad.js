@@ -93,7 +93,7 @@ async function runQualityGate(target, onContinue = null) {
     if (onContinue) onContinue(); else toast('Validació completada: no s\'han detectat incidències.');
     return;
   }
-  showAuditDialog(findings, `Revisión antes de exportar a ${target}`, onContinue);
+  showAuditDialog(findings, `Revisió abans d'exportar a ${target}`, onContinue);
 }
 
 async function openVersionsDialog() {
@@ -104,7 +104,7 @@ async function openVersionsDialog() {
     const versions = (await eeDbAll('versions')).filter(v => v.examId === S.exam.id).sort((a,b) => b.at-a.at);
     if (!versions.length) list.append(h('div', { class: 'note' }, 'Encara no hi ha versions anteriors. Prem «Crear una versió ara» per a guardar un punt de restauració.'));
     versions.forEach(v => {
-      const time = new Date(v.at).toLocaleString('es-ES');
+      const time = new Date(v.at).toLocaleString('ca-ES');
       list.append(h('div', { class: 'item' }, h('div', { class: 'n' }, h('b', {}, time), h('small', {}, `${v.reason === 'Autoguardado anterior' ? 'Desat automàtic anterior' : v.reason} · ${v.name}`)),
         h('button', { class: 'btn sm primary', onclick: async () => {
           if (!confirm(`Vols restaurar la versió del ${time}? Es conservarà una còpia de l'estat actual abans de restaurar.`)) return;
@@ -169,7 +169,7 @@ async function openReusableLibrary() {
     const snippets = (await eeDbAll('snippets')).sort((a,b) => (b.created || 0)-(a.created || 0));
     if (!snippets.length) list.append(h('div', { class: 'note' }, 'El banc està buit. Selecciona un bloc de l\'examen i guarda\'l ací.'));
     snippets.forEach(sn => list.append(h('div', { class: 'item' },
-      h('div', { class: 'n' }, h('b', {}, sn.name), h('small', {}, `${TYPES[sn.type]?.name || sn.type} · ${new Date(sn.created).toLocaleDateString('es-ES')}`)),
+      h('div', { class: 'n' }, h('b', {}, sn.name), h('small', {}, `${TYPES[sn.type]?.name || sn.type} · ${new Date(sn.created).toLocaleDateString('ca-ES')}`)),
       h('button', { class: 'btn sm primary', onclick: () => {
         const node = cloneWithNewIds(sn.node);
         const found = S.sel && findNode(S.exam.body, S.sel);

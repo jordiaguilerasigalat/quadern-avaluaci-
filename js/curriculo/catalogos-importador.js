@@ -342,10 +342,10 @@ window.descargarPlantillaCatalogo=()=>{
 window.validarEImportarCatalogo=async ()=>{
   const ta=document.getElementById("catTexto");
   const raw=(ta.value||"").trim();
-  if(!raw){ mostrarResultadoImportacion('<div class="alert-box">Pega o escribe primero los datos de tu materia en el cuadro de texto (o descarga la plantilla, rellénala y cárgala).</div>'); return; }
+  if(!raw){ mostrarResultadoImportacion('<div class="alert-box">Apega o escriu primer les dades de la teua matèria en el quadre de text (o descarrega la plantilla, ompli-la i carrega-la).</div>'); return; }
   const rawSinComentarios=raw.split(/\r?\n/).filter(l=>!l.trim().startsWith("#")).join("\n");
   if(/\[[^\]\n]{2,80}\]/.test(rawSinComentarios)){
-    mostrarResultadoImportacion(`<div class="alert-box" style="border-color:var(--danger);background:#fbeaea">⚠️ <strong>Parece que quedan marcadores de la plantilla sin sustituir</strong>, como <code>[Nombre de la materia]</code>. Sustituye todo lo que esté entre corchetes <code>[así]</code> por tus propios datos y vuelve a intentarlo.</div>`);
+    mostrarResultadoImportacion(`<div class="alert-box" style="border-color:var(--danger);background:#fbeaea">⚠️ <strong>Pareix que queden marcadors de la plantilla sense substituir</strong>, com ara <code>[Nombre de la materia]</code>. Substituïx tot el que estiga entre claudàtors <code>[així]</code> per les teues dades i torna-ho a intentar.</div>`);
     return;
   }
   let obj, erroresFormato=[];
@@ -403,9 +403,9 @@ window.validarEImportarCatalogo=async ()=>{
   const nCrit=catalogo.ces.reduce((n,ce)=>n+ce.criterios.length,0);
   const nSaberes=Object.values(saberesPorCE).reduce((n,arr)=>n+arr.length,0);
   mostrarResultadoImportacion(`<div class="alert-box" style="border-color:var(--accent);background:var(--accent-soft)">
-    ✓ <strong>${editando?"Guardado correctamente":"Importado correctamente"}:</strong> ${esc(catalogo.materia)} · ${esc(catalogo.curso)} — ${catalogo.ces.length} competencia${catalogo.ces.length===1?"":"s"} específica${catalogo.ces.length===1?"":"s"}, ${nCrit} criterio${nCrit===1?"":"s"}, ${catalogo.bloques.length} bloque${catalogo.bloques.length===1?"":"s"}${nSaberes?`, ${nSaberes} saber${nSaberes===1?"":"es"} básico${nSaberes===1?"":"s"}`:""}.
+    ✓ <strong>${editando?"Guardat correctament":"Importat correctament"}:</strong> ${esc(catalogo.materia)} · ${esc(catalogo.curso)} — ${catalogo.ces.length} competènci${catalogo.ces.length===1?"a":"es"} específi${catalogo.ces.length===1?"ca":"ques"}, ${nCrit} criteri${nCrit===1?"":"s"}, ${catalogo.bloques.length} bloc${catalogo.bloques.length===1?"":"s"}${nSaberes?`, ${nSaberes} saber${nSaberes===1?"":"s"} bàsic${nSaberes===1?"":"s"}`:""}.
     ${val.aviso?`<br>⚠️ ${esc(val.aviso)}`:""}
-    ${editando?"":`<br>Ya puedes elegirla en "Crear grupo nuevo", abajo.`}
+    ${editando?"":`<br>Ja pots triar-la en «Crear un grup nou», davall.`}
   </div>`);
   ta.value="";
   actualizarSelectCatalogos(key);

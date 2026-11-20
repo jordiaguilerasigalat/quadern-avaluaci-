@@ -101,7 +101,7 @@ function cxActTieneNotas(grupo,act){
 async function cxPonerRubrica(grupo,act){
   if(act.rubrica) return true;
   if(cxActTieneNotas(grupo,act)){
-    const ok=await confirmar(`«${act.nombre}» ya tiene notas puestas en Calificar.\n\nAl pasar a corregirse con rúbrica, sus notas (cuantitativa y por criterio) se sustituirán por las que salgan de la rúbrica, y tendrás que corregirlo de nuevo en el Corrector. Las marcas (no presentado, exento…) se mantienen.`,{titulo:"Este examen ya tiene notas",ok:"Sí, sustituir por la rúbrica"});
+    const ok=await confirmar(`«${act.nombre}» ja té notes posades en Qualificar.\n\nEn passar a corregir-se amb rúbrica, les seues notes (quantitativa i per criteri) se substituiran per les que isquen de la rúbrica, i hauràs de tornar a corregir-lo en el Corrector. Les marques (no presentat, exempt…) es mantenen.`,{titulo:"Aquest examen ja té notes",ok:"Sí, substituir per la rúbrica"});
     if(!ok) return false;
   }
   const ref=cxProgActDe(grupo,act);
@@ -179,7 +179,7 @@ window.progAbrirEnCorrector=async actId=>{
   const progAct=p.actividades.find(a=>a.id===actId); if(!progAct) return;
   if(!(progAct.nombre||"").trim()){ mostrarAviso("Ponle antes un nombre al examen."); return; }
   const grupos=state.grupos.filter(g=>g.programacionId===p.id);
-  if(!grupos.length){ mostrarAviso(`El Corrector trabaja con el alumnado de un grupo, y ningún grupo tiene vinculada todavía la Programación "${p.nombre}".\n\nVincúlala a un grupo y vuelve a pulsar aquí.`); return; }
+  if(!grupos.length){ mostrarAviso(`El Corrector treballa amb l'alumnat d'un grup, i encara cap grup no té vinculada la Programació «${p.nombre}».\n\nVincula-la a un grup i torna a prémer ací.`); return; }
   let grupo=grupos.length===1? grupos[0] : null;
   if(!grupo){
     const gid=await elegirOpcion("🖊️ Abrir en el Corrector",`¿En qué grupo quieres abrir «${progAct.nombre}»?`,
@@ -196,7 +196,7 @@ window.progAbrirEnCorrector=async actId=>{
     return;
   }
   if(!(progAct.criterios||[]).length && !(progAct.rubrica||[]).length){
-    if(!await confirmar(`«${progAct.nombre}» todavía no tiene criterios marcados, así que la rúbrica empezará en blanco y no contará para las competencias hasta que vincules sus ítems a criterios en el Corrector.\n\n¿Continuar?`)) return;
+    if(!await confirmar(`«${progAct.nombre}» encara no té criteris marcats, així que la rúbrica començarà en blanc i no comptarà per a les competències fins que vincules els seus ítems a criteris en el Corrector.\n\nVols continuar?`)) return;
   }
   const trims=(progAct.sdaIds||[]).map(sid=>(p.sdas.find(s=>s.id===sid)||{}).trimestre).filter(t=>typeof t==="number"&&TRIMESTRES[t]);
   const trim=trims.length? Math.min(...trims) : state.ui.trim;

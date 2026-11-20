@@ -193,7 +193,7 @@ function cxAvisoCriteriosBadgeHTML(grupo,act){
   if(!act.rubrica) return "";
   const av=cxAvisosCriterios(grupo,act); if(!av.length) return "";
   const n=new Set(av.flatMap(a=>a.faltan)).size;
-  return `<div style="font-size:12.5px;margin-top:3px;color:var(--danger,#b91c1c);font-weight:600">⚠️ ${n} criterio${n===1?"":"s"} previsto${n===1?"":"s"} sin vincular en la rúbrica: ${cxCritChipsHTML(grupo,[...new Set(av.flatMap(a=>a.faltan))])}</div>`;
+  return `<div style="font-size:12.5px;margin-top:3px;color:var(--danger,#b91c1c);font-weight:600">⚠️ ${n} criteri${n===1?"":"s"} previst${n===1?"":"s"} sense vincular en la rúbrica: ${cxCritChipsHTML(grupo,[...new Set(av.flatMap(a=>a.faltan))])}</div>`;
 }
 /* Nombres de las SdA que abarca el examen (si viene de la Programación). */
 function cxSdasDeExamen(grupo,act){

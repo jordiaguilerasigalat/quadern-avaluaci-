@@ -174,7 +174,7 @@ function _tImpCuadernoModal(o,nombreArchivo){
   const opcNivel=NIVELES.map(n=>`<option ${n===nivelSug?'selected':''}>${_tEsc(n)}</option>`).join('');
   ov.innerHTML=`<div class="tdlg-box" role="dialog" aria-modal="true" aria-labelledby="impCT" style="max-width:560px">
     <h2 id="impCT">📥 Suspensos de ${_tEsc(o.materia)} — ${_tEsc(o.grupo)}</h2>
-    <div class="tdlg-msg" style="font-size:13px">${[o.alumnos.length+' alumnes', o.profesor?_tEsc(o.profesor):'', 'generado el '+_tEsc(new Date(o.generado).toLocaleDateString('es-ES'))].filter(Boolean).join(' · ')}. Elige a qué grupo de Tutoría corresponde:</div>
+    <div class="tdlg-msg" style="font-size:13px">${[o.alumnos.length+' alumnes', o.profesor?_tEsc(o.profesor):'', 'generado el '+_tEsc(new Date(o.generado).toLocaleDateString('ca-ES'))].filter(Boolean).join(' · ')}. Elige a qué grupo de Tutoría corresponde:</div>
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
       <select id="impCNivel" class="tdlg-in" style="width:auto;margin:0">${opcNivel}</select>
       <select id="impCGrupo" class="tdlg-in" style="width:auto;margin:0"></select>

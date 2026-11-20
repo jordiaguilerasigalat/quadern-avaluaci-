@@ -55,7 +55,7 @@ function openAsistencia(nivel, grupo) {
   _asistCtx = { nivel, grupo, evalKey: 'eval1' };
   const d = _getAsistenciaData(nivel, grupo);
   document.getElementById('asistTitle').textContent = `👥 Asistencia a la sesión`;
-  document.getElementById('asistSubtitle').textContent = `${nivel} — Grupo ${grupo} · ${d.profesores.length} profesor${d.profesores.length !== 1 ? 'es' : ''} registrat${d.profesores.length !== 1 ? 's' : ''}`;
+  document.getElementById('asistSubtitle').textContent = `${nivel} — Grup ${grupo} · ${d.profesores.length} professor${d.profesores.length !== 1 ? 's' : ''} registrat${d.profesores.length !== 1 ? 's' : ''}`;
   renderAsistTabs();
   renderAsistBody();
   document.getElementById('asistOverlay').classList.add('open');
@@ -270,7 +270,7 @@ window._asistUpdateProf = function(idx, field, val) {
   // Update subtitle
   const d = _getAsistenciaData(nivel, grupo);
   const sub = document.getElementById('asistSubtitle');
-  if (sub) sub.textContent = `${nivel} — Grupo ${grupo} · ${d.profesores.length} profesor${d.profesores.length !== 1 ? 'es' : ''} registrat${d.profesores.length !== 1 ? 's' : ''}`;
+  if (sub) sub.textContent = `${nivel} — Grup ${grupo} · ${d.profesores.length} professor${d.profesores.length !== 1 ? 's' : ''} registrat${d.profesores.length !== 1 ? 's' : ''}`;
 };
 
 window._asistImportTutor = function() {
@@ -300,7 +300,7 @@ function exportAsistenciaPDF() {
   const d = _getAsistenciaData(nivel, grupo);
   const iesName = document.getElementById('headerIesName')?.value || 'IES —';
   const tutor   = tutores[`${nivel}-${grupo}`] || '—';
-  const dateStr = new Date().toLocaleDateString('es-ES', {year:'numeric', month:'long', day:'numeric'});
+  const dateStr = new Date().toLocaleDateString('ca-ES', {year:'numeric', month:'long', day:'numeric'});
   const esc = s => _tEsc(s||'');
 
   const evalKeys  = ['eval1','eval2','eval3'];

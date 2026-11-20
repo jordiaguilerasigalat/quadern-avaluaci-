@@ -33,7 +33,7 @@ let _fotoContext = { nivel: '', grupo: '' };
 
 function openFotoGaleria(nivel, grupo) {
   _fotoContext = { nivel, grupo };
-  document.getElementById('fotoGaleriaTitulo').textContent = `Foto del grupo — ${nivel} ${grupo}`;
+  document.getElementById('fotoGaleriaTitulo').textContent = `Foto del grup — ${nivel} ${grupo}`;
   renderFotoDisplay();
   const ov = document.getElementById('fotoGaleriaOverlay');
   ov.style.display = 'flex';
@@ -294,7 +294,7 @@ function printHorario() {
     </div>
   </div>
   <div class="img-wrap">
-    <img src="${horario.src}" alt="Horario ${_tEsc(nivel)} ${_tEsc(grupo)}">
+    <img src="${horario.src}" alt="Horari ${_tEsc(nivel)} ${_tEsc(grupo)}">
   </div>
   <script>window.onload=function(){window.print();}<\/script>
 </body>
@@ -350,7 +350,7 @@ function printObservacionesGrupo() {
   const grupo   = _obsContext.grupo;
   const iesName = document.getElementById('headerIesName')?.value || 'Centro Educativo';
   const tutor   = tutores[key] || '—';
-  const dateStr = new Date().toLocaleDateString('es-ES', {year:'numeric', month:'long', day:'numeric'});
+  const dateStr = new Date().toLocaleDateString('ca-ES', {year:'numeric', month:'long', day:'numeric'});
 
   // Use textarea current content (unsaved changes included)
   const ta = document.getElementById('obsGrupoTextarea');

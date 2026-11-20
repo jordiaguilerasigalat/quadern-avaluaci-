@@ -185,7 +185,7 @@ function renderResultados(grupo){
               const vb=notaActividadBase(grupo,al.id,a), vf=notaActividadSinExtra(grupo,al.id,a);
               if(vf!=null && (vb==null || Math.abs(vf-vb)>1e-9)) notaCell += ` <span class="pill" title="Nota tras aplicar la recuperación" style="background:#dcece0;color:#1e5631;font-size:11.5px">🔁 ${fmt(vf)}</span>`;
            }
-           if(!a.recupera) notaCell += `${extraBadgeHTML(grupo,al.id,a)} <button class="ghost small" title="Puntos extra en ${esc(a.nombre)}" aria-label="Puntos extra en ${esc(a.nombre)}" onclick="abrirExtrasActividad('${a.id}','${al.id}')">➕</button>`;
+           if(!a.recupera) notaCell += `${extraBadgeHTML(grupo,al.id,a)} <button class="ghost small" title="Punts extra en ${esc(a.nombre)}" aria-label="Punts extra en ${esc(a.nombre)}" onclick="abrirExtrasActividad('${a.id}','${al.id}')">➕</button>`;
            if(a.recupera) notaCell += ` <span class="badge" title="${esc(recResumenTexto(grupo,a).replace(/<[^>]+>/g,""))}">🔁 recuperación</span>`;
            htmlActs += `<tr><td>${esc(a.nombre)}${marcaBadgeHTML(grupo,al.id,a.id)}</td><td>${esc(a.tipo)}</td><td>${notaCell}</td><td>${critCell}</td></tr>`;
         });
@@ -233,8 +233,8 @@ function renderResultados(grupo){
         <div class="flex" style="gap:8px;align-items:baseline"><span class="big">${fmt(nf)}</span> ${pillCuant(nf)}</div></div>
     </div>
     <div class="grid" style="gap:8px;margin-top:14px">
-      <div><div style="font-size:12.5px;color:var(--mut);margin-bottom:4px">Puntos extra en ${TRIMESTRES[trim]}${(x=>x&&nt!=null?` · ${textoNotaConExtra(notaTrimestreSinExtra(grupo,al.id,trim),x,nt)}`:"")(ptsExtraEval(grupo,al.id,trim))}</div>${extraCamposHTML("eval",al.id,String(trim),extraEval(grupo,al.id,trim))}</div>
-      <div><div style="font-size:12.5px;color:var(--mut);margin-bottom:4px">Puntos extra en la nota final${(x=>x&&nf!=null?` · ${textoNotaConExtra(notaFinalSinExtra(grupo,al.id),x,nf)}`:"")(ptsExtraEval(grupo,al.id,"final"))}</div>${extraCamposHTML("eval",al.id,"final",extraEval(grupo,al.id,"final"))}</div>
+      <div><div style="font-size:12.5px;color:var(--mut);margin-bottom:4px">Punts extra en la ${TRIMESTRES[trim]}${(x=>x&&nt!=null?` · ${textoNotaConExtra(notaTrimestreSinExtra(grupo,al.id,trim),x,nt)}`:"")(ptsExtraEval(grupo,al.id,trim))}</div>${extraCamposHTML("eval",al.id,String(trim),extraEval(grupo,al.id,trim))}</div>
+      <div><div style="font-size:12.5px;color:var(--mut);margin-bottom:4px">Punts extra en la nota final${(x=>x&&nf!=null?` · ${textoNotaConExtra(notaFinalSinExtra(grupo,al.id),x,nf)}`:"")(ptsExtraEval(grupo,al.id,"final"))}</div>${extraCamposHTML("eval",al.id,"final",extraEval(grupo,al.id,"final"))}</div>
     </div>
   </div>
 

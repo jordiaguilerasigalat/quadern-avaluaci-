@@ -115,7 +115,7 @@ window.exCobertura=()=>{
   if(Math.abs(total-10)>0.01) av.push(`El examen suma ${cxFmtPts(total)} puntos (no 10). Se escalará a 10 si la rúbrica está en «convertir a 10».`);
   (est.descuadres||[]).forEach(d=>av.push(`«${esc(String(d.label).slice(0,50))}» vale ${cxFmtPts(d.max)} pts, pero sus partes suman ${cxFmtPts(d.suma)}. La rúbrica copia las partes (${cxFmtPts(d.suma)} pts): corrige los puntos en el Diseño y vuelve a importar.`));
   if((est.repartidos||[]).length) av.push(`${est.repartidos.length} pregunt${est.repartidos.length===1?"a":"es"} amb subpreguntes sense punts propis (${est.repartidos.slice(0,4).map(s=>esc(String(s).slice(0,40))).join("; ")}${est.repartidos.length>4?"…":""}): la rúbrica en reparteix els punts a parts iguals. Posa punts a cada subpregunta en el Disseny si vols un altre repartiment.`);
-  if(sinCrit.length) av.push(`${sinCrit.length} pregunta${sinCrit.length===1?"":"s"} sin criterio: ${sinCrit.slice(0,6).map(h=>esc(h.label.slice(0,40))).join("; ")}${sinCrit.length>6?"…":""}`);
+  if(sinCrit.length) av.push(`${sinCrit.length} pregunt${sinCrit.length===1?"a":"es"} sense criteri: ${sinCrit.slice(0,6).map(h=>esc(h.label.slice(0,40))).join("; ")}${sinCrit.length>6?"…":""}`);
   if(conPrev){ const f=lista.filter(c=>!pts.has(c.id)).length; if(f) av.push(`${f} criteri${f===1?"":"s"} previst${f===1?"":"s"} per a aquest examen no s'avalua${f===1?"":"en"} en cap pregunta.`); }
   exModal(`<h2 style="font-size:16.5px;margin-bottom:4px">📊 Cobertura de criteris</h2><p class="sub" style="margin:0 0 10px">${hojas.length} ${hojas.length===1?"ítem puntuable":"ítems puntuables"} · ${cxFmtPts(total)} punts${conPrev?" · criteris previstos de l'examen":" · criteris marcats"}</p>
     ${av.length?`<div class="alert-box" style="margin-bottom:10px">${av.map(a=>"• "+a).join("<br>")}</div>`:`<p style="color:var(--ok,#15803d);margin:0 0 10px">✓ Sense avisos: totes les preguntes tenen criteri i el total és correcte.</p>`}
@@ -232,7 +232,7 @@ window.exImportarPaquete=()=>{
     let sinVinculos=false;
     if(p.catalogoKey && p.catalogoKey!==grupo.catalogoKey){
       const c=getCatalogo(grupo.catalogoKey)||{}, aqui=[c.materia,c.curso].filter(Boolean).join(" · ")||grupo.nombre;
-      sinVinculos=!await confirmar(`Este paquete se preparó para «${p.cursoNombre||p.catalogoKey}» y este grupo es de «${aqui}».\n\nLos criterios de evaluación se enlazan por su número (1.1, 2.3…), y en otro curso ese número puede ser otro criterio. Consérvalos solo si los criterios coinciden en los dos cursos (por ejemplo, 3.º y 4.º ESO).`,{titulo:"📥 Paquete de otro curso",ok:"Conservar vínculos",cancelar:"Quitar vínculos",peligro:false});
+      sinVinculos=!await confirmar(`Aquest paquet es va preparar per a «${p.cursoNombre||p.catalogoKey}» i aquest grup és de «${aqui}».\n\nEls criteris d'avaluació s'enllacen pel seu número (1.1, 2.3…), i en un altre curs eixe número pot ser un altre criteri. Conserva'ls només si els criteris coincidixen en els dos cursos (per exemple, 3r i 4t d'ESO).`,{titulo:"📥 Paquet d'un altre curs",ok:"Conservar els vincles",cancelar:"Llevar els vincles",peligro:false});
       if(sinVinculos){
         const limpiaR=r=>{ (function w(l){ (l||[]).forEach(n=>{ (n.items||[]).forEach(it=>{ it.links=[]; }); w(n.subs); }); })(r); return r; };
         p.rubrica=limpiaR(JSON.parse(JSON.stringify(p.rubrica))); (p.variantes||[]).forEach(v=>{ v.rubrica=limpiaR(JSON.parse(JSON.stringify(v.rubrica||[]))); });
@@ -297,7 +297,7 @@ window.exCopiasDiseno=async()=>{
 };
 window.exRestaurarCopia=async ts=>{
   const c=await exTx("readonly",s=>s.get(ts),"copias"); if(!c) return;
-  if(!await confirmar(`Se restaurarán ${c.disenos.length} diseños de la copia del ${new Date(c.ts).toLocaleString("ca-ES")}. Los diseños actuales con el mismo examen se sustituirán por los de la copia.\n\n¿Continuar?`,{ok:"Restaurar",peligro:true})) return;
+  if(!await confirmar(`Es restauraran ${c.disenos.length} dissenys de la còpia del ${new Date(c.ts).toLocaleString("ca-ES")}. Els dissenys actuals del mateix examen se substituiran pels de la còpia.\n\nVols continuar?`,{ok:"Restaurar",peligro:true})) return;
   await exCopiaDiaria(true); await exGuardarVarios(c.disenos);
   document.querySelectorAll(".modal-overlay").forEach(m=>{ if(m.querySelector("button.btn")&&/Copias de seguridad de los dise/.test(m.textContent)) m.remove(); });
   mostrarToast("✓ Diseños restaurados"); render();
@@ -554,7 +554,7 @@ window.exImportar=async()=>{
   const est=exConReparto(_exFrame.contentWindow.__ee.estructura());
   if(!est.nodos.length){ mostrarAviso("El examen aún no tiene preguntas ni apartados con puntuación. Añade puntos a las preguntas o a sus subpreguntas (campo «puntos») y vuelve a importar."); return; }
   if(!act.rubrica && !await cxPonerRubrica(grupo,act)) return;
-  if(cxEsNiveles((cxVarEditando(act)||act).rubrica)){ mostrarAviso("Esta rúbrica es por niveles de logro (categorías × niveles), así que no se construye a partir de las preguntas del Diseño.\n\nSi quieres una rúbrica por preguntas, pásala antes a «por puntos» en la pestaña 📋 Rúbrica («⇄ Pasar a rúbrica por puntos») y vuelve a importar."); return; }
+  if(cxEsNiveles((cxVarEditando(act)||act).rubrica)){ mostrarAviso("Aquesta rúbrica és per nivells d'assoliment (categories × nivells), així que no es construïx a partir de les preguntes del Disseny.\n\nSi vols una rúbrica per preguntes, passa-la abans a «per punts» en la pestanya 📋 Rúbrica («⇄ Passar a rúbrica per punts») i torna a importar."); return; }
   const dest=cxVarEditando(act)||act; const yaImp=cxItemsFlat(dest.rubrica).some(i=>i.fuenteId);
   if(!yaImp){
     const n=cxItemsFlat(dest.rubrica).length;
@@ -565,10 +565,10 @@ window.exImportar=async()=>{
     if(avisoNotas||desglose){
       const msg=(pv.alumnos?`Ja hi ha ${pv.alumnos} alumne${pv.alumnos===1?"":"s"} corregit${pv.alumnos===1?"":"s"} amb aquesta rúbrica i l'examen ha canviat:`:"La rúbrica s'actualitzarà amb l'estructura actual de l'examen:")
         +(desglose?`\n• Ara es divideixen en subpreguntes, que es puntuen una a una (se'n perden els descriptors${pv.desglosan.some(d=>d.conNota)?" i les notes que tingueren com a pregunta sencera":""}): ${L(pv.desglosan.map(d=>d.et))}`:"")
-        +(pv.cambian.length?`\n• Cambian de puntuación: ${L(pv.cambian)}`:"")
-        +(pv.quitan.length?`\n• Ya no están en el examen (se quitan de la rúbrica y de la nota): ${L(pv.quitan)}`:"")
+        +(pv.cambian.length?`\n• Canvien de puntuació: ${L(pv.cambian)}`:"")
+        +(pv.quitan.length?`\n• Ja no estan en l'examen (es lleven de la rúbrica i de la nota): ${L(pv.quitan)}`:"")
         +(pv.exceden?`\n• ${pv.exceden} puntuaci${pv.exceden===1?"ó supera":"ons superen"} el nou màxim i s'hi ajustar${pv.exceden===1?"à":"an"}.`:"")
-        +(pv.alumnos?`\n\nLas notas se recalcularán. ¿Continuar?`:`\n\n¿Continuar?`);
+        +(pv.alumnos?`\n\nEs tornaran a calcular les notes. Vols continuar?`:`\n\nVols continuar?`);
       if(!await confirmar(msg,{titulo:pv.alumnos?"⚠️ Reimportar amb notes posades":"Reimportar a la rúbrica",ok:"Reimportar",peligro:!!pv.alumnos})) return;
     }
   }

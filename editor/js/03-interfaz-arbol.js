@@ -36,8 +36,8 @@ function queueSave() {
       try { await createRecoverySnapshot(prior, 'Autoguardado anterior', false); } catch (e) { console.warn('No s\'ha pogut crear una versió de recuperació', e); }
     }
     const ok = saveExamLocal(S.exam);
-    const t = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-    $('#status').textContent = ok ? `Guardado en este navegador · ${t}` : 'No s\'ha pogut guardar ací: usa «Guardar arxiu»';
+    const t = new Date().toLocaleTimeString('ca-ES', { hour: '2-digit', minute: '2-digit' });
+    $('#status').textContent = ok ? `Guardat en aquest navegador · ${t}` : 'No s\'ha pogut guardar ací: usa «Guardar arxiu»';
     $('#status').style.color = ok ? '' : 'var(--danger)';
   }, 500);
 }

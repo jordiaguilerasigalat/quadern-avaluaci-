@@ -699,5 +699,5 @@ function icExecute() {
   renderICStep();
   renderAll();
   markDirty();
-  showToast(`✅ ${result.reduce((s,r)=>s+r.count,0)} alumnes importats en ${result.length} grupos`);
+  showToast(`✅ ${result.reduce((s,r)=>s+r.count,0)} alumnes importats en ${result.length} grup${result.length===1?'':'s'}`);
 }

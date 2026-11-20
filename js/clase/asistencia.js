@@ -320,7 +320,7 @@ function asistModalAlumnoHTML(grupo,al,desde,hasta){
     <div class="modal-box" style="max-width:80vw;width:80vw;max-height:80vh;display:flex;flex-direction:column;padding:0;overflow:hidden">
       <div style="padding:14px 26px;border-bottom:1px solid var(--line);flex-shrink:0">
         <div class="flex" style="justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
-          <div style="font-weight:700;font-size:15px">👁️ Asistencia de ${esc(al.nombre)}</div>
+          <div style="font-weight:700;font-size:15px">👁️ Assistència de ${esc(al.nombre)}</div>
           <div class="flex" style="flex-shrink:0;flex-wrap:wrap">
             ${entregaBtn}
             <button class="ghost" style="border:1px solid var(--line)" onclick="asistImprimirAlumno('${al.id}')">🖨️ Imprimir</button>

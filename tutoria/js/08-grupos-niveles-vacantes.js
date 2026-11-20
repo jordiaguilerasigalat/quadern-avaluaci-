@@ -454,12 +454,12 @@ function importJSON(input) {
       if (parsed.vacantesCfg) extras.push('configuración de vacantes');
 
       document.getElementById('jsonImportInfo').innerHTML =
-        `<strong>Archivo:</strong> ${_tEsc(file.name)}<br>` +
-        `<strong>Exportado el:</strong> ${fechaExport ? new Date(fechaExport).toLocaleString('es-ES') : '—'}<br>` +
-        `<strong>Centro:</strong> ${parsed.iesName ? _tEsc(parsed.iesName) : '—'}<br>` +
-        `<strong>Niveles:</strong> ${_tEsc(niveles || '—')}<br>` +
-        `<strong>Grupos:</strong> ${totalGrupos}<br>` +
-        `<strong>Total alumnos:</strong> ${totalAl}` +
+        `<strong>Arxiu:</strong> ${_tEsc(file.name)}<br>` +
+        `<strong>Exportat el:</strong> ${fechaExport ? new Date(fechaExport).toLocaleString('ca-ES') : '—'}<br>` +
+        `<strong>Centre:</strong> ${parsed.iesName ? _tEsc(parsed.iesName) : '—'}<br>` +
+        `<strong>Nivells:</strong> ${_tEsc(niveles || '—')}<br>` +
+        `<strong>Grups:</strong> ${totalGrupos}<br>` +
+        `<strong>Total d'alumnes:</strong> ${totalAl}` +
         (extras.length ? `<br><strong>Incluye además:</strong> ${extras.join(', ')}` : '') +
         (!esCompleto ? `<br><span style="color:var(--yellow)">⚠ Copia de seguridad de un formato anterior (sin calendario, actas, planos de aula, etc.)</span>` : '');
       // Highlight selected radio on click
@@ -649,7 +649,7 @@ function renderResumen() {
 
   const iesName = document.getElementById('headerIesName')?.value || 'Centro Educativo';
   const now = new Date();
-  const dateStr = now.toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const dateStr = now.toLocaleDateString('ca-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
   const kpiColor = (c) => `border-left-color:${c}`;
 
@@ -1628,7 +1628,7 @@ function renderVacantes() {
 
 function printVacantes() {
   const iesName = document.getElementById('headerIesName')?.value || 'Centro Educativo';
-  const dateStr = new Date().toLocaleDateString('es-ES',{year:'numeric',month:'long',day:'numeric'});
+  const dateStr = new Date().toLocaleDateString('ca-ES',{year:'numeric',month:'long',day:'numeric'});
   const esc = _tEsc;
 
   const sectionHtml = (propField, titulo) => {

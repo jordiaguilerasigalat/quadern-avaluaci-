@@ -119,7 +119,7 @@ function statsProblematicaHTML(grupo){
         <span style="font-size:13.5px;font-weight:600">Alumnado con problemática</span><strong style="font-size:15px;color:var(--accent-texto)">${problematica}</strong>
       </div>
     </div>
-    <p class="sub" style="margin:8px 0 0;font-size:11px">"Con problemática" = NESE o repetidor; a quien sea las dos cosas se le cuenta una sola vez.</p>
+    <p class="sub" style="margin:8px 0 0;font-size:11px">«Amb problemàtica» = NESE o repetidor; qui siga les dues coses es compta una sola vegada.</p>
   </div>`;
 }
 function resumenAsistConvGrupoHTML(grupo,desde,hasta){
@@ -188,7 +188,7 @@ function renderResumen(grupo){
         </select>
       </label>
     </div>
-    ${sinFechasTrim?`<p class="sub" style="margin:6px 0 10px;color:var(--warning)">⚠️ No has indicado las fechas de ${trimValido.toLowerCase()} en Ajustes — de momento se muestra el curso completo.</p>`:`<p class="sub" style="margin:6px 0 10px">${filtroTrim===""?"Curso completo hasta la fecha.":`${trimValido}: del ${fmt2(desdeF)} al ${fmt2(hastaF)}.`}</p>`}
+    ${sinFechasTrim?`<p class="sub" style="margin:6px 0 10px;color:var(--warning)">⚠️ No has indicat les dates de la ${trimValido.toLowerCase()} en Ajustos — de moment es mostra el curs complet.</p>`:`<p class="sub" style="margin:6px 0 10px">${filtroTrim===""?"Curs complet fins a la data.":`${trimValido}: del ${fmt2(desdeF)} al ${fmt2(hastaF)}.`}</p>`}
     <div style="overflow-x:auto">${resumenAsistConvGrupoHTML(grupo,sinFechasTrim?null:desdeF,sinFechasTrim?null:hastaF)}</div>
   </div>
   <div class="flex" style="align-items:stretch;flex-wrap:wrap;gap:16px">
