@@ -132,3 +132,6 @@ body[data-tema="oscuro"] .gcard-count{color:var(--accent)}
   header h1::before{width:20px;height:20px}
 }
 @media(max-width:400px){ header h1::before{display:none} header h1{font-size:16px} }
+/* La targeta «📌 Pendents» d'Inici no és un grup: sense número. */
+.home-grup.pd{counter-increment:none}
+.home-grup.pd::after{content:none}

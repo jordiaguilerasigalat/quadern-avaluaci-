@@ -55,6 +55,7 @@ Completan el repositorio: `manifest.json` e `icons/` (instalación como app), `.
 | `js/inicio/reuniones.js` | Registro de reuniones con familias, alumnado y equipo |
 | `js/alumnado/plan-refuerzo.js` | Plan de refuerzo: seguimiento individualizado |
 | `js/alumnado/plan-repeticion.js` | Plan de repetición: expediente formal |
+| `js/alumnado/pendents.js` | Pestanya «📌 Pendents»: alumnat amb la matèria pendent que no tens este curs (plans de repetició amb `extern:true`, sense grup), per cursos, al costat dels grups i en Inici |
 | `js/alumnado/alumnos-nese.js` | Alumnado NESE: plan de seguimiento curricular adaptado |
 | `js/inicio/horario.js` | Horario semanal, franjas horarias y vista «Hoy» |
 | `js/inicio/alertas-home.js` | Alertas automáticas y pantalla de Inicio |

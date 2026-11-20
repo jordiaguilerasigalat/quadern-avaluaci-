@@ -9,11 +9,11 @@ function renderTopBar(){
   const tabs=document.getElementById("groupTabs");
   tabs.innerHTML = state.grupos.map(g=>{
     const cat=getCatalogo(g.catalogoKey);
-    return `<div class="gpill ${g.id===state.ui.grupoId?"on":""}" data-ordre-grup="${esc(g.id)}">
+    return `<div class="gpill ${g.id===state.ui.grupoId&&state.ui.appMode!=="pendents"?"on":""}" data-ordre-grup="${esc(g.id)}">
       <span class="gpillname" onclick="irAGrupo('${g.id}')">${esc(g.nombre)}<span class="mat">${esc(cat.materia)} · ${esc(cat.curso)}</span></span>
       <button class="gpillx" title="Eliminar grup" onclick="borrarGrupoId('${g.id}')">×</button>
     </div>`;
-  }).join("") + `<button class="gpill" style="border-style:dashed" onclick="irAGrupo(null)">+ Nou grup</button>
+  }).join("") + pendentsPillHTML() + `<button class="gpill" style="border-style:dashed" onclick="irAGrupo(null)">+ Nou grup</button>
     <label class="gpill file" style="border-style:dashed;cursor:pointer">Importar grup…<input type="file" accept=".json,application/json" style="display:none" onchange="importarGrupoArchivo(this)"></label>`;
 
   const diasSinCopia = state.lastBackupAt? (Date.now()-state.lastBackupAt)/86400000 : Infinity;
@@ -35,6 +35,13 @@ function renderTopBar(){
   trimSel.innerHTML=TRIMESTRES.map((t,i)=>`<option value="${i}">${t}</option>`).join("");
   trimSel.value=state.ui.trim;
   trimSel.addEventListener("change",e=>{ state.ui.trim=Number(e.target.value); save(); render(); });
+}
+/* Pestanya «📌 Pendents» al costat dels grups: alumnat amb la matèria pendent
+   que no tens este curs (js/alumnado/pendents.js). */
+function pendentsPillHTML(){
+  if(typeof pdLlista!=="function") return "";
+  const n=pdLlista().length;
+  return `<div class="gpill ${state.ui.appMode==="pendents"?"on":""}"><span class="gpillname" onclick="irPendents('')" title="Alumnat amb la matèria pendent que no tens este curs">📌 Pendents<span class="mat">${n?n+" alumne"+(n===1?"":"s")+" · per cursos":"no els tinc este curs"}</span></span></div>`;
 }
 function renderShell(){ renderTopBar(); renderMain(); }
 function renderCorrectorApp(){ renderTopBar(); renderCorMain(); }
