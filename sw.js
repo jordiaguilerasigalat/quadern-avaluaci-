@@ -21,7 +21,7 @@ const CACHE_PREFIJO = 'cuaderno-v3-';
 const CACHE_NAME = CACHE_PREFIJO + '91';
 // Resumen de todos los archivos de esta versión. No lo cambies a mano: «npm run sellar» lo recalcula y, si
 // algún archivo ha cambiado, sube CACHE_NAME. La prueba «version-cache» falla si se sube un cambio sin sellar.
-const HUELLA = 'd15897de25e962fb';
+const HUELLA = '5c5abbaed699b8ce';
 
 // El "esqueleto" de las dos apps: HTML, manifest e iconos.
 const APP_SHELL = [
@@ -44,6 +44,7 @@ const APP_SHELL = [
   './js/datos/programaciones-departamento.js',
   './js/datos/rubriques-fiq.js',
   './js/datos/modelos-nese-refuerzo.js',
+  './js/datos/quadern-nese-fiq.js',
   './js/nucleo/utilidades.js',
   './js/nucleo/plantillas-materias.js',
   './js/nucleo/modelo-datos.js',
@@ -63,6 +64,7 @@ const APP_SHELL = [
   './js/alumnado/plan-repeticion.js',
   './js/alumnado/pendents.js',
   './js/alumnado/alumnos-nese.js',
+  './js/alumnado/quadern-nese.js',
   './js/alumnado/fitxa-alumne.js',
   './js/alumnado/anotacions.js',
   './js/alumnado/fotos-alumnat.js',
