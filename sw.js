@@ -75,6 +75,7 @@ const APP_SHELL = [
   './js/resultados/informe-detallado.js',
   './js/resultados/resultados.js',
   './js/resultados/banc-comentaris.js',
+  './js/resultados/grafiques.js',
   './js/resultados/cobertura-diagnostico.js',
   './js/clase/asistencia.js',
   './js/clase/convivencia.js',

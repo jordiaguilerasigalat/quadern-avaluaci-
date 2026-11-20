@@ -1412,4 +1412,39 @@ export const PRUEBAS = [
     t.ok(r.filtre && r.gestio, 'filtre per categoria i mode d\'edició del banc');
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'grafiques', descripcion: 'Gràfiques d\'evolució en Resultats: grup (avaluacions, activitats, CE, altres grups) i alumne/a (línia amb la mitjana del grup)', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const ids = await cuadernoConGrupo(p, t.url);
+    const r = await p.evaluate(async ids => {
+      const g = state.grupos[0], c1 = getCatalogo('FiQ_2ESO').ces[0].criterios[0].id;
+      g.actividades = [
+        { id: 'e1', nombre: 'Examen 1', tipo: TIPOS[0], trimestre: 0, bloqueId: g.bloques[0].id, esExamen: true, criterios: [{ critId: c1, peso: 100 }] },
+        { id: 'e2', nombre: 'Examen 2', tipo: TIPOS[0], trimestre: 1, bloqueId: g.bloques[0].id, esExamen: true, criterios: [{ critId: c1, peso: 100 }] }];
+      g.notasCuant = { [ids[0]]: { e1: 8, e2: 9 }, [ids[1]]: { e1: 2, e2: 4 }, [ids[2]]: { e1: 5 } };
+      g.notas = { [ids[0]]: { e1: { [c1]: 8 }, e2: { [c1]: 9 } }, [ids[1]]: { e1: { [c1]: 2 }, e2: { [c1]: 4 } }, [ids[2]]: { e1: { [c1]: 5 } } };
+      const g2 = JSON.parse(JSON.stringify(g)); g2.id = 'g2'; g2.nombre = '2n ESO B'; state.grupos.push(g2);
+      const abans = JSON.stringify([notaTrimestre(g, ids[0], 0), notaFinal(g, ids[1])]);
+      state.ui.appMode = 'competencial'; state.ui.tab = 'resultados'; state.ui.trim = 0; state.ui.resAl = ''; state.ui.grafObert = {}; save(); render();
+      const out = {};
+      const det = document.querySelector('.grafCard'); out.tancat = det && !det.open && !det.querySelector('svg');
+      det.open = true; await new Promise(r => setTimeout(r, 150));
+      const d2 = document.querySelector('.grafCard');
+      out.svgs = d2.querySelectorAll('svg.grSvg').length; out.text = d2.textContent;
+      out.sus = d2.querySelectorAll('rect.grBarSus').length; out.mapa = d2.querySelectorAll('.grMapa tbody tr').length;
+      out.persisteix = state.ui.grafObert.grup === true;
+      state.ui.resAl = ids[1]; state.ui.grafObert.alumne = true; save(); render();
+      const da = document.querySelector('.grafCard');
+      out.alumne = !!da.querySelector('path.grLinAl') && !!da.querySelector('path.grLinGrup') && /Evolució de Luis/.test(da.textContent);
+      out.mateix = JSON.stringify([notaTrimestre(g, ids[0], 0), notaFinal(g, ids[1])]) === abans;
+      return out;
+    }, ids);
+    t.ok(r.tancat, 'la targeta ix plegada i no calcula res fins que s\'obri');
+    t.ok(r.svgs >= 3 && r.persisteix, 'obrint-la: gràfiques per avaluació, per activitat i comparació de grups', String(r.svgs));
+    t.ok(/1\/3 aprovats|2\/3 aprovats/.test(r.text) && /Examen 1/.test(r.text), 'resum de mitjana i aprovats per avaluació', r.text.slice(0, 300));
+    t.ok(r.mapa >= 1, 'mapa de les competències específiques del grup');
+    t.ok(/Comparació amb els altres grups/.test(r.text) && /2n ESO B/.test(r.text), 'compara amb l\'altre grup de la mateixa matèria');
+    t.ok(r.alumne, 'alumne/a: línia de les seues notes i de la mitjana del grup');
+    t.ok(r.mateix, 'les gràfiques no canvien cap nota');
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
 ];

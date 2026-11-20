@@ -135,7 +135,7 @@ function renderResultados(grupo){
   </div>
   ${state.ui.evolModalAl?evolucionModalHTML(grupo,grupo.alumnos.find(x=>x.id===state.ui.evolModalAl)):""}`;
 
-  if(!al){ c.innerHTML=htmlClase; return; }
+  if(!al){ c.innerHTML=htmlClase+grafiquesGrupHTML(grupo); return; }
   const nt=notaTrimestre(grupo,al.id,trim), nf=notaFinal(grupo,al.id);
   const ccT=Object.keys(COMP_CLAVE).filter(cc=>idx.cat.ces.some(ce=>ce.cc.includes(cc))).map(cc=>({cc,p:scoreCC(grupo,al.id,cc)})).filter(x=>x.p!=null);
   const ceT=idx.cat.ces.map(ce=>({ce,p:scoreCE(grupo,al.id,ce.id)})).filter(x=>x.p!=null);
@@ -237,6 +237,8 @@ function renderResultados(grupo){
       <div><div style="font-size:12.5px;color:var(--mut);margin-bottom:4px">Puntos extra en la nota final${(x=>x&&nf!=null?` · ${textoNotaConExtra(notaFinalSinExtra(grupo,al.id),x,nf)}`:"")(ptsExtraEval(grupo,al.id,"final"))}</div>${extraCamposHTML("eval",al.id,"final",extraEval(grupo,al.id,"final"))}</div>
     </div>
   </div>
+
+  ${grafiquesAlumneHTML(grupo,al)}
 
   ${teQualitativaCE(grupo)?`<div class="card">
     <h2 style="font-size:15px">Qualificació qualitativa (per competències)</h2>
