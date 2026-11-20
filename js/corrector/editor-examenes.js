@@ -80,7 +80,7 @@ function exSelectorVariante(act){
     +ms.map(m=>`<button class="tab ${!cxVarEditando(act)&&l===m.letra?"on":""}" title="Mismo examen con las preguntas en otro orden; comparte la rúbrica, que al corregir sale en el orden de cada modelo" onclick="exVerModelo('${m.letra}')">Modelo ${m.letra}</button>`).join("")
     +(sig?`<button class="ghost" style="border:1px dashed var(--line)" title="Mismo examen con las preguntas en otro orden, para repartir el día del examen y evitar la copia (hasta tres modelos: A, B y C)" onclick="exNuevoModelo()">+ Modelo ${sig}</button>`:"")
     +vs.map(v=>`<button class="tab ${vid===v.id?"on":""}" title="${v.tipo==="ausencia"?"Examen alternativo para quien no vino el día del examen":"Examen adaptado (NESE)"}" onclick="cxElegirVariante('${v.id}')">${v.tipo==="ausencia"?"📅 ":""}${esc(v.nombre||"Examen alternativo")}${v.fecha?" · "+esc(cxFechaCorta(v.fecha)):""}</button>`).join("")
-    +`<button class="ghost" style="border:1px dashed var(--line)" title="Examen con otras preguntas para uno o varios alumnos/as: quien no vino el día del examen o el alumnado NESE. Se corrige con su propia rúbrica y su nota cuenta en este mismo examen." onclick="exNuevoAdaptado()">+ Examen alternativo</button>`;
+    +`<button class="ghost" style="border:1px dashed var(--line)" title="Examen con otras preguntas para uno o varios alumnos/as: quien no vino el día del examen o el alumnado NESE. Se corrige con su propia rúbrica y su nota cuenta en este mismo examen." onclick="exNuevoAdaptado()">+ Examen alternatiu</button>`;
 }
 /* Aviso de diseños sin exportar (solo cuenta; no toca el estado de la app) */
 const EX_PEND="cuaderno_ex_sin_copia";
@@ -292,12 +292,12 @@ window.exCopiasDiseno=async()=>{
   const cp=((await exTx("readonly",s=>s.getAll(),"copias").catch(()=>[]))||[]).sort((a,b)=>b.ts-a.ts);
   exModal(`<h2 style="font-size:16.5px;margin-bottom:4px">🛟 Copias de seguridad de los diseños</h2>
     <p class="sub" style="margin:0 0 10px">Se guarda una copia automática al día (las 3 últimas) en este navegador. No sustituye a «Exportar todo».</p>
-    ${cp.length?`<table style="width:100%;border-collapse:collapse;font-size:13px">${cp.map(c=>`<tr><td style="padding:4px 0">${new Date(c.ts).toLocaleString("es-ES")}</td><td>${c.disenos.length} diseño${c.disenos.length===1?"":"s"}</td><td style="text-align:right"><button class="ghost small" style="border:1px solid var(--line)" onclick="exRestaurarCopia(${c.ts})">Restaurar</button></td></tr>`).join("")}</table>`:`<p class="sub">Todavía no hay copias.</p>`}
+    ${cp.length?`<table style="width:100%;border-collapse:collapse;font-size:13px">${cp.map(c=>`<tr><td style="padding:4px 0">${new Date(c.ts).toLocaleString("ca-ES")}</td><td>${c.disenos.length} diseño${c.disenos.length===1?"":"s"}</td><td style="text-align:right"><button class="ghost small" style="border:1px solid var(--line)" onclick="exRestaurarCopia(${c.ts})">Restaurar</button></td></tr>`).join("")}</table>`:`<p class="sub">Todavía no hay copias.</p>`}
     <div style="margin-top:12px"><button class="ghost small" style="border:1px solid var(--line)" onclick="exLimpiarHuerfanos()">🧹 Buscar diseños de exámenes que ya no existen</button></div>`);
 };
 window.exRestaurarCopia=async ts=>{
   const c=await exTx("readonly",s=>s.get(ts),"copias"); if(!c) return;
-  if(!await confirmar(`Se restaurarán ${c.disenos.length} diseños de la copia del ${new Date(c.ts).toLocaleString("es-ES")}. Los diseños actuales con el mismo examen se sustituirán por los de la copia.\n\n¿Continuar?`,{ok:"Restaurar",peligro:true})) return;
+  if(!await confirmar(`Se restaurarán ${c.disenos.length} diseños de la copia del ${new Date(c.ts).toLocaleString("ca-ES")}. Los diseños actuales con el mismo examen se sustituirán por los de la copia.\n\n¿Continuar?`,{ok:"Restaurar",peligro:true})) return;
   await exCopiaDiaria(true); await exGuardarVarios(c.disenos);
   document.querySelectorAll(".modal-overlay").forEach(m=>{ if(m.querySelector("button.btn")&&/Copias de seguridad de los dise/.test(m.textContent)) m.remove(); });
   mostrarToast("✓ Diseños restaurados"); render();
@@ -347,7 +347,7 @@ function exFlush(){ try{ if(_exFrame&&_exFrame.isConnected&&_exFrame.contentWind
 { const _r0=render; render=function(){ exFlush(); if(_exFull&&!(state.ui.appMode==="corrector"&&state.ui.corTab==="diseno")) exPantallaCompleta(false); const r=_r0.apply(this,arguments); if(state.ui.appMode==="corrector"&&state.ui.corTab==="corregir") setTimeout(exPintarEnunciados,0); return r; }; }
 
 function cxSubtabs(act,on){
-  return `<div class="card" style="padding:8px 14px"><div class="flex" style="gap:6px;flex-wrap:wrap;align-items:center"><strong style="font-size:13.5px;margin-right:6px">${esc(act.nombre)}</strong>${[["diseno","✏️ Diseño"],["rubrica","📋 Rúbrica"],["corregir","🖊️ Corregir"]].map(([k,l])=>`<button class="tab ${on===k?"on":""}" onclick="cxSubIr('${k}')">${l}</button>`).join("")}<span style="flex:1"></span><button class="ghost small" style="border:1px solid var(--line)" title="Acierto medio por pregunta y por criterio" onclick="exAnalisis()">📈 Análisis</button><button class="ghost small" style="border:1px solid var(--line)" title="Cómo usar el diseño de exámenes" onclick="exAyuda()">❔ Ayuda</button></div></div>`;
+  return `<div class="card" style="padding:8px 14px"><div class="flex" style="gap:6px;flex-wrap:wrap;align-items:center"><strong style="font-size:13.5px;margin-right:6px">${esc(act.nombre)}</strong>${[["diseno","✏️ Disseny"],["rubrica","📋 Rúbrica"],["corregir","🖊️ Corregir"]].map(([k,l])=>`<button class="tab ${on===k?"on":""}" onclick="cxSubIr('${k}')">${l}</button>`).join("")}<span style="flex:1"></span><button class="ghost small" style="border:1px solid var(--line)" title="Acierto medio por pregunta y por criterio" onclick="exAnalisis()">📈 Análisis</button><button class="ghost small" style="border:1px solid var(--line)" title="Cómo usar el diseño de exámenes" onclick="exAyuda()">❔ Ayuda</button></div></div>`;
 }
 function cxPonerSubtabs(grupo){
   const act=grupo.actividades.find(a=>a.id===state.ui.corExamId), c=document.getElementById("tabContent"), t=state.ui.corTab;
@@ -406,10 +406,10 @@ function renderCorDiseno(grupo){
       win.__eeOnSave=ex=>{
         const g=JSON.parse(JSON.stringify(ex)); g.updated=0; const fr=JSON.stringify(g); if(fr===_exFirma) return; _exFirma=fr;
         // Modelos B y C: solo cuenta el orden de sus preguntas; el contenido sale siempre del general.
-        if(esB){ mbGuardadoEn(act,letra,JSON.parse(JSON.stringify(ex)),win).then(()=>{ exMarcarPendiente(clave); exEstado("Orden guardado · "+new Date().toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"})); }); return; }
+        if(esB){ mbGuardadoEn(act,letra,JSON.parse(JSON.stringify(ex)),win).then(()=>{ exMarcarPendiente(clave); exEstado("Orden guardado · "+new Date().toLocaleTimeString("ca-ES",{hour:"2-digit",minute:"2-digit"})); }); return; }
         exPut({key:clave,exam:JSON.parse(JSON.stringify(ex)),actualizado:Date.now(),nombre:act.nombre})
           .then(()=>{ if(!vr && mbModelos(act)) return mbActualizar(act,JSON.parse(JSON.stringify(ex)),win); })   // los modelos siguen al general
-          .then(()=>{ exMarcarPendiente(clave); exCopiaDiaria(); exEstado("Guardado · "+new Date().toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"})); })
+          .then(()=>{ exMarcarPendiente(clave); exCopiaDiaria(); exEstado("Guardado · "+new Date().toLocaleTimeString("ca-ES",{hour:"2-digit",minute:"2-digit"})); })
           .catch(()=>exEstado("⚠️ No se pudo guardar el diseño: usa «Guardar archivo» del editor"));
       };
       exEstado("Diseño cargado");

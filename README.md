@@ -1,6 +1,9 @@
-# Cuaderno del profesor v3 · Evaluación, Corrector y Tutoría
+# Quadern d'avaluació · Física i Química
 
-Aplicación web para Geografía e Historia, pensada para usarse como una app (PWA) en el
+Adaptació per a Física i Química (ESO i Batxillerat) del *Cuaderno del profesor v3*.
+La interfície del Quadern està en valencià.
+
+Aplicación web para Física y Química, pensada para usarse como una app (PWA) en el
 iPad, el móvil o el ordenador: sin cuenta, sin servidor y **sin datos dentro**. Al
 publicarla se abre vacía; todo lo que se escribe se guarda solo en el navegador del
 dispositivo.

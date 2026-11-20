@@ -65,7 +65,7 @@ function evolucionAprobadosHTML(grupo){
       <div style="width:100%;max-width:46px;height:90px;display:flex;align-items:flex-end;background:var(--surface-2);border-radius:6px;overflow:hidden">
         <div style="width:100%;height:${alturaPx}px;background:linear-gradient(180deg,var(--accent),var(--accent-2));border-radius:6px 6px 0 0"></div>
       </div>
-      <div style="font-size:11px;color:var(--mut);text-align:center">${TRIMESTRES[d.trim].replace("ª evaluación","ª ev.")}</div>
+      <div style="font-size:11px;color:var(--mut);text-align:center">${TRIMESTRES[d.trim].replace(" avaluació"," av.")}</div>
     </div>`;
   }).join("");
   return `<div class="card" style="flex:1;min-width:260px">
@@ -101,7 +101,7 @@ function distribucionCalificacionesHTML(grupo){
   }).join("");
   return `<div class="card" style="flex:1;min-width:260px">
     <h2 style="font-size:15px">Distribución de calificaciones</h2>
-    <p class="sub" style="margin:0 0 10px">${TRIMESTRES[trim]} · ${total} alumno${total===1?"":"s"} con nota.</p>
+    <p class="sub" style="margin:0 0 10px">${TRIMESTRES[trim]} · ${total} alumne${total===1?"":"s"} amb nota.</p>
     ${total?filas:'<p class="sub" style="margin:0">Todavía no hay ninguna nota registrada en esta evaluación.</p>'}
   </div>`;
 }
@@ -202,7 +202,7 @@ function renderResumen(grupo){
   ${cards}
   <div class="card" style="border-color:var(--accent)">
     <h2 style="font-size:15.5px">Evaluación final · curso completo</h2>
-    <div style="font-size:12.5px;color:var(--mut);margin-bottom:2px">Aprobados y suspensos (nota final, media ponderada de las tres evaluaciones)</div>
+    <div style="font-size:12.5px;color:var(--mut);margin-bottom:2px">Aprovats i suspesos (nota final, mitjana ponderada de les tres avaluacions)</div>
     ${barraAprobadosHTML(rf)}
     <div style="margin-top:12px">
       ${sdaResumenTextoNuevo(sdaResumenCurso)}
@@ -231,7 +231,7 @@ function resumenInformeTrimHTML(grupo,trim){
     <div style="margin:8px 0 0">${sdaResumenTextoNuevo(sdaResumen,{print:true})}</div>
 
     <h2>Propuestas de mejora · ${TRIMESTRES[trim]}</h2>
-    <p style="font-size:13px;margin:0">${propTrim?parr(propTrim):'<em style="color:#888">Sin propuestas registradas para esta evaluación.</em>'}</p>
+    <p style="font-size:13px;margin:0">${propTrim?parr(propTrim):'<em style="color:#888">No hi ha propostes registrades per a esta avaluació.</em>'}</p>
   `;
 }
 function resumenInformeFinalHTML(grupo){
@@ -249,7 +249,7 @@ function resumenInformeFinalHTML(grupo){
   const propuestas=[0,1,2].map(t=>{
     const p=(grupo.propuestasMejora[t]||"").trim();
     return `<p style="font-size:13px;margin:4px 0 2px"><strong>${TRIMESTRES[t]}:</strong></p>
-      <p style="font-size:13px;margin:0 0 10px">${p?parr(p):'<em style="color:#888">Sin propuestas registradas.</em>'}</p>`;
+      <p style="font-size:13px;margin:0 0 10px">${p?parr(p):'<em style="color:#888">No hi ha propostes registrades.</em>'}</p>`;
   }).join("");
   const propFinal=(grupo.propuestasMejoraFinal||"").trim();
   return `
@@ -263,7 +263,7 @@ function resumenInformeFinalHTML(grupo){
     <h2>Propuestas de mejora</h2>
     ${propuestas}
     <p style="font-size:13px;margin:4px 0 2px"><strong>Evaluación final / memoria de curso:</strong></p>
-    <p style="font-size:13px;margin:0">${propFinal?parr(propFinal):'<em style="color:#888">Sin propuestas registradas.</em>'}</p>
+    <p style="font-size:13px;margin:0">${propFinal?parr(propFinal):'<em style="color:#888">No hi ha propostes registrades.</em>'}</p>
   `;
 }
 

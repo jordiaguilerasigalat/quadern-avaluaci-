@@ -104,7 +104,7 @@ const FAM_MEDIOS=[
   {id:"email", label:"Email", icono:"✉️"},
   {id:"nota", label:"Nota escrita", icono:"📝"},
   {id:"reunion", label:"Reunión informal", icono:"🗣️"},
-  {id:"otro", label:"Otro", icono:"•"},
+  {id:"otro", label:"Altre", icono:"•"},
 ];
 function famMedioInfo(id){ return FAM_MEDIOS.find(m=>m.id===id)||FAM_MEDIOS[FAM_MEDIOS.length-1]; }
 function asistDelDia(grupo,fecha,alumnoId){
@@ -345,14 +345,14 @@ window.asistImprimirAlumno=alId=>{
   const desde=state.ui.asistDesde||rangoDef.desde, hasta=state.ui.asistHasta||rangoDef.hasta;
   const body=`
     <h1>Informe de asistencia</h1>
-    <div class="meta">${esc(al.nombre)} · ${esc(grupo.nombre)} · ${esc(cat.materia)} · Del ${fmt2(desde)} al ${fmt2(hasta)} · Generado el ${new Date().toLocaleDateString("es-ES")}</div>
+    <div class="meta">${esc(al.nombre)} · ${esc(grupo.nombre)} · ${esc(cat.materia)} · Del ${fmt2(desde)} al ${fmt2(hasta)} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     ${asistInformeAlumnoBodyHTML(grupo,al,desde,hasta)}
   `;
   const portada=generarPortadaHTML(`Informe de asistencia — ${al.nombre}`,
     [`${esc(grupo.nombre)} · ${esc(cat.materia)}`, `Del ${fmt2(desde)} al ${fmt2(hasta)}`,
      `Curso escolar: <strong>${esc(cursoEscolarEfectivo(null))}</strong>`,
      profesorNombreEfectivo(null)?`Elaborado por: <strong>${esc(profesorNombreEfectivo(null))}</strong>`:""], []);
-  abrirVentanaInforme(`Asistencia · ${al.nombre}`, body, {portada});
+  abrirVentanaInforme(`Assistència · ${al.nombre}`, body, {portada});
 };
 window.asistImprimirResumen=()=>{
   const grupo=grupoActual();
@@ -365,7 +365,7 @@ window.asistImprimirResumen=()=>{
   }).join("");
   const body=`
     <h1>Resumen de asistencia</h1>
-    <div class="meta">${esc(grupo.nombre)} · ${esc(cat.materia)} · Del ${fmt2(desde)} al ${fmt2(hasta)} · Generado el ${new Date().toLocaleDateString("es-ES")}</div>
+    <div class="meta">${esc(grupo.nombre)} · ${esc(cat.materia)} · Del ${fmt2(desde)} al ${fmt2(hasta)} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     <table><thead><tr><th>Alumno/a</th><th>Faltas justificadas</th><th>Faltas no justificadas</th><th>Retrasos</th></tr></thead><tbody>${filas}</tbody></table>
   `;
   const portada=generarPortadaHTML(`Resumen de asistencia — ${grupo.nombre}`,

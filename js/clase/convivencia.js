@@ -158,7 +158,7 @@ function renderConvivencia(grupo){
         <option value="">Todos los tipos</option>
         ${CONV_TIPOS.map(t=>`<option value="${t.id}" ${filtroTipo===t.id?"selected":""}>${t.corto} — ${t.label.split(" — ")[1]}</option>`).join("")}
       </select>
-      ${filtroAl?`<button class="ghost" style="border:1px solid var(--line)" onclick="convVerAlumno('${filtroAl}')">👁️ Ver informe</button>${grupoTieneEntrega(grupo,filtroAl,"conv")?`<span title="Informe entregado el ${fmt2(grupoTieneEntrega(grupo,filtroAl,"conv").fecha)}" style="color:#1e5631;font-weight:700;font-size:13px">✓</span>`:""}`:""}
+      ${filtroAl?`<button class="ghost" style="border:1px solid var(--line)" onclick="convVerAlumno('${filtroAl}')">👁️ Vore l'informe</button>${grupoTieneEntrega(grupo,filtroAl,"conv")?`<span title="Informe lliurat el ${fmt2(grupoTieneEntrega(grupo,filtroAl,"conv").fecha)}" style="color:#1e5631;font-weight:700;font-size:13px">✓</span>`:""}`:""}
     </div>
   </div>
   <div class="card">
@@ -240,14 +240,14 @@ window.convImprimirAlumno=alId=>{
   const cat=getCatalogo(grupo.catalogoKey);
   const body=`
     <h1>Informe de convivencia</h1>
-    <div class="meta">${esc(al.nombre)} · ${esc(grupo.nombre)} · ${esc(cat.materia)} · Generado el ${new Date().toLocaleDateString("es-ES")}</div>
+    <div class="meta">${esc(al.nombre)} · ${esc(grupo.nombre)} · ${esc(cat.materia)} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     ${convInformeAlumnoBodyHTML(grupo,al)}
   `;
   const portada=generarPortadaHTML(`Informe de convivencia — ${al.nombre}`,
     [`${esc(grupo.nombre)} · ${esc(cat.materia)}`,
      `Curso escolar: <strong>${esc(cursoEscolarEfectivo(null))}</strong>`,
      profesorNombreEfectivo(null)?`Elaborado por: <strong>${esc(profesorNombreEfectivo(null))}</strong>`:""], []);
-  abrirVentanaInforme(`Convivencia · ${al.nombre}`, body, {portada});
+  abrirVentanaInforme(`Convivència · ${al.nombre}`, body, {portada});
 };
 
 /* ---- Vista detalle (AC/RC simple, o formulario PA completo) ---- */
@@ -267,7 +267,7 @@ function renderConvivenciaDetalle(grupo){
   const info=convTipoInfo(entry.tipo);
   if(entry.tipo!=="pa"){
     c.innerHTML=`<div class="card">
-      <button class="ghost" style="border:1px solid var(--line)" onclick="convVolverLista()">← Volver al listado</button>
+      <button class="ghost" style="border:1px solid var(--line)" onclick="convVolverLista()">← Tornar a la llista</button>
       <h2 style="font-size:15px;margin-top:10px">${info.label}</h2>
       <div style="font-size:13px;color:var(--mut);margin-bottom:10px">${esc(al?al.nombre:"—")} · ${esc(grupo.nombre)}</div>
       <label style="font-size:12.5px;color:var(--mut);font-weight:500;max-width:220px">Fecha
@@ -286,7 +286,7 @@ function renderConvivenciaDetalle(grupo){
   const cat=getCatalogo(grupo.catalogoKey);
   c.innerHTML=`
     <div class="flex" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
-      <button class="ghost" style="border:1px solid var(--line)" onclick="convVolverLista()">← Volver al listado</button>
+      <button class="ghost" style="border:1px solid var(--line)" onclick="convVolverLista()">← Tornar a la llista</button>
       <div class="flex">
         <button class="ghost" style="border:1px solid var(--line)" onclick="convImprimirPA('${entry.id}')">🖨️ Imprimir parte</button>
         <button class="ghost danger" onclick="convEliminarRegistro('${entry.id}')">Eliminar</button>
@@ -387,7 +387,7 @@ window.convImprimirPA=(id)=>{
     <div style="background:linear-gradient(135deg,#152a44,#25456b);color:#fff;padding:16px 22px;border-radius:10px 10px 0 0;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
       <div>
         <div style="font-size:1.15rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em">${esc(state.centroNombre)||"Hoja de Registro de Incidencias"}</div>
-        ${state.centroCodigo?`<div style="font-size:.75rem;color:rgba(255,255,255,.7);margin-top:2px">Cód. Centro: ${esc(state.centroCodigo)}</div>`:""}
+        ${state.centroCodigo?`<div style="font-size:.75rem;color:rgba(255,255,255,.7);margin-top:2px">Codi de centre: ${esc(state.centroCodigo)}</div>`:""}
       </div>
       <div style="text-align:right;background:rgba(0,0,0,.2);padding:6px 14px;border-radius:6px;font-size:.72rem;line-height:1.5">
         <strong style="font-size:.8rem;display:block;color:#f0a35e">DECRETO 193/2025</strong>
@@ -396,7 +396,7 @@ window.convImprimirPA=(id)=>{
     </div>
     <div style="background:#e8ecf0;padding:8px 22px;text-align:center;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#25456b;border-radius:0 0 10px 10px;margin-bottom:16px">Hoja de Registro de Incidencias</div>
     <h1 style="margin-top:0">Parte de Amonestación</h1>
-    <div class="meta">${esc(grupo.nombre)} · ${esc(cat.materia)} · Generado el ${new Date().toLocaleDateString("es-ES")}</div>
+    <div class="meta">${esc(grupo.nombre)} · ${esc(cat.materia)} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     <table><tbody>
       <tr><th style="width:170px">Alumno/a</th><td>${esc(al?al.nombre:"—")}</td></tr>
       <tr><th>Grupo</th><td>${esc(grupo.nombre)}</td></tr>
@@ -412,6 +412,6 @@ window.convImprimirPA=(id)=>{
     <h2>Descripción de los hechos</h2><p style="white-space:pre-wrap">${esc(pa.descripcionHechos)||"—"}</p>
     <h2>Observaciones</h2><p style="white-space:pre-wrap">${esc(pa.observaciones)||"—"}</p>
   `;
-  abrirVentanaInforme(`Parte de amonestación — ${al?al.nombre:""}`, body);
+  abrirVentanaInforme(`Part d'amonestació — ${al?al.nombre:""}`, body);
 };
 

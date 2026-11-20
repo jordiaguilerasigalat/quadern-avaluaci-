@@ -47,7 +47,7 @@ function pedirContrasena({titulo,texto,confirmar,boton}){
       <h2 style="font-size:17px">${titulo}</h2>
       <p class="sub">${texto||""}</p>
       <input class="in" type="password" id="pwd1" autocomplete="new-password" placeholder="Contraseña" style="width:100%;margin-top:6px">
-      ${confirmar?'<input class="in" type="password" id="pwd2" autocomplete="new-password" placeholder="Repite la contraseña" style="width:100%;margin-top:8px">':""}
+      ${confirmar?'<input class="in" type="password" id="pwd2" autocomplete="new-password" placeholder="Repetix la contrasenya" style="width:100%;margin-top:8px">':""}
       <div id="pwdErr" style="color:var(--danger,#b91c1c);font-size:12.5px;min-height:18px;margin-top:6px"></div>
       <div class="flex" style="justify-content:flex-end;gap:8px"><button class="ghost" id="pwdNo" style="border:1px solid var(--line)">Cancelar</button><button class="btn" id="pwdSi">${boton||"Aceptar"}</button></div>
     </div>`;
@@ -70,7 +70,7 @@ function pedirContrasena({titulo,texto,confirmar,boton}){
 }
 window.exportarCifrada=async()=>{
   if(!cifradoDisponible()){ mostrarAviso("Este navegador no permite cifrar aquí (hace falta abrir la app desde https o como archivo en Chrome/Edge/Safari actualizados)."); return; }
-  const pass=await pedirContrasena({titulo:"🔒 Copia cifrada",confirmar:true,boton:"Cifrar",
+  const pass=await pedirContrasena({titulo:"🔒 Còpia xifrada",confirmar:true,boton:"Cifrar",
     texto:"Elige una contraseña para proteger la copia. <strong>Apúntala en un lugar seguro: si la olvidas, la copia no se podrá abrir</strong> (nadie puede recuperarla, tampoco la app)."});
   if(!pass) return;
   volcarEspejoIDB();
@@ -99,7 +99,7 @@ async function descifrarSiHaceFalta(s,nombreArchivo){
   // Copia de la carpeta cifrada con la clave que guarda este mismo dispositivo: se abre sin pedir la contraseña.
   if(typeof ccIntentarDescifrar==="function"){ const r=await ccIntentarDescifrar(s); if(r) return r; }
   for(let intento=0;intento<5;intento++){
-    const pass=await pedirContrasena({titulo:"🔒 Copia cifrada",texto:`«${esc(nombreArchivo||"copia")}» está protegida con contraseña.${intento?' <strong style="color:var(--danger,#b91c1c)">Contraseña incorrecta, prueba de nuevo.</strong>':""}`,boton:"Abrir"});
+    const pass=await pedirContrasena({titulo:"🔒 Còpia xifrada",texto:`«${esc(nombreArchivo||"còpia")}» està protegida amb contrasenya.${intento?' <strong style="color:var(--danger,#b91c1c)">Contrasenya incorrecta, torna-ho a provar.</strong>':""}`,boton:"Obrir"});
     if(pass==null) return null;
     try{ return JSON.parse(await descifrarTexto(s,pass)); }catch(e){ /* contraseña incorrecta o archivo dañado */ }
   }

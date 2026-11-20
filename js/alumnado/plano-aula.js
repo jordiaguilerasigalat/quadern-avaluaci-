@@ -66,7 +66,7 @@ function renderPlano(grupo){
       const esAzar=al&&modoAzar&&planoAzar.actual===al.id;
       const yaSalio=al&&modoAzar&&usadosAzar.has(al.id)&&!esAzar;
       const click=modoLista?(al?`planoListaTocar('${al.id}')`:""):modoAzar?"":`planoTocarMesa(${f},${c})`;
-      celdas+=`<div class="plano-mesa ${al?"ocupada":""} ${esSel&&!modoLista&&!modoAzar?"seleccionada":""}" ${click?`onclick="${click}"`:""} title="${al?esc(al.nombre)+(modoLista?" · "+asistEstadoInfo(estadoDe(al.id)).label:""):"Mesa libre"}" style="${col?`background:${col}22;border-color:${col};box-shadow:inset 0 0 0 2px ${col};color:var(--ink)`:""}${esAzar?";background:var(--accent);color:var(--accent-ink,#1c1408);transform:scale(1.08);box-shadow:0 0 0 4px var(--accent-2)":""}${yaSalio?";opacity:.45":""}">
+      celdas+=`<div class="plano-mesa ${al?"ocupada":""} ${esSel&&!modoLista&&!modoAzar?"seleccionada":""}" ${click?`onclick="${click}"`:""} title="${al?esc(al.nombre)+(modoLista?" · "+asistEstadoInfo(estadoDe(al.id)).label:""):"Taula lliure"}" style="${col?`background:${col}22;border-color:${col};box-shadow:inset 0 0 0 2px ${col};color:var(--ink)`:""}${esAzar?";background:var(--accent);color:var(--accent-ink,#1c1408);transform:scale(1.08);box-shadow:0 0 0 4px var(--accent-2)":""}${yaSalio?";opacity:.45":""}">
         ${al?nombreCorto+(col?`<div style="font-size:9.5px;font-weight:700;color:${col}">${asistEstadoInfo(estadoDe(al.id)).label.replace("Falta ","F. ")}</div>`:""):'<span class="plano-vacia">+</span>'}
       </div>`;
     }
@@ -95,14 +95,14 @@ function renderPlano(grupo){
     </div>
     ${modoLista?`<div class="flex" style="gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap">
         <label style="font-size:12.5px;color:var(--mut)">Fecha <input type="date" class="in" value="${fechaLista}" onchange="asistSeleccionarFecha(this.value)"></label>
-        <span class="sub" style="margin:0">Toca una mesa para cambiar: presente → falta → retraso → falta justificada. Se guarda en Asistencia.</span>
-        <button class="ghost small" style="border:1px solid var(--line)" onclick="asistMarcarTodosPresentes()">Todos presentes</button>
+        <span class="sub" style="margin:0">Toca una taula per a canviar: present → falta → retard → falta justificada. Es guarda en Assistència.</span>
+        <button class="ghost small" style="border:1px solid var(--line)" onclick="asistMarcarTodosPresentes()">Tots presents</button>
       </div>`
     :modoAzar?`<div class="flex" style="gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap">
-        <button class="btn" onclick="planoSacarAlAzar()">🎲 Sacar alumno/a</button>
-        ${planoAzar.actual&&grupo.alumnos.find(a=>a.id===planoAzar.actual)?`<strong style="font-size:18px" aria-live="polite">👉 ${esc(grupo.alumnos.find(a=>a.id===planoAzar.actual).nombre)}</strong>`:'<span class="sub" style="margin:0" aria-live="polite">No repite hasta que hayan salido todos, y no saca a quien tenga falta hoy.</span>'}
+        <button class="btn" onclick="planoSacarAlAzar()">🎲 Traure alumne/a</button>
+        ${planoAzar.actual&&grupo.alumnos.find(a=>a.id===planoAzar.actual)?`<strong style="font-size:18px" aria-live="polite">👉 ${esc(grupo.alumnos.find(a=>a.id===planoAzar.actual).nombre)}</strong>`:'<span class="sub" style="margin:0" aria-live="polite">No repetix fins que hagen eixit tots, i no trau qui tinga falta hui.</span>'}
         <span class="sub" style="margin:0">${usadosAzar.size}/${grupo.alumnos.length} han salido</span>
-        ${usadosAzar.size?'<button class="ghost small" style="border:1px solid var(--line)" onclick="planoAzarReiniciar()">↺ Nueva ronda</button>':""}
+        ${usadosAzar.size?'<button class="ghost small" style="border:1px solid var(--line)" onclick="planoAzarReiniciar()">↺ Nova ronda</button>':""}
       </div>`
     :`<p class="sub" style="margin:8px 0 0">Toca un alumno (de la lista o de una mesa) para elegirlo, y luego toca una mesa: si está libre, se sienta ahí; si ya tiene a alguien, se intercambian.</p>`}
   </div>
@@ -115,9 +115,9 @@ function renderPlano(grupo){
       <div class="section-eyebrow" style="margin-bottom:8px">Sin colocar (${sinColocar.length})</div>
       <div class="plano-sidebar">
         ${sinColocar.length?sinColocar.map(a=>{ const col=modoLista?colorEstado(a.id):""; const click=modoLista?`planoListaTocar('${a.id}')`:modoAzar?"":`planoSeleccionar('${a.id}')`;
-          return `<div class="plano-chip ${sel===a.id&&!modoLista?"seleccionado":""}" ${click?`onclick="${click}"`:""} style="${col?`border-color:${col};box-shadow:inset 3px 0 0 ${col}`:""}${modoAzar&&planoAzar.actual===a.id?";background:var(--accent);font-weight:700":""}">${esc(a.nombre)}${col?` <small style="color:${col}">· ${asistEstadoInfo(estadoDe(a.id)).label}</small>`:""}</div>`; }).join(""):'<p class="sub" style="margin:0">Todo el alumnado está ya colocado.</p>'}
+          return `<div class="plano-chip ${sel===a.id&&!modoLista?"seleccionado":""}" ${click?`onclick="${click}"`:""} style="${col?`border-color:${col};box-shadow:inset 3px 0 0 ${col}`:""}${modoAzar&&planoAzar.actual===a.id?";background:var(--accent);font-weight:700":""}">${esc(a.nombre)}${col?` <small style="color:${col}">· ${asistEstadoInfo(estadoDe(a.id)).label}</small>`:""}</div>`; }).join(""):'<p class="sub" style="margin:0">Tot l\'alumnat ja està col·locat.</p>'}
       </div>
-      ${sel&&idsColocados.has(sel)?`<button class="ghost" style="border:1px solid var(--line);margin-top:10px;width:100%" onclick="planoQuitarDeMesa('${sel}')">🗑️ Quitar de su mesa</button>`:""}
+      ${sel&&idsColocados.has(sel)?`<button class="ghost" style="border:1px solid var(--line);margin-top:10px;width:100%" onclick="planoQuitarDeMesa('${sel}')">🗑️ Llevar de la seua taula</button>`:""}
     </div>
   </div>`;
 }
@@ -203,11 +203,11 @@ function renderAlumnos(grupo){
       <button class="btn" onclick="addAlumno(); document.getElementById('alApellidos')?.focus()">Añadir</button>
     </div>
     <div class="flex" style="margin-bottom:10px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
-      ${grupo.alumnos.length>5?`<input class="in" id="alBuscar" style="width:100%;max-width:280px" placeholder="Buscar alumno/a…" oninput="filtrarAlumnos(this.value)">`:"<span></span>"}
+      ${grupo.alumnos.length>5?`<input class="in" id="alBuscar" style="width:100%;max-width:280px" placeholder="Cercar alumne/a…" oninput="filtrarAlumnos(this.value)">`:"<span></span>"}
       <div style="position:relative">
         <button class="ghost" style="border:1px solid var(--line)" onclick="toggleColumnasAlumnoPanel()">⚙ Columnas</button>
         ${alumColumnasPanelAbierto?`<div class="card" id="panelColumnasAlumnado" style="position:absolute;right:0;top:100%;margin-top:6px;z-index:20;width:220px;padding:12px">
-          <div style="font-size:12px;color:var(--mut);margin-bottom:8px">Elige qué columnas ver</div>
+          <div style="font-size:12px;color:var(--mut);margin-bottom:8px">Tria quines columnes vols vore</div>
           ${ALUM_COLUMNAS_OPCIONALES.map(c=>`<label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:3px 0">
             <input type="checkbox" ${alumColVisible(c.id)?"checked":""} onchange="toggleColumnaAlumno('${c.id}',this.checked)"> ${c.label}
           </label>`).join("")}
@@ -262,29 +262,29 @@ function renderAlumnos(grupo){
           ${alumColVisible("pendientes")?`<td><button class="ghost" style="font-size:11.5px;padding:5px 8px;width:100%;overflow:hidden;text-overflow:ellipsis" onclick="togglePendientesRow('${a.id}')">${a.pendientes.length?esc(a.pendientes.map(n=>n+"º").join(", ")):"— Ninguna —"}</button></td>`:""}
           ${alumColVisible("nacimiento")?`<td>
             <input type="date" class="in" style="width:100%;font-size:12.5px;padding:6px 8px" value="${esc(a.fechaNacimiento||"")}" onchange="setFechaNacimiento('${a.id}',this.value)" onblur="refrescarFechaNacimiento()">
-            <input type="text" class="in" placeholder="o DD/MM/AAAA" title="Escribe la fecha completa (o solo pégala) y pulsa Intro o sal del campo" style="width:100%;font-size:11px;padding:3px 8px;margin-top:3px;border-color:transparent;background:transparent" onkeydown="if(event.key==='Enter'){ if(setFechaNacimientoTexto('${a.id}',this.value)) this.blur(); }" onblur="if(this.value){ setFechaNacimientoTexto('${a.id}',this.value); this.value=''; }">
+            <input type="text" class="in" placeholder="o DD/MM/AAAA" title="Escriu la data completa (o només apega-la) i polsa Intro o ix del camp" style="width:100%;font-size:11px;padding:3px 8px;margin-top:3px;border-color:transparent;background:transparent" onkeydown="if(event.key==='Enter'){ if(setFechaNacimientoTexto('${a.id}',this.value)) this.blur(); }" onblur="if(this.value){ setFechaNacimientoTexto('${a.id}',this.value); this.value=''; }">
           </td>`:""}
-          ${alumColVisible("edad")?`<td style="text-align:center;font-size:12.5px;color:${edad==null?"var(--mut)":"var(--ink)"}">${edad==null?"—":edad+" años"}</td>`:""}
-          ${alumColVisible("familia")?(()=>{ const ok=familiaCorreos(a).length, mal=(a.familia||[]).some(f=>f.email&&!emailValido(f.email)); return `<td style="text-align:center;font-size:12.5px"><button class="ghost small" style="padding:3px 7px;${mal?"color:#dc2626":""}" title="${mal?"Hay un correo mal escrito":ok?familiaCorreos(a).join(", "):"Sin correo de la familia"}" onclick="abrirFichaAlumno('${a.id}')">${mal?"⚠️":ok?"✉️ "+ok:"—"}</button></td>`; })():""}
+          ${alumColVisible("edad")?`<td style="text-align:center;font-size:12.5px;color:${edad==null?"var(--mut)":"var(--ink)"}">${edad==null?"—":edad+" anys"}</td>`:""}
+          ${alumColVisible("familia")?(()=>{ const ok=familiaCorreos(a).length, mal=(a.familia||[]).some(f=>f.email&&!emailValido(f.email)); return `<td style="text-align:center;font-size:12.5px"><button class="ghost small" style="padding:3px 7px;${mal?"color:#dc2626":""}" title="${mal?"Hi ha un correu mal escrit":ok?familiaCorreos(a).join(", "):"Sense correu de la família"}" onclick="abrirFichaAlumno('${a.id}')">${mal?"⚠️":ok?"✉️ "+ok:"—"}</button></td>`; })():""}
           <td><button class="ghost" onclick="abrirFichaAlumno('${a.id}')">📋 Fitxa</button></td>
-          <td><button class="ghost" onclick="toggleObservacion('${a.id}')">${abierto===a.id?"Ocultar obs.":(a.observaciones?"Ver obs.":"+ Obs.")}</button></td>
+          <td><button class="ghost" onclick="toggleObservacion('${a.id}')">${abierto===a.id?"Amagar obs.":(a.observaciones?"Vore obs.":"+ Obs.")}</button></td>
           <td><button class="ghost" onclick="delAlumno('${a.id}')">Eliminar</button></td>
         </tr>
         ${state.ui.alumPendAbierto===a.id?`<tr data-pendfor="${a.id}"><td colspan="${colspanTotal}" style="background:var(--paper)">
           <div style="padding:10px 4px">
-            <div style="font-size:12.5px;color:var(--mut);margin-bottom:8px">Marca los cursos anteriores en los que este alumno/a tiene la materia pendiente. Al marcar uno, se crea automáticamente su Plan de Refuerzo (si no lo tenía ya) con el modelo de ese curso; desmarcarlo no borra el plan.</div>
+            <div style="font-size:12.5px;color:var(--mut);margin-bottom:8px">Marca els cursos anteriors en què este alumne/a té la matèria pendent. En marcar-ne un, es crea automàticament el seu Pla de reforç (si no el tenia ja) amb el model d'eixe curs; desmarcar-lo no esborra el pla.</div>
             <div class="flex" style="gap:14px;flex-wrap:wrap">
               ${["1","2","3","4"].map(n=>`<label style="font-size:13px;display:flex;align-items:center;gap:6px">
-                <input type="checkbox" ${a.pendientes.includes(n)?"checked":""} onchange="toggleAlumnoPendiente('${a.id}','${n}',this.checked)"> ${n}º ESO
+                <input type="checkbox" ${a.pendientes.includes(n)?"checked":""} onchange="toggleAlumnoPendiente('${a.id}','${n}',this.checked)"> ${({1:"1r",2:"2n",3:"3r",4:"4t"})[n]||n} ESO
               </label>`).join("")}
             </div>
           </div>
         </td></tr>`:""}
         ${abierto===a.id?`<tr data-obsfor="${a.id}"><td colspan="${colspanTotal}" style="background:var(--paper)">
-              <div style="font-size:12px;color:var(--mut);margin:6px 0 4px">Observaciones del alumno · uso interno, no se imprime</div>
-              <textarea class="in" style="width:100%;min-height:80px;resize:vertical" placeholder="Notas privadas para ti sobre este alumno/a…" onchange="setObservacion('${a.id}',this.value)">${esc(a.observaciones||"")}</textarea>
+              <div style="font-size:12px;color:var(--mut);margin:6px 0 4px">Observacions de l'alumne/a · ús intern, no s'imprimix</div>
+              <textarea class="in" style="width:100%;min-height:80px;resize:vertical" placeholder="Notes privades per a tu sobre este alumne/a…" onchange="setObservacion('${a.id}',this.value)">${esc(a.observaciones||"")}</textarea>
             </td></tr>`:""}`;}).join("")
-        : `<tr><td colspan="${5+ALUM_COLUMNAS_OPCIONALES.filter(c=>alumColVisible(c.id)).length}" style="color:var(--mut);font-size:14px">Aún no hay alumnado. Añade el primero arriba, o usa la carga en bloque de más abajo.</td></tr>`}
+        : `<tr><td colspan="${5+ALUM_COLUMNAS_OPCIONALES.filter(c=>alumColVisible(c.id)).length}" style="color:var(--mut);font-size:14px">Encara no hi ha alumnat. Afig el primer dalt, o usa la càrrega en bloc de més avall.</td></tr>`}
       </tbody>
     </table>
     <p id="alSinResultados" style="display:none;color:var(--mut);font-size:13.5px;margin-top:6px">Ningún alumno/a coincide con la búsqueda.</p>
@@ -310,11 +310,11 @@ function renderAlumnos(grupo){
 
   ${pap.length? `<div class="card">
     <h2 style="font-size:15px">Papelera de alumnado</h2>
-    <p class="sub">Los últimos eliminados de este grupo, con sus notas y observaciones. Se guardan los ${pap.length<10?"últimos "+pap.length:"últimos 10"}.</p>
+    <p class="sub">Els últims eliminats d'este grup, amb les seues notes i observacions. Es guarden els ${pap.length<10?"últims "+pap.length:"últims 10"}.</p>
     <div class="grid">
       ${pap.map((it,i)=>`
         <div class="row" style="justify-content:space-between">
-          <span style="font-size:13.5px;color:var(--mut)">${esc(it.alumno.nombre)} · eliminado ${haceTiempo(it.borradoEn)}</span>
+          <span style="font-size:13.5px;color:var(--mut)">${esc(it.alumno.nombre)} · eliminat ${haceTiempo(it.borradoEn)}</span>
           <div class="flex">
             <button class="ghost" onclick="restaurarAlumnoPapelera(${i})">Restaurar</button>
             <button class="ghost danger" onclick="purgarAlumnoPapelera(${i})">Eliminar definitivamente</button>
@@ -384,7 +384,7 @@ function addAlumnosNombres(entradas){
   });
   ordenarAlumnos(g);
   save(); render();
-  if(anadidos||omitidos) mostrarAviso(`Añadidos ${anadidos} alumno${anadidos===1?"":"s"}.${omitidos?` Omitidos ${omitidos} por tener ya un nombre muy similar en el grupo.`:""}`);
+  if(anadidos||omitidos) mostrarAviso(`Afegits ${anadidos} alumne${anadidos===1?"":"s"}.${omitidos?` Omesos ${omitidos} per tindre ja un nom molt semblant en el grup.`:""}`);
 }
 window.addAlumnosBulk=()=>{
   const ta=document.getElementById("alBulk");
@@ -498,8 +498,8 @@ window.setNeseNivel=(id,v)=>{ const g=grupoActual(); const a=g.alumnos.find(x=>x
 window.setAlumnoPlan=(id,v)=>{ const g=grupoActual(); const a=g.alumnos.find(x=>x.id===id);
   if(a){
     a.plan=v;
-    if(v==="refuerzo"){ if(autoCrearPlanRefuerzoSiFalta(g,a)) mostrarToast("✓ Plan de Refuerzo creado para "+a.nombre); }
-    else if(v==="repeticion"){ if(autoCrearPlanRepeticionSiFalta(g,a)) mostrarToast("✓ Plan de Repetición creado para "+a.nombre); }
+    if(v==="refuerzo"){ if(autoCrearPlanRefuerzoSiFalta(g,a)) mostrarToast("✓ Pla de reforç creat per a "+a.nombre); }
+    else if(v==="repeticion"){ if(autoCrearPlanRepeticionSiFalta(g,a)) mostrarToast("✓ Pla de repetició creat per a "+a.nombre); }
     save(); render();
   } };
 function autoCrearPlanRefuerzoSiFalta(g,a){
@@ -536,7 +536,7 @@ window.toggleRepetidor=(id,checked)=>{ const g=grupoActual(); const a=g.alumnos.
     a.repetidor=checked;
     if(checked){
       if(!a.plan) a.plan="repeticion";
-      if(autoCrearPlanRepeticionSiFalta(g,a)) mostrarToast("✓ Plan de Repetición creado para "+a.nombre);
+      if(autoCrearPlanRepeticionSiFalta(g,a)) mostrarToast("✓ Pla de repetició creat per a "+a.nombre);
     }
     save(); render();
   } };
@@ -581,7 +581,7 @@ function fichaAlumnoModalHTML(grupo,alumnoId){
         </div>
         <label style="font-size:12.5px;color:var(--mut);font-weight:500;max-width:220px">Fecha de nacimiento
           <input type="date" class="in" style="width:100%;margin-top:4px" value="${esc(a.fechaNacimiento||"")}" onchange="setFechaNacimiento('${a.id}',this.value)" onblur="refrescarFechaNacimiento()">
-          <span style="font-size:12px;color:var(--mut)">${edad==null?"":"→ "+edad+" años"}</span>
+          <span style="font-size:12px;color:var(--mut)">${edad==null?"":"→ "+edad+" anys"}</span>
         </label>
         <label style="font-size:12.5px;color:var(--mut);font-weight:500;max-width:220px">O escríbela a mano (DD/MM/AAAA)
           <input type="text" class="in" placeholder="p. ej. 15/03/2012" style="width:100%;margin-top:4px" onkeydown="if(event.key==='Enter'){ if(setFechaNacimientoTexto('${a.id}',this.value)) this.blur(); else mostrarToast('Formato no válido. Usa DD/MM/AAAA'); }" onblur="if(this.value){ if(setFechaNacimientoTexto('${a.id}',this.value)) this.value=''; }">
@@ -608,7 +608,7 @@ function fichaAlumnoModalHTML(grupo,alumnoId){
           <div style="font-size:12.5px;color:var(--mut);font-weight:500;margin-bottom:4px">Materia pendiente de cursos anteriores</div>
           <div class="flex" style="gap:14px;flex-wrap:wrap">
             ${["1","2","3","4"].map(n=>`<label style="font-size:13px;display:flex;align-items:center;gap:6px">
-              <input type="checkbox" ${a.pendientes.includes(n)?"checked":""} onchange="toggleAlumnoPendiente('${a.id}','${n}',this.checked)"> ${n}º ESO
+              <input type="checkbox" ${a.pendientes.includes(n)?"checked":""} onchange="toggleAlumnoPendiente('${a.id}','${n}',this.checked)"> ${({1:"1r",2:"2n",3:"3r",4:"4t"})[n]||n} ESO
             </label>`).join("")}
           </div>
         </div>
@@ -631,7 +631,7 @@ window.toggleAlumnoPendiente=(alId,curso,checked)=>{
     if(!a.pendientes.includes(curso)) a.pendientes.push(curso);
     const creado=autoCrearPlanRefuerzoPendiente(g,a,curso);
     save(); render();
-    if(creado) mostrarToast(`✓ Plan de Refuerzo creado — ${curso}º ESO pendiente`);
+    if(creado) mostrarToast(`✓ Pla de reforç creat — ${({1:"1r",2:"2n",3:"3r",4:"4t"})[curso]||curso} ESO pendent`);
   }else{
     a.pendientes=a.pendientes.filter(c=>c!==curso);
     save(); render();

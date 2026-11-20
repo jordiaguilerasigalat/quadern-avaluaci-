@@ -54,9 +54,9 @@ function progDetalleHTML(root){
   </div>
   `:`
   <div class="card">
-    ${progCabeceraPlegableHTML("recursos","Recursos didácticos",(()=>{ const n=PROG_RECURSOS_OPCIONES.filter(r=>p.recursos[r.id]).length+((p.recursos.otros||"").trim()?1:0); return n?`${n} marcado${n===1?"":"s"}`:"ninguno marcado"; })())}
+    ${progCabeceraPlegableHTML("recursos","Recursos didácticos",(()=>{ const n=PROG_RECURSOS_OPCIONES.filter(r=>p.recursos[r.id]).length+((p.recursos.otros||"").trim()?1:0); return n?`${n} marcat${n===1?"":"s"}`:"cap marcat"; })())}
     ${progPlegado("recursos")?"":`<div style="margin-top:8px">
-    <p class="sub" style="margin:0 0 8px">Señala los que vayas a utilizar este curso (sin adjuntar archivos, solo para dejar constancia en la programación).</p>
+    <p class="sub" style="margin:0 0 8px">Assenyala els que usaràs este curs (sense adjuntar fitxers, només per a deixar-ne constància en la programació).</p>
     <div class="flex" style="flex-wrap:wrap;gap:10px 18px">
       ${PROG_RECURSOS_OPCIONES.map(r=>`<label style="font-size:13px;display:flex;align-items:center;gap:6px">
         <input type="checkbox" ${p.recursos[r.id]?"checked":""} onchange="progToggleRecurso('${r.id}',this.checked)"> ${r.label}
@@ -70,16 +70,16 @@ function progDetalleHTML(root){
   <div class="card">
     ${progCabeceraPlegableHTML("metodologia","Metodología y criterios de calificación",[["Metodología",p.metodologia],["Cualitativa",p.criteriosCalifCualitativa],["Cuantitativa",p.criteriosCalifCuantitativa]].map(([l,v])=>`${l} ${progRTETieneTexto(v)?"✓":"—"}`).join(" · "))}
     ${progPlegado("metodologia")?"":`<div style="margin-top:8px">
-    <p class="sub" style="margin:0 0 8px">Contenido general de la programación, común a todas las Situaciones de Aprendizaje.</p>
+    <p class="sub" style="margin:0 0 8px">Contingut general de la programació, comú a totes les situacions d'aprenentatge.</p>
     <div style="font-size:12.5px;color:var(--mut);font-weight:500">Metodología
-      <div style="margin-top:4px">${progRTEEditorHTML("metodologia",p.metodologia,"Enfoque metodológico, principios pedagógicos, agrupamientos, papel del alumnado y del profesorado…")}</div>
+      <div style="margin-top:4px">${progRTEEditorHTML("metodologia",p.metodologia,"Enfocament metodològic, principis pedagògics, agrupaments, paper de l'alumnat i del professorat…")}</div>
     </div>
     <div class="section-eyebrow" style="margin-top:14px">Criterios de calificación</div>
-    <div style="font-size:12.5px;color:var(--mut);font-weight:500;margin-top:8px">Valoración cualitativa
-      <div style="margin-top:4px">${progRTEEditorHTML("criteriosCalifCualitativa",p.criteriosCalifCualitativa,"Cómo se valoran los aprendizajes de forma cualitativa (rúbricas, escalas de logro, observación directa…)")}</div>
+    <div style="font-size:12.5px;color:var(--mut);font-weight:500;margin-top:8px">Valoració qualitativa
+      <div style="margin-top:4px">${progRTEEditorHTML("criteriosCalifCualitativa",p.criteriosCalifCualitativa,"Com es valoren els aprenentatges de manera qualitativa (rúbriques, escales d'assoliment, observació directa…)")}</div>
     </div>
-    <div style="font-size:12.5px;color:var(--mut);font-weight:500;margin-top:10px">Valoración cuantitativa
-      <div style="margin-top:4px">${progRTEEditorHTML("criteriosCalifCuantitativa",p.criteriosCalifCuantitativa,"Cómo se traduce a una nota numérica (ponderaciones, pesos por instrumento o competencia específica…)")}</div>
+    <div style="font-size:12.5px;color:var(--mut);font-weight:500;margin-top:10px">Valoració quantitativa
+      <div style="margin-top:4px">${progRTEEditorHTML("criteriosCalifCuantitativa",p.criteriosCalifCuantitativa,"Com es traduïx a una nota numèrica (ponderacions, pesos per instrument o competència específica…)")}</div>
     </div>
     </div>`}
   </div>
@@ -106,7 +106,7 @@ function progDetalleHTML(root){
           <select class="in" style="min-width:140px" onchange="progSetSdaCampo('${s.id}','trimestre',this.value)">
             ${TRIMESTRES.map((tt,i)=>`<option value="${i}" ${s.trimestre===i?"selected":""}>${tt}</option>`).join("")}
           </select>
-          ${abierta?"":`<span class="sub" style="font-size:12px;white-space:nowrap">${esc(s.sesionesPrevistas||0)} sesiones${(s.saberesIds||[]).length?` · ${(s.saberesIds||[]).length} saberes`:""}${(s.recursos||[]).length?` · ${(s.recursos||[]).length} recursos`:""}</span>`}
+          ${abierta?"":`<span class="sub" style="font-size:12px;white-space:nowrap">${esc(s.sesionesPrevistas||0)} sessions${(s.saberesIds||[]).length?` · ${(s.saberesIds||[]).length} sabers`:""}${(s.recursos||[]).length?` · ${(s.recursos||[]).length} recursos`:""}</span>`}
           <button class="ghost danger" onclick="progEliminarSda('${s.id}')">Eliminar</button>
         </div>
         ${typeof materialTemaHTML==="function"? materialTemaHTML(p,s) : ""}
@@ -116,7 +116,7 @@ function progDetalleHTML(root){
             <input type="number" min="0" class="in miniw" style="width:100%;margin-top:4px" value="${esc(s.sesionesPrevistas)}" onchange="progSetSdaCampo('${s.id}','sesionesPrevistas',this.value)">
           </label>
         </div>
-        <button class="ghost" style="border:1px solid var(--line);margin-top:8px" onclick="progToggleSaberesAbierto('${s.id}')">${state.ui.progSaberesAbierto===s.id?"Ocultar":"Elegir"} saberes básicos — ${(s.saberesIds||[]).length} marcado${(s.saberesIds||[]).length===1?"":"s"}</button>
+        <button class="ghost" style="border:1px solid var(--line);margin-top:8px" onclick="progToggleSaberesAbierto('${s.id}')">${state.ui.progSaberesAbierto===s.id?"Amagar":"Triar"} sabers bàsics — ${(s.saberesIds||[]).length} marcat${(s.saberesIds||[]).length===1?"":"s"}</button>
         ${state.ui.progSaberesAbierto===s.id?`<div class="scroll" style="margin-top:8px;max-height:320px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;padding:10px">
           ${Object.keys(progSaberesDelCatalogo(p.catalogoKey)).length? idx.cat.ces.map(ce=>{
             const lista=progSaberesDelCatalogo(p.catalogoKey)[ce.id]||[];
@@ -132,7 +132,7 @@ function progDetalleHTML(root){
                 </label>`;
               }).join("")}
             </div>`;
-          }).join("") : '<p class="sub" style="margin:0">No hay saberes básicos oficiales cargados para este catálogo — usa el campo de abajo.</p>'}
+          }).join("") : '<p class="sub" style="margin:0">No hi ha sabers bàsics oficials carregats per a este catàleg: usa el camp de davall.</p>'}
         </div>`:""}
         <label style="font-size:12.5px;color:var(--mut);font-weight:500;display:block;margin-top:10px">Otros saberes / notas (opcional)
           <textarea class="in" style="width:100%;margin-top:4px;min-height:46px;resize:vertical" placeholder="Cualquier saber adicional no listado arriba…" onchange="progSetSdaCampo('${s.id}','saberesOtros',this.value)">${esc(s.saberesOtros||"")}</textarea>
@@ -336,8 +336,8 @@ window.progImprimir=(id)=>{
   const metodologiaCalifHTML = (hayMetodologia||hayCriteriosCalif) ? `
     ${hayMetodologia?`<h2>Metodología</h2><div style="font-size:13px">${progSanitizarHTML(p.metodologia)}</div>`:""}
     ${hayCriteriosCalif?`<h2>Criterios de calificación</h2>
-      ${textoPlano(p.criteriosCalifCualitativa)?`<h3>Valoración cualitativa</h3><div style="font-size:13px">${progSanitizarHTML(p.criteriosCalifCualitativa)}</div>`:""}
-      ${textoPlano(p.criteriosCalifCuantitativa)?`<h3>Valoración cuantitativa</h3><div style="font-size:13px">${progSanitizarHTML(p.criteriosCalifCuantitativa)}</div>`:""}
+      ${textoPlano(p.criteriosCalifCualitativa)?`<h3>Valoració qualitativa</h3><div style="font-size:13px">${progSanitizarHTML(p.criteriosCalifCualitativa)}</div>`:""}
+      ${textoPlano(p.criteriosCalifCuantitativa)?`<h3>Valoració quantitativa</h3><div style="font-size:13px">${progSanitizarHTML(p.criteriosCalifCuantitativa)}</div>`:""}
     `:""}
   ` : "";
   const indiceItems=["Leyenda de competencias específicas y criterios de evaluación"];
@@ -350,8 +350,8 @@ window.progImprimir=(id)=>{
   const portada=`
     <div style="min-height:85vh;display:flex;flex-direction:column;justify-content:center;page-break-after:always">
       <div style="background:linear-gradient(135deg,#152a44,#25456b);color:#fff;padding:26px 30px;border-radius:12px;text-align:center">
-        <div style="font-size:1.15rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em">${esc(state.centroNombre)||"Programación de Aula"}</div>
-        ${state.centroCodigo?`<div style="font-size:.8rem;color:rgba(255,255,255,.7);margin-top:2px">Cód. Centro: ${esc(state.centroCodigo)}</div>`:""}
+        <div style="font-size:1.15rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em">${esc(state.centroNombre)||"Programació d'aula"}</div>
+        ${state.centroCodigo?`<div style="font-size:.8rem;color:rgba(255,255,255,.7);margin-top:2px">Codi de centre: ${esc(state.centroCodigo)}</div>`:""}
         <div style="margin-top:22px;font-size:1.6rem;font-weight:700">${esc(p.nombre)}</div>
         <div style="font-size:1rem;color:rgba(255,255,255,.9);margin-top:8px">${esc(idx.cat.materia)} · ${esc(idx.cat.curso)}</div>
         <div style="font-size:.95rem;color:rgba(255,255,255,.85);margin-top:14px">Curso escolar: <strong>${esc(cursoEscolarEfectivo(p))}</strong></div>

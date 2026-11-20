@@ -37,7 +37,7 @@ function diagnosticarDatos(){
         Object.keys(m[alId]||{}).forEach(aId=>{ if(!actIds.has(aId)) restosAct++; });
       });
     });
-    if(restosAl||restosAct) add("arreglo",donde,`Hay datos sueltos de ${restosAl?restosAl+" alumno(s) ya borrado(s)":""}${restosAl&&restosAct?" y ":""}${restosAct?restosAct+" nota(s) de actividades ya borradas":""}. No se ven ni cuentan; ocupan espacio. (Lo que está en la papelera no se toca.)`,()=>{
+    if(restosAl||restosAct) add("arreglo",donde,`Hi ha dades soltes de ${restosAl?restosAl+" alumne(s) ja esborrat(s)":""}${restosAl&&restosAct?" i ":""}${restosAct?restosAct+" nota/es d'activitats ja esborrades":""}. No es veuen ni compten; ocupen espai. (El que hi ha en la paperera no es toca.)`,()=>{
       ["notas","notasCuant","rubricScores","examComentarios","marcas","entregasInforme","extras","extrasEval"].forEach(k=>{
         const m=g[k]||{};
         Object.keys(m).forEach(alId=>{
@@ -63,7 +63,7 @@ function diagnosticarDatos(){
     });
     // 5. Actividades sin criterios
     const sinCrit=g.actividades.filter(a=>!a.recupera && !a.rubrica && !(a.criterios||[]).length);
-    if(sinCrit.length) add("aviso",donde,`${sinCrit.length} actividad(es) sin ningún criterio: ${sinCrit.slice(0,4).map(a=>"«"+a.nombre+"»").join(", ")}. No cuentan para las competencias${sinCrit.some(a=>!a.esExamen)?" (ni para la nota, si no son exámenes)":""}.`);
+    if(sinCrit.length) add("aviso",donde,`${sinCrit.length} activitat(s) sense cap criteri: ${sinCrit.slice(0,4).map(a=>"«"+a.nombre+"»").join(", ")}. No compten per a les competències${sinCrit.some(a=>!a.esExamen)?" (ni per a la nota, si no són exàmens)":""}.`);
     // 6. Recuperaciones rotas
     const recRotas=g.actividades.filter(a=>a.recupera && (a.recupera.ids||[]).some(id=>!actIds.has(id)));
     if(recRotas.length) add("arreglo",donde,`${recRotas.length} recuperación(es) apuntan a exámenes que ya no existen. Se quitan esas referencias.`,()=>{ recRotas.forEach(r=>{ r.recupera.ids=(r.recupera.ids||[]).filter(id=>actIds.has(id)); }); });
@@ -120,12 +120,12 @@ function pintarDiagnostico(){
     <div class="flex" style="justify-content:space-between;align-items:center"><h2 style="font-size:17px">🩺 Revisión de tus datos</h2><button class="modal-close" onclick="cerrarDiagnostico()" aria-label="Cerrar">×</button></div>
     ${!r.length||(!arreglos.length&&!avisos.length)?`<p style="font-size:14.5px;color:#1e7a44;font-weight:600;margin:10px 0">✓ Todo en orden: no hay nada que arreglar.</p>`:`<p class="sub">${arreglos.length} cosa/es que es poden arreglar soles · ${avisos.length} avís/os perquè ho revises tu.</p>`}
     <div class="scroll" style="max-height:52vh">
-      ${arreglos.length?`<div class="section-eyebrow" style="margin-top:8px">Se pueden arreglar automáticamente</div>${arreglos.map(x=>fila(x,"🔧")).join("")}`:""}
+      ${arreglos.length?`<div class="section-eyebrow" style="margin-top:8px">Es poden arreglar automàticament</div>${arreglos.map(x=>fila(x,"🔧")).join("")}`:""}
       ${avisos.length?`<div class="section-eyebrow" style="margin-top:12px">Para revisar tú</div>${avisos.map(x=>fila(x,"⚠️")).join("")}`:""}
       ${infos.length?`<div class="section-eyebrow" style="margin-top:12px">Sugerencias</div>${infos.map(x=>fila(x,"💡")).join("")}`:""}
     </div>
     <div class="flex" style="justify-content:flex-end;gap:8px;margin-top:12px">
-      ${arreglos.length?`<button class="btn" onclick="aplicarArreglosDiagnostico()">🔧 Arreglar ${arreglos.length} automáticamente</button>`:""}
+      ${arreglos.length?`<button class="btn" onclick="aplicarArreglosDiagnostico()">🔧 Arreglar-ne ${arreglos.length} automàticament</button>`:""}
       <button class="ghost" style="border:1px solid var(--line)" onclick="cerrarDiagnostico()">Cerrar</button>
     </div>
   </div>`;
@@ -205,8 +205,8 @@ function coberturaAvisosInicioHTML(){
     <strong style="font-size:14px">🧭 Antes de cerrar la evaluación</strong>
     <div style="display:grid;gap:8px;margin-top:8px">
     ${av.map(({g,t,dias,cb})=>`<div class="flex" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-      <span style="font-size:13px"><strong>${esc(g.nombre)}</strong> · ${TRIMESTRES[t]} ${dias>=0?`termina en ${dias} día${dias===1?"":"s"}`:"ya ha terminado"}:
-        ${cb.unaSola.length?`${cb.unaSola.length} criterio${cb.unaSola.length===1?"":"s"} con una sola evidencia`:""}${cb.unaSola.length&&cb.sinNota.length?" · ":""}${cb.sinNota.length?`${cb.sinNota.length} alumno${cb.sinNota.length===1?"":"s"} sin nota en algún criterio trabajado`:""}.</span>
+      <span style="font-size:13px"><strong>${esc(g.nombre)}</strong> · ${TRIMESTRES[t]} ${dias>=0?`acaba d'ací a ${dias} dia${dias===1?"":"s"}`:"ja ha acabat"}:
+        ${cb.unaSola.length?`${cb.unaSola.length} criteri${cb.unaSola.length===1?"":"s"} amb una sola evidència`:""}${cb.unaSola.length&&cb.sinNota.length?" · ":""}${cb.sinNota.length?`${cb.sinNota.length} alumne${cb.sinNota.length===1?"":"s"} sense nota en algun criteri treballat`:""}.</span>
       <button class="ghost small" style="border:1px solid var(--line)" onclick="state.ui.trim=${t};hoyIr('${g.id}','cobertura')">Ver cobertura</button>
     </div>`).join("")}
     </div></div>`;
@@ -226,10 +226,10 @@ function renderCobertura(grupo){
   const _cb=coberturaTrim(grupo,state.ui.trim);
   let html = `<div class="card" style="border-left:4px solid ${(_cb.unaSola.length||_cb.sinNota.length)?"#b45309":"#1e7a44"}">
     <h2 style="font-size:15px">🧭 ${TRIMESTRES[state.ui.trim]}: ¿hay evidencias suficientes?</h2>
-    ${!_cb.trabajados?'<p class="sub" style="margin:0">Todavía no hay actividades con criterios en esta evaluación.</p>':`
-    <p class="sub" style="margin:4px 0 8px">${_cb.trabajados} criterio${_cb.trabajados===1?"":"s"} trabajado${_cb.trabajados===1?"":"s"} en esta evaluación.</p>
+    ${!_cb.trabajados?'<p class="sub" style="margin:0">Encara no hi ha activitats amb criteris en esta avaluació.</p>':`
+    <p class="sub" style="margin:4px 0 8px">${_cb.trabajados} criteri${_cb.trabajados===1?"":"s"} treballat${_cb.trabajados===1?"":"s"} en esta avaluació.</p>
     ${_cb.unaSola.length?`<div style="font-size:13px;margin-bottom:6px">⚠️ <strong>Amb una sola evidència</strong> (convé avaluar-los amb més d'un instrument): ${_cb.unaSola.map(cid=>`${critLinkHTML(grupo.catalogoKey,cid)} <span class="sub">(${esc(_cb.porCrit[cid][0].nombre)})</span>`).join(" · ")}</div>`:'<div style="font-size:13px;margin-bottom:6px;color:#1e7a44">✓ Tots els criteris treballats tenen almenys dues evidències.</div>'}
-    ${_cb.sinNota.length?`<details style="font-size:13px"><summary style="cursor:pointer">⚠️ <strong>${_cb.sinNota.length} alumno${_cb.sinNota.length===1?"":"s"}</strong> sin nota en algún criterio ya corregido</summary>
+    ${_cb.sinNota.length?`<details style="font-size:13px"><summary style="cursor:pointer">⚠️ <strong>${_cb.sinNota.length} alumne${_cb.sinNota.length===1?"":"s"}</strong> sense nota en algun criteri ja corregit</summary>
       <ul style="margin:6px 0 0 18px">${_cb.sinNota.map(x=>`<li>${esc(x.al.nombre)}: ${x.faltan.map(cid=>critLinkHTML(grupo.catalogoKey,cid)).join(", ")}</li>`).join("")}</ul></details>`:'<div style="font-size:13px;color:#1e7a44">✓ Nadie tiene huecos en los criterios ya corregidos.</div>'}`}
     ${!(grupo.fechasTrimestre&&grupo.fechasTrimestre[state.ui.trim]&&grupo.fechasTrimestre[state.ui.trim].fin)?'<p class="sub" style="margin:8px 0 0">Consejo: pon las fechas de cada evaluación en Ajustes y la app te avisará en Inicio tres semanas antes del cierre.</p>':""}
   </div>

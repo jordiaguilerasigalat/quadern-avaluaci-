@@ -43,8 +43,8 @@ function renderCalificar(grupo){
         <tr>
           <th>Alumno/a</th>
           <th title="NP: no presentado (cuenta 0) · Exento: no cuenta">Marca</th>
-          ${act.esExamen?`<th style="min-width:150px">Nota cuantitativa <button class="ghost small" title="Llenar vacíos" onclick="massFillCuantExamen('${act.id}')">⚡</button><button class="ghost small" title="Pegar una columna de notas (desde Excel, Sheets…)" onclick="calPegarColumna('${act.id}','cuant')">📋</button></th>`:""}
-          ${act.criterios.map(l=>`<th style="min-width:120px">${critLinkHTML(grupo.catalogoKey,l.critId)} <button class="ghost small" title="Llenar vacíos a todos en este criterio" onclick="massFill('${act.id}','${l.critId}')">⚡</button><button class="ghost small" title="Pegar una columna de valores (10, 7,5, 5, 0)" onclick="calPegarColumna('${act.id}','${l.critId}')">📋</button></th>`).join("")}
+          ${act.esExamen?`<th style="min-width:150px">Nota quantitativa <button class="ghost small" title="Omplir els buits" onclick="massFillCuantExamen('${act.id}')">⚡</button><button class="ghost small" title="Apegar una columna de notes (des d'Excel, Sheets…)" onclick="calPegarColumna('${act.id}','cuant')">📋</button></th>`:""}
+          ${act.criterios.map(l=>`<th style="min-width:120px">${critLinkHTML(grupo.catalogoKey,l.critId)} <button class="ghost small" title="Omplir els buits de tothom en este criteri" onclick="massFill('${act.id}','${l.critId}')">⚡</button><button class="ghost small" title="Apegar una columna de valors (10, 7,5, 5, 0)" onclick="calPegarColumna('${act.id}','${l.critId}')">📋</button></th>`).join("")}
         </tr>
       </thead>
       <tbody>
@@ -72,7 +72,7 @@ function renderCalificar(grupo){
     <div class="flex" style="justify-content:space-between; margin-bottom:12px">
       <div>
         <h2>Calificar actividad</h2>
-        <p class="sub" style="margin:0">Elige una actividad y asigna la valoración. Haz clic en ⚡ en modo tabla para calificar masivamente a los que no tengan nota. ${act.esExamen?"Els exàmens tenen una nota quantitativa pròpia (compta per a la nota numèrica) a més de la qualificació de cada criteri (compta per a les competències).":""}</p>
+        <p class="sub" style="margin:0">Tria una activitat i assigna la valoració. Fes clic en ⚡ en mode taula per a qualificar de colp els que no tinguen nota. ${act.esExamen?"Els exàmens tenen una nota quantitativa pròpia (compta per a la nota numèrica) a més de la qualificació de cada criteri (compta per a les competències).":""}</p>
       </div>
       <div class="flex" style="background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:4px">
          <button class="ghost ${!isTable?'on':''}" style="${!isTable?'background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.05);border-radius:4px':''}" onclick="setCalView('cards')">Tarjetas</button>
@@ -155,7 +155,7 @@ function calAplicarColumna(actId,col,lineas,desdeAlId){
   });
   const sobrantes=Math.max(0,lineas.length-(grupo.alumnos.length-i0));
   save(); render();
-  mostrarToast(`✓ ${n} nota${n===1?"":"s"} pegada${n===1?"":"s"}`);
+  mostrarToast(`✓ ${n} not${n===1?"a":"es"} apegad${n===1?"a":"es"}`);
   if(errores.length||sobrantes) mostrarAviso((errores.length?`No se han entendido ${errores.length} valor(es) (deben ser números de 0 a 10, NP o Exento):\n• ${errores.slice(0,12).join("\n• ")}`:"")+(sobrantes?`\n\nSobraban ${sobrantes} línea(s): hay más valores que alumnos.`:""));
 }
 window.calPegarColumna=(actId,col)=>{
@@ -263,7 +263,7 @@ window.setMarca=(alId,actId,tipo)=>{
 window.setCalView = view => { state.ui.calViewMode = view; save(); render(); };
 window.massFill = async (actId, critId) => {
    { const g=grupoActual(); const a=g&&g.actividades.find(x=>x.id===actId); if(a&&a.recupera){ mostrarAviso("Esta actividad es una recuperación: califica solo a quien se haya presentado (el relleno masivo aprobaría o cambiaría la nota de todo el grupo)."); return; } }
-   let input = await pedirTexto(`Nota para los sin calificar en ${critId} (10, 7.5, 5 o 0):`);
+   let input = await pedirTexto(`Nota per a qui no té qualificació en ${critId} (10, 7.5, 5 o 0):`);
    if(input === null || input.trim() === "") return;
    let val = Number(input.replace(',','.'));
    if(isNaN(val) || val < 0 || val > 10) { mostrarAviso("Valor numérico no válido."); return; }
@@ -284,7 +284,7 @@ window.massFill = async (actId, critId) => {
 window.massFillCuantExamen = async (actId) => {
    { const g=grupoActual(); const a=g&&g.actividades.find(x=>x.id===actId); if(a&&a.recupera){ mostrarAviso("Esta actividad es una recuperación: califica solo a quien se haya presentado (el relleno masivo cambiaría la nota de todo el grupo)."); return; } }
    const grupo = grupoActual(); const act = grupo.actividades.find(x=>x.id===actId); if(!act) return;
-   let input = await pedirTexto(`Nota cuantitativa (0-10) para alumnos sin nota en este examen:`);
+   let input = await pedirTexto(`Nota quantitativa (0-10) per a l'alumnat sense nota en este examen:`);
    if(input === null || input.trim() === "") return;
    let val = Number(input.replace(',','.'));
    if(isNaN(val) || val < 0 || val > 10) { mostrarAviso("Valor numérico no válido."); return; }

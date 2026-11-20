@@ -67,14 +67,14 @@ function renderRpListaHTML(root){
           <span class="pill" style="${pillTinte(info.color)};margin-bottom:6px">${info.label}</span>
           <div style="font-size:15px;font-weight:700">${esc(rpNombre(p))}</div>
           <div style="font-size:12.5px;color:var(--mut);margin-top:2px">${alV?esc(alV.g.nombre):"pendiente de asignar"}${p.cursoRepite?" · "+esc(p.cursoRepite):""}</div>
-          <div style="font-size:12.5px;color:var(--mut);margin-top:6px">${p.fechaInicio?"Desde "+fmt2(p.fechaInicio):""}</div>
+          <div style="font-size:12.5px;color:var(--mut);margin-top:6px">${p.fechaInicio?"Des del "+fmt2(p.fechaInicio):""}</div>
         </div>
-        <span class="badge">${objetivosTotal} objetivo${objetivosTotal===1?"":"s"}</span>
+        <span class="badge">${objetivosTotal} objectiu${objetivosTotal===1?"":"s"}</span>
       </div>
     </div>`;
   }).join("") : `<div class="card" style="text-align:center;padding:34px 18px">
     <div style="font-size:34px;margin-bottom:8px;opacity:.8">🔁</div>
-    <p class="sub" style="margin:0">${total===0?"Todavía no has creado ningún plan de repetición.":"Sin resultados con este filtro/búsqueda."}</p>
+    <p class="sub" style="margin:0">${total===0?"Encara no has creat cap pla de repetició.":"No hi ha resultats amb este filtre o cerca."}</p>
     ${total===0?'<button class="btn small" style="margin-top:12px" onclick="rpAbrirModalNueva()">+ Crear el primero</button>':""}
   </div>`;
 
@@ -202,7 +202,7 @@ function renderRpDetalleHTML(root){
   const alV=rpAlumno(p);
   const catalogoCursoKey=rpCatalogoParaCursoRepite(p);
   const referenciaCurricularHTML=catalogoCursoKey?`<div class="card">${referenciaCurricularTablaHTML(catalogoCursoKey,true)}
-    <p class="sub" style="margin-top:8px">Currículo cargado automáticamente a partir del curso y la materia que repite. Usa el botón «🔍 Elegir de las competencias cargadas» en cada evaluación para marcar cuáles no se han conseguido: se añaden solas a la tabla, sin tener que escribirlas a mano. No se imprime en el informe.</p>
+    <p class="sub" style="margin-top:8px">Currículo cargado automáticamente a partir del curso y la materia que repite. Usa el botón «🔍 Triar de les competències carregades» en cada evaluación para marcar cuáles no se han conseguido: se añaden solas a la tabla, sin tener que escribirlas a mano. No se imprime en el informe.</p>
   </div>`:"";
   const motivosHTML=`<div class="card">
     <h2 style="font-size:15px">Motivos de la no superación de la materia</h2>
@@ -236,7 +236,7 @@ function renderRpDetalleHTML(root){
     return `<div class="card">
       <h2 style="font-size:15px">${TRIMESTRES[idx]}</h2>
       <div class="section-eyebrow" style="margin-top:8px">Competencias específicas, criterios de evaluación y competencias clave no conseguidas</div>
-      ${catalogoCursoKey?`<button class="ghost" style="border:1px solid var(--line);margin-bottom:8px" onclick="rpAbrirModalElegirCE(${idx})">🔍 Elegir de las competencias cargadas</button>`
+      ${catalogoCursoKey?`<button class="ghost" style="border:1px solid var(--line);margin-bottom:8px" onclick="rpAbrirModalElegirCE(${idx})">🔍 Triar de les competències carregades</button>`
         :`<p class="sub" style="margin:0 0 8px">Selecciona arriba el curso y la materia que repite para poder elegirlas de una lista en vez de escribirlas a mano.</p>`}
       ${rfrpTablaCEHTML("rp",idx,trim.gruposCE)}
       <div class="section-eyebrow" style="margin-top:16px">Actividades de evaluación</div>
@@ -272,7 +272,7 @@ function renderRpDetalleHTML(root){
       </div>
     </div>
     ${!alV?`<div class="alert-box" style="align-items:flex-start;flex-direction:column;gap:8px;margin-top:14px">
-      <div>👤 <strong>${esc(p.alumnoNombre||"Sin asignar")}</strong> — pendiente de asignar a un grupo de este curso.</div>
+      <div>👤 <strong>${esc(p.alumnoNombre||"Sense assignar")}</strong> — pendent d'assignar a un grup d'este curs.</div>
       <div class="flex" style="width:100%">
         <select class="in" id="rpReasignGrupo" style="flex:1" onchange="rpRefrescarReasignAlumno()">
           <option value="">Elige un grupo…</option>
@@ -282,7 +282,7 @@ function renderRpDetalleHTML(root){
         <button class="btn small" onclick="rpConfirmarReasignacion('${p.id}')">Asignar</button>
       </div>
     </div>`:""}
-    ${p.planOrigenId?`<p class="sub" style="margin:10px 0 0">➜ Continuación de un plan de ${p.planOrigenTipo==="repeticion"?"repetición":"refuerzo"} del curso anterior.</p>`:""}
+    ${p.planOrigenId?`<p class="sub" style="margin:10px 0 0">➜ Continuació d'un pla de ${p.planOrigenTipo==="repeticion"?"repetició":"reforç"} del curs anterior.</p>`:""}
     <div class="grid" style="gap:12px;margin-top:14px">
       <div style="font-size:14px"><strong>${esc(rpNombre(p))}</strong>${alV?neseBadgeHTML(alV.al)+planBadgeHTML(alV.al)+repetidorBadgeHTML(alV.al)+` <span class="sub">· ${esc(alV.g.nombre)}</span>`:""}</div>
       <label style="font-size:12.5px;color:var(--mut);font-weight:500">Curso y materia que repite
@@ -292,8 +292,8 @@ function renderRpDetalleHTML(root){
         </select>
       </label>
       <div class="flex" style="align-items:center;gap:8px;flex-wrap:wrap">
-        ${catalogoCursoKey?`<span class="sub" style="margin:0">📘 ${esc(getCatalogo(catalogoCursoKey).materia)} · <strong>${esc(getCatalogo(catalogoCursoKey).curso)}</strong> — currículo cargado más abajo.</span>`
-        :`<span class="sub" style="margin:0">Elige el curso y la materia que repite para cargar sus competencias, criterios y saberes básicos.</span>`}
+        ${catalogoCursoKey?`<span class="sub" style="margin:0">📘 ${esc(getCatalogo(catalogoCursoKey).materia)} · <strong>${esc(getCatalogo(catalogoCursoKey).curso)}</strong> — currículum carregat més avall.</span>`
+        :`<span class="sub" style="margin:0">Tria el curs i la matèria que repetix per a carregar-ne les competències, els criteris i els sabers bàsics.</span>`}
       </div>
       <div class="flex">
         <label style="font-size:12.5px;color:var(--mut);font-weight:500;flex:1">Curso académico
@@ -307,8 +307,8 @@ function renderRpDetalleHTML(root){
   </div>
   ${referenciaCurricularHTML}
   ${motivosHTML}
-  ${medidasHTML("Medidas propuestas — Nivel II", RP_MEDIDAS_II, "medidasNivelII")}
-  ${medidasHTML("Medidas propuestas — Nivel III", RP_MEDIDAS_III, "medidasNivelIII")}
+  ${medidasHTML("Mesures proposades — Nivell II", RP_MEDIDAS_II, "medidasNivelII")}
+  ${medidasHTML("Mesures proposades — Nivell III", RP_MEDIDAS_III, "medidasNivelIII")}
   ${trimestreHTML(0)}
   ${trimestreHTML(1)}
   ${trimestreHTML(2)}
@@ -323,7 +323,7 @@ function renderRpDetalleHTML(root){
     <h2 style="font-size:15px">Observaciones finales</h2>
     <p class="sub" style="margin:0 0 8px">Valoración de cierre: si finalmente supera o no la materia este curso.</p>
     <textarea class="in" style="width:100%;min-height:70px;resize:vertical" id="rpDObservaciones" placeholder="Valoración de cierre del plan…">${esc(p.observacionesFinales||"")}</textarea>
-    ${(reunionesRelacionadas.length||refuerzoRelacionados.length)?`<h2 style="font-size:15px;margin-top:22px">Relacionado con este alumno/a</h2>
+    ${(reunionesRelacionadas.length||refuerzoRelacionados.length)?`<h2 style="font-size:15px;margin-top:22px">Relacionat amb este alumne/a</h2>
       <div class="grid" style="gap:6px">
         ${refuerzoRelacionados.map(r=>`<div class="ag-evento" onclick="rfAbrirDesdeOtroModo('${r.id}')">
           <div class="ag-evento-info"><div class="ag-evento-titulo">📈 ${esc(r.titulo)}</div><div class="ag-evento-grupo">Plan de refuerzo · ${rfEstadoInfo(r.estado).label}</div></div>
@@ -386,7 +386,7 @@ function rpModalElegirCEHTML(){
         <button type="button" class="ghost small" style="border:1px solid var(--line);flex-shrink:0" onclick="rpToggleTodosCE('${escJS(ce.id)}')">Marcar/desmarcar</button>
       </div>
       <div class="sub" style="margin:2px 0 6px">Competencias clave: ${(ce.cc||[]).join(", ")||"—"}</div>
-      ${sab.length?`<details style="margin:0 0 8px"><summary class="sub" style="cursor:pointer">Saberes básicos (${sab.length})</summary><ul style="margin:4px 0 0 18px;font-size:12px">${sab.map(s=>`<li>${esc(s)}</li>`).join("")}</ul></details>`:""}
+      ${sab.length?`<details style="margin:0 0 8px"><summary class="sub" style="cursor:pointer">Sabers bàsics (${sab.length})</summary><ul style="margin:4px 0 0 18px;font-size:12px">${sab.map(s=>`<li>${esc(s)}</li>`).join("")}</ul></details>`:""}
       ${filasCrit}
     </div>`;
   }).join("");
@@ -506,7 +506,7 @@ window.rpImprimirInforme=id=>{
   const vfinal=rfrpValoracionPNInfo(p.valoracionFinal);
   const body=`
     <h1>Plan de repetición</h1>
-    <div class="meta">${esc(rpNombre(p))}${alV?" · "+esc(alV.g.nombre):""}${p.cursoRepite?" · "+esc(p.cursoRepite):""} · Generado el ${new Date().toLocaleDateString("es-ES")}</div>
+    <div class="meta">${esc(rpNombre(p))}${alV?" · "+esc(alV.g.nombre):""}${p.cursoRepite?" · "+esc(p.cursoRepite):""} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     <table>
       <tr><th style="width:170px">Curso académico</th><td>${esc(p.cursoAcademico)||"—"}</td></tr>
       <tr><th>Fecha de inicio</th><td>${fmt2(p.fechaInicio)}</td></tr>
@@ -565,7 +565,7 @@ window.crearPlanSiguienteCurso=tipoDestino=>{
   const obsPrevias=(origen.observacionesFinales||"").trim();
   const motivos=rfrpMotivosDefault();
   motivos.otros=true;
-  motivos.otrosTexto=`Continuación del Plan de ${tipo==="refuerzo"?"Refuerzo":"Repetición"} del curso anterior.`+(obsPrevias?" Observaciones del curso anterior: "+obsPrevias:"");
+  motivos.otrosTexto=`Continuació del pla de ${tipo==="refuerzo"?"reforç":"repetició"} del curs anterior.`+(obsPrevias?" Observacions del curs anterior: "+obsPrevias:"");
   if(tipoDestino==="repeticion"){
     const p={ id:uid(), grupoId:"", alumnoId:"", alumnoNombre:nombre, cursoRepite:"", cursoAcademico:"",
       motivos, medidasNivelII:rpMedidasDefault(RP_MEDIDAS_II), medidasNivelIII:rpMedidasDefault(RP_MEDIDAS_III),

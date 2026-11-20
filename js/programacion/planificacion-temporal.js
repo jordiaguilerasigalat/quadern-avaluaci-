@@ -64,7 +64,7 @@ function planTempUnitatsDe(p){
     return {name:{es:nom,va:nom},sessions:Number.isFinite(n)&&n>0?n:8,fixed:false};
   });
 }
-/* La plantilla porta d'exemple les unitats de Geografia i Història: si una
+/* La plantilla original portava d'exemple les unitats de Geografia i Història: si una
    planificació encara les té, es torna a generar amb les de la programació. */
 function planTempEsExempleGeH(pt){
   return !!(pt && Array.isArray(pt.units) && pt.units.some(u=>/prehist|civilizaci[oó]n griega|civilització grega|relieve terrestre/i.test((u.name&&(u.name.es||u.name.va))||u.name||"")));
@@ -93,7 +93,7 @@ async function planTempMontar(p){
   const wrap=document.getElementById("planTempWrap");
   if(!wrap) return;
   wrap.innerHTML="";
-  if(!await planTempAsegurar()){ wrap.innerHTML=`<div class="card" style="padding:14px 16px;color:var(--mut)">${location.protocol==="file:"?"La Planificación temporal necesita abrir la app desde su dirección web (GitHub Pages): el navegador no la deja cargar si abres <code>index.html</code> con doble clic.":"No se ha podido cargar la herramienta de Planificación temporal. Comprueba la conexión y vuelve a abrir esta pestaña (una vez cargada, funciona sin conexión)."}</div>`; return; }
+  if(!await planTempAsegurar()){ wrap.innerHTML=`<div class="card" style="padding:14px 16px;color:var(--mut)">${location.protocol==="file:"?"La Planificació temporal necessita obrir l'app des de la seua adreça web (GitHub Pages): el navegador no la deixa carregar si obris <code>index.html</code> amb doble clic.":"No s'ha pogut carregar l'eina de Planificació temporal. Comprova la connexió i torna a obrir esta pestanya (una vegada carregada, funciona sense connexió)."}</div>`; return; }
   if(!document.getElementById("planTempWrap")) return;
   const ifr=document.createElement("iframe");
   ifr.name=p.id;
@@ -169,7 +169,7 @@ window.planTempAplicarAProgramacion=async (progId)=>{
   });
   save();
   if(!actualizadas && !creadas){ mostrarAviso("No se encontró ninguna Situación de Aprendizaje con nombre en la Planificación temporal."); return; }
-  mostrarToast(`✓ ${actualizadas} actualizada(s)${creadas?`, ${creadas} creada(s)`:""}`);
+  mostrarToast(`✓ ${actualizadas} actualitzada/es${creadas?`, ${creadas} creada/es`:""}`);
   render();
 };
 

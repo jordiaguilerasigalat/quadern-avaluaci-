@@ -25,7 +25,7 @@ const HOR_FILAS_DEF=[
 /* v2: las franjas son editables (state.horario.filas). Si no se han
    tocado, se usan las de siempre (HOR_FILAS_DEF). */
 function horFilas(){ const f=state&&state.horario&&state.horario.filas; return (Array.isArray(f)&&f.length)?f:HOR_FILAS_DEF; }
-const HOR_DIAS=[{id:"L",label:"Lunes"},{id:"M",label:"Martes"},{id:"X",label:"Miércoles"},{id:"J",label:"Jueves"},{id:"V",label:"Viernes"}];
+const HOR_DIAS=[{id:"L",label:"Dilluns"},{id:"M",label:"Dimarts"},{id:"X",label:"Dimecres"},{id:"J",label:"Dijous"},{id:"V",label:"Divendres"}];
 const HOR_TIPOS=[
   {id:"",label:"— Vacío —",color:"var(--muted-border)"},
   {id:"clase",label:"Clase",color:"#2563eb"},
@@ -36,7 +36,7 @@ const HOR_TIPOS=[
   {id:"reunion",label:"Reunión",color:"#be185d"},
   {id:"atencionFamilias",label:"Atención a Familias",color:"#15803d"},
   {id:"recreo",label:"Recreo",color:"#64748b"},
-  {id:"otro",label:"Otro",color:"#64748b"}
+  {id:"otro",label:"Altre",color:"#64748b"}
 ];
 function horTipoInfo(id){ return HOR_TIPOS.find(t=>t.id===id)||HOR_TIPOS[0]; }
 function horClave(fila,dia){ return fila+"-"+dia; }
@@ -140,7 +140,7 @@ window.horBorrarCelda=(fila,dia)=>{
 let horPortapapeles=null;
 function horResumenTextoPlano(c){
   const info=horTipoInfo(c.tipo);
-  if(c.tipo==="clase") return `${c.materia||"Clase"}${c.nivelGrupo?" · "+c.nivelGrupo:""}`;
+  if(c.tipo==="clase") return `${c.materia||"Classe"}${c.nivelGrupo?" · "+c.nivelGrupo:""}`;
   return info.label+(c.nota?" — "+c.nota:"");
 }
 window.horCopiarCelda=(fila,dia)=>{
@@ -236,7 +236,7 @@ window.horImprimir=()=>{
   const body=`
     <div style="background:linear-gradient(135deg,#152a44,#25456b);color:#fff;padding:16px 22px;border-radius:10px;margin-bottom:16px">
       <div style="font-size:1.15rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em">${esc(state.centroNombre)||"Horario semanal"}</div>
-      <div style="font-size:.85rem;color:rgba(255,255,255,.85);margin-top:4px">Curso escolar ${esc(cursoEscolarEfectivo(null))}${profesorNombreEfectivo(null)?" · "+esc(profesorNombreEfectivo(null)):""}</div>
+      <div style="font-size:.85rem;color:rgba(255,255,255,.85);margin-top:4px">Curs escolar ${esc(cursoEscolarEfectivo(null))}${profesorNombreEfectivo(null)?" · "+esc(profesorNombreEfectivo(null)):""}</div>
     </div>
     <table style="border-collapse:collapse;table-layout:fixed;font-size:14px">
       <thead><tr><th style="width:9%"></th>${HOR_DIAS.map(d=>`<th style="font-size:14px;padding:10px 8px">${d.label}</th>`).join("")}</tr></thead>
@@ -279,7 +279,7 @@ window.horQuitarFranja=async i=>{
   const f=state.horario.filas[i]; if(!f) return;
   const ocupadas=HOR_DIAS.filter(d=>{ const c=state.horario.celdas[i+"-"+d.id]; return c&&c.tipo&&c.tipo!=="recreo"; }).length;
   if(state.horario.filas.length<=1){ mostrarAviso("El horario necesita al menos una franja."); return; }
-  if(!await confirmar(`¿Quitar la franja ${f.inicio}–${f.fin}?${ocupadas?`\nTiene ${ocupadas} casilla(s) rellena(s), que se borrarán.`:""}`)) return;
+  if(!await confirmar(`Vols llevar la franja ${f.inicio}–${f.fin}?${ocupadas?`\nTé ${ocupadas} casella/es plena/es, que s'esborraran.`:""}`)) return;
   state.horario.filas.splice(i,1);
   _horRemapear(n=>n===i?null:(n>i?n-1:n));
   save(); render();
@@ -312,10 +312,10 @@ function horFranjasModalHTML(){
           <input class="in" type="time" value="${esc(f.inicio)}" style="width:110px" onchange="horSetFranja(${i},'inicio',this.value)">
           <span style="color:var(--mut)">–</span>
           <input class="in" type="time" value="${esc(f.fin)}" style="width:110px" onchange="horSetFranja(${i},'fin',this.value)">
-          <label style="font-size:13px;display:inline-flex;gap:5px;align-items:center;cursor:pointer"><input type="checkbox" ${f.recreo?"checked":""} onchange="horSetFranja(${i},'recreo',this.checked)"> Recreo</label>
+          <label style="font-size:13px;display:inline-flex;gap:5px;align-items:center;cursor:pointer"><input type="checkbox" ${f.recreo?"checked":""} onchange="horSetFranja(${i},'recreo',this.checked)"> Esplai</label>
           <span style="flex:1"></span>
-          <button class="ghost small" title="Añadir una franja justo después" onclick="horInsertarFranja(${i})">＋</button>
-          <button class="ghost small danger" title="Quitar esta franja" onclick="horQuitarFranja(${i})">🗑</button>
+          <button class="ghost small" title="Afegir una franja just després" onclick="horInsertarFranja(${i})">＋</button>
+          <button class="ghost small danger" title="Llevar esta franja" onclick="horQuitarFranja(${i})">🗑</button>
         </div>`).join("")}
       </div>
       <div class="flex" style="justify-content:space-between;margin-top:12px;flex-wrap:wrap;gap:8px">
@@ -371,7 +371,7 @@ function hoyTarjetaHTML(){
       </div>`
       : (h.celda.tipo==="clase"?`<button class="ghost small" style="border:1px dashed var(--line)" onclick="homeTabActual='horario';horAbrirModal(${h.fila},'${h.dia}')">🔗 Enlazar a un grupo</button>`:"");
     return `<div class="flex" style="gap:12px;align-items:center;padding:8px 10px;border-radius:10px;flex-wrap:wrap;${estado==="ahora"?"background:var(--surface-2);box-shadow:inset 3px 0 0 var(--accent)":""}${min>=fin?";opacity:.55":""}">
-      <div style="width:92px;flex-shrink:0;font-variant-numeric:tabular-nums;font-size:13px;font-weight:600">${esc(h.inicio)}–${esc(h.fin)}${estado==="ahora"?'<div style="font-size:11px;color:var(--accent-texto)">● ahora</div>':estado==="proxima"?'<div style="font-size:11px;color:var(--mut)">siguiente</div>':""}</div>
+      <div style="width:92px;flex-shrink:0;font-variant-numeric:tabular-nums;font-size:13px;font-weight:600">${esc(h.inicio)}–${esc(h.fin)}${estado==="ahora"?'<div style="font-size:11px;color:var(--accent-texto)">● ara</div>':estado==="proxima"?'<div style="font-size:11px;color:var(--mut)">següent</div>':""}</div>
       <div style="flex:1;min-width:160px"><span class="ag-dot" style="background:${info.color};display:inline-block;margin-right:6px"></span><strong style="font-size:13.5px">${detalle||info.label}</strong>${g&&typeof avuiClasseHTML==="function"?avuiClasseHTML(g):""}</div>
       ${acciones}
     </div>`;
@@ -382,11 +382,11 @@ function hoyTarjetaHTML(){
   }).join("");
   const fechaLarga=ahora.toLocaleDateString("ca-ES",{weekday:"long",day:"numeric",month:"long"});
   const finde=[0,6].includes(ahora.getDay());
-  const vacio=festivo?`🎉 Hoy es festivo${festivo.etiqueta?": "+esc(festivo.etiqueta):""}.`:finde?"Fin de semana: no hay clases.":hayHorario?"Hoy no tienes nada en tu horario.":"";
+  const vacio=festivo?`🎉 Hui és festiu${festivo.etiqueta?": "+esc(festivo.etiqueta):""}.`:finde?"Cap de setmana: no hi ha classes.":hayHorario?"Hui no tens res en l'horari.":"";
   return `<div class="card" style="border-left:4px solid var(--accent);padding:14px 18px">
     <div class="flex" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
       <strong style="font-size:14.5px;color:var(--accent-texto)">📌 Avui · ${esc(fechaLarga.charAt(0).toUpperCase()+fechaLarga.slice(1))}</strong>
-      ${hayHorario?"":`<button class="ghost small" style="border:1px solid var(--line)" onclick="homeTabActual='horario';homeSecciones.calendario=true;render()">🗓️ Rellena tu horario para ver aquí tus clases</button>`}
+      ${hayHorario?"":`<button class="ghost small" style="border:1px solid var(--line)" onclick="homeTabActual='horario';homeSecciones.calendario=true;render()">🗓️ Ompli el teu horari per a vore ací les teues classes</button>`}
     </div>
     ${chips?`<div class="flex" style="gap:8px;margin-top:10px;flex-wrap:wrap">${chips}</div>`:""}
     ${filas?`<div style="margin-top:8px;display:grid;gap:2px">${filas}</div>`:(vacio?`<p class="sub" style="margin:8px 0 0">${vacio}</p>`:"")}

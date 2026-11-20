@@ -111,12 +111,12 @@
 
   /* ---------- Avisos ---------- */
   const TEXTOS = {
-    'ya-abierta': ['🔒 ' + NOMBRE + ' ya está abierto en otra ventana',
-      'Para no perder cambios, solo una ventana puede trabajar a la vez. También cuenta la otra versión de la app (v2 o v3) si la usas en este navegador. En esta ventana no se guardará nada.'],
-    'cedida': ['🔒 Ahora se está usando otra ventana',
-      'Has pasado a trabajar en otra ventana. Esta ya ha guardado todo y ha dejado de guardar, para no sobrescribir lo que hagas allí.'],
-    'relevada': ['🔒 Ahora se está usando otra ventana',
-      'Mientras esta ventana estaba en segundo plano, la app se abrió en otra. Para no sobrescribir lo que se haya hecho allí, esta ventana ha dejado de guardar.']
+    'ya-abierta': ['🔒 ' + NOMBRE + ' ja està obert en una altra finestra',
+      'Per a no perdre canvis, només una finestra pot treballar alhora. També hi compta l\'altra versió de l\'app (v2 o v3) si la uses en este navegador. En esta finestra no es guardarà res.'],
+    'cedida': ['🔒 Ara s\'està usant una altra finestra',
+      'Has passat a treballar en una altra finestra. Esta ja ho ha guardat tot i ha deixat de guardar, per a no sobreescriure el que hi faces.'],
+    'relevada': ['🔒 Ara s\'està usant una altra finestra',
+      'Mentre esta finestra estava en segon pla, l\'app es va obrir en una altra. Per a no sobreescriure el que s\'hi haja fet, esta finestra ha deixat de guardar.']
   };
   function mostrarAviso(motivo) {
     if (!document.body) { document.addEventListener('DOMContentLoaded', () => mostrarAviso(motivo), { once: true }); return; }
@@ -136,8 +136,8 @@
     ov.innerHTML = '<div style="max-width:460px;width:100%;background:#fff;color:#0f172a;border-radius:14px;padding:22px 22px 18px;box-shadow:0 20px 50px rgba(0,0,0,.35)">' +
       '<h2 id="unaVentanaTitulo" style="font-size:18px;margin:0 0 10px;line-height:1.3"></h2>' +
       '<p id="unaVentanaTexto" style="margin:0 0 12px;color:#334155"></p>' +
-      '<p style="margin:0 0 16px;font-size:13.5px;color:#64748b">Si quieres trabajar aquí, pulsa «Usar esta ventana»: la otra guardará lo pendiente y se bloqueará, y esta se recargará con los datos más recientes.</p>' +
-      '<div style="display:flex;justify-content:flex-end"><button type="button" id="unaVentanaUsar" style="background:#2563eb;color:#fff;border:0;border-radius:9px;padding:10px 16px;font:inherit;font-weight:600;cursor:pointer">Usar esta ventana</button></div></div>';
+      '<p style="margin:0 0 16px;font-size:13.5px;color:#64748b">Si vols treballar ací, polsa «Usar esta finestra»: l\'altra guardarà el que tinga pendent i es bloquejarà, i esta es recarregarà amb les dades més recents.</p>' +
+      '<div style="display:flex;justify-content:flex-end"><button type="button" id="unaVentanaUsar" style="background:#2563eb;color:#fff;border:0;border-radius:9px;padding:10px 16px;font:inherit;font-weight:600;cursor:pointer">Usar esta finestra</button></div></div>';
     ov.querySelector('#unaVentanaTitulo').textContent = titulo;
     ov.querySelector('#unaVentanaTexto').textContent = texto;
     const btn = ov.querySelector('#unaVentanaUsar');

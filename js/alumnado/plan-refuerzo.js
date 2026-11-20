@@ -138,16 +138,16 @@ function renderRfListaHTML(root){
       <div class="flex" style="justify-content:space-between;align-items:flex-start">
         <div style="min-width:0">
           <span class="pill" style="${pillTinte(info.color)};margin-bottom:6px">${info.label}</span>
-          <div style="font-size:15px;font-weight:700">${esc(p.titulo||"Sin título")}</div>
+          <div style="font-size:15px;font-weight:700">${esc(p.titulo||"Sense títol")}</div>
           <div style="font-size:12.5px;color:var(--mut);margin-top:2px">${esc(rfNombre(p))}${alV?neseBadgeHTML(alV.al)+" · "+esc(alV.g.nombre):" · pendiente de asignar"}</div>
-          <div style="font-size:12.5px;color:var(--mut);margin-top:6px">${p.fechaInicio?"Desde "+fmt2(p.fechaInicio):""}${ultimo?" · último seguimiento "+fmt2(ultimo.fecha):""}</div>
+          <div style="font-size:12.5px;color:var(--mut);margin-top:6px">${p.fechaInicio?"Des del "+fmt2(p.fechaInicio):""}${ultimo?" · últim seguiment "+fmt2(ultimo.fecha):""}</div>
         </div>
         <span class="badge">${(p.seguimiento||[]).length} entrada${(p.seguimiento||[]).length===1?"":"s"}</span>
       </div>
     </div>`;
   }).join("") : `<div class="card" style="text-align:center;padding:34px 18px">
     <div style="font-size:34px;margin-bottom:8px;opacity:.8">📈</div>
-    <p class="sub" style="margin:0">${total===0?"Todavía no has creado ningún plan de refuerzo.":"Sin resultados con este filtro/búsqueda."}</p>
+    <p class="sub" style="margin:0">${total===0?"Encara no has creat cap pla de reforç.":"No hi ha resultats amb este filtre o cerca."}</p>
     ${total===0?'<button class="btn small" style="margin-top:12px" onclick="rfAbrirModalNueva()">+ Crear el primero</button>':""}
   </div>`;
 
@@ -269,14 +269,14 @@ function rfrpTablaCEHTML(tipo,trimIdx,gruposCE){
       });
     }
     filas+=`<tr class="rfrp-fila-acciones"><td colspan="4">
-      <button class="ghost small" onclick="rfrpAnadirCriterioEnGrupo('${tipo}',${trimIdx},${gi})">+ Añadir criterio a ${esc(g.ce)||"esta CE"}</button>
+      <button class="ghost small" onclick="rfrpAnadirCriterioEnGrupo('${tipo}',${trimIdx},${gi})">+ Afegir criteri a ${esc(g.ce)||"esta CE"}</button>
       <button class="ghost danger small" onclick="rfrpQuitarGrupoCE('${tipo}',${trimIdx},${gi})">Quitar esta competencia específica</button>
     </td></tr>`;
   });
   return `<div style="overflow-x:auto"><table class="rfrp-tabla-ce">
     <colgroup><col style="width:70px"><col style="width:150px"><col><col style="width:90px"></colgroup>
     <thead><tr><th>CE</th><th>Comp. clave</th><th>Criterio de evaluación no conseguido</th><th>Trabajado</th></tr></thead>
-    <tbody>${filas||'<tr><td colspan="4" style="color:var(--mut);font-style:italic">Sin competencias específicas añadidas.</td></tr>'}</tbody>
+    <tbody>${filas||'<tr><td colspan="4" style="color:var(--mut);font-style:italic">No s\'hi han afegit competències específiques.</td></tr>'}</tbody>
   </table></div>
   <button class="ghost" style="border:1px solid var(--line);margin-top:8px" onclick="rfrpAnadirGrupoCE('${tipo}',${trimIdx})">+ Añadir competencia específica</button>`;
 }
@@ -290,7 +290,7 @@ function renderRfDetalleHTML(root){
   const alV=rfAlumno(p);
   const catalogoCursoKey=rfCatalogoParaCursoRefuerza(p);
   const referenciaCurricularHTML=catalogoCursoKey?`<div class="card">${referenciaCurricularTablaHTML(catalogoCursoKey,true)}
-    <p class="sub" style="margin-top:8px">Currículo cargado automáticamente a partir del curso y la materia a reforzar. Usa el botón «🔍 Elegir de las competencias cargadas» en cada evaluación para marcar cuáles no se han conseguido: se añaden solas a la tabla, sin tener que escribirlas a mano. No se imprime en el informe.</p>
+    <p class="sub" style="margin-top:8px">Currículo cargado automáticamente a partir del curso y la materia a reforzar. Usa el botón «🔍 Triar de les competències carregades» en cada evaluación para marcar cuáles no se han conseguido: se añaden solas a la tabla, sin tener que escribirlas a mano. No se imprime en el informe.</p>
   </div>`:"";
   const motivosHTML=`<div class="card">
     <h2 style="font-size:15px">Motivos de la no superación de la materia</h2>
@@ -313,8 +313,8 @@ function renderRfDetalleHTML(root){
     const vinfo=rfrpValoracionPNInfo(trim.valoracion);
     return `<div class="card">
       <h2 style="font-size:15px">${TRIMESTRES[idx]}</h2>
-      <div class="section-eyebrow" style="margin-top:8px">Competencias específicas, criterios de evaluación y competencias clave no conseguidas</div>
-      ${catalogoCursoKey?`<button class="ghost" style="border:1px solid var(--line);margin-bottom:8px" onclick="rfAbrirModalElegirCE(${idx})">🔍 Elegir de las competencias cargadas</button>`
+      <div class="section-eyebrow" style="margin-top:8px">Competències específiques, criteris d'avaluació i competències clau no assolides</div>
+      ${catalogoCursoKey?`<button class="ghost" style="border:1px solid var(--line);margin-bottom:8px" onclick="rfAbrirModalElegirCE(${idx})">🔍 Triar de les competències carregades</button>`
         :`<p class="sub" style="margin:0 0 8px">Selecciona arriba el curso y la materia a reforzar para poder elegirlas de una lista en vez de escribirlas a mano.</p>`}
       ${rfrpTablaCEHTML("rf",idx,trim.gruposCE)}
       <div class="section-eyebrow" style="margin-top:16px">Actividades de evaluación</div>
@@ -360,7 +360,7 @@ function renderRfDetalleHTML(root){
       </div>
     </div>
     ${!alV?`<div class="alert-box" style="align-items:flex-start;flex-direction:column;gap:8px;margin-top:14px">
-      <div>👤 <strong>${esc(p.alumnoNombre||"Sin asignar")}</strong> — pendiente de asignar a un grupo de este curso.</div>
+      <div>👤 <strong>${esc(p.alumnoNombre||"Sense assignar")}</strong> — pendent d'assignar a un grup d'este curs.</div>
       <div class="flex" style="width:100%">
         <select class="in" id="rfReasignGrupo" style="flex:1" onchange="rfRefrescarReasignAlumno()">
           <option value="">Elige un grupo…</option>
@@ -370,7 +370,7 @@ function renderRfDetalleHTML(root){
         <button class="btn small" onclick="rfConfirmarReasignacion('${p.id}')">Asignar</button>
       </div>
     </div>`:""}
-    ${p.planOrigenId?`<p class="sub" style="margin:10px 0 0">➜ Continuación de un plan de ${p.planOrigenTipo==="repeticion"?"repetición":"refuerzo"} del curso anterior.</p>`:""}
+    ${p.planOrigenId?`<p class="sub" style="margin:10px 0 0">➜ Continuació d'un pla de ${p.planOrigenTipo==="repeticion"?"repetició":"reforç"} del curs anterior.</p>`:""}
     <div class="grid" style="gap:12px;margin-top:14px">
       <div style="font-size:14px"><strong>${esc(rfNombre(p))}</strong>${alV?neseBadgeHTML(alV.al)+planBadgeHTML(alV.al)+repetidorBadgeHTML(alV.al)+` <span class="sub">· ${esc(alV.g.nombre)}</span>`:""}</div>
       <label style="font-size:12.5px;color:var(--mut);font-weight:500">Título del plan
@@ -383,8 +383,8 @@ function renderRfDetalleHTML(root){
         </select>
       </label>
       <div class="flex" style="align-items:center;gap:8px;flex-wrap:wrap">
-        ${catalogoCursoKey?`<span class="sub" style="margin:0">📘 ${esc(getCatalogo(catalogoCursoKey).materia)} · <strong>${esc(getCatalogo(catalogoCursoKey).curso)}</strong> — currículo cargado más abajo.</span>`
-        :`<span class="sub" style="margin:0">Elige el curso y la materia a reforzar para cargar sus competencias, criterios y saberes básicos.</span>`}
+        ${catalogoCursoKey?`<span class="sub" style="margin:0">📘 ${esc(getCatalogo(catalogoCursoKey).materia)} · <strong>${esc(getCatalogo(catalogoCursoKey).curso)}</strong> — currículum carregat més avall.</span>`
+        :`<span class="sub" style="margin:0">Tria el curs i la matèria que cal reforçar per a carregar-ne les competències, els criteris i els sabers bàsics.</span>`}
       </div>
       <div class="flex">
         <label style="font-size:12.5px;color:var(--mut);font-weight:500;flex:1">Curso académico
@@ -427,7 +427,7 @@ function renderRfDetalleHTML(root){
     <h2 style="font-size:15px;margin-top:22px">Observaciones finales</h2>
     <textarea class="in" style="width:100%;min-height:70px;resize:vertical" id="rfDObservaciones" placeholder="Valoración de cierre del plan (cuando proceda)…">${esc(p.observacionesFinales||"")}</textarea>
 
-    ${reunionesRelacionadas.length?`<h2 style="font-size:15px;margin-top:22px">Reuniones relacionadas con este alumno</h2>
+    ${reunionesRelacionadas.length?`<h2 style="font-size:15px;margin-top:22px">Reunions relacionades amb este alumne/a</h2>
       <div class="grid" style="gap:6px">
         ${reunionesRelacionadas.map(r=>`<div class="ag-evento" onclick="reAbrirDesdeOtroModo('${r.id}')">
           <div class="ag-evento-info"><div class="ag-evento-titulo">${esc(r.titulo)}</div><div class="ag-evento-grupo">${reTipoInfo(r.tipo).label}${r.fecha?" · "+fmt2(r.fecha):""}</div></div>
@@ -490,7 +490,7 @@ function rfModalElegirCEHTML(){
         <button type="button" class="ghost small" style="border:1px solid var(--line);flex-shrink:0" onclick="rfToggleTodosCE('${escJS(ce.id)}')">Marcar/desmarcar</button>
       </div>
       <div class="sub" style="margin:2px 0 6px">Competencias clave: ${(ce.cc||[]).join(", ")||"—"}</div>
-      ${sab.length?`<details style="margin:0 0 8px"><summary class="sub" style="cursor:pointer">Saberes básicos (${sab.length})</summary><ul style="margin:4px 0 0 18px;font-size:12px">${sab.map(s=>`<li>${esc(s)}</li>`).join("")}</ul></details>`:""}
+      ${sab.length?`<details style="margin:0 0 8px"><summary class="sub" style="cursor:pointer">Sabers bàsics (${sab.length})</summary><ul style="margin:4px 0 0 18px;font-size:12px">${sab.map(s=>`<li>${esc(s)}</li>`).join("")}</ul></details>`:""}
       ${filasCrit}
     </div>`;
   }).join("");
@@ -632,7 +632,7 @@ window.rfEliminarPlan=async id=>{
 };
 function rfrpMotivosResumenHTML(motivos){
   if(!motivos) return "—";
-  const activos=RFRP_MOTIVOS.filter(m=>motivos[m.id]).map(m=>m.id==="otros"&&motivos.otrosTexto?`Otros: ${esc(motivos.otrosTexto)}`:esc(m.label));
+  const activos=RFRP_MOTIVOS.filter(m=>motivos[m.id]).map(m=>m.id==="otros"&&motivos.otrosTexto?`Altres: ${esc(motivos.otrosTexto)}`:esc(m.label));
   return activos.length?activos.join(", "):"—";
 }
 function rfrpTablaCEPrintHTML(gruposCE){
@@ -662,7 +662,7 @@ function rfrpTrimBodyHTML(idx,trim){
     <p style="font-size:13px;font-weight:600;margin:6px 0 2px">Competencias específicas, criterios de evaluación y competencias clave no conseguidas</p>
     ${rfrpTablaCEPrintHTML(trim.gruposCE)}
     <p style="font-size:13px;font-weight:600;margin:10px 0 2px">Actividades de evaluación</p>
-    ${actividadesLis?`<ol style="margin-left:18px">${actividadesLis}</ol>`:'<p style="color:#999;font-style:italic">Sin actividades registradas.</p>'}
+    ${actividadesLis?`<ol style="margin-left:18px">${actividadesLis}</ol>`:'<p style="color:#999;font-style:italic">No s\'han registrat activitats.</p>'}
     <table style="margin-top:6px">
       <tr><th style="width:170px">Calificación obtenida</th><td>${esc(trim.calificacion)||"—"}</td></tr>
       <tr><th>Valoración</th><td><span class="pill" style="${pillTinte(vinfo.color)}">${vinfo.label}</span></td></tr>
@@ -677,7 +677,7 @@ window.rfImprimirInforme=id=>{
   const vfinal=rfrpValoracionPNInfo(p.valoracionFinal);
   const body=`
     <h1>Plan de refuerzo</h1>
-    <div class="meta">${esc(rfNombre(p))}${alV?" · "+esc(alV.g.nombre):""} · Física i Química · Generat el ${new Date().toLocaleDateString("es-ES")}</div>
+    <div class="meta">${esc(rfNombre(p))}${alV?" · "+esc(alV.g.nombre):""} · Física i Química · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     <table>
       <tr><th style="width:170px">Título</th><td>${esc(p.titulo||"—")}</td></tr>
       <tr><th>Curso académico</th><td>${esc(p.cursoAcademico)||"—"}</td></tr>
@@ -691,7 +691,7 @@ window.rfImprimirInforme=id=>{
     <h2>Valoración final del plan</h2>
     <p><span class="pill" style="${pillTinte(vfinal.color)}">${vfinal.label}</span></p>
     <h2>Diario de seguimiento</h2>
-    ${seguimientoFilas?`<table><thead><tr><th>Fecha</th><th>Valoración</th><th>Anotación</th></tr></thead><tbody>${seguimientoFilas}</tbody></table>`:'<p style="color:#999;font-style:italic">Sin entradas de seguimiento.</p>'}
+    ${seguimientoFilas?`<table><thead><tr><th>Data</th><th>Valoració</th><th>Anotació</th></tr></thead><tbody>${seguimientoFilas}</tbody></table>`:'<p style="color:#999;font-style:italic">No hi ha entrades de seguiment.</p>'}
     ${p.observacionesFinales?`<h2>Observaciones finales</h2><p style="white-space:pre-wrap;line-height:1.6">${esc(p.observacionesFinales)}</p>`:""}
     ${rfrpCeLegendPrintHTML()}
   `;

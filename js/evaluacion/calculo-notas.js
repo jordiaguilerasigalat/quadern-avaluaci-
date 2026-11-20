@@ -31,7 +31,7 @@ window.verCriterio=(catalogoKey,critId)=>{
   wrap.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this) cerrarModalCriterio()">
     <div class="modal-box">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px">
-        <div style="font-size:16px;font-weight:600">Criterio ${esc(critId)}</div>
+        <div style="font-size:16px;font-weight:600">Criteri ${esc(critId)}</div>
         <button class="modal-close" onclick="cerrarModalCriterio()" aria-label="Cerrar">×</button>
       </div>
       <div style="font-size:14.5px;line-height:1.6">${esc(l.texto)}</div>
@@ -83,7 +83,7 @@ function actsTrim(grupo){ const c=_estructura(grupo), t=state.ui.trim; return c.
    Para las competencias, se aplica igual criterio a criterio, en los
    criterios que comparten original y recuperación.
    ================================================================= */
-const REC_MODOS=[{id:"mayor",label:"Se queda con la nota más alta"},{id:"sustituye",label:"Sustituye a la nota original"},{id:"media",label:"Media entre original y recuperación"}];
+const REC_MODOS=[{id:"mayor",label:"Es queda amb la nota més alta"},{id:"sustituye",label:"Substituïx la nota original"},{id:"media",label:"Mitjana entre l'original i la recuperació"}];
 function recuperacionesDe(grupo,actId){
   return _estructura(grupo).rec[actId]||[];
 }
@@ -403,7 +403,7 @@ function actividadesDeCC(grupo,alId,cc){
 function abrevActs(names,max=3){
   if(!names.length) return "Sin actividades con nota en este periodo";
   const shown=names.slice(0,max).join(" · ");
-  return names.length>max? `${shown} · +${names.length-max} más` : shown;
+  return names.length>max? `${shown} · +${names.length-max} més` : shown;
 }
 
 /* =================================================================

@@ -23,8 +23,8 @@ function _renderActividadesLlista(grupo){
   const c=document.getElementById("tabContent");
   const formularioLibreHTML=`
   <div class="card">
-    <h2>${editando?"Editar actividad":"Nueva actividad de evaluación"}</h2>
-    <p class="sub">${editando?"Modifica los datos y guarda los cambios.":`Se crea en ${TRIMESTRES[state.ui.trim]}.`} Marca uno o varios criterios; cada uno con su peso dentro de la actividad. El bloque decide en qué cuenta para la nota cuantitativa.</p>
+    <h2>${editando?"Editar l'activitat":"Nova activitat d'avaluació"}</h2>
+    <p class="sub">${editando?"Modifica les dades i guarda els canvis.":`Es crea en la ${TRIMESTRES[state.ui.trim]}.`} Marca un o diversos criteris, cadascun amb el seu pes dins de l'activitat. El bloc decidix en què compta per a la nota quantitativa.</p>
     <div class="grid" style="margin-bottom:14px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
       <input class="in" id="fN" placeholder="Nombre de la actividad" value="${esc(f.nombre)}">
       <label style="display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--mut)">📅 Data (opcional; apareix al calendari)<input class="in" type="date" id="fData" value="${esc(f.fecha||"")}" onchange="state.ui.form.fecha=this.value;save()"></label>
@@ -39,7 +39,7 @@ function _renderActividadesLlista(grupo){
         </label>
       </div>
       <label style="display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--mut);max-width:420px">
-        Peso dentro de "${bloqueSel?esc(bloqueSel.label):""}"
+        Pes dins de «${bloqueSel?esc(bloqueSel.label):""}»
         <input class="in" style="width:80px" type="number" min="0" id="fPB" placeholder="${previewPct}" value="${f.pesoBloque??""}">%
       </label>
       <p class="sub" style="margin:0">Déjalo en blanco para repartir el bloque a partes iguales entre sus actividades (ahora mismo: ${previewPct} %). Ponlo solo si, por ejemplo, un examen debe pesar más que otro dentro del mismo bloque.</p>
@@ -62,7 +62,7 @@ function _renderActividadesLlista(grupo){
       `).join("")}
     </div>
     <div class="flex" style="margin-top:12px">
-      <button class="btn" id="fSave" onclick="saveActividad()" ${(!f.nombre.trim()||!f.links.length)?"disabled":""}>${editando?"Guardar cambios":"Guardar actividad"}</button>
+      <button class="btn" id="fSave" onclick="saveActividad()" ${(!f.nombre.trim()||!f.links.length)?"disabled":""}>${editando?"Guardar els canvis":"Guardar l'activitat"}</button>
       ${editando?`<button class="ghost" onclick="cancelarEdicionActividad()">Cancelar</button>`:""}
     </div>
   </div>`;
@@ -74,7 +74,7 @@ function _renderActividadesLlista(grupo){
       <select class="in" id="actElegirSda" style="min-width:220px" onchange="actActualizarSelectorActividad()">
         <option value="">— Elige la Situación de Aprendizaje —</option>
         ${prog.sdas.map(s=>`<option value="${s.id}">${TRIMESTRES[s.trimestre]} · ${esc(sdaNom(s)||"(sin título)")}</option>`).join("")}
-        ${prog.actividades.some(a=>!(a.sdaIds||[]).length)?`<option value="__sinsda__">— Actividades sin SdA asignada —</option>`:""}
+        ${prog.actividades.some(a=>!(a.sdaIds||[]).length)?`<option value="__sinsda__">— Activitats sense SdA assignada —</option>`:""}
       </select>
       <select class="in" id="actElegirActividad" style="min-width:220px">
         <option value="">— Elige la actividad —</option>
@@ -86,33 +86,33 @@ function _renderActividadesLlista(grupo){
   c.innerHTML=(editando||!prog?formularioLibreHTML:selectorProgramacionHTML)+`
   <div class="card">
     <h2>Activitats de ${TRIMESTRES[state.ui.trim]}</h2>
-    ${actsTrim(grupo).length>1?`<p class="sub" style="margin:4px 0 0">Ordénalas a tu gusto: arrastra una actividad por ⠿ o usa ▲▼. El orden se usa también en Calificar, Resultados e informes.</p>`:""}
+    ${actsTrim(grupo).length>1?`<p class="sub" style="margin:4px 0 0">Ordena-les com vulgues: arrossega una activitat per ⠿ o usa ▲▼. L'ordre també s'usa en Qualificar, Resultats i informes.</p>`:""}
     ${actsTrim(grupo).length? `<div class="grid" style="margin-top:8px">${actsTrim(grupo).map((a,iAct,lista)=>{
       const b=grupo.bloques.find(x=>x.id===a.bloqueId);
       const pctEnBloque=pesoActividadEnBloque(grupo,a).toFixed(0);
-      const tipoDesc = a.rubrica ? "examen con rúbrica: nota cuantitativa + % por criterio (gestionado desde el Corrector)"
+      const tipoDesc = a.rubrica ? "examen amb rúbrica: nota quantitativa + % per criteri (gestionat des del Corrector)"
         : a.esExamen ? "examen: nota quantitativa + escala de 4 nivells per criteri" : "escala de 4 nivells";
       const nAct=lista.length;
       return `<div class="act-row" ${nAct>1?`ondragstart="actDragStart(event,'${a.id}')" ondragend="actDragEnd()" ondragover="actDragOver(event,this)" ondragleave="this.classList.remove('act-drop')" ondrop="actDrop(event,'${a.id}')"`:""} data-actid="${a.id}" style="border:1px solid var(--line);border-radius:8px;padding:10px 12px">
         <div style="display:flex;justify-content:space-between;gap:8px;align-items:start">
           ${nAct>1?`<div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0">
             <span draggable="true" style="cursor:grab;color:var(--mut);font-size:17px;user-select:none;line-height:1" title="Arrastra para reordenar">⠿</span>
-            <button class="ghost" style="padding:2px 8px;min-width:0" title="Subir un puesto" aria-label="Subir ${esc(a.nombre)}" ${iAct===0?"disabled":""} onclick="moverActividad('${a.id}',-1)">▲</button>
-            <button class="ghost" style="padding:2px 8px;min-width:0" title="Bajar un puesto" aria-label="Bajar ${esc(a.nombre)}" ${iAct===nAct-1?"disabled":""} onclick="moverActividad('${a.id}',1)">▼</button>
+            <button class="ghost" style="padding:2px 8px;min-width:0" title="Pujar una posició" aria-label="Pujar ${esc(a.nombre)}" ${iAct===0?"disabled":""} onclick="moverActividad('${a.id}',-1)">▲</button>
+            <button class="ghost" style="padding:2px 8px;min-width:0" title="Bajar un puesto" aria-label="Baixar ${esc(a.nombre)}" ${iAct===nAct-1?"disabled":""} onclick="moverActividad('${a.id}',1)">▼</button>
           </div>`:""}
           <div style="flex:1;min-width:0">
             <div style="font-size:14.5px;font-weight:500">${esc(a.nombre)} ${agDataBadgeHTML(a.id)}${temaBadgeHTML(grupo,a)||(a.sda ? `<span class="badge" style="vertical-align:middle;margin-left:6px">${esc(a.sda)}</span>` : '')}</div>
             ${prog&&!a.recupera?`<div style="font-size:12.5px;color:var(--mut);margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">Tema: ${temaSelectHTML(grupo,a.temaId||"",`style="padding:2px 6px;font-size:12.5px;max-width:260px" aria-label="Tema de ${esc(a.nombre)}" onchange="setTemaActivitat('${a.id}',this.value)"`)}</div>`:""}
             <div style="font-size:12.5px;color:var(--mut);margin-top:2px">${a.tipo} · ${b?esc(b.label):""} · ${tipoDesc}</div>
             ${a.recupera?`<div style="font-size:12.5px;margin-top:2px;color:var(--accent-texto,#7d5a12);font-weight:600">🔁 ${recResumenTexto(grupo,a)}</div>`:`<div style="font-size:12.5px;color:var(--mut);margin-top:2px">Pes dins del bloc: ${pctEnBloque} %${(a.pesoBloque==null||a.pesoBloque==="")?" (automàtic)":""}</div>`}
-            ${!a.recupera && recuperacionesDe(grupo,a.id).length?`<div style="font-size:12.5px;color:var(--mut);margin-top:2px">🔁 Tiene recuperación: ${recuperacionesDe(grupo,a.id).map(r=>esc(r.nombre)).join(", ")}</div>`:""}
+            ${!a.recupera && recuperacionesDe(grupo,a.id).length?`<div style="font-size:12.5px;color:var(--mut);margin-top:2px">🔁 Té recuperació: ${recuperacionesDe(grupo,a.id).map(r=>esc(r.nombre)).join(", ")}</div>`:""}
             ${cxAvisoCriteriosBadgeHTML(grupo,a)}
-            <div style="font-size:12.5px;color:var(--mut);margin-top:4px">Criterios: ${a.criterios.length?a.criterios.map(l=>`${critLinkHTML(grupo.catalogoKey,l.critId)} (${l.peso})`).join(" · "):"ninguno todavía"}</div>
+            <div style="font-size:12.5px;color:var(--mut);margin-top:4px">Criterios: ${a.criterios.length?a.criterios.map(l=>`${critLinkHTML(grupo.catalogoKey,l.critId)} (${l.peso})`).join(" · "):"cap encara"}</div>
           </div>
           <div class="flex">
             ${a.rubrica?`<button class="ghost" onclick="cxAbrirDesdeOtroModo('${a.id}')">Abrir en el Corrector</button>`:`<button class="ghost" onclick="editarActividad('${a.id}')">Editar</button>${a.esExamen?`<button class="ghost" title="Abre este examen en el Corrector con una rúbrica inicial (un ítem por criterio) para ajustarla y corregir con ella" onclick="cxAnadirRubrica('${a.id}')">🖊️ Añadir rúbrica</button>`:""}`}
             <button class="ghost" onclick="duplicarActividad('${a.id}')">Duplicar</button>
-            ${a.recupera?`<button class="ghost" onclick="recAbrirModal('${a.id}')">🔁 Recuperación…</button>`:(a.esExamen?`<button class="ghost" title="Crea un examen de recuperación vinculado a este" onclick="recCrear('${a.id}')">🔁 Crear recuperación</button>`:`<button class="ghost" title="Marcar esta actividad como recuperación de otra(s)" onclick="recAbrirModal('${a.id}')">🔁</button>`)}
+            ${a.recupera?`<button class="ghost" onclick="recAbrirModal('${a.id}')">🔁 Recuperació…</button>`:(a.esExamen?`<button class="ghost" title="Crea un examen de recuperación vinculado a este" onclick="recCrear('${a.id}')">🔁 Crear recuperación</button>`:`<button class="ghost" title="Marcar esta activitat com a recuperació d'una altra o d'altres" onclick="recAbrirModal('${a.id}')">🔁</button>`)}
             <button class="ghost" onclick="delActividad('${a.id}')">Eliminar</button>
           </div>
         </div>
@@ -121,8 +121,8 @@ function _renderActividadesLlista(grupo){
   </div>
   ${state.ui.recModalAct?recModalHTML(grupo):""}
   ${grupo.papelera.actividades.length? `<div class="card">
-    <h2 style="font-size:15px">Papelera de actividades</h2>
-    <p class="sub">Las últimas eliminadas de este grupo, con las notas que tuvieran. Se guardan las ${grupo.papelera.actividades.length<10?"últimas "+grupo.papelera.actividades.length:"últimas 10"}.</p>
+    <h2 style="font-size:15px">Paperera d'activitats</h2>
+    <p class="sub">Les últimes eliminades d'este grup, amb les notes que tingueren. Es guarden les ${grupo.papelera.actividades.length<10?"últimes "+grupo.papelera.actividades.length:"últimes 10"}.</p>
     <div class="grid">
       ${grupo.papelera.actividades.map((it,i)=>`
         <div class="row" style="justify-content:space-between">
@@ -171,7 +171,7 @@ window.actAnadirDesdeProgramacion=()=>{
   if(!(progAct.criterios||[]).length){ mostrarAviso("Esa actividad todavía no tiene criterios marcados en la Programación — márcalos allí antes de añadirla aquí."); return; }
   const act=progCrearActividadEnGrupo(grupo,progAct,state.ui.trim);
   save(); render();
-  mostrarToast(act.rubrica? "✓ Examen añadido con rúbrica — ábrelo en el Corrector para ajustarla" : "✓ Actividad añadida — "+progAct.nombre);
+  mostrarToast(act.rubrica? "✓ Examen afegit amb rúbrica: obri'l en el Corrector per a ajustar-la" : "✓ Activitat afegida — "+progAct.nombre);
 };
 /* Orden manual de las actividades de un trimestre: se reordenan dentro de
    grupo.actividades ocupando los mismos huecos que ya tenían las de ese
@@ -224,7 +224,7 @@ window.actDrop=(ev,destinoId)=>{
   if(ok){ save(); render(); }
 };
 window.duplicarActividad=id=>{ const grupo=grupoActual(); const a=grupo.actividades.find(x=>x.id===id); if(!a) return;
-  const copia={...a,id:uid(),nombre:a.nombre+" (copia)",pesoBloque:a.pesoBloque??"",criterios:a.criterios.map(l=>({...l})),sda:a.sda||""};
+  const copia={...a,id:uid(),nombre:a.nombre+" (còpia)",pesoBloque:a.pesoBloque??"",criterios:a.criterios.map(l=>({...l})),sda:a.sda||""};
   if(a.rubrica) copia.rubrica=JSON.parse(JSON.stringify(a.rubrica));
   if(a.variantes) copia.variantes=JSON.parse(JSON.stringify(a.variantes));
   if(a.recupera) copia.recupera=JSON.parse(JSON.stringify(a.recupera));
@@ -233,21 +233,21 @@ window.duplicarActividad=id=>{ const grupo=grupoActual(); const a=grupo.activida
 /* ---- v2 · Recuperaciones: interfaz ---- */
 function recResumenTexto(grupo,r){
   const ids=(r.recupera&&r.recupera.ids)||[];
-  const nombres=ids.map(id=>{ const a=grupo.actividades.find(x=>x.id===id); return a?`${esc(a.nombre)} (${TRIMESTRES[a.trimestre].replace(" evaluación","")})`:null; }).filter(Boolean);
+  const nombres=ids.map(id=>{ const a=grupo.actividades.find(x=>x.id===id); return a?`${esc(a.nombre)} (${TRIMESTRES[a.trimestre].replace(" avaluació","")})`:null; }).filter(Boolean);
   const modo=(REC_MODOS.find(m=>m.id===r.recupera.modo)||REC_MODOS[0]).label.toLowerCase();
-  const tope=(r.recupera.tope!=null&&r.recupera.tope!=="")?` · nota máxima ${String(r.recupera.tope).replace(".",",")}`:"";
-  return `Recuperación de ${nombres.length?nombres.join(", "):"(ninguna actividad)"} · ${modo}${tope}. No cuenta por sí sola: solo cambia la nota de lo que recupera, y solo a quien tenga nota en ella.`;
+  const tope=(r.recupera.tope!=null&&r.recupera.tope!=="")?` · nota màxima ${String(r.recupera.tope).replace(".",",")}`:"";
+  return `Recuperació de ${nombres.length?nombres.join(", "):"(cap activitat)"} · ${modo}${tope}. No compta per si sola: només canvia la nota del que recupera, i només a qui hi tinga nota.`;
 }
 window.recCrear=id=>{
   const grupo=grupoActual(); const a=grupo.actividades.find(x=>x.id===id); if(!a) return;
-  const r={id:uid(),trimestre:state.ui.trim,nombre:"Recuperación — "+a.nombre,tipo:a.tipo,bloqueId:a.bloqueId,esExamen:true,pesoBloque:"",
+  const r={id:uid(),trimestre:state.ui.trim,nombre:"Recuperació — "+a.nombre,tipo:a.tipo,bloqueId:a.bloqueId,esExamen:true,pesoBloque:"",
     criterios:a.criterios.map(l=>({...l})),sda:a.sda||"",recupera:{ids:[a.id],modo:"mayor",tope:""}};
   if(a.rubrica){ r.rubrica=JSON.parse(JSON.stringify(a.rubrica)); r.escalarA10=a.escalarA10!==false; }
   if(a.variantes) r.variantes=JSON.parse(JSON.stringify(a.variantes));
   grupo.actividades.push(r);
   state.ui.recModalAct=r.id; state.ui.tab="actividades";
   save(); render();
-  mostrarToast("✓ Recuperación creada en "+TRIMESTRES[state.ui.trim]+". Revisa cómo cuenta.");
+  mostrarToast("✓ Recuperació creada en la "+TRIMESTRES[state.ui.trim]+". Revisa com compta.");
 };
 window.recAbrirModal=id=>{ state.ui.recModalAct=id; save(); render(); };
 window.recCerrarModal=()=>{ state.ui.recModalAct=""; save(); render(); };
@@ -263,7 +263,7 @@ function recModalHTML(grupo){
       <p class="sub">Marca qué actividades recupera. La recuperación <strong>no cuenta por sí sola</strong>: solo cambia la nota de esas actividades, y solo para el alumnado que tenga nota en ella. Las originales pueden ser de otro trimestre (p. ej. recuperar la 1ª evaluación en la 2ª).</p>
       <div class="scroll" style="max-height:34vh;border:1px solid var(--line);border-radius:8px;padding:6px 10px">
         ${porTrim.length?porTrim.map(x=>`<div style="font-size:12px;color:var(--mut);font-weight:600;margin:6px 0 2px">${TRIMESTRES[x.t]}</div>
-          ${x.acts.map(a=>`<label style="display:flex;gap:8px;align-items:center;font-size:13.5px;padding:3px 0;cursor:pointer"><input type="checkbox" ${cfg.ids.includes(a.id)?"checked":""} onchange="recToggleOriginal('${r.id}','${a.id}',this.checked)"> ${esc(a.nombre)}${a.esExamen?' <span class="badge">examen</span>':""}</label>`).join("")}`).join(""):'<p class="sub">No hay otras actividades en el grupo.</p>'}
+          ${x.acts.map(a=>`<label style="display:flex;gap:8px;align-items:center;font-size:13.5px;padding:3px 0;cursor:pointer"><input type="checkbox" ${cfg.ids.includes(a.id)?"checked":""} onchange="recToggleOriginal('${r.id}','${a.id}',this.checked)"> ${esc(a.nombre)}${a.esExamen?' <span class="badge">examen</span>':""}</label>`).join("")}`).join(""):'<p class="sub">No hi ha altres activitats en el grup.</p>'}
       </div>
       <div class="grid" style="margin-top:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">
         <label style="font-size:13px;color:var(--mut)">Cómo cuenta
