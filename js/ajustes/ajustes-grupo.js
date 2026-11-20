@@ -320,8 +320,8 @@ window.setPesoCE=(ceId,v)=>{ const g=grupoActual(); if(!g.pesosCE) g.pesosCE={};
 function sumaPesosCEHTML(grupo){
   const ces=catIndex(grupo.catalogoKey).cat.ces;
   const t=Math.round(ces.reduce((n,ce)=>n+pesoCEGrupo(grupo,ce.id),0)*100)/100;
-  if(Math.abs(t-100)<0.01) return `<span style="color:#15803d">✓ Sumen 100 %.</span>`;
-  return `<span style="color:#b45309;font-weight:600">⚠️ Sumen ${String(t).replace(".",",")} %.</span> <span class="sub">La nota es calcula igualment en proporció, però el normal és que sumen 100.</span>`;
+  if(Math.abs(t-100)<0.01) return `<span class="txtOk">✓ Sumen 100 %.</span>`;
+  return `<span class="txtAvis" style="font-weight:600">⚠️ Sumen ${String(t).replace(".",",")} %.</span> <span class="sub">La nota es calcula igualment en proporció, però el normal és que sumen 100.</span>`;
 }
 window.setPesoTrim=(t,v)=>{ const g=grupoActual(); if(!g.pesosTrim) g.pesosTrim={}; g.pesosTrim[t]=v; save(); };
 window.setFechaTrimestre=(t,campo,v)=>{ const g=grupoActual(); if(!g.fechasTrimestre) g.fechasTrimestre=[{inicio:"",fin:""},{inicio:"",fin:""},{inicio:"",fin:""}]; g.fechasTrimestre[t][campo]=v; save(); };

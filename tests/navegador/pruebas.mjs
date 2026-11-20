@@ -1525,4 +1525,76 @@ export const PRUEBAS = [
     t.ok(r.amagades === 0, '«Amagar les fotos» les amaga en este dispositiu');
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'autoavaluacio', descripcion: 'Autoavaluació i coavaluació amb rúbrica: passar el dispositiu, enllaç per al mòbil amb codi, copiar a la correcció', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const ids = await cuadernoConGrupo(p, t.url);
+    await p.evaluate(() => {
+      const g = state.grupos[0]; state.ui.appMode = 'competencial'; state.ui.tab = 'actividades'; state.ui.trim = 0; save(); render();
+      document.getElementById('segNom_laboratori').value = 'Pràctica 1: densitat'; segCrear('laboratori');
+      state.ui.aaObert = true; save(); render();
+    });
+    await p.waitForSelector('.aaCard');
+    // Passar el dispositiu: autoavaluació d'Ana
+    await p.click('.aaCard button:has-text("Passar el dispositiu: autoavaluació")');
+    await p.waitForSelector('#aaKiosc .aaNom');
+    const senseNotes = await p.evaluate(() => !/\d,\d/.test(document.getElementById('aaKiosc').textContent));
+    await p.click('#aaKiosc .aaNom >> nth=0');
+    const nFiles = await p.locator('#aaKiosc .aaFila').count();
+    const enviarDesactivat = await p.locator('#aaKiosc button:has-text("Envia")').isDisabled();
+    for (let i = 0; i < nFiles; i++) await p.click(`#aaKiosc .aaFila >> nth=${i} >> .aaOp >> nth=${i % 2}`);
+    await p.click('#aaKiosc button:has-text("Envia")');
+    await p.waitForSelector('#aaKiosc :text("Gràcies")');
+    await p.click('#aaKiosc button:has-text("Següent")');
+    const marcat = await p.locator('#aaKiosc .aaNom >> nth=0').textContent();
+    await p.evaluate(() => { window.__dialogosAuto = { confirmar: true }; });
+    await p.click('#aaKiosc .aaSortir');
+    await p.waitForSelector('#aaKiosc', { state: 'detached' });
+    // Coavaluació: Luis avalua qui li ha tocat
+    await p.click('.aaCard button:has-text("Passar el dispositiu: coavaluació")');
+    await p.click('#aaKiosc .aaNom >> nth=1');
+    for (let i = 0; i < nFiles; i++) await p.click(`#aaKiosc .aaFila >> nth=${i} >> .aaOp >> nth=0`);
+    await p.click('#aaKiosc button:has-text("Envia")');
+    await p.click('#aaKiosc .aaSortir');
+    const r = await p.evaluate(async ids => {
+      const g = state.grupos[0], act = g.actividades.find(a => a.seguiment === 'laboratori'), out = {};
+      out.auto = act.autoaval && act.autoaval[ids[0]] && Object.keys(act.autoaval[ids[0]].n).length;
+      out.notaAuto = aaNota(act, act.autoaval[ids[0]].n);
+      const obj = act.coavalParelles[ids[1]]; out.parella = obj && obj !== ids[1];
+      out.co = act.coaval[ids[1]] && act.coaval[ids[1]].obj === obj && aaNota(act, act.coaval[ids[1]].n) === 10;
+      out.profAbans = g.notasCuant?.[ids[0]]?.[act.id] ?? null;
+      state.ui.segAl = ids[0]; save(); render();
+      document.querySelector('.aaCard button[onclick^="aaCopiar"]').click();
+      out.profDespres = g.notasCuant?.[ids[0]]?.[act.id];
+      out.taula = document.querySelector('.aaCard').textContent;
+      out.url = await aaEnllacURL(g, act, 'auto'); out.urlCo = await aaEnllacURL(g, act, 'co');
+      out.senseNoms = !g.alumnos.some(a => out.url.includes(encodeURIComponent(a.nombre)) || out.url.includes(a.nombre));
+      out.k = aaEmpremta(act); out.files = cxItemsFlat(act.rubrica).length; out.actId = act.id;
+      return out;
+    }, ids);
+    // Pàgina del mòbil
+    const m = await t.contexto.newPage(); const errM = []; m.on('pageerror', e => errM.push(e.message));
+    await m.goto(r.url); await m.waitForSelector('.op');
+    await m.fill('#num', '3');
+    const n = await m.locator('fieldset').count();
+    for (let i = 0; i < n; i++) await m.click(`fieldset >> nth=${i} >> .op >> nth=1`);
+    await m.click('#fet'); const codi = (await m.textContent('#codi')).trim();
+    await m.goto(r.urlCo); await m.reload(); await m.waitForSelector('.op'); await m.fill('#num', '1');
+    const objectiu = await m.textContent('#numAj');
+    await m.close();
+    const r2 = await p.evaluate(async ([ids, codi]) => {
+      const g = state.grupos[0], act = g.actividades.find(a => a.seguiment === 'laboratori');
+      window.__dialogosAuto = { texto: codi + '\nA-9-1111-ZZZZ' }; window.__dialogosLog = [];
+      await aaEnganxarCodis(act.id);
+      return { auto3: act.autoaval[ids[2]] && aaNota(act, act.autoaval[ids[2]].n), avis: window.__dialogosLog.join(' | ') };
+    }, [ids, codi]);
+    t.ok(senseNotes && enviarDesactivat, 'pantalla de l\'alumnat: només noms, sense notes; no s\'envia fins a triar totes les files');
+    t.ok(r.auto === nFiles && r.notaAuto != null && /✓/.test(marcat), 'l\'autoavaluació es guarda i el nom queda marcat', JSON.stringify([r.auto, nFiles, marcat]));
+    t.ok(r.parella && r.co, 'coavaluació: cadascú avalua un altre company/a (no a si mateix)');
+    t.ok(r.profAbans == null && Math.abs(r.profDespres - r.notaAuto) < 0.051, '«Copiar a la meua correcció» posa els nivells de l\'autoavaluació en la nota', JSON.stringify([r.profAbans, r.profDespres, r.notaAuto]));
+    t.ok(r.senseNoms, 'l\'enllaç per al mòbil no porta cap nom');
+    t.ok(new RegExp('^A-3-\\d{' + r.files + '}-' + r.k + '$').test(codi), 'el mòbil dona un codi amb el número de llista, els nivells i l\'empremta', codi);
+    t.ok(/número \d/.test(objectiu), 'coavaluació al mòbil: diu el número del company/a que s\'avalua', objectiu);
+    t.ok(r2.auto3 != null && /d'una altra activitat/.test(r2.avis), 'en enganxar els codis s\'afigen i els d\'una altra activitat es rebutgen', JSON.stringify(r2));
+    t.ok(!p.errores.length && !errM.length, 'sin errores de JavaScript', p.errores.concat(errM).slice(0, 3).join('; '));
+  } },
 ];
