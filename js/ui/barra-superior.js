@@ -55,7 +55,7 @@ window.ajudaObrir=()=>{
     ${bloc("🔁 Repàs i recuperació","En <strong>Avaluar → Programació</strong>, cada tema té el seu <strong>dossier de repàs</strong> en PDF (exercicis i models d'examen d'altres cursos, i una versió adaptada si n'hi ha) i les <strong>fitxes de repàs</strong>: una pàgina per alumne/a amb les seues notes del tema, què ha de reforçar i què ha de fer.")}
     ${bloc("📶 Sense connexió","Afig-la a la pantalla d'inici de l'iPad (Safari → compartir → «Afegir a la pantalla d'inici»). Després d'obrir-la una vegada amb connexió, funciona sense wifi.")}
     ${bloc("🎓 Gestor de Tutoria","Viu en la subcarpeta <code>tutoria/</code> i guarda les seues pròpies dades. Pots passar-li els teus suspesos amb «👥 Per a la tutoria» (en Resultats de cada grup) i la llista d'alumnat amb «📥 Del Cuaderno» des de Tutoria, si les dos s'usen en el mateix navegador.")}
-    ${bloc("📖 Guia d'ús",`Primers passos, rúbriques, còpies, paperera i preguntes freqüents (guia original, en castellà). <a href="guia_mejorada.html">Obrir la guia</a>`)}
+    ${bloc("📖 Guia d'ús",`Primers passos, rúbriques, còpies, paperera i preguntes freqüents. <a href="guia_mejorada.html">Obrir la guia</a>`)}
   </div>`;
   document.body.appendChild(div);
 };

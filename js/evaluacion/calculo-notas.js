@@ -449,7 +449,10 @@ function actividadesDeCCAnual(grupo,alId,cc){
 /* v2: la cabecera muestra las materias reales de tus grupos (antes decía
    siempre "Geografía e Historia"). */
 function materiasEtiqueta(){
-  const ms=[...new Set(state.grupos.map(g=>{ const c=getCatalogo(g.catalogoKey); return c&&c.materia; }).filter(Boolean))];
+  // Les matèries escrites a mà (tallers, atenció educativa…) no van a la capçalera si hi ha alguna matèria amb catàleg.
+  const cats=state.grupos.map(g=>getCatalogo(g.catalogoKey)).filter(c=>c&&c.materia);
+  const principals=cats.filter(c=>!c.lliure);
+  const ms=[...new Set((principals.length?principals:cats).map(c=>c.materia))];
   if(!ms.length) return "Quadern d'avaluació";
   if(ms.length<=2) return ms.join(" · ");
   return ms.slice(0,2).join(" · ")+` i ${ms.length-2} més`;
