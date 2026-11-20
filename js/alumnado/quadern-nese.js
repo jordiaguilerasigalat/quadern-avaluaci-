@@ -162,6 +162,7 @@ function qnSeccioHTML(p){
     return `<div class="card" id="qnQuadern">
       <h2 style="font-size:15px">📒 Quadern de reforç (dossier de treball)</h2>
       <p class="sub" style="margin:2px 0 10px">Porta el compte de quines tasques del dossier ha fet l'alumne/a, quan i com les ha fetes. Cada tasca està lligada als criteris d'avaluació i a les competències específiques, i el progrés es veu per competència.</p>
+      ${typeof rfDossierAlumnatHTML==="function"? rfDossierAlumnatHTML("nese",qnCatalogo(p)) : ""}
       <div class="flex" style="gap:8px;flex-wrap:wrap;align-items:center">
         <select class="in" id="qnDossierSel">
           ${Object.entries(QN_DOSSIERS).map(([k,d])=>`<option value="${k}" ${k===sug?"selected":""}>Dossier NESE de FiQ ${esc(d.curs)} (${d.temes.reduce((s,T)=>s+T.activitats.length,0)} tasques)</option>`).join("")}
@@ -243,6 +244,7 @@ function qnSeccioHTML(p){
       <div>
         <h2 style="font-size:15px;margin:0">📒 Quadern de reforç${d?` · dossier de ${esc(d.curs)}`:""}</h2>
         <p class="sub" style="margin:2px 0 0">Marca les tasques fetes i com les ha fetes: <strong>AE</strong> excel·lent · <strong>AN</strong> notable · <strong>AS</strong> suficient · <strong>NA</strong> no assolit. Passa el ratolí pels codis per a veure el criteri.</p>
+        ${typeof rfDossierAlumnatHTML==="function"? rfDossierAlumnatHTML("nese",qnCatalogo(p)) : ""}
       </div>
       <div style="min-width:170px">
         <div style="font-size:13px;font-weight:700">${fetes} de ${total} tasques fetes</div>
