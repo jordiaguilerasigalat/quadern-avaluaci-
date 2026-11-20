@@ -310,11 +310,11 @@ function opcionesCatalogosHTML(selectedKey){
     return `<option value="${k}" ${k===selectedKey?"selected":""}>${esc(c.materia)} · ${esc(c.curso)}</option>`;
   }).join("");
   const customKeys=Object.keys(state.catalogosPersonalizados||{}).filter(k=>!CATALOGOS[k]);
-  const custom=customKeys.length? `<optgroup label="Materias importadas">${customKeys.map(k=>{
+  const custom=customKeys.length? `<optgroup label="Altres matèries">${customKeys.map(k=>{
     const c=state.catalogosPersonalizados[k];
     return `<option value="${k}" ${k===selectedKey?"selected":""}>${esc(c.materia)} · ${esc(c.curso)}</option>`;
   }).join("")}</optgroup>` : "";
-  return `<optgroup label="Catálogos incluidos (Geografía e Historia)">${built}</optgroup>${custom}`;
+  return `<optgroup label="Física i Química">${built}</optgroup>${custom}`;
 }
 function actualizarSelectCatalogos(selectedKey){
   const sel=document.getElementById("ngCat"); if(!sel) return;
