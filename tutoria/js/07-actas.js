@@ -73,7 +73,7 @@ function _actaMostrarAvisoGuardada(savedAt) {
     fecha = d.toLocaleDateString('es-ES', {day:'numeric',month:'long',year:'numeric'}) + ' a las ' +
       d.toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'});
   } catch (e) {}
-  bar.innerHTML = `📂 Continuando un acta guardada${fecha ? ' el ' + fecha : ''} ·
+  bar.innerHTML = `📂 Continuant una acta guardada${fecha ? ' el ' + fecha : ''} ·
     <a href="#" onclick="resetActa();return false;" style="color:#f5c842;text-decoration:underline;cursor:pointer;">empezar en blanco</a>`;
   bar.style.display = 'block';
 }

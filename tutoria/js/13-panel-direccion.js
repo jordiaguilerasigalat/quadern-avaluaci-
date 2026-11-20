@@ -212,7 +212,7 @@ function buildDistEtapa(alist, field, sectionId, canvasPrefix, sinLabel) {
   ];
   return etapas.map(({ titulo, icon, key, al }) => {
     const tot = al.length;
-    if (!tot) return `<div style="margin-bottom:14px;font-size:11px;color:var(--text3)">${icon} ${titulo} — sin alumnos</div>`;
+    if (!tot) return `<div style="margin-bottom:14px;font-size:11px;color:var(--text3)">${icon} ${titulo} — sense alumnes</div>`;
     const d = _distData(al, field, 'merged', sinLabel);
     const passN = d.prom + d.titu;
     const pctProm = tot ? Math.round(passN / tot * 100) : 0;
@@ -229,7 +229,7 @@ function buildDistEtapa(alist, field, sectionId, canvasPrefix, sinLabel) {
           </div>
           <div style="display:flex;align-items:baseline;gap:6px;">
             <span style="font-family:inherit;font-size:20px;font-weight:800;color:var(--green);line-height:1">${pctProm}%</span>
-            <span style="font-size:10px;color:var(--text3)">${passN}/${tot} promo./titulan</span>
+            <span style="font-size:10px;color:var(--text3)">${passN}/${tot} promo./titulen</span>
           </div>
         </div>
         <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
@@ -329,7 +329,7 @@ function renderDashboard() {
         if (gruposIncompletos.length) {
           alertas.push({
             icon:'⏳', color:'var(--yellow)',
-            title:`${gruposIncompletos.length} grupo${gruposIncompletos.length>1?'s':''} sin completar`,
+            title:`${gruposIncompletos.length} grup${gruposIncompletos.length>1?'s':''} sense completar`,
             sub: gruposIncompletos.map(g=>`${g.n} ${g.g} (${g.pct}%)`).join(' · ')
           });
         }
@@ -339,7 +339,7 @@ function renderDashboard() {
           const critGrupos = grupoGrid.filter(g=>g.crit>0);
           alertas.push({
             icon:'🚨', color:'var(--red)',
-            title:`${totalCrit} alumne${totalCrit>1?'s':''} con ≥5 suspensos sin decisión`,
+            title:`${totalCrit} alumne${totalCrit>1?'s':''} amb ≥5 suspensos sense decisió`,
             sub: critGrupos.map(g=>`${g.n} ${g.g}: ${g.crit} crític${g.crit>1?'s':''}`).join(' · ')
           });
         }
@@ -352,7 +352,7 @@ function renderDashboard() {
           if (pctRep >= 25 && reps >= 3) {
             alertas.push({
               icon:'🔄', color:'var(--orange)',
-              title:`${n}: ${pctRep}% de repetición (${reps}/${al.length})`,
+              title:`${n}: ${pctRep}% de repetició (${reps}/${al.length})`,
               sub:'Índice de repetición elevado'
             });
           }
@@ -362,7 +362,7 @@ function renderDashboard() {
         if (abando > 0) {
           alertas.push({
             icon:'🚪', color:'#9aa3bb',
-            title:`${abando} alumne${abando>1?'s':''} en situación de abandono`,
+            title:`${abando} alumne${abando>1?'s':''} en situació d'abandonament`,
             sub:'Requieren atención y seguimiento'
           });
         }
@@ -462,7 +462,7 @@ function renderDashboard() {
             <div style="width:${pct}%;height:5px;background:${pctColor(pct)};border-radius:3px;"></div>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:10px;color:var(--text2)">${dec}/${tot} decididos</span>
+            <span style="font-size:10px;color:var(--text2)">${dec}/${tot} decidits</span>
             <span style="font-size:11px;font-weight:700;color:${pctColor(pct)}">${pct}%</span>
           </div>
           ${crit>0?`<div style="margin-top:5px;font-size:10px;color:var(--red);font-weight:600">🚨 ${crit} alumne${crit>1?'s':''} crític${crit>1?'s':''}</div>`:''}

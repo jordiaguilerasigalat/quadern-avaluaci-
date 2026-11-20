@@ -110,9 +110,12 @@ function _mostrarDocumentoT(html){
   const ov=document.createElement('div'); ov.id='tdocOverlay'; ov.className='tdoc-ov'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); ov.setAttribute('aria-label','Vista previa: '+titulo);
   ov.innerHTML=`<div class="tdoc-bar"><strong>${_tEsc(titulo)}</strong><button class="tdoc-print">🖨️ Imprimir / Guardar PDF</button><button class="tdoc-save">⬇ Guardar archivo</button><button class="tdoc-close" aria-label="Cerrar vista previa">✕ Cerrar</button></div><iframe class="tdoc-frame" title="${_tEsc(titulo)}"></iframe>`;
   document.body.appendChild(ov);
-  const fr=ov.querySelector('iframe'); fr.srcdoc=doc;
+  const fr=ov.querySelector('iframe');
+  // Els documents es redacten en castellà: el traductor del quadern els passa al valencià en carregar-se.
+  fr.onload=()=>{ try{ const d=fr.contentDocument; if(d && d.body && typeof window.traduirNode==='function'){ window.traduirNode(d.body); if(window.traduirText) d.title=window.traduirText(d.title); d.documentElement.lang='ca'; } }catch(e){} };
+  fr.srcdoc=doc;
   ov.querySelector('.tdoc-print').onclick=()=>{ try{ fr.contentWindow.focus(); fr.contentWindow.print(); }catch(e){ mostrarAviso('No se ha podido abrir la impresión. Usa «Guardar archivo» y ábrelo en el navegador para imprimirlo.'); } };
-  ov.querySelector('.tdoc-save').onclick=()=>{ _tGuardarArchivo(new Blob([html],{type:'text/html'}),titulo.replace(/[\\/:*?"<>|]+/g,' ').slice(0,90)+'.html'); };
+  ov.querySelector('.tdoc-save').onclick=()=>{ let _h=html; try{ const d=fr.contentDocument; if(d && d.documentElement && d.documentElement.lang==='ca') _h='<!DOCTYPE html>\n'+d.documentElement.outerHTML; }catch(e){} _tGuardarArchivo(new Blob([_h],{type:'text/html'}),titulo.replace(/[\\/:*?"<>|]+/g,' ').slice(0,90)+'.html'); };
   ov.querySelector('.tdoc-close').onclick=window.__cerrarVistaDocT;
   setTimeout(()=>{ try{ ov.querySelector('.tdoc-print').focus(); }catch(e){} },30);
 }
@@ -196,7 +199,7 @@ function _tImpCuadernoModal(o,nombreArchivo){
     const p=plan(); const mats=getMateriasParaNivel(selN.value, selG.value)||[];
     ov.querySelector('#impCResumen').innerHTML=
       (mats.length && !mats.some(m=>_tNorm(m)===_tNorm(inM.value))?`<div style="color:#f59e0b">⚠️ «${_tEsc(inM.value)}» no está en la lista de materias de ${_tEsc(selN.value)}. Elige la equivalente en el desplegable.</div>`:'')+
-      `<div>✓ ${p.emparejados.length} alumnes encontrados en ${_tEsc(selN.value)} ${_tEsc(selG.value)} · ${p.cambios} cambios en sus pendientes.</div>`+
+      `<div>✓ ${p.emparejados.length} alumnes trobats en ${_tEsc(selN.value)} ${_tEsc(selG.value)} · ${p.cambios} canvis en les seues pendents.</div>`+
       (p.propuestas.length?`<div style="margin-top:8px"><strong>¿Son la misma persona?</strong> El nombre no coincide exactamente:</div>`+
         p.propuestas.map((pr,k)=>`<label style="display:flex;gap:8px;align-items:center;margin-top:4px;cursor:pointer"><input type="checkbox" data-prop="${k}" ${confirmados.get(pr.nombre)===pr.idx?'checked':''}> <span>«${_tEsc(pr.nombre)}» (Cuaderno) → «${_tEsc(pr.nombreTutoria)}» (Tutoría)</span></label>`).join(''):'')+
       (p.noEncontrados.filter(n=>!p.propuestas.some(pr=>pr.nombre===n)).length?`<div style="color:#f59e0b;margin-top:6px">⚠️ Sin encontrar: ${p.noEncontrados.filter(n=>!p.propuestas.some(pr=>pr.nombre===n)).map(_tEsc).join(', ')}. Comprueba que el nombre coincide («Apellidos, Nombre»).</div>`:'');

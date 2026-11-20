@@ -378,7 +378,7 @@ window.mbEnlazarRubrica=async()=>{
   const fila=(e,i)=>`<label class="mb-par"><input type="checkbox" data-i="${i}" ${e.p>=0.6?"checked":""}><span><strong>${esc(String(e.texto).slice(0,90))}</strong><br><span class="sub" style="margin:0">→ ${esc(String(e.n.rotulo||e.n.label).slice(0,110))}${e.porNumero?" · emparejados por el número (el texto es distinto)":""}</span></span></label>`;
   const div=document.createElement("div"); div.className="modal-overlay"; div.style.zIndex="1500";
   div.innerHTML=`<div class="modal-box" style="max-width:640px" role="dialog" aria-modal="true" aria-labelledby="mbT">
-    <h2 id="mbT" style="font-size:17px">🔗 Enlazar la rúbrica con el diseño</h2>
+    <h2 id="mbT" style="font-size:17px">🔗 Enllaçar la rúbrica amb el disseny</h2>
     <p class="sub">Cada ítem de la rúbrica se empareja con su pregunta del examen por el texto. No cambia ningún ítem, punto, criterio ni lo ya corregido: solo quedan enlazados, y así la rúbrica puede salir en el orden de cada modelo (y «Importar a la rúbrica» los actualizará en vez de duplicarlos).</p>
     <p style="font-size:13.5px;margin:6px 0">✓ <strong>${seguros.length}</strong> enllaçats amb seguretat${dudosos.length?` · <strong>${dudosos.length}</strong> dubtosos (revisa'ls)`:""}${sinPareja.length?` · <strong>${sinPareja.length}</strong> ítems sense parella en el disseny: són parts que només té la rúbrica i continuen dins de la seua pregunta`:""}</p>
     ${dudosos.length?`<div class="scroll" style="max-height:44vh;border:1px solid var(--line);border-radius:10px;padding:6px 10px">${dudosos.map((e,i)=>fila(e,i)).join("")}</div>`:""}

@@ -33,11 +33,11 @@ function queueSave() {
   saveTimer = setTimeout(async () => {
     const prior = loadExamLocal(S.exam.id);
     if (prior && examSignature(prior) !== examSignature(S.exam)) {
-      try { await createRecoverySnapshot(prior, 'Autoguardado anterior', false); } catch (e) { console.warn('No se pudo crear una versión de recuperación', e); }
+      try { await createRecoverySnapshot(prior, 'Autoguardado anterior', false); } catch (e) { console.warn('No s\'ha pogut crear una versió de recuperació', e); }
     }
     const ok = saveExamLocal(S.exam);
     const t = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-    $('#status').textContent = ok ? `Guardado en este navegador · ${t}` : 'No se pudo guardar aquí: usa «Guardar archivo»';
+    $('#status').textContent = ok ? `Guardado en este navegador · ${t}` : 'No s\'ha pogut guardar ací: usa «Guardar arxiu»';
     $('#status').style.color = ok ? '' : 'var(--danger)';
   }, 500);
 }
@@ -70,15 +70,15 @@ function setView(v) { $('#app').dataset.view = v; $$('.mobile-tabs button').forE
 function summaryOf(n) {
   switch (n.type) {
     case 'title': return n.title;
-    case 'datos': return 'Datos del alumno';
+    case 'datos': return 'Dades de l\'alumne';
     case 'section': return n.title || plainOf(n.text);
     case 'question': return n.title || plainOf(n.text);
     case 'subquestion': case 'text': return plainOf(n.text);
-    case 'table': return `Tabla ${n.table.cells.length}×${n.table.cells[0]?.length || 0}`;
-    case 'image': return n.src ? (n.caption || 'Imagen') : '(sin imagen)';
-    case 'lines': return `${n.count} líneas`;
+    case 'table': return `Taula ${n.table.cells.length}×${n.table.cells[0]?.length || 0}`;
+    case 'image': return n.src ? (n.caption || 'Imatge') : '(sense imatge)';
+    case 'lines': return `${n.count} línies`;
     case 'box': return n.title || plainOf(n.text);
-    case 'spacer': return `Espacio · ${n.height} mm`;
+    case 'spacer': return `Espai · ${n.height} mm`;
   }
   return '';
 }
@@ -87,7 +87,7 @@ function renderTree() {
   const labels = computeLabels(S.exam), root = $('#tree');
   root.textContent = '';
   if (!S.exam.body.length) {
-    root.append(h('div', { class: 'empty-tree' }, h('p', {}, 'El examen está vacío.'), h('button', { class: 'btn primary', onclick: e => openAddMenu(e.currentTarget, null) }, '+ Añadir el primer bloque')));
+    root.append(h('div', { class: 'empty-tree' }, h('p', {}, 'L\'examen està buit.'), h('button', { class: 'btn primary', onclick: e => openAddMenu(e.currentTarget, null) }, '+ Afegir el primer bloc')));
   }
   const rec = (list, parent) => list.forEach(n => {
     const kids = n.children || [];
@@ -99,7 +99,7 @@ function renderTree() {
       labels.get(n.id) ? h('span', { class: 'lab' }, labels.get(n.id)) : null,
       h('span', { class: 'txt' }, sm ? sm : h('em', {}, TYPES[n.type].name)),
       pts ? h('span', { class: 'pt' }, pts) : null,
-      CONTAINERS.has(n.type) ? h('button', { class: 'add', title: 'Añadir dentro', 'aria-label': 'Añadir dentro', onclick: ev => { ev.stopPropagation(); openAddMenu(ev.currentTarget, n.id, true); } }, '+') : null);
+      CONTAINERS.has(n.type) ? h('button', { class: 'add', title: 'Afegir dins', 'aria-label': 'Afegir dins', onclick: ev => { ev.stopPropagation(); openAddMenu(ev.currentTarget, n.id, true); } }, '+') : null);
     row.addEventListener('click', () => selectNode(n.id, { scrollPreview: true, fromTree: true }));
     row.addEventListener('dragstart', ev => { dragId = n.id; ev.dataTransfer.effectAllowed = 'move'; ev.dataTransfer.setData('text/plain', n.id); });
     row.addEventListener('dragend', () => { dragId = null; $$('.row').forEach(r => r.classList.remove('drop-before', 'drop-after', 'drop-in')); });
@@ -124,7 +124,7 @@ function renderTree() {
   // total de puntos
   const tot = sumPoints(S.exam.body), target = num(S.exam.num.total, 10);
   const ok = Math.abs(tot - target) < 0.005;
-  $('#totals').innerHTML = `<span>Suma de puntos</span><b class="${ok ? 'ok' : 'bad'}">${fmtNum(tot)} / ${fmtNum(target)} ${ok ? '✓' : ''}</b>`;
+  $('#totals').innerHTML = `<span>Suma de punts</span><b class="${ok ? 'ok' : 'bad'}">${fmtNum(tot)} / ${fmtNum(target)} ${ok ? '✓' : ''}</b>`;
 }
 
 function moveNode(srcId, dstId, zone) {
@@ -184,14 +184,14 @@ function nodeOp(op) {
   const { node, list, index, parent } = f;
   if (op === 'up' && index > 0) { [list[index - 1], list[index]] = [list[index], list[index - 1]]; }
   else if (op === 'down' && index < list.length - 1) { [list[index + 1], list[index]] = [list[index], list[index + 1]]; }
-  else if (op === 'in') { const prev = list[index - 1]; if (!prev || !prev.children) return toast('Solo se puede meter dentro de un apartado, pregunta o subpregunta anterior'); list.splice(index, 1); prev.children.push(node); prev.collapsed = false; }
+  else if (op === 'in') { const prev = list[index - 1]; if (!prev || !prev.children) return toast('Només es pot posar dins d\'un apartat, pregunta o subpregunta anterior'); list.splice(index, 1); prev.children.push(node); prev.collapsed = false; }
   else if (op === 'out') { if (!parent) return; const g = findNode(S.exam.body, parent.id); list.splice(index, 1); g.list.splice(g.index + 1, 0, node); }
   else if (op === 'dup') { list.splice(index + 1, 0, cloneWithNewIds(node)); S.sel = list[index + 1].id; }
   else if (op === 'del') {
     list.splice(index, 1);
     S.sel = (list[index] || list[index - 1] || parent || {}).id || null;
     change({ tree: true, insp: true, now: true });
-    return toast('Bloque eliminado', { label: 'Deshacer', fn: () => histGo(-1) });
+    return toast('Bloc eliminat', { label: 'Desfer', fn: () => histGo(-1) });
   } else return;
   change({ tree: true, insp: true, now: true }); markSelectionSoon(S.sel);
 }

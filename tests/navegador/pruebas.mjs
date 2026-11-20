@@ -737,7 +737,7 @@ export const PRUEBAS = [
       (function w(l) { l.forEach(n => { delete n.fuenteId; (n.items || []).forEach(it => { delete it.fuenteId; }); w(n.subs || []); }); })(act.rubrica);
       const sinEnlace = mbRubricaEnlazada(act);
       state.ui.corTab = 'diseno'; state.ui.corModelo = ''; render(); await new Promise(r => setTimeout(r, 2200));
-      const boton = [...document.querySelectorAll('#tabContent button')].find(b => /Enlazar la rúbrica/.test(b.textContent));
+      const boton = [...document.querySelectorAll('#tabContent button')].find(b => /Enllaçar la rúbrica/.test(b.textContent));
       await mbEnlazarRubrica(); await new Promise(r => setTimeout(r, 300));
       document.getElementById('mbSi').click(); await new Promise(r => setTimeout(r, 300));
       return { boton: !!boton, sinEnlace, enlazada: mbRubricaEnlazada(act), sinEnlazar: mbSinEnlazar(act), mismosIds: cxItemsFlat(act.rubrica).map(i => i.id).join() === ids, mismasNotas: JSON.stringify(g.rubricScores) === antes,

@@ -199,7 +199,7 @@ function exportAllCSV() {
   const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
   const year = new Date().getFullYear();
   triggerDownload(blob, `evaluaciones_completo_${year}.csv`);
-  showToast(`✅ CSV exportado — ${rows.length} alumnes`);
+  showToast(`✅ CSV exportat — ${rows.length} alumnes`);
 }
 
 // ===================== EXPORT =====================
@@ -401,11 +401,11 @@ function renderImportStep() {
       </div>
 
       <div class="csv-hint" style="margin-top:16px">
-        <strong>📋 Columnas reconocidas automáticamente:</strong><br>
+        <strong>📋 Columnes reconegudes automàticament:</strong><br>
         <code>Nombre</code>, <code>Fecha Nacimiento</code>, <code>Repetidor</code>, <code>NESE</code>, <code>Compensatoria</code>,
         <code>I Eval</code>, <code>II Eval</code>, <code>Propuesta</code>, <code>III Eval</code>, <code>Promociona</code>…<br><br>
-        No importa el orden ni el nombre exacto — podrás ajustar la correspondencia en el paso 2.
-        El archivo puede tener columnas extra; solo se importarán las mapeadas.
+        No importa l'ordre ni el nom exacte: podràs ajustar la correspondència en el pas 2.
+        L'arxiu pot tindre columnes extra; només s'importaran les assignades.
       </div>
     `;
     actions.innerHTML = `
@@ -585,7 +585,7 @@ function renderImportStep() {
     body.innerHTML = `
       <div class="modal-title" style="margin-bottom:12px">👁 Previsualización</div>
       <div class="import-info">
-        <span class="import-pill blue">${importState.rows.length} filas en CSV</span>
+        <span class="import-pill blue">${importState.rows.length} files en el CSV</span>
         <span class="import-pill green">✓ ${ok} válidas</span>
         ${err ? `<span class="import-pill red">✗ ${err} con error</span>` : ''}
         <span class="import-pill yellow">→ ${_tEsc(importState.targetNivel)} ${_tEsc(importState.targetGrupo)}</span>

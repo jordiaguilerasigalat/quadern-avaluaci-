@@ -257,7 +257,7 @@ function renderPapFormHTML(nivel, grupo, idx, a) {
       <div class="pap-section">
         <div class="pap-section-head"><span class="pap-section-letter">C</span><span class="pap-section-title">Información relevante</span></div>
         <div class="pap-section-body">
-          <p class="pap-hint">Barreras y fortalezas · necesidades educativas identificadas (NESE y NCD) · propuesta de medidas de respuesta · grado de apoyo · orientaciones para el desarrollo y evaluación de las medidas. (Disponible en el informe sociopsicopedagógico y en el módulo de inclusión de ITACA3; incluir aquí solo lo que surja de la revisión del PAP.)</p>
+          <p class="pap-hint">Barreres i fortaleses · necessitats educatives identificades (NESE i NCD) · proposta de mesures de resposta · grau de suport · orientacions per al desenvolupament i l'avaluació de les mesures. (Disponible en l'informe sociopsicopedagògic i en el mòdul d'inclusió d'ITACA3; incloure ací només el que sorgisca de la revisió del PAP.)</p>
           ${T('pap_infoRelevante','Información relevante',p.infoRelevante)}
         </div>
       </div>
@@ -420,7 +420,7 @@ function _papDocBodyHTML(nivel, grupo, idx) {
     <div>${esc(p.firmaNombre)||'Nombre y apellidos'}<br>${esc(p.firmaComo)||'Como'}</div>
     <div>Firma</div>
   </div>
-  <p style="font-size:8pt;color:#999;margin-top:16px">Datos personales tratados conforme al Reglamento (UE) 2016/679 y la Ley Orgánica 3/2018, en cumplimiento de la Ley 26/2018 de la Generalitat y la Orden 20/2019 de medidas de respuesta a la inclusión. Tratamiento confidencial; puede ejercer sus derechos de acceso, rectificación, cancelación y oposición según el aviso legal de la Conselleria d'Educació, Cultura i Esport.</p>
+  <p style="font-size:8pt;color:#999;margin-top:16px">Dades personals tractades d'acord amb el Reglament (UE) 2016/679 i la Llei orgànica 3/2018, en compliment de la Llei 26/2018 de la Generalitat i l'Ordre 20/2019 de mesures de resposta a la inclusió. Tractament confidencial; podeu exercir els vostres drets d'accés, rectificació, cancel·lació i oposició segons l'avís legal de la Conselleria d'Educació, Cultura i Esport.</p>
 
   <div class="footer">
     <span>Gestor de Tutoría — ${esc(iesName)}</span>

@@ -77,7 +77,7 @@ async function abrirImportarDelCuaderno(nivel, grupo) {
           return `<label style="display:flex;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--border,#2a3245);border-radius:8px;margin-bottom:6px;cursor:pointer">
             <input type="radio" name="impCuadGrupo" value="${i}" ${i === 0 ? 'checked' : ''}>
             <span style="flex:1">${_escImp(g.nombre || 'Grupo sin nombre')}</span>
-            <span style="font-size:12px;color:var(--text2,#9aa4b8)">${g.alumnos.length} alumnes · ${nuevos} nuevos</span>
+            <span style="font-size:12px;color:var(--text2,#9aa4b8)">${g.alumnos.length} alumnes · ${nuevos} nous</span>
           </label>`;
         }).join('')}
       </fieldset>
@@ -129,5 +129,5 @@ function _importarAlumnadoCuaderno(nivel, grupo, grupoCuaderno) {
   if (nivel === currentNivel && grupo === currentGrupos[currentNivel]) updateTable(nivel, grupo);
   else renderMain();
   markDirty();
-  showToast(`✅ ${nuevos.length} alumne${nuevos.length === 1 ? '' : 's'} importado${nuevos.length === 1 ? '' : 's'} del Cuaderno`);
+  showToast(`✅ ${nuevos.length} alumne${nuevos.length === 1 ? '' : 's'} importat${nuevos.length === 1 ? '' : 's'} del Quadern`);
 }

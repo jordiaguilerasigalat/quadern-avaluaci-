@@ -161,7 +161,7 @@ function renderCalendario() {
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
         <div>
           <div style="font-family:inherit;font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.5px;">📅 Calendario</div>
-          <div style="font-size:12px;color:var(--text2);margin-top:4px;">${sessions.length} sesión${sessions.length===1?'':'es'} de evaluación · ${calEventos.length} evento${calEventos.length===1?'':'s'} · pulsa un día para añadir</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:4px;">${sessions.length} sessi${sessions.length===1?'ó':'ons'} d'avaluació · ${calEventos.length} esdeveniment${calEventos.length===1?'':'s'} · prem un dia per a afegir-ne</div>
         </div>
         <div style="display:flex;gap:8px;">
           <button class="btn btn-ghost btn-sm${viewMode==='calendar'?' ':''}" style="${viewMode==='calendar'?'border-color:var(--accent);color:var(--accent);background:rgba(79,142,247,0.08)':''}" onclick="_calSetView('calendar')">📆 Mes</button>
@@ -540,7 +540,7 @@ function exportConvivenciaInforme(evalKey) {
   </style>
   </head><body>
   <h1>🤝 Informe de Convivencia — ${esc(tituloEval)}</h1>
-  <div class="subtitle">${esc(iesName)} &nbsp;·&nbsp; ${dateStr} &nbsp;·&nbsp; ${todosAlumnos.length} alumnes en ${statsGrupos.length} grupo${statsGrupos.length!==1?'s':''}</div>
+  <div class="subtitle">${esc(iesName)} &nbsp;·&nbsp; ${dateStr} &nbsp;·&nbsp; ${todosAlumnos.length} alumnes en ${statsGrupos.length} grup${statsGrupos.length!==1?'s':''}</div>
 
   <div class="grid2">
     ${CONVIV_METRICS.map(m => `

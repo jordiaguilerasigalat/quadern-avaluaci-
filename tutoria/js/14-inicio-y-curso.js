@@ -213,7 +213,7 @@ window.__IS_SNAPSHOT_EXPORT__ = true;
   triggerDownload(blob, filename);
   const mb = (blob.size / (1024*1024)).toFixed(1);
   if (blob.size > 9 * 1024 * 1024) {
-    showToast(`✅ Generado ${filename} (${mb} MB) — pesa bastante para un correo normal; si falla el envío, súbelo a Drive/OneDrive y comparte el enlace`);
+    showToast(`✅ Generat ${filename} (${mb} MB): pesa prou per a un correu normal; si falla l'enviament, puja'l a Drive/OneDrive i comparteix l'enllaç`);
   } else {
     showToast(`✅ Versión fosilizada lista: ${filename} (${mb} MB) — ya puedes adjuntarla al correo para el claustro`);
   }
@@ -247,7 +247,7 @@ function openGuide() {
           <ul style="margin:0 0 12px 16px">
             <li><strong>Inicio</strong> — Resumen global con propuestas por nivel, FPB, PDC y Titulación</li>
             <li><strong>📅 Calendario</strong> — Fechas de las sesiones de evaluación (círculos de color) y <strong>tus propios eventos</strong> (cuadrados): pulsa cualquier día para añadir reunión, junta, entrega, actividad… Vista de mes o cronología</li>
-            <li><strong>🎓 Informe Académico</strong> — Estadísticas de aprobados/suspensos por materia y nivel, con subpestañas para I Eval., II Eval., Evaluación Final y Extraordinaria; incluye el PDF Estadísticas</li>
+            <li><strong>🎓 Informe Académico</strong> — Estadístiques d'aprovats/suspesos per matèria i nivell, amb subpestanyes per a I Av., II Av., Avaluació Final i Extraordinària; inclou el PDF Estadístiques</li>
             <li><strong>📞 Seguimientos</strong> — Listado por grupo de todos los registros de "Seguimiento con familia", para consultarlos o imprimirlos juntos (por ejemplo, si inspección los pide)</li>
             <li><strong>🤝 Informe Convivencia</strong> — Amonestaciones, partes, expedientes y faltas de asistencia, calculados a partir de las tablas de cada evaluación</li>
             <li><strong>⚙ Materias</strong> — Personaliza las materias disponibles por nivel</li>
@@ -256,16 +256,16 @@ function openGuide() {
           <ul style="margin:0 0 12px 16px">
             <li><strong>📅</strong> Historial académico de cursos anteriores</li>
             <li><strong>📋</strong> Informe de seguimiento individual (PDF), generado automáticamente con sus datos</li>
-            <li><strong>📞</strong> <strong>Seguimiento con familia</strong> — para cuando los padres piden reunión: anota, materia por materia, lo que te ha dicho cada profesor/a (Trabajo, Exámenes, Comportamiento). Quita las materias que no correspondan y añade las que hagan falta. Cada vez que guardas se crea un registro nuevo fechado, así que puedes repetirlo tantas veces al año como haga falta; cada uno se imprime por separado</li>
+            <li><strong>📞</strong> <strong>Seguimiento con familia</strong> — per a quan les famílies demanen reunió: anota, matèria per matèria, el que t'ha dit cada professor/a (Treball, Exàmens, Comportament). Lleva les matèries que no corresponguen i afig les que calguen. Cada vegada que guardes es crea un registre nou amb data, així que pots repetir-ho tantes vegades a l'any com calga; cadascun s'imprimeix per separat</li>
             <li><strong>↗</strong> Mover alumno a otro grupo o nivel</li>
           </ul>
           <div style="font-weight:700;color:var(--text);margin-bottom:4px">📋 Por grupo (cabecera de grupo)</div>
           <ul style="margin:0 0 12px 16px">
-            <li><strong>🗂️ Actas no Oficiales</strong> — Pestaña que centraliza el acceso a las Actas I/II/Final (editables) de todos los grupos; se puede ocultar/mostrar con el icono 🗂️👁️ junto a "＋ Nivel"</li>
-            <li><strong>Acta I/II/Final</strong> — Actas de sesión de evaluación, editables y guardables; se pueden exportar a PDF, Word o HTML (esta última conserva la maquetación exacta)</li>
-            <li><strong>Acta Oficial</strong> — Genera el acta de sesión para I, II o Evaluación Final, con estadísticas de materias suspendidas, pendientes de cursos anteriores, alumnado NESE/Compensatoria con leyenda de códigos, faltas/convivencia y evolución entre evaluaciones; permite guardar acuerdos, firmas y decisiones sobre pendientes, y exportar a PDF, Word o HTML</li>
+            <li><strong>🗂️ Actas no Oficiales</strong> — Pestanya que centralitza l'accés a les Actes I/II/Final (editables) de tots els grups; es pot amagar/mostrar amb la icona 🗂️👁️ al costat de "＋ Nivell"</li>
+            <li><strong>Acta I/II/Final</strong> — Actes de sessió d'avaluació, editables i guardables; es poden exportar a PDF, Word o HTML (aquest últim conserva la maquetació exacta)</li>
+            <li><strong>Acta Oficial</strong> — Genera l'acta de sessió per a la I, II o Avaluació Final, amb estadístiques de matèries suspeses, pendents de cursos anteriors, alumnat NESE/Compensatòria amb llegenda de codis, faltes/convivència i evolució entre avaluacions; permet guardar acords, signatures i decisions sobre pendents, i exportar a PDF, Word o HTML</li>
             <li><strong>🖼️ Fotos del grupo</strong> — Galería de fotos del alumnado</li>
-            <li><strong>🪑 Plano del grupo</strong> — Distribución de mesas: toca un alumno/a (de la lista o de una mesa) y luego una mesa; si está libre se sienta ahí, si está ocupada se intercambian. Tamaño de cuadrícula ajustable e imprimible</li>
+            <li><strong>🪑 Plano del grupo</strong> — Distribució de taules: toca un alumne/a (de la llista o d'una taula) i després una taula; si està lliure s'hi asseu, si està ocupada s'intercanvien. Mida de quadrícula ajustable i imprimible</li>
             <li><strong>🕐 Horario del grupo</strong> — Horario semanal del grupo</li>
             <li><strong>👥 Asistencia sesión</strong> — Pasa lista al equipo docente en cada junta de evaluación</li>
             <li><strong>👨‍🏫 Equipo docente</strong> — Nombre, materia y correo corporativo de cada profesor/a del grupo. Es la lista que usa "Asistencia sesión" para pasar lista, y desde aquí puedes enviar un correo a una persona, a varias seleccionadas o a todo el equipo (se abre tu propio Outlook con los destinatarios puestos)</li>
@@ -466,7 +466,7 @@ function renderICStep() {
         <span class="ic-pill blue">📄 ${icState.rows.length} alumnes en CSV</span>
         <span class="ic-pill blue">📋 ${icState.plan.length} grupos detectados</span>
         <span class="ic-pill green">✓ ${ok} grupos listos</span>
-        ${create ? `<span class="ic-pill yellow">⚡ ${create} grupos por crear</span>` : ''}
+        ${create ? `<span class="ic-pill yellow">⚡ ${create} grups per crear</span>` : ''}
         ${skip   ? `<span class="ic-pill" style="color:var(--text3)">— ${skip} sin equivalencia (se omiten)</span>` : ''}
       </div>
 
@@ -699,5 +699,5 @@ function icExecute() {
   renderICStep();
   renderAll();
   markDirty();
-  showToast(`✅ ${result.reduce((s,r)=>s+r.count,0)} alumnes importados en ${result.length} grupos`);
+  showToast(`✅ ${result.reduce((s,r)=>s+r.count,0)} alumnes importats en ${result.length} grupos`);
 }

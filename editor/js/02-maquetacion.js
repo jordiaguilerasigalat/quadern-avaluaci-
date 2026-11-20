@@ -309,9 +309,9 @@ async function renderPreview() {
   if (tok !== S.tok) return;
   $('#pages').replaceChildren(frag);
   S.pages = total; S.overflow = over;
-  $('#pageCount').textContent = total + (total === 1 ? ' página' : ' páginas') + ` · ${W === 210 ? 'A4' : page.size}`;
+  $('#pageCount').textContent = total + (total === 1 ? ' pàgina' : ' pàgines') + ` · ${W === 210 ? 'A4' : page.size}`;
   const warn = $('#warn');
-  if (over) { warn.hidden = false; warn.textContent = `Hay ${over} bloque${over > 1 ? 's' : ''} más alto${over > 1 ? 's' : ''} que una página y se verá${over > 1 ? 'n' : ''} cortado${over > 1 ? 's' : ''}. Reduce su tamaño o sus márgenes.`; }
+  if (over) { warn.hidden = false; warn.textContent = `Hi ha ${over} bloc${over > 1 ? 's' : ''} més alt${over > 1 ? 's' : ''} que una pàgina i es veurà${over > 1 ? 'n' : ''} tallat${over > 1 ? 's' : ''}. Redueix-ne la mida o els marges.`; }
   else warn.hidden = true;
   markSelection();
   applyZoom();
