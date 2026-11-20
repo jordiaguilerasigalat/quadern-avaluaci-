@@ -254,4 +254,5 @@ function renderSeguimentAlumne(grupo,act,al){
     <p class="sub" style="margin:6px 0">Tria l'alumne/a (al costat, la seua nota en esta activitat):</p>
     <div class="flex" style="gap:6px;flex-wrap:wrap">${chips}</div>
   </div>`);
+  if(typeof aaTargetaHTML==="function"){ const h=aaTargetaHTML(grupo,act,al); if(h) c.firstElementChild.insertAdjacentHTML("afterend",h); }
 }

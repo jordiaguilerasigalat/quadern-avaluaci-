@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Autoavaluació</title>
+<!-- Pàgina per a l'alumnat (js/evaluacion/autoavaluacio.js → «Enllaç per als mòbils»).
+     La rúbrica viu dins de l'enllaç (després de #): no es carrega cap dada del quadern,
+     no es guarda res i no s'envia res enlloc. En acabar mostra un codi curt per al professor/a. -->
+<style>
+  :root{--bg:#f6f3ec;--card:#fff;--ink:#141b28;--mut:#56627a;--line:#dcd6c8;--accent:#25456b;--accent-ink:#fff;--ok:#1e5631}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1622;--card:#162232;--ink:#e9edf4;--mut:#a7b3c6;--line:#2c3b52;--accent:#d7b463;--accent-ink:#1c1408;--ok:#8fd19e}}
+  :root[data-theme="dark"]{--bg:#0e1622;--card:#162232;--ink:#e9edf4;--mut:#a7b3c6;--line:#2c3b52;--accent:#d7b463;--accent-ink:#1c1408;--ok:#8fd19e}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  main{max-width:760px;margin:0 auto;padding:16px}
+  h1{font-size:20px;margin:6px 0 2px}
+  .sub{color:var(--mut);font-size:14px;margin:4px 0 12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+  fieldset{border:1px solid var(--line);border-radius:12px;padding:10px;margin:10px 0;background:var(--card)}
+  legend{font-weight:700;padding:0 6px}
+  .ops{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+  .op{display:flex;flex-direction:column;gap:4px;text-align:left;padding:10px;border-radius:10px;border:2px solid var(--line);background:transparent;color:inherit;font:inherit;font-size:14px;cursor:pointer}
+  .op strong{font-size:15px}
+  .op[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+  .op[aria-pressed="true"] strong::before{content:"✓ "}
+  label{font-weight:600}
+  input{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:inherit;width:6em}
+  button.btn{font:inherit;font-weight:700;padding:10px 18px;border-radius:10px;border:0;background:var(--accent);color:var(--accent-ink);cursor:pointer}
+  button.btn:disabled{opacity:.45;cursor:not-allowed}
+  .codi{font:700 28px/1.2 ui-monospace,Menlo,Consolas,monospace;letter-spacing:1px;text-align:center;padding:14px;border:2px dashed var(--accent);border-radius:12px;word-break:break-all;margin:10px 0}
+  .err{color:#b91c1c}
+</style>
+</head>
+<body>
+<main id="app"><p class="sub">Carregant…</p></main>
+<script>
+(async function(){
+  const app=document.getElementById("app");
+  const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
+  const error=m=>{ app.innerHTML=`<h1>Autoavaluació</h1><p class="err">${esc(m)}</p><p class="sub">Demana al professor/a l'enllaç sencer.</p>`; };
+  async function llegir(h){
+    const tipus=h[0], b=h.slice(1).replace(/-/g,"+").replace(/_/g,"/");
+    const bin=atob(b+"===".slice((b.length+3)%4)); const bytes=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    if(tipus==="j") return JSON.parse(new TextDecoder().decode(bytes));
+    if(tipus==="z"){
+      if(typeof DecompressionStream!=="function") throw new Error("vell");
+      const st=new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+      return JSON.parse(await new Response(st).text());
+    }
+    throw new Error("format");
+  }
+  let d;
+  try{ d=await llegir(decodeURIComponent(location.hash.slice(1))); }
+  catch(e){ error(e.message==="vell"?"Este navegador és massa antic per a obrir l'enllaç. Prova-ho amb un altre navegador.":"L'enllaç no és correcte o està incomplet."); return; }
+  const ok=d&&d.v===1&&Array.isArray(d.n)&&d.n.length&&d.n.length<=9&&Array.isArray(d.r)&&d.r.length&&/^[0-9A-Z]{4}$/.test(d.k||"")&&(d.m==="auto"||d.m==="co")&&Number.isInteger(d.max);
+  if(!ok){ error("L'enllaç no és correcte o està incomplet."); return; }
+  const co=d.m==="co";
+  document.title=(co?"Coavaluació":"Autoavaluació")+" · "+String(d.t||"");
+  const sel=[];
+  let num=null, numTxt="";
+  function pintar(){
+    const objectiu=co&&num? (d.p||[])[num-1] : null;
+    app.innerHTML=`<h1>${co?"👥 Coavaluació":"🪞 Autoavaluació"}</h1>
+      <p class="sub">${esc(d.t||"")} · No es guarda res en este mòbil i ningú veurà cap nota.</p>
+      <div class="card"><label for="num">El teu número de llista</label><br>
+        <input id="num" type="number" inputmode="numeric" min="1" max="${d.max}" value="${esc(numTxt)}" aria-describedby="numAj">
+        <div id="numAj" class="sub" style="margin:6px 0 0">${co?(objectiu?`Avalues el treball del company/a amb el <strong>número ${esc(objectiu)}</strong>.`:"Escriu-lo i veuràs a qui has d'avaluar."):"Pregunta'l al professor/a si no el saps."}${numTxt&&!num?`<br><span class="err">Ha de ser un número de l'1 al ${d.max}.</span>`:""}</div></div>
+      ${d.r.map((f,i)=>`<fieldset><legend>${esc(f[0])}</legend><div class="ops">${d.n.map((nom,j)=>`<button type="button" class="op" aria-pressed="${sel[i]===j}" data-f="${i}" data-n="${j}"><strong>${esc(nom)}</strong>${(f[1]||[])[j]?`<span>${esc(f[1][j])}</span>`:""}</button>`).join("")}</div></fieldset>`).join("")}
+      <p><button class="btn" id="fet" ${num&&d.r.every((_,i)=>sel[i]!=null)&&(!co||objectiu)?"":"disabled"}>Obtindre el codi</button></p>
+      <div id="eix"></div>`;
+    app.querySelector("#num").addEventListener("input",e=>{ numTxt=e.target.value; const v=parseInt(numTxt,10); num=v>=1&&v<=d.max?v:null; const pos=e.target.selectionStart; pintar(); const i=app.querySelector("#num"); i.focus(); try{ i.setSelectionRange(pos,pos); }catch(_){} });
+    app.querySelectorAll(".op").forEach(b=>b.addEventListener("click",()=>{ sel[+b.dataset.f]=+b.dataset.n; const y=window.scrollY; pintar(); window.scrollTo(0,y); }));
+    app.querySelector("#fet").addEventListener("click",()=>{
+      const codi=(co?`C-${num}-${objectiu}-`:`A-${num}-`)+sel.map(j=>j+1).join("")+"-"+d.k;
+      app.querySelector("#eix").innerHTML=`<div class="card"><p style="margin:0">Envia o ensenya este codi al professor/a:</p><div class="codi" id="codi">${esc(codi)}</div>
+        <button class="btn" id="copiar">Copiar el codi</button></div>`;
+      app.querySelector("#copiar").addEventListener("click",()=>{ (navigator.clipboard?navigator.clipboard.writeText(codi):Promise.reject()).then(()=>{ app.querySelector("#copiar").textContent="✓ Copiat"; },()=>{ const r=document.createRange(); r.selectNodeContents(app.querySelector("#codi")); getSelection().removeAllRanges(); getSelection().addRange(r); }); });
+      app.querySelector("#eix").scrollIntoView({behavior:"smooth"});
+    });
+  }
+  pintar();
+})();
+</script>
+</body>
+</html>

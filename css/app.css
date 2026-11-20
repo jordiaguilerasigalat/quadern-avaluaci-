@@ -687,3 +687,21 @@
 .grMapa thead th{font-size:12px;color:var(--mut);text-align:center}
 .grCel{text-align:center;white-space:nowrap}
 .grafCard>summary{list-style-position:outside}
+
+/* Autoavaluació i coavaluació (js/evaluacion/autoavaluacio.js) */
+.aaTaula{border-collapse:collapse;font-size:12.5px;width:100%;margin-top:4px}
+.aaTaula th,.aaTaula td{padding:4px 6px;border-bottom:1px solid var(--line);text-align:center}
+.aaTaula thead th{font-size:12px;color:var(--mut)}
+body.aaKioscObert{overflow:hidden}
+#aaKiosc{position:fixed;inset:0;z-index:9000;background:var(--paper,var(--card));color:var(--ink);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.aaK{max-width:900px;margin:0 auto;padding:16px}
+.aaKCap{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.aaNoms{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));margin-top:10px}
+.aaNom{justify-content:flex-start;text-align:left;padding:12px;font-size:15px;display:flex;align-items:center;gap:8px}
+.aaFila{border:1px solid var(--line);border-radius:12px;padding:10px;margin:10px 0}
+.aaFila legend{font-weight:700;padding:0 6px}
+.aaOps{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.aaOp{display:flex;flex-direction:column;gap:4px;text-align:left;padding:10px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-size:13.5px;cursor:pointer}
+.aaOp strong{font-size:14.5px}
+.aaOp.on{background:var(--aa);color:var(--aa-tinta);border-color:var(--aa);box-shadow:0 0 0 3px var(--ink) inset}
+.aaOp.on strong::before{content:"✓ "}
