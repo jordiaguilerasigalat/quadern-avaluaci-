@@ -24,7 +24,7 @@ function renderCalificar(grupo){
         return `
         <div class="cal-tarjeta">
           <div class="cal-cab">
-            <div class="cal-nombre">${esc(al.nombre)}${neseBadgeHTML(al)}${marcaBadgeHTML(grupo,al.id,act.id)}${extraBadgeHTML(grupo,al.id,act)}</div>
+            <div class="cal-nombre">${avatarAlumneHTML(al,{mida:30})}${esc(al.nombre)}${neseBadgeHTML(al)}${marcaBadgeHTML(grupo,al.id,act.id)}${extraBadgeHTML(grupo,al.id,act)}</div>
             ${act.esExamen?`<label class="cal-cuant" title="Nota cuantitativa del examen: es la que cuenta para la nota numérica">Nota
               <input class="in" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" data-cal-col="cuant" data-cal-al="${al.id}" placeholder="0–10" value="${vc==null?"":String(vc).replace(".",",")}" onchange="setNotaCuantExamen('${al.id}','${act.id}',this.value)"></label>`:""}
             <div class="cal-marcas">${marcaBotonesHTML(grupo,al.id,act.id)}</div>

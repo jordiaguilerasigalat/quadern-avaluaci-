@@ -8,7 +8,7 @@
    plans (NESE, repetició, reforç). Les dades no es mouen: només es mostren.
    ============================================================================ */
 function nomFitxaHTML(al,extra){
-  return `<button type="button" class="nom-fitxa" title="Obrir la fitxa de ${esc(al.nombre)}" onclick="abrirFichaAlumno('${escJS(al.id)}')">${esc(al.nombre)}</button>${extra||""}`;
+  return `<button type="button" class="nom-fitxa" title="Obrir la fitxa de ${esc(al.nombre)}" onclick="abrirFichaAlumno('${escJS(al.id)}')">${typeof avatarAlumneHTML==="function"?avatarAlumneHTML(al):""}${esc(al.nombre)}</button>${extra||""}`;
 }
 function fitxaResumHTML(g,a){
   const bloc=(tit,cos)=>`<div style="border:1px solid var(--line);border-radius:10px;padding:8px 10px"><div style="font-size:12px;font-weight:700;color:var(--mut);margin-bottom:4px">${tit}</div>${cos}</div>`;

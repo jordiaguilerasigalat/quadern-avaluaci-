@@ -1494,4 +1494,35 @@ export const PRUEBAS = [
     t.ok(r.cursNou, 'en començar un curs nou les anotacions s\'esborren');
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'fotos-alumnat', descripcion: "Foto de l'alumnat: es reduïx al navegador, s'assigna per nom de fitxer, es mostra al costat del nom i no deixa colar codi", async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const ids = await cuadernoConGrupo(p, t.url, { nombres: ['Pérez Martínez, Joan', 'García López, Maria', 'Pérez Soler, Marta'] });
+    const r = await p.evaluate(async ids => {
+      const g = state.grupos[0], out = {};
+      state.ui.appMode = 'competencial'; state.ui.tab = 'asistencia'; save(); render();
+      out.senseFotos = document.querySelectorAll('#tabContent .av-al').length;
+      const c = document.createElement('canvas'); c.width = 1200; c.height = 1600; const x = c.getContext('2d'); x.fillStyle = '#c33'; x.fillRect(0, 0, 1200, 1600);
+      const blob = await new Promise(res => c.toBlob(res, 'image/png'));
+      const foto = await fotoReduir(new File([blob], 'x.png', { type: 'image/png' }));
+      const img = new Image(); img.src = foto; await img.decode();
+      out.mida = [img.naturalWidth, img.naturalHeight]; out.jpeg = foto.startsWith('data:image/jpeg;base64,'); out.kb = foto.length / 1024;
+      out.match = ['Perez Martinez, Joan.jpg', 'maria_garcia_lopez.png', 'GARCÍA LÓPEZ MARIA.jpeg', 'perez.jpg', 'Joan.jpg', 'desconegut.jpg'].map(n => (fotoAlumnePerFitxer(g, n) || {}).id || null);
+      g.alumnos[0].foto = foto; save(); render();
+      out.assist = [...document.querySelectorAll('#tabContent .av-al')].map(e => e.tagName).join(',');
+      state.ui.tab = 'alumnos'; render(); out.llista = document.querySelectorAll('#tablaAlumnos img.av-al').length;
+      out.copia = JSON.stringify(state).includes(foto);
+      g.alumnos[1].foto = 'data:image/png;base64,AAA" onerror="window.__xss=1'; render();
+      out.hostil = !document.querySelector('img.av-al[onerror]') && !window.__xss;
+      fotosAlternarVisibles(); out.amagades = document.querySelectorAll('#tabContent .av-al').length; fotosAlternarVisibles();
+      return out;
+    }, ids);
+    t.ok(r.senseFotos === 0, 'un grup sense cap foto no mostra avatars');
+    t.ok(r.mida[0] === 128 && r.mida[1] === 128 && r.jpeg && r.kb < 30, 'la foto es retalla i es reduïx a 128×128 JPEG', JSON.stringify(r.mida) + ' ' + r.kb);
+    t.ok(JSON.stringify(r.match) === JSON.stringify([ids[0], ids[1], ids[1], null, null, null]), 'importació en bloc: el nom del fitxer troba l\'alumne/a (sense accents, en qualsevol ordre) i no endevina', JSON.stringify(r.match));
+    t.ok(r.assist === 'IMG,SPAN,SPAN,IMG,SPAN,SPAN' && r.llista === 1, 'la foto ix al costat del nom (Assistència i llista) i qui no en té mostra les inicials', r.assist);
+    t.ok(r.copia, 'la foto va dins de la còpia de seguretat');
+    t.ok(r.hostil, 'una foto manipulada en una còpia no es pinta com a codi');
+    t.ok(r.amagades === 0, '«Amagar les fotos» les amaga en este dispositiu');
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
 ];

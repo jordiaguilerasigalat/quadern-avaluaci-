@@ -168,7 +168,7 @@ function alumColVisible(colId){ return !(state.ui.alumColumnasOcultas||[]).inclu
 // Anchos por defecto de cada columna (px) — el usuario puede redimensionar
 // arrastrando el borde derecho de cualquier cabecera; lo elegido se recuerda.
 const ALUM_COL_ANCHO_DEFECTO={
-  apellidos:170, nombre:130, nese:55, nivelNese:115, plan:110,
+  apellidos:205, nombre:130, nese:55, nivelNese:115, plan:110,
   repite:65, pendientes:105, nacimiento:130, edad:65, familia:90
 };
 function alumColAncho(colId){
