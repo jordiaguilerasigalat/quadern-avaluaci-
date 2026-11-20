@@ -9,7 +9,7 @@ function renderTopBar(){
   const tabs=document.getElementById("groupTabs");
   tabs.innerHTML = state.grupos.map(g=>{
     const cat=getCatalogo(g.catalogoKey);
-    return `<div class="gpill ${g.id===state.ui.grupoId?"on":""}">
+    return `<div class="gpill ${g.id===state.ui.grupoId?"on":""}" data-ordre-grup="${esc(g.id)}">
       <span class="gpillname" onclick="irAGrupo('${g.id}')">${esc(g.nombre)}<span class="mat">${esc(cat.materia)} · ${esc(cat.curso)}</span></span>
       <button class="gpillx" title="Eliminar grup" onclick="borrarGrupoId('${g.id}')">×</button>
     </div>`;
