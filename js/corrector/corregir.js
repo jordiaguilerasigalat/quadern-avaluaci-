@@ -22,10 +22,10 @@ function renderCorCorregir(grupo){
     const hecho=vc!=null;
     return `<tr>
       ${mbCeldaHTML(act,al)}
-      <td>${esc(al.nombre)}${neseBadgeHTML(al)}${marcaBadgeHTML(grupo,al.id,act.id)}${cxVarianteDeAlumno(act,al.id)?(v=>` <span class="badge" title="${v.tipo==="ausencia"?"Hace un examen alternativo (otro día)":"Hace un examen adaptado"} y se corrige con su propia rúbrica">${v.tipo==="ausencia"?"📅 ":""}${esc(v.nombre||"Adaptada")}${v.fecha?" · "+esc(cxFechaCorta(v.fecha)):""}</span>`)(cxVarianteDeAlumno(act,al.id)):""}</td>
+      <td>${esc(al.nombre)}${neseBadgeHTML(al)}${marcaBadgeHTML(grupo,al.id,act.id)}${cxVarianteDeAlumno(act,al.id)?(v=>` <span class="badge" title="${v.tipo==="ausencia"?"Fa un examen alternatiu (un altre dia)":"Fa un examen adaptat"} i es corregix amb la seua pròpia rúbrica">${v.tipo==="ausencia"?"📅 ":""}${esc(v.nombre||"Adaptada")}${v.fecha?" · "+esc(cxFechaCorta(v.fecha)):""}</span>`)(cxVarianteDeAlumno(act,al.id)):""}</td>
       <td style="font-weight:600">${hecho?fmt(vc):"—"}${extraBadgeHTML(grupo,al.id,act)}</td>
-      <td>${hecho?pillCuant(vc):'<span class="badge">Sin corregir</span>'}</td>
-      <td><button class="btn small" onclick="cxIrAlumno('${al.id}')">${hecho?"Revisar":"Corregir"}</button>${hecho?` <button class="ghost small" style="border:1px solid var(--line)" title="Imprimir la rúbrica de este alumno/a" onclick="cxImprimirRubrica('${al.id}','${act.id}')">🖨️</button> <button class="ghost small" style="border:1px solid var(--line)" title="Imprimir la rúbrica resumida de este alumno/a: solo puntuaciones y anotaciones, para gastar menos papel" onclick="cxImprimirRubrica('${al.id}','${act.id}',true)">📄 Resumida</button>`:""}</td>
+      <td>${hecho?pillCuant(vc):'<span class="badge">Sense corregir</span>'}</td>
+      <td><button class="btn small" onclick="cxIrAlumno('${al.id}')">${hecho?"Revisar":"Corregir"}</button>${hecho?` <button class="ghost small" style="border:1px solid var(--line)" title="Imprimir la rúbrica d'este alumne/a" onclick="cxImprimirRubrica('${al.id}','${act.id}')">🖨️</button> <button class="ghost small" style="border:1px solid var(--line)" title="Imprimir la rúbrica resumida d'este alumne/a: només puntuacions i anotacions, per a gastar menys paper" onclick="cxImprimirRubrica('${al.id}','${act.id}',true)">📄 Resumida</button>`:""}</td>
     </tr>`;
   }).join("");
   // Las marcas NP/Exento no entran en la media ni en las estadísticas del examen.
@@ -37,15 +37,15 @@ function renderCorCorregir(grupo){
     <div class="flex" style="justify-content:space-between;flex-wrap:wrap">
       <div>
         <h2>${esc(act.nombre)}</h2>
-        <p class="sub" style="margin:0">${TRIMESTRES[act.trimestre]} · ${notas.length} de ${grupo.alumnos.length} corregidos</p>
+        <p class="sub" style="margin:0">${TRIMESTRES[act.trimestre]} · ${notas.length} de ${grupo.alumnos.length} corregits</p>
       </div>
       <div class="flex">
-        <button class="ghost" style="border:1px solid var(--line)" title="Corregir una pregunta de todo el grupo seguida (opcional)" onclick="exTogglePreg()">↕ Por ${cxEsNiveles(act.rubrica)?"categoría":"pregunta"}</button>
+        <button class="ghost" style="border:1px solid var(--line)" title="Corregir una pregunta de tot el grup seguida (opcional)" onclick="exTogglePreg()">↕ Per ${cxEsNiveles(act.rubrica)?"categoria":"pregunta"}</button>
         <select class="in" id="cxExamSel">${exams.map(a=>`<option value="${a.id}" ${a.id===act.id?"selected":""}>${esc(a.nombre)}</option>`).join("")}</select>
         <button class="ghost" style="border:1px solid var(--line)" onclick="cxIrEditor('${act.id}')">✏️ Editar rúbrica</button>
-        ${act.recupera?"":`<button class="ghost" style="border:1px solid var(--line)" title="Sumar puntos a la nota de este examen (p. ej. +0,5 por presentarse voluntario/a)" onclick="abrirExtrasActividad('${act.id}')">➕ Puntos extra</button>`}
-        ${notas.length?`<button class="ghost" style="border:1px solid var(--line)" onclick="cxImprimirRubricasTodos('${act.id}')">🖨️ Imprimir rúbricas</button>
-        <button class="ghost" style="border:1px solid var(--line)" title="Rúbricas resumidas de todo el alumnado corregido: solo puntuaciones y anotaciones, para gastar menos papel" onclick="cxImprimirRubricasTodos('${act.id}',true)">📄 Rúbricas resumidas</button>`:""}
+        ${act.recupera?"":`<button class="ghost" style="border:1px solid var(--line)" title="Sumar punts a la nota d'este examen (p. ex. +0,5 per presentar-se voluntari/ària)" onclick="abrirExtrasActividad('${act.id}')">➕ Punts extra</button>`}
+        ${notas.length?`<button class="ghost" style="border:1px solid var(--line)" onclick="cxImprimirRubricasTodos('${act.id}')">🖨️ Imprimir rúbriques</button>
+        <button class="ghost" style="border:1px solid var(--line)" title="Rúbriques resumides de tot l'alumnat corregit: només puntuacions i anotacions, per a gastar menys paper" onclick="cxImprimirRubricasTodos('${act.id}',true)">📄 Rúbriques resumides</button>`:""}
         <button class="ghost" style="border:1px solid var(--line)" onclick="cxExportarCSV('${act.id}')">⬇ CSV</button>
       </div>
     </div>
@@ -53,21 +53,21 @@ function renderCorCorregir(grupo){
     ${cxElegirTipoHTML(grupo,act)?`<div style="margin-top:12px">${cxElegirTipoHTML(grupo,act)}</div>`:""}
     ${cxAvisoNeseHTML(grupo,act)?`<div style="margin-top:12px">${cxAvisoNeseHTML(grupo,act)}</div>`:""}
     ${notas.length?`<div class="flex" style="margin-top:12px;gap:24px">
-      <div><div style="font-size:12.5px;color:var(--mut)">Media</div><span class="big" style="font-size:24px">${fmt(media)}</span></div>
-      <div><div style="font-size:12.5px;color:var(--mut)">Aprobados</div><span class="big" style="font-size:24px">${aprob}/${notas.length}</span></div>
+      <div><div style="font-size:12.5px;color:var(--mut)">Mitjana</div><span class="big" style="font-size:24px">${fmt(media)}</span></div>
+      <div><div style="font-size:12.5px;color:var(--mut)">Aprovats</div><span class="big" style="font-size:24px">${aprob}/${notas.length}</span></div>
     </div>`:""}
   </div>
   <div class="card">
     <div class="flex" style="justify-content:space-between;align-items:center">
-      <h2 style="font-size:15px">📊 Estadísticas por ${cxEsNiveles(act.rubrica)?"categoría":"ítem"}</h2>
-      <button class="ghost small" style="border:1px solid var(--line)" onclick="cxToggleEstadisticas()">${state.ui.cxVerEstadisticas?"Ocultar":"Ver"}</button>
+      <h2 style="font-size:15px">📊 Estadístiques per ${cxEsNiveles(act.rubrica)?"categoria":"ítem"}</h2>
+      <button class="ghost small" style="border:1px solid var(--line)" onclick="cxToggleEstadisticas()">${state.ui.cxVerEstadisticas?"Amagar":"Vore"}</button>
     </div>
     ${state.ui.cxVerEstadisticas
-      ? (notas.length? cxEstadisticasItemsHTML(grupo,act) : '<p class="sub" style="margin:6px 0 0">Corrige al menos un alumno/a para ver las estadísticas.</p>')
-      : '<p class="sub" style="margin:6px 0 0">Qué ítems de la rúbrica ha fallado más la clase, para saber qué reforzar antes de seguir.</p>'}
+      ? (notas.length? cxEstadisticasItemsHTML(grupo,act) : '<p class="sub" style="margin:6px 0 0">Corregix almenys un alumne/a per a vore les estadístiques.</p>')
+      : '<p class="sub" style="margin:6px 0 0">Quins ítems de la rúbrica ha fallat més la classe, per a saber què cal reforçar abans de continuar.</p>'}
   </div>
   <div class="card"><div style="overflow-x:auto"><table>
-    <thead><tr>${mbModelos(act)?`<th title="Modelo de examen que hace cada alumno/a">Modelo</th>`:""}<th>Alumno/a</th><th>Nota</th><th>Calificación</th><th></th></tr></thead>
+    <thead><tr>${mbModelos(act)?`<th title="Model d'examen que fa cada alumne/a">Model</th>`:""}<th>Alumne/a</th><th>Nota</th><th>Qualificació</th><th></th></tr></thead>
     <tbody>${rows}</tbody>
   </table></div></div>`;
   document.getElementById("cxExamSel").addEventListener("change",e=>{ state.ui.corExamId=e.target.value; save(); render(); });
@@ -154,7 +154,7 @@ function cxNodoCorregirHTML(sec,depth,sc,alId,actId){
       <div style="${depth===0&&sec.tipo!=="pregunta"?"font-size:12.5px;text-transform:uppercase;letter-spacing:.02em":"font-size:13px"};color:var(--mut);font-weight:600;white-space:pre-wrap">${esc(sec.title||CX_NOMBRE_TIPO[sec.tipo]||(depth===0?"Apartado":"Subapartado"))}</div>
       <div style="font-size:12px;color:var(--mut);white-space:nowrap">${ev.hay?`<strong style="color:var(--ink)">${cxFmtPts(ev.pts)}</strong>`:"—"} / ${cxFmtPts(cxMaxNodo(sec))}</div>
     </div>
-    ${k?`<div class="sub" style="font-size:11.5px;margin:-2px 0 6px">A elegir: cuentan ${k} de ${cxNumHijos(sec)}. Puntúa solo lo que haya respondido.</div>`:""}`;
+    ${k?`<div class="sub" style="font-size:11.5px;margin:-2px 0 6px">A triar: compten ${k} de ${cxNumHijos(sec)}. Puntua només el que haja respost.</div>`:""}`;
   if(depth===0) return `<div style="margin-bottom:16px">${sec.sinTitulo&&!k?"":cab}${items}${subs}</div>`;
   return `<div style="margin:8px 0 10px ${depth>1?"14px":"10px"};padding-left:10px;border-left:3px solid var(--line)">${cab}${items}${subs}</div>`;
 }
@@ -183,25 +183,25 @@ function renderCxGradingAlumno(grupo,act,al){
       <div><h2>${esc(al.nombre)}${neseBadgeHTML(al)}${marcaBadgeHTML(grupo,al.id,act.id)}</h2><p class="sub" style="margin:0">${esc(act.nombre)} · ${marcaBotonesHTML(grupo,al.id,act.id)}</p></div>
       <div class="flex">
         ${vc!=null?`<button class="ghost" style="border:1px solid var(--line)" onclick="cxImprimirRubrica('${al.id}','${act.id}')">🖨️ Imprimir rúbrica</button>
-        <button class="ghost" style="border:1px solid var(--line)" title="Solo puntuaciones y anotaciones, sin el detalle de lo que había que contestar: gasta menos papel" onclick="cxImprimirRubrica('${al.id}','${act.id}',true)">📄 Rúbrica resumida</button>`:""}
-        <button class="ghost" style="border:1px solid var(--line)" onclick="cxVolverLista()">← Lista</button>
+        <button class="ghost" style="border:1px solid var(--line)" title="Només puntuacions i anotacions, sense el detall del que calia contestar: gasta menys paper" onclick="cxImprimirRubrica('${al.id}','${act.id}',true)">📄 Rúbrica resumida</button>`:""}
+        <button class="ghost" style="border:1px solid var(--line)" onclick="cxVolverLista()">← Llista</button>
         <button class="ghost" style="border:1px solid var(--line)" ${i<=0?"disabled":""} onclick="cxIrAlumno('${i>0?alumnos[i-1].id:al.id}')">← Anterior</button>
-        <button class="ghost" style="border:1px solid var(--line)" ${i>=alumnos.length-1?"disabled":""} onclick="cxIrAlumno('${i<alumnos.length-1?alumnos[i+1].id:al.id}')">Siguiente →</button>
+        <button class="ghost" style="border:1px solid var(--line)" ${i>=alumnos.length-1?"disabled":""} onclick="cxIrAlumno('${i<alumnos.length-1?alumnos[i+1].id:al.id}')">Següent →</button>
       </div>
     </div>
   </div>
   <div class="card">
-    <h2 style="font-size:15px">Rúbrica${varAl?` <span class="badge" style="vertical-align:middle">${varAl.tipo==="ausencia"?"📅 ":""}${esc(varAl.nombre||"Adaptada")}${varAl.fecha?" · "+esc(cxFechaCorta(varAl.fecha)):""}</span>`:""}${deB?` <span class="badge mb-badge" style="vertical-align:middle">Modelo ${letraM}</span>`:""}</h2>
-    ${varAl?`<p class="sub" style="margin:0 0 10px">Este alumno/a hace ${varAl&&varAl.tipo==="ausencia"?"un examen alternativo (otro día)":"un examen adaptado"} y se corrige con su propia rúbrica.</p>`:""}
-    ${deB?(mbRubricaEnlazada(act)?`<p class="sub" style="margin:0 0 10px">Hace el modelo ${letraM}: las preguntas salen en el orden del ${letraM} y con su número (entre paréntesis, el del modelo A). La rúbrica y la nota son las mismas.</p>`:`<div class="alert-box" style="margin:0 0 10px">Hace el modelo ${letraM}, pero la rúbrica no está enlazada con el diseño y sale en el orden del A. Enlázala en ✏️ Diseño → «🔗 Enlazar la rúbrica con el diseño».</div>`):""}
+    <h2 style="font-size:15px">Rúbrica${varAl?` <span class="badge" style="vertical-align:middle">${varAl.tipo==="ausencia"?"📅 ":""}${esc(varAl.nombre||"Adaptada")}${varAl.fecha?" · "+esc(cxFechaCorta(varAl.fecha)):""}</span>`:""}${deB?` <span class="badge mb-badge" style="vertical-align:middle">Model ${letraM}</span>`:""}</h2>
+    ${varAl?`<p class="sub" style="margin:0 0 10px">Este alumne/a fa ${varAl&&varAl.tipo==="ausencia"?"un examen alternatiu (un altre dia)":"un examen adaptat"} i es corregix amb la seua pròpia rúbrica.</p>`:""}
+    ${deB?(mbRubricaEnlazada(act)?`<p class="sub" style="margin:0 0 10px">Fa el model ${letraM}: les preguntes ixen en l'ordre del ${letraM} i amb el seu número (entre parèntesis, el del model A). La rúbrica i la nota són les mateixes.</p>`:`<div class="alert-box" style="margin:0 0 10px">Fa el model ${letraM}, però la rúbrica no està enllaçada amb el disseny i ix en l'ordre de l'A. Enllaça-la en ✏️ Disseny → «🔗 Enllaçar la rúbrica amb el disseny».</div>`):""}
     ${itemsHtml}
   </div>
   <div class="card">
-    <div style="font-size:12.5px;color:var(--mut)">Nota cuantitativa</div>
+    <div style="font-size:12.5px;color:var(--mut)">Nota quantitativa</div>
     <span class="big" style="color:var(--accent-texto)">${vc==null?"—":fmt(vc)}</span>
-    ${extraAplicadoActividad(grupo,al.id,act)?`<div style="margin-top:4px;font-size:14px">Con puntos extra: <strong>${textoNotaConExtra(notaActividadSinExtra(grupo,al.id,act),extraAplicadoActividad(grupo,al.id,act),notaActividad(grupo,al.id,act))}</strong></div>`:""}
-    <p class="sub" style="margin:8px 0 0">Cuenta para la nota numérica del trimestre.</p>
-    ${act.recupera?"":`<div style="margin-top:12px"><div style="font-size:12.5px;color:var(--mut);margin-bottom:4px">Puntos extra (opcional)${extraBadgeHTML(grupo,al.id,act)}</div>${extraCamposHTML("act",al.id,act.id,extraActividad(grupo,al.id,act.id))}</div>`}
+    ${extraAplicadoActividad(grupo,al.id,act)?`<div style="margin-top:4px;font-size:14px">Amb punts extra: <strong>${textoNotaConExtra(notaActividadSinExtra(grupo,al.id,act),extraAplicadoActividad(grupo,al.id,act),notaActividad(grupo,al.id,act))}</strong></div>`:""}
+    <p class="sub" style="margin:8px 0 0">Compta per a la nota numèrica del trimestre.</p>
+    ${act.recupera?"":`<div style="margin-top:12px"><div style="font-size:12.5px;color:var(--mut);margin-bottom:4px">Punts extra (opcional)${extraBadgeHTML(grupo,al.id,act)}</div>${extraCamposHTML("act",al.id,act.id,extraActividad(grupo,al.id,act.id))}</div>`}
   </div>
   <div class="card">
     <h2 style="font-size:15px">Calificación cualitativa por criterio</h2>
@@ -236,7 +236,7 @@ window.cxSetItemScore=(alId,actId,itemId,v)=>{
 };
 window.cxExportarCSV=actId=>{
   const grupo=grupoActual(); const act=grupo.actividades.find(a=>a.id===actId); if(!act) return;
-  let csv="Alumno;Nota (0-10);Calificacion;Rubrica\n";
+  let csv="Alumne;Nota (0-10);Qualificacio;Rubrica\n";
   const q=s=>'"'+String(s??"").replace(/"/g,'""')+'"';
   grupo.alumnos.forEach(al=>{
     const v=grupo.notasCuant?.[al.id]?.[act.id];
@@ -315,7 +315,7 @@ function cxRubricaBodyHTML(grupo,act,al,opts){
   const rubAl=mbRubricaVista(act,al.id);
   const maxTotal=cxMaxTotal(rubAl);
   const comentario=(grupo.examComentarios?.[al.id]?.[act.id]||"").trim();
-  const fechaLarga=new Date().toLocaleDateString("es-ES",{day:"numeric",month:"long",year:"numeric"});
+  const fechaLarga=new Date().toLocaleDateString("ca-ES",{day:"numeric",month:"long",year:"numeric"});
   const filaItem=it=>{
       const val=sc[it.id];
       const max=Number(it.max)||0;
@@ -345,16 +345,16 @@ function cxRubricaBodyHTML(grupo,act,al,opts){
   return `
     <div${opts.pageBreak?' style="page-break-before:always;break-before:page"':''}>
     ${state.centroNombre?`<div class="cx-letterhead">${esc(state.centroNombre)}</div>`:""}
-    <div class="cx-eyebrow">${opts.resumida?"Rúbrica de corrección · resumen":"Rúbrica de corrección"}</div>
+    <div class="cx-eyebrow">${opts.resumida?"Rúbrica de correcció · resum":"Rúbrica de correcció"}</div>
     <h1 class="cx-alumno">${esc(al.nombre)}</h1>
-    <div class="cx-meta-line">${esc(act.nombre)}${mbHaceB(act,al.id)?" · Modelo "+mbModeloDe(act,al.id):""}${(v=>v?" · "+esc(v.nombre||"Adaptada")+(v.fecha?" ("+esc(cxFechaCorta(v.fecha))+")":""):"")(cxVarianteDeAlumno(act,al.id))}<span class="sep">·</span>${esc(cat.materia)} ${esc(cat.curso)}<span class="sep">·</span>Grupo ${esc(grupo.nombre)}<span class="sep">·</span><b>${fechaLarga}</b></div>
+    <div class="cx-meta-line">${esc(act.nombre)}${mbHaceB(act,al.id)?" · Model "+mbModeloDe(act,al.id):""}${(v=>v?" · "+esc(v.nombre||"Adaptada")+(v.fecha?" ("+esc(cxFechaCorta(v.fecha))+")":""):"")(cxVarianteDeAlumno(act,al.id))}<span class="sep">·</span>${esc(cat.materia)} ${esc(cat.curso)}<span class="sep">·</span>Grup ${esc(grupo.nombre)}<span class="sep">·</span><b>${fechaLarga}</b></div>
     ${seccionesHtml}
     <div class="cx-total-box">
-      <div><div class="cx-total-label">Puntuación total</div><div class="cx-total-value">${vc==null?"—":fmt(vc)} <small>/ ${fmt(cxEscalarDe(act,al.id)&&maxTotal>0&&Math.abs(maxTotal-10)>=0.01?10:maxTotal)}</small></div></div>
-      ${(x=>x?`<div><div class="cx-total-label">Puntos extra${(extraActividad(grupo,al.id,act.id).motivo||"").trim()?" · "+esc(extraActividad(grupo,al.id,act.id).motivo):""}</div><div class="cx-total-value">+${fmtPts(x)} <small>→ nota del examen</small> ${fmt(_sumarExtra(vc,x))}</div></div>`:"")(extraAplicadoActividad(grupo,al.id,act))}
+      <div><div class="cx-total-label">Puntuació total</div><div class="cx-total-value">${vc==null?"—":fmt(vc)} <small>/ ${fmt(cxEscalarDe(act,al.id)&&maxTotal>0&&Math.abs(maxTotal-10)>=0.01?10:maxTotal)}</small></div></div>
+      ${(x=>x?`<div><div class="cx-total-label">Punts extra${(extraActividad(grupo,al.id,act.id).motivo||"").trim()?" · "+esc(extraActividad(grupo,al.id,act.id).motivo):""}</div><div class="cx-total-value">+${fmtPts(x)} <small>→ nota de l'examen</small> ${fmt(_sumarExtra(vc,x))}</div></div>`:"")(extraAplicadoActividad(grupo,al.id,act))}
       <div>${pillCuant(_sumarExtra(vc,extraAplicadoActividad(grupo,al.id,act)))}</div>
     </div>
-    ${comentario?`<div class="cx-comentario"><h2>Comentario del profesor/a</h2><p style="white-space:pre-wrap">${esc(comentario)}</p></div>`:""}
+    ${comentario?`<div class="cx-comentario"><h2>Comentari del professor/a</h2><p style="white-space:pre-wrap">${esc(comentario)}</p></div>`:""}
     </div>`;
 }
 window.cxImprimirRubrica=(alId,actId,resumida)=>{
@@ -365,7 +365,7 @@ window.cxImprimirRubrica=(alId,actId,resumida)=>{
 };
 function cxRubricasPortadaHTML(grupo,act,alumnos){
   const cat=getCatalogo(grupo.catalogoKey);
-  const fechaLarga=new Date().toLocaleDateString("es-ES",{day:"numeric",month:"long",year:"numeric"});
+  const fechaLarga=new Date().toLocaleDateString("ca-ES",{day:"numeric",month:"long",year:"numeric"});
   const filas=alumnos.map(al=>{
     const vc=grupo.notasCuant?.[al.id]?.[act.id];
     return `<tr><td>${esc(al.nombre)}</td><td style="text-align:right;font-weight:600;white-space:nowrap">${vc==null?"—":fmt(vc)}</td><td>${pillCuant(vc)}</td></tr>`;
@@ -373,11 +373,11 @@ function cxRubricasPortadaHTML(grupo,act,alumnos){
   return `
     <div>
     ${state.centroNombre?`<div class="cx-letterhead">${esc(state.centroNombre)}</div>`:""}
-    <div class="cx-eyebrow">Rúbricas de corrección</div>
+    <div class="cx-eyebrow">Rúbriques de correcció</div>
     <h1 class="cx-portada-titulo">${esc(act.nombre)}</h1>
-    <div class="cx-meta-line" style="margin-bottom:8px">${esc(cat.materia)} ${esc(cat.curso)}<span class="sep">·</span>Grupo ${esc(grupo.nombre)}<span class="sep">·</span><b>${fechaLarga}</b></div>
-    <p class="cx-sub">${alumnos.length} alumno${alumnos.length===1?"":"s"} corregido${alumnos.length===1?"":"s"}, ordenados alfabéticamente por apellidos. Cada uno ocupa su propia página a continuación de este índice.</p>
-    <table class="cx-portada-table"><thead><tr><th>Alumno/a</th><th style="width:70px;text-align:right">Nota</th><th style="width:150px">Calificación</th></tr></thead><tbody>${filas}</tbody></table>
+    <div class="cx-meta-line" style="margin-bottom:8px">${esc(cat.materia)} ${esc(cat.curso)}<span class="sep">·</span>Grup ${esc(grupo.nombre)}<span class="sep">·</span><b>${fechaLarga}</b></div>
+    <p class="cx-sub">${alumnos.length} alumne${alumnos.length===1?"":"s"} corregit${alumnos.length===1?"":"s"}, ordenats alfabèticament per cognoms. Cadascun ocupa la seua pròpia pàgina a continuació d'este índex.</p>
+    <table class="cx-portada-table"><thead><tr><th>Alumne/a</th><th style="width:70px;text-align:right">Nota</th><th style="width:150px">Qualificació</th></tr></thead><tbody>${filas}</tbody></table>
     </div>`;
 }
 window.cxImprimirRubricasTodos=(actId,resumida)=>{
@@ -414,7 +414,7 @@ function renderCalificarRubrica(grupo,act,acts){
       <select class="in" id="calSel" style="min-width:260px">
         ${acts.map(a=>`<option value="${a.id}" ${a.id===act.id?"selected":""}>${esc(a.nombre)}</option>`).join("")}
       </select>
-      ${act.recupera?"":`<button class="ghost" style="border:1px solid var(--line)" title="Sumar puntos a la nota de este examen (p. ej. +0,5 por presentarse voluntario/a)" onclick="abrirExtrasActividad('${act.id}')">➕ Puntos extra</button>`}
+      ${act.recupera?"":`<button class="ghost" style="border:1px solid var(--line)" title="Sumar punts a la nota d'este examen (p. ex. +0,5 per presentar-se voluntari/ària)" onclick="abrirExtrasActividad('${act.id}')">➕ Punts extra</button>`}
     </div>
     <div class="alert-box" style="margin-bottom:14px">🖊️ Este examen se corrige con rúbrica desde el <strong>Corrector de Exámenes</strong>: la nota cuantitativa y la de cada criterio se calculan solas.
       <button class="btn small" onclick="cxAbrirDesdeOtroModo('${act.id}')">Abrir en el Corrector →</button>

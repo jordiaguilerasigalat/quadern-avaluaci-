@@ -60,7 +60,7 @@ window.comSugerirGrupo=async(lang)=>{
   const grupo=grupoActual(); if(!grupo) return; const trim=state.ui.trim;
   const vacios=grupo.alumnos.filter(al=>!((al.comentariosEval||[])[trim]||"").trim() && notaTrimestre(grupo,al.id,trim)!=null);
   if(!vacios.length){ mostrarAviso("Todo el alumnado con nota ya tiene comentario en esta evaluación (no se sobrescribe ninguno)."); return; }
-  if(!(await confirmar(`Se redactará un borrador de comentario (${lang==="va"?"en valencià":"en castellano"}) para ${vacios.length} alumno${vacios.length===1?"":"s"} con nota y sin comentario en ${TRIMESTRES[trim]}. Los comentarios ya escritos no se tocan.`,{ok:"Redactar",peligro:false}))) return;
+  if(!(await confirmar(`Es redactarà un esborrany de comentari (${lang==="va"?"en valencià":"en castellà"}) per a ${vacios.length} alumne${vacios.length===1?"":"s"} amb nota i sense comentari en la ${TRIMESTRES[trim]}. Els comentaris ja escrits no es toquen.`,{ok:"Redactar",peligro:false}))) return;
   vacios.forEach(al=>{ al.comentariosEval[trim]=comentarioSugerido(grupo,al,trim,lang); });
   save(); render(); mostrarToast(`✓ ${vacios.length} borradores escritos: revísalos antes de imprimir`);
 };
@@ -230,7 +230,7 @@ function renderResultados(grupo){
     <div class="flex" style="gap:24px;align-items:flex-end">
       <div><div style="font-size:12.5px;color:var(--mut)">Nota de ${TRIMESTRES[trim]}${extraEvalBadgeHTML(grupo,al.id,trim)}</div>
         <div class="flex" style="gap:8px;align-items:baseline"><span class="big" style="color:var(--accent-texto)">${fmt(nt)}</span> ${pillCuant(nt)}</div></div>
-      <div><div style="font-size:12.5px;color:var(--mut)">Nota final (media ponderada)${extraEvalBadgeHTML(grupo,al.id,"final")}</div>
+      <div><div style="font-size:12.5px;color:var(--mut)">Nota final (mitjana ponderada)${extraEvalBadgeHTML(grupo,al.id,"final")}</div>
         <div class="flex" style="gap:8px;align-items:baseline"><span class="big">${fmt(nf)}</span> ${pillCuant(nf)}</div></div>
     </div>
     <div class="grid" style="gap:8px;margin-top:14px">

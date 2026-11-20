@@ -136,10 +136,10 @@ function _procesarArchivoCopiaJSON(file,limpiar){
     if(idsNoValidos(s).length){ mostrarAviso(AVISO_IDS_NO_VALIDOS); return; }
     const nuevo=resumenEstado(s), actual=resumenEstado(state);
     const hayDatos=actual.total>0;
-    const msg=`Vas a cargar la copia «${file.name}»:\n• ${nuevo.texto}`+
-      (hayDatos?`\n\nEsto SUSTITUIRÁ todo lo que tienes ahora:\n• ${actual.texto}\n\nAntes se guarda automáticamente una copia de lo actual (recuperable en 🛟 Copias).`:"")+"\n\n¿Continuar?";
+    const msg=`Vas a carregar la còpia «${file.name}»:\n• ${nuevo.texto}`+
+      (hayDatos?`\n\nAixò SUBSTITUIRÀ tot el que tens ara:\n• ${actual.texto}\n\nAbans es guarda automàticament una còpia del que hi ha ara (recuperable en 🛟 Còpies).`:"")+"\n\nVols continuar?";
     if(!await confirmar(msg)) return;
-    if(hayDatos) await crearCopiaAuto("Antes de importar «"+file.name+"»",true);
+    if(hayDatos) await crearCopiaAuto("Abans d'importar «"+file.name+"»",true);
     const _exDis=s._examenesDiseno; delete s._examenesDiseno;
     if(cargarEstadoCompleto(s)){
       if(Array.isArray(_exDis)){ await exGuardarVarios(_exDis); exLimpiarPendientes(); }
@@ -217,10 +217,10 @@ function renderGrupo(grupo){
   }catch(err){
     const tc=document.getElementById("tabContent");
     if(tc) tc.innerHTML=`<div class="card" style="border-color:var(--danger)">
-      <h2 style="color:var(--danger)">⚠️ Ha habido un problema al mostrar esta pestaña</h2>
-      <p class="sub">Prueba a recargar la página. Si sigue pasando, haz una captura de este mensaje (con el detalle técnico) y compártela para poder arreglarlo.</p>
-      <details style="margin-top:8px"><summary style="cursor:pointer;font-size:13px;color:var(--mut)">Detalle técnico</summary>
-        <pre style="white-space:pre-wrap;font-size:11.5px;color:var(--mut);background:var(--surface);padding:10px;border-radius:8px;margin-top:6px">Pestaña: ${esc(t)}
+      <h2 style="color:var(--danger)">⚠️ Hi ha hagut un problema en mostrar esta pestanya</h2>
+      <p class="sub">Prova de recarregar la pàgina. Si continua passant, fes una captura d'este missatge (amb el detall tècnic) i comparteix-la perquè es puga arreglar.</p>
+      <details style="margin-top:8px"><summary style="cursor:pointer;font-size:13px;color:var(--mut)">Detall tècnic</summary>
+        <pre style="white-space:pre-wrap;font-size:11.5px;color:var(--mut);background:var(--surface);padding:10px;border-radius:8px;margin-top:6px">Pestanya: ${esc(t)}
 ${esc(err.message||String(err))}
 ${esc(err.stack||"")}</pre>
       </details>

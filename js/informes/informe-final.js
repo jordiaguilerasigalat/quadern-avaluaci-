@@ -59,20 +59,20 @@ function informeFinalAlumnoBodyHTML(grupo,al,opts){
 
   return `
     <div${opts.pageBreak?' style="page-break-before:always;break-before:page"':''}>
-    <h1>Informe final de curso</h1>
-    <div class="meta">${esc(cat.materia)} · ${esc(cat.curso)} · Grupo ${esc(grupo.nombre)} · Curso completo · Generado el ${new Date().toLocaleDateString("es-ES")}</div>
+    <h1>Informe final de curs</h1>
+    <div class="meta">${esc(cat.materia)} · ${esc(cat.curso)} · Grup ${esc(grupo.nombre)} · Curso completo · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     <h2>Alumno/a: ${esc(al.nombre)}</h2>
     ${htmlAlertaAsimetria}
     <table><thead><tr><th>Periodo</th><th>Nota</th><th>Calificación</th><th>Comentario a la calificación</th></tr></thead><tbody>${filas3}<tr><td><strong>Nota final</strong></td><td><strong>${notaEvalInformeHTML(grupo,al.id,"final")}</strong></td><td>${pillCuant(nf)}</td><td></td></tr></tbody></table>
-    <p style="font-size:12px;color:#666;margin-top:-2px">La nota final es la media ponderada de las evaluaciones con datos disponibles.</p>
+    <p style="font-size:12px;color:#666;margin-top:-2px">La nota final és la mitjana ponderada de les avaluacions amb dades disponibles.</p>
     ${htmlAsistenciaFinal}
     ${htmlActsPDF}
     <h2>Competencias clave trabajadas (media del curso)</h2>
-    ${ccF.length?`<table><thead><tr><th>Competencia clave</th><th>Adquisición</th><th>Actividades y exámenes utilizados</th></tr></thead><tbody>
-      ${ccF.map(x=>`<tr><td>${x.cc} · ${COMP_CLAVE[x.cc]}</td><td>${pillPlain(grupo,x.p)}</td><td style="font-size:12px;color:#555">${esc(abrevActs(actividadesDeCCAnual(grupo,al.id,x.cc),4))}</td></tr>`).join("")}</tbody></table>`:"<p>Sin datos en todo el curso.</p>"}
+    ${ccF.length?`<table><thead><tr><th>Competència clau</th><th>Adquisició</th><th>Activitats i exàmens utilitzats</th></tr></thead><tbody>
+      ${ccF.map(x=>`<tr><td>${x.cc} · ${COMP_CLAVE[x.cc]}</td><td>${pillPlain(grupo,x.p)}</td><td style="font-size:12px;color:#555">${esc(abrevActs(actividadesDeCCAnual(grupo,al.id,x.cc),4))}</td></tr>`).join("")}</tbody></table>`:"<p>No hi ha dades en tot el curs.</p>"}
     <h2>Competencias específicas trabajadas (media del curso)</h2>
     ${ceF.length?`<table><thead><tr><th>Competencia específica</th><th>Adquisición</th><th>Actividades y exámenes utilizados</th></tr></thead><tbody>
-      ${ceF.map(x=>`<tr><td>${x.ce.id} · ${esc(x.ce.titulo)}</td><td>${pillPlain(grupo,x.p)}</td><td style="font-size:12px;color:#555">${esc(abrevActs(actividadesDeCEAnual(grupo,al.id,x.ce.id),4))}</td></tr>`).join("")}</tbody></table>`:"<p>Sin datos en todo el curso.</p>"}
+      ${ceF.map(x=>`<tr><td>${x.ce.id} · ${esc(x.ce.titulo)}</td><td>${pillPlain(grupo,x.p)}</td><td style="font-size:12px;color:#555">${esc(abrevActs(actividadesDeCEAnual(grupo,al.id,x.ce.id),4))}</td></tr>`).join("")}</tbody></table>`:"<p>No hi ha dades en tot el curs.</p>"}
     </div>
   `;
 }
@@ -81,7 +81,7 @@ window.exportarInformeFinalAlumno=alId=>{
   const al=grupo.alumnos.find(a=>a.id===alId);
   const cat=getCatalogo(grupo.catalogoKey);
   const portada=generarPortadaHTML(`Informe final de curso — ${al.nombre}`,
-    [`${esc(cat.materia)} · ${esc(cat.curso)} · Grupo ${esc(grupo.nombre)}`,
+    [`${esc(cat.materia)} · ${esc(cat.curso)} · Grup ${esc(grupo.nombre)}`,
      `Curso escolar: <strong>${esc(cursoEscolarEfectivo(null))}</strong>`,
      profesorNombreEfectivo(null)?`Elaborado por: <strong>${esc(profesorNombreEfectivo(null))}</strong>`:""], []);
   abrirVentanaInforme(`Informe final · ${al.nombre}`, informeFinalAlumnoBodyHTML(grupo,al), {portada});
@@ -128,7 +128,7 @@ window.exportarInformeGrupo=(modo)=>{
     }).join("");
   }else{
     tituloPeriodo=TRIMESTRES[trim];
-    cabNotas=`<th>Alumno/a</th><th>Nota · ${TRIMESTRES[trim]}</th><th>Calificación</th>`;
+    cabNotas=`<th>Alumne/a</th><th>Nota · ${TRIMESTRES[trim]}</th><th>Qualificació</th>`;
     filasAl=grupo.alumnos.map(a=>{
       const t=notaTrimestre(grupo,a.id,trim);
       return `<tr><td>${esc(a.nombre)}</td><td><strong>${fmt(t)}</strong></td><td>${pillCuant(t)}</td></tr>`;}).join("");
@@ -153,7 +153,7 @@ window.exportarInformeGrupo=(modo)=>{
   }
   const body=`
     <h1>Informe de grupo${esFinal?" · final de curso":""}</h1>
-    <div class="meta">${esc(cat.materia)} · ${esc(cat.curso)} · Grupo ${esc(grupo.nombre)} · ${tituloPeriodo} · Generado el ${new Date().toLocaleDateString("es-ES")}</div>
+    <div class="meta">${esc(cat.materia)} · ${esc(cat.curso)} · Grup ${esc(grupo.nombre)} · ${tituloPeriodo} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     ${resumenHTML}
     <h2>Calificación cuantitativa</h2>
     <table><thead><tr>${cabNotas}</tr></thead><tbody>${filasAl}</tbody></table>

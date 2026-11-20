@@ -210,21 +210,21 @@ function progActividadCardHTML(idx,a,p,grupoId,iAct,totalGrupo){
       <label style="font-size:12.5px;display:flex;align-items:center;gap:5px;color:var(--mut)">
         <input type="checkbox" ${a.esExamen?"checked":""} onchange="progSetActividadCampo('${a.id}','esExamen',this.checked);render()"> Es examen
       </label>
-      ${a.esExamen?`<button class="ghost" style="border:1px solid var(--line)" title="Abre este examen en el Corrector del grupo vinculado para crear o editar su rúbrica (si aún no está en Evaluación, se añade)" onclick="progAbrirEnCorrector('${a.id}')">🖊️ Abrir en el Corrector</button>`:""}
+      ${a.esExamen?`<button class="ghost" style="border:1px solid var(--line)" title="Obri este examen en el Corrector del grup vinculat per a crear o editar-ne la rúbrica (si encara no és en Avaluació, s'hi afig)" onclick="progAbrirEnCorrector('${a.id}')">🖊️ Obrir en el Corrector</button>`:""}
       <button class="ghost danger" onclick="progEliminarActividad('${a.id}')">✕</button>
     </div>
     ${a.esExamen&&(a.rubrica||[]).length?(()=>{ const n=cxItemsFlat(a.rubrica).length, tot=cxMaxTotal(a.rubrica);
-      return `<div style="font-size:12.5px;color:var(--mut);margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">📌 Rúbrica guardada: ${a.rubrica.length} apartado${a.rubrica.length===1?"":"s"}, ${n} ítem${n===1?"":"s"}, ${String(Math.round(tot*100)/100).replace(".",",")} pts${(a.variantes||[]).length?`, con ${a.variantes.length===1?"versión adaptada":a.variantes.length+" versiones adaptadas"} (${a.variantes.map(v=>esc(v.nombre||"Adaptada")).join(", ")})`:""} — se usará al traer este examen a cualquier grupo.
+      return `<div style="font-size:12.5px;color:var(--mut);margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">📌 Rúbrica guardada: ${a.rubrica.length} apartat${a.rubrica.length===1?"":"s"}, ${n} ítem${n===1?"":"s"}, ${String(Math.round(tot*100)/100).replace(".",",")} punts${(a.variantes||[]).length?`, amb ${a.variantes.length===1?"versió adaptada":a.variantes.length+" versions adaptades"} (${a.variantes.map(v=>esc(v.nombre||"Adaptada")).join(", ")})`:""} — s'usarà en portar este examen a qualsevol grup.
         <button class="ghost danger small" style="padding:2px 8px" onclick="progQuitarRubrica('${a.id}')">Quitar</button></div>`; })():""}
     <div style="margin-top:8px">
       <div class="section-eyebrow" style="margin:0 0 4px">Situaciones de Aprendizaje que cubre (marca varias si es un examen conjunto)</div>
       <div class="flex" style="flex-wrap:wrap;gap:10px">
         ${p.sdas.map(s=>`<label style="font-size:12.5px;display:flex;align-items:center;gap:5px">
-          <input type="checkbox" ${(a.sdaIds||[]).includes(s.id)?"checked":""} onchange="progToggleActividadSda('${a.id}','${s.id}',this.checked)"> ${TRIMESTRES[s.trimestre].replace("ª evaluación","ª ev.")} · ${esc(sdaNom(s)||"(sin título)")}
-        </label>`).join("")||'<span class="sub">Crea antes alguna SdA.</span>'}
+          <input type="checkbox" ${(a.sdaIds||[]).includes(s.id)?"checked":""} onchange="progToggleActividadSda('${a.id}','${s.id}',this.checked)"> ${TRIMESTRES[s.trimestre].replace(" avaluació"," av.").replace("ª evaluación","ª ev.")} · ${esc(sdaNom(s)||"(sin título)")}
+        </label>`).join("")||'<span class="sub">Crea abans alguna SdA.</span>'}
       </div>
     </div>
-    <button class="ghost" style="border:1px solid var(--line);margin-top:8px" onclick="progToggleActividadAbierta('${a.id}')">${abierta?"Ocultar":"Elegir"} criterios de evaluación — ${nCrit} marcado${nCrit===1?"":"s"}</button>
+    <button class="ghost" style="border:1px solid var(--line);margin-top:8px" onclick="progToggleActividadAbierta('${a.id}')">${abierta?"Amagar":"Triar"} criteris d'avaluació — ${nCrit} marcat${nCrit===1?"":"s"}</button>
     ${abierta?(()=>{
       const permitidas=progCEsPermitidasActividad(p,a);
       // CEs con algún criterio ya marcado aunque hayan quedado fuera de las
@@ -236,13 +236,13 @@ function progActividadCardHTML(idx,a,p,grupoId,iAct,totalGrupo){
       const cesBase=permitidas? idx.cat.ces.filter(ce=>permitidas.has(ce.id)) : idx.cat.ces;
       const cesAMostrar=[...cesBase, ...cesFueraConSeleccion];
       const aviso = permitidas===null
-        ? `<p class="sub" style="margin:0 0 8px">Esta actividad no está vinculada a ninguna Situación de Aprendizaje, así que se muestran todos los criterios de la materia. Márcala en una SdA (arriba) para que solo aparezcan los de las competencias específicas trabajadas en ella.</p>`
-        : (!cesBase.length ? `<p class="sub" style="margin:0 0 8px">Todavía no hay saberes básicos marcados en la Situación de Aprendizaje de esta actividad. Elígelos primero (en "Elegir saberes básicos") para que aquí aparezcan sus criterios de evaluación.</p>` : "");
+        ? `<p class="sub" style="margin:0 0 8px">Esta activitat no està vinculada a cap situació d'aprenentatge, així que es mostren tots els criteris de la matèria. Marca-la en una SdA (dalt) perquè només hi apareguen els de les competències específiques que s'hi treballen.</p>`
+        : (!cesBase.length ? `<p class="sub" style="margin:0 0 8px">Encara no hi ha sabers bàsics marcats en la situació d'aprenentatge d'esta activitat. Tria'ls primer (en «Triar sabers bàsics») perquè ací n'apareguen els criteris d'avaluació.</p>` : "");
       return `<div class="scroll" style="margin-top:8px;max-height:320px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;padding:10px">
       ${aviso}
       ${cesAMostrar.map(ce=>`
         <div style="margin-bottom:10px">
-          <div style="font-size:12.5px;font-weight:700;color:var(--ink)">${ce.id}${cesFueraConSeleccion.includes(ce)?' <span class="badge" style="background:var(--danger-soft);color:var(--danger)">fuera de los saberes elegidos</span>':""}</div>
+          <div style="font-size:12.5px;font-weight:700;color:var(--ink)">${ce.id}${cesFueraConSeleccion.includes(ce)?' <span class="badge" style="background:var(--danger-soft);color:var(--danger)">fora dels sabers triats</span>':""}</div>
           <div style="font-size:11.5px;color:var(--mut);margin:1px 0 6px;line-height:1.35">${esc(ce.titulo||"")}</div>
           ${ce.criterios.map(cr=>{
             const link=(a.criterios||[]).find(c=>c.critId===cr.id);

@@ -130,87 +130,90 @@ function slugCatalogo(materia,curso){
   return "custom_"+(base||uid());
 }
 function ejemploCatalogoTexto(){
-  return `MATERIA: Matemáticas
-CURSO: 2º ESO
+  return `MATERIA: Física i Química
+CURSO: 2n ESO
 
 BLOQUES
-Pruebas y exámenes = 60
-Trabajo diario y cuaderno = 30
-Actitud y participación = 10
+Proves i exàmens = 60
+Treball diari i quadern = 30
+Actitud i participació = 10
 
-CE1: Interpretar y transmitir información cuantitativa, espacial y de incertidumbre analizando textos, gráficos y datos matemáticos | CCL, STEM
-1.1: Interpretar y describir informaciones, datos y argumentaciones que contengan elementos matemáticos.
-1.2: Reconocer y comprender el papel de las matemáticas en el mundo, emitiendo juicios fundamentados.
+CE1: Comprendre i relacionar els motius pels quals ocorren els principals fenòmens fisicoquímics de l'entorn, explicant-los en termes de lleis i teories científiques | STEM, CPSAA
+1.1: Identificar, comprendre i explicar els fenòmens fisicoquímics quotidians més rellevants a partir dels principis, teories i lleis científiques adequades.
+1.2: Resoldre els problemes fisicoquímics plantejats utilitzant les lleis i teories científiques adequades.
 SABERES:
-- Lectura e interpretación de tablas, gráficos y diagramas estadísticos sencillos.
-- Estimación y redondeo de cantidades en contextos cotidianos.
+- Les magnituds físiques i les seues unitats en el Sistema Internacional.
+- Propietats de la matèria i estats d'agregació.
 
-CE2: Utilizar el razonamiento y la argumentación para investigar y resolver problemas, seleccionando y aplicando estrategias adecuadas | STEM, CPSAA
-2.1: Emplear estrategias de resolución (ensayo-error, particularización, patrones…) en situaciones de la vida cotidiana.
-2.2: Comprobar la validez matemática de las soluciones a un problema.
-2.3: Formular conjeturas y proponer razonamientos para su verificación.`;
+CE2: Expressar les observacions realitzades per l'alumnat en forma de preguntes, formulant hipòtesis per a explicar-les i demostrant-les per mitjà de l'experimentació científica | STEM, CCL
+2.1: Emprar les metodologies pròpies de la ciència en la identificació i descripció de fenòmens a partir de qüestions a les quals es puga donar resposta a través de la indagació.
+2.2: Seleccionar, d'acord amb la naturalesa de les qüestions que es tracten, la manera més adequada de comprovar o refutar les hipòtesis formulades.
+2.3: Aplicar les lleis i teories científiques conegudes en formular qüestions i hipòtesis.`;
 }
 function plantillaCatalogoTexto(){
   return `# ======================================================================
-# PLANTILLA PARA IMPORTAR UNA MATERIA · Evaluación por competencias
+# PLANTILLA PER A IMPORTAR UNA MATÈRIA · Avaluació per competències
 # ======================================================================
-# Rellena los datos de tu materia sustituyendo todo lo que está entre
-# corchetes [así] por tus propios datos, y luego pega este contenido
-# (o carga directamente este archivo) en la aplicación, en
-# "Importar una materia nueva" → "Validar e importar".
+# Ompli les dades de la teua matèria substituint tot el que està entre
+# claudàtors [així] per les teues dades, i després apega este contingut
+# (o carrega directament este fitxer) en l'aplicació, en
+# «Importar una matèria nova» → «Validar i importar».
 #
-# Las líneas que empiezan por "#", como esta, son solo explicaciones:
-# la aplicación las ignora al importar. Puedes dejarlas, borrarlas, o
-# añadir tus propias notas con "#" delante.
+# Les línies que comencen per "#", com esta, són només explicacions:
+# l'aplicació les ignora en importar. Pots deixar-les, esborrar-les o
+# afegir les teues pròpies notes amb "#" davant.
+#
+# IMPORTANT: no traduïsques les paraules clau MATERIA:, CURSO:, BLOQUES
+# ni SABERES: (l'aplicació les necessita tal com estan).
 # ======================================================================
 
-# Nombre de tu materia y el curso al que corresponde este catálogo:
-MATERIA: [Nombre de la materia]
-CURSO: [Curso, p. ej. 2º ESO]
+# Nom de la teua matèria i el curs al qual correspon este catàleg:
+MATERIA: [Nom de la matèria]
+CURSO: [Curs, p. ex. 2n ESO]
 
 # ----------------------------------------------------------------------
-# BLOQUES DE CALIFICACIÓN
-# Son las partes que se combinan para la nota (exámenes, trabajo
-# diario, actitud...). Una línea "Nombre del bloque = porcentaje" por
-# bloque; lo habitual es que los porcentajes sumen 100. Puedes añadir
-# tantos bloques como necesites, o quitar alguno de los dos de ejemplo.
+# BLOCS DE QUALIFICACIÓ
+# Són les parts que es combinen per a la nota (exàmens, treball diari,
+# actitud...). Una línia "Nom del bloc = percentatge" per bloc; el
+# normal és que els percentatges sumen 100. Pots afegir tants blocs com
+# necessites, o llevar-ne algun dels dos d'exemple.
 # ----------------------------------------------------------------------
 BLOQUES
-[Nombre del bloque 1, p. ej. Pruebas y exámenes] = [porcentaje, p. ej. 60]
-[Nombre del bloque 2, p. ej. Trabajo diario] = [porcentaje, p. ej. 40]
+[Nom del bloc 1, p. ex. Proves i exàmens] = [percentatge, p. ex. 60]
+[Nom del bloc 2, p. ex. Treball diari] = [percentatge, p. ex. 40]
 
 # ----------------------------------------------------------------------
-# COMPETENCIAS ESPECÍFICAS Y CRITERIOS DE EVALUACIÓN
-# Cópialos de tu currículum oficial (Real Decreto de enseñanzas
-# mínimas o el decreto de tu comunidad autónoma).
+# COMPETÈNCIES ESPECÍFIQUES I CRITERIS D'AVALUACIÓ
+# Copia'ls del teu currículum oficial (decret de la Comunitat
+# Valenciana o reial decret d'ensenyaments mínims).
 #
-# Una línea "CEn: título | CÓDIGOS_CC" por cada competencia específica.
-# Códigos de competencias clave disponibles (usa los que correspondan,
-# separados por comas): CCL, CP, STEM, CD, CPSAA, CC, CE, CCEC.
+# Una línia "CEn: títol | CODIS_CC" per cada competència específica.
+# Codis de competències clau disponibles (usa els que corresponguen,
+# separats per comes): CCL, CP, STEM, CD, CPSAA, CC, CE, CCEC.
 #
-# Debajo de cada CE, una línea "n.n: texto" por cada criterio de
-# evaluación asociado, con la numeración de tu currículum.
+# Davall de cada CE, una línia "n.n: text" per cada criteri
+# d'avaluació associat, amb la numeració del teu currículum.
 #
-# Opcional: si quieres que Programación de Aula pueda ofrecerte también
-# los saberes básicos oficiales al elegir los de una Situación de
-# Aprendizaje (en vez de solo el cuadro de texto libre), añade debajo
-# de los criterios de esa CE una línea "SABERES:" seguida de una línea
-# "- texto" por cada saber básico. Es opcional: si no los pones, la
-# materia se importa igual, solo que sin saberes precargados.
+# Opcional: si vols que la Programació d'aula també et puga oferir els
+# sabers bàsics oficials en triar els d'una situació d'aprenentatge (en
+# compte de només el quadre de text lliure), afig davall dels criteris
+# d'eixa CE una línia "SABERES:" seguida d'una línia "- text" per cada
+# saber bàsic. És opcional: si no els poses, la matèria s'importa igual,
+# només que sense sabers precarregats.
 # ----------------------------------------------------------------------
-CE1: [Título de la primera competencia específica] | [CCL, STEM]
-1.1: [Texto del primer criterio de evaluación]
-1.2: [Texto del segundo criterio de evaluación]
+CE1: [Títol de la primera competència específica] | [CCL, STEM]
+1.1: [Text del primer criteri d'avaluació]
+1.2: [Text del segon criteri d'avaluació]
 SABERES:
-- [Primer saber básico de esta competencia específica]
-- [Segundo saber básico de esta competencia específica]
+- [Primer saber bàsic d'esta competència específica]
+- [Segon saber bàsic d'esta competència específica]
 
-CE2: [Título de la segunda competencia específica] | [STEM, CPSAA]
-2.1: [Texto del primer criterio de evaluación]
-2.2: [Texto del segundo criterio de evaluación]
+CE2: [Títol de la segona competència específica] | [STEM, CPSAA]
+2.1: [Text del primer criteri d'avaluació]
+2.2: [Text del segon criteri d'avaluació]
 
-# Añade tantas competencias específicas (CE3, CE4…) y sus criterios
-# (3.1, 3.2…) como tenga tu materia, siguiendo el mismo patrón.`;
+# Afig tantes competències específiques (CE3, CE4…) i els seus criteris
+# (3.1, 3.2…) com tinga la teua matèria, seguint el mateix patró.`;
 }
 function parseCatalogoTexto(texto){
   const lines=String(texto||"").split(/\r?\n/);
@@ -310,11 +313,11 @@ function opcionesCatalogosHTML(selectedKey){
     return `<option value="${k}" ${k===selectedKey?"selected":""}>${esc(c.materia)} · ${esc(c.curso)}</option>`;
   }).join("");
   const customKeys=Object.keys(state.catalogosPersonalizados||{}).filter(k=>!CATALOGOS[k]);
-  const custom=customKeys.length? `<optgroup label="Materias importadas">${customKeys.map(k=>{
+  const custom=customKeys.length? `<optgroup label="Matèries importades">${customKeys.map(k=>{
     const c=state.catalogosPersonalizados[k];
     return `<option value="${k}" ${k===selectedKey?"selected":""}>${esc(c.materia)} · ${esc(c.curso)}</option>`;
   }).join("")}</optgroup>` : "";
-  return `<optgroup label="Catálogos incluidos (Geografía e Historia)">${built}</optgroup>${custom}`;
+  return `<optgroup label="Catàlegs inclosos (Física i Química)">${built}</optgroup>${custom}`;
 }
 function actualizarSelectCatalogos(selectedKey){
   const sel=document.getElementById("ngCat"); if(!sel) return;
@@ -345,7 +348,7 @@ window.validarEImportarCatalogo=async ()=>{
   if(!raw){ mostrarResultadoImportacion('<div class="alert-box">Pega o escribe primero los datos de tu materia en el cuadro de texto (o descarga la plantilla, rellénala y cárgala).</div>'); return; }
   const rawSinComentarios=raw.split(/\r?\n/).filter(l=>!l.trim().startsWith("#")).join("\n");
   if(/\[[^\]\n]{2,80}\]/.test(rawSinComentarios)){
-    mostrarResultadoImportacion(`<div class="alert-box" style="border-color:var(--danger);background:#fbeaea">⚠️ <strong>Parece que quedan marcadores de la plantilla sin sustituir</strong>, como <code>[Nombre de la materia]</code>. Sustituye todo lo que esté entre corchetes <code>[así]</code> por tus propios datos y vuelve a intentarlo.</div>`);
+    mostrarResultadoImportacion(`<div class="alert-box" style="border-color:var(--danger);background:#fbeaea">⚠️ <strong>Sembla que queden marcadors de la plantilla sense substituir</strong>, com ara <code>[Nom de la matèria]</code>. Substituïx tot el que estiga entre claudàtors <code>[així]</code> per les teues dades i torna-ho a provar.</div>`);
     return;
   }
   let obj, erroresFormato=[];
@@ -403,9 +406,9 @@ window.validarEImportarCatalogo=async ()=>{
   const nCrit=catalogo.ces.reduce((n,ce)=>n+ce.criterios.length,0);
   const nSaberes=Object.values(saberesPorCE).reduce((n,arr)=>n+arr.length,0);
   mostrarResultadoImportacion(`<div class="alert-box" style="border-color:var(--accent);background:var(--accent-soft)">
-    ✓ <strong>${editando?"Guardado correctamente":"Importado correctamente"}:</strong> ${esc(catalogo.materia)} · ${esc(catalogo.curso)} — ${catalogo.ces.length} competencia${catalogo.ces.length===1?"":"s"} específica${catalogo.ces.length===1?"":"s"}, ${nCrit} criterio${nCrit===1?"":"s"}, ${catalogo.bloques.length} bloque${catalogo.bloques.length===1?"":"s"}${nSaberes?`, ${nSaberes} saber${nSaberes===1?"":"es"} básico${nSaberes===1?"":"s"}`:""}.
+    ✓ <strong>${editando?"Guardat correctament":"Importat correctament"}:</strong> ${esc(catalogo.materia)} · ${esc(catalogo.curso)} — ${catalogo.ces.length} competènci${catalogo.ces.length===1?"a":"es"} específi${catalogo.ces.length===1?"ca":"ques"}, ${nCrit} criteri${nCrit===1?"":"s"}, ${catalogo.bloques.length} bloc${catalogo.bloques.length===1?"":"s"}${nSaberes?`, ${nSaberes} saber${nSaberes===1?"":"s"} bàsic${nSaberes===1?"":"s"}`:""}.
     ${val.aviso?`<br>⚠️ ${esc(val.aviso)}`:""}
-    ${editando?"":`<br>Ya puedes elegirla en "Crear grupo nuevo", abajo.`}
+    ${editando?"":`<br>Ja la pots triar en «Crear grup nou», més avall.`}
   </div>`);
   ta.value="";
   actualizarSelectCatalogos(key);

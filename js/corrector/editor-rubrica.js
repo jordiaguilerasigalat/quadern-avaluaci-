@@ -26,9 +26,9 @@ function renderCorEditor(grupo){
   _cxHayPrevistos = !!prevCrit;
   _cxPrevistosSet = prevCrit ? new Set(prevCrit) : null;
   const pestanas=`<div class="flex" style="flex-wrap:wrap;gap:6px;margin-top:12px;align-items:center">
-      <button class="tab ${!variante?"on":""}" onclick="cxElegirVariante('')">Rúbrica general · ${nGeneral} alumno${nGeneral===1?"":"s"}</button>
-      ${cxVariantes(act).map(v=>`<button class="tab ${variante&&variante.id===v.id?"on":""}" onclick="cxElegirVariante('${v.id}')">${v.tipo==="ausencia"?"📅 ":""}${esc(v.nombre||"Examen alternativo")}${v.fecha?" · "+esc(cxFechaCorta(v.fecha)):""} · ${(v.alumnos||[]).length} alumno${(v.alumnos||[]).length===1?"":"s"}</button>`).join("")}
-      <button class="ghost" style="border:1px dashed var(--line)" title="Examen con otras preguntas para uno o varios alumnos/as (quien no vino el día del examen, o el alumnado NESE): se corrigen con su propia rúbrica y el resto con la general" onclick="cxNuevoAlternativo()">+ Examen alternativo</button>
+      <button class="tab ${!variante?"on":""}" onclick="cxElegirVariante('')">Rúbrica general · ${nGeneral} alumne${nGeneral===1?"":"s"}</button>
+      ${cxVariantes(act).map(v=>`<button class="tab ${variante&&variante.id===v.id?"on":""}" onclick="cxElegirVariante('${v.id}')">${v.tipo==="ausencia"?"📅 ":""}${esc(v.nombre||"Examen alternatiu")}${v.fecha?" · "+esc(cxFechaCorta(v.fecha)):""} · ${(v.alumnos||[]).length} alumne${(v.alumnos||[]).length===1?"":"s"}</button>`).join("")}
+      <button class="ghost" style="border:1px dashed var(--line)" title="Examen amb altres preguntes per a un o diversos alumnes (qui no va vindre el dia de l'examen, o l'alumnat NESE): es corregixen amb la seua pròpia rúbrica i la resta amb la general" onclick="cxNuevoAlternativo()">+ Examen alternatiu</button>
     </div>`;
   const panelVariante=variante? `<div class="card" style="border-left:4px solid var(--accent)">
     <div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
@@ -37,8 +37,8 @@ function renderCorEditor(grupo){
       </label>
       <label style="font-size:12.5px;color:var(--mut);font-weight:500">Tipo
         <select class="in" style="display:block;margin-top:4px" onchange="cxSetVarianteTipo(this.value)">
-          <option value="ausencia" ${variante.tipo==="ausencia"?"selected":""}>📅 Otro día (no vino al examen)</option>
-          <option value="nese" ${variante.tipo!=="ausencia"?"selected":""}>🧩 Adaptado (NESE)</option>
+          <option value="ausencia" ${variante.tipo==="ausencia"?"selected":""}>📅 Un altre dia (no va vindre a l'examen)</option>
+          <option value="nese" ${variante.tipo!=="ausencia"?"selected":""}>🧩 Adaptat (NESE)</option>
         </select>
       </label>
       <label style="font-size:12.5px;color:var(--mut);font-weight:500">Fecha
@@ -55,10 +55,10 @@ function renderCorEditor(grupo){
         const otra=cxVarianteDeAlumno(act,al.id);
         const aqui=otra&&otra.id===variante.id;
         const bloqueado=otra&&!aqui;
-        return `<label style="font-size:13px;display:flex;align-items:center;gap:6px;${bloqueado?"opacity:.55":""}" ${bloqueado?`title="Ya hace «${esc(otra.nombre||"otra rúbrica adaptada")}»"`:""}>
+        return `<label style="font-size:13px;display:flex;align-items:center;gap:6px;${bloqueado?"opacity:.55":""}" ${bloqueado?`title="Ja fa «${esc(otra.nombre||"una altra rúbrica adaptada")}»"`:""}>
           <input type="checkbox" ${aqui?"checked":""} ${bloqueado?"disabled":""} onchange="cxToggleAlumnoVariante('${al.id}',this.checked)"> ${esc(al.nombre)}${neseBadgeHTML(al)}
         </label>`;
-      }).join("")||'<span class="sub">Este grupo todavía no tiene alumnado.</span>'}
+      }).join("")||'<span class="sub">Este grup encara no té alumnat.</span>'}
     </div>
     <p class="sub" style="margin:8px 0 0">Quien esté marcado aquí se corrige con esta rúbrica y no con la general; su nota cuenta en el mismo examen, con el mismo peso.</p>
   </div>` : "";
@@ -84,11 +84,11 @@ function renderCorEditor(grupo){
   ${panelVariante}
   ${cxPanelPrevistosHTML(grupo,act,rub,variante)}
   ${esNiv? cxnEditorHTML(grupo,act,rub,variante,escalar) : `  <div class="card">
-    <p class="sub" style="margin:0">Organiza el examen como necesites: <strong>apartados</strong> con sus preguntas o ítems y, si hace falta, <strong>subapartados</strong> dentro (hasta ${CX_MAX_NIVELES} niveles). Cada ítem tiene su puntuación máxima, descriptores opcionales y los criterios de evaluación que trabaja. Si el alumnado elige (p. ej. «responda UNA de las dos opciones»), indica en ese apartado cuántos cuentan. Al importar desde el Diseño, la rúbrica copia su estructura (apartado → pregunta → subpregunta) con los puntos de cada parte.</p>
+    <p class="sub" style="margin:0">Organitza l'examen com necessites: <strong>apartats</strong> amb les seues preguntes o ítems i, si cal, <strong>subapartats</strong> dins (fins a ${CX_MAX_NIVELES} nivells). Cada ítem té la seua puntuació màxima, descriptors opcionals i els criteris d'avaluació que treballa. Si l'alumnat tria (p. ex. «responeu UNA de les dues opcions»), indica en eixe apartat quants en compten. En importar des del Disseny, la rúbrica copia la seua estructura (apartat → pregunta → subpregunta) amb els punts de cada part.</p>
     <div class="flex" style="margin-top:10px;align-items:center">
-      <span class="pill" style="background:${totalOk?'#dcece0':'#f3dcdc'};color:${totalOk?'#1e5631':'#912525'}">Suma de puntos${variante?" (rúbrica adaptada)":""}: ${maxTotal.toFixed(2)} / 10</span>
+      <span class="pill" style="background:${totalOk?'#dcece0':'#f3dcdc'};color:${totalOk?'#1e5631':'#912525'}">Suma de punts${variante?" (rúbrica adaptada)":""}: ${maxTotal.toFixed(2)} / 10</span>
 
-      ${!totalOk?`<label style="font-size:12.5px;color:var(--ink);display:inline-flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" ${escalar?"checked":""} onchange="cxSetEscalarA10(this.checked)"> Convertir la puntuación a nota sobre 10 ${maxTotal>0?`(p. ej. ${cxFmtPts(maxTotal/2)} puntos → 5)`:""}</label>
+      ${!totalOk?`<label style="font-size:12.5px;color:var(--ink);display:inline-flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" ${escalar?"checked":""} onchange="cxSetEscalarA10(this.checked)"> Convertir la puntuació a nota sobre 10 ${maxTotal>0?`(p. ex. ${cxFmtPts(maxTotal/2)} punts → 5)`:""}</label>
         ${escalar?"":'<span style="font-size:12.5px;color:var(--danger,#b91c1c)">Sin convertir, la nota será la suma de puntos (máximo 10).</span>'}`:''}
       <span style="flex:1"></span>
       <button class="ghost small" style="border:1px solid var(--line)" onclick="cxPlegarTodo(true)">▸ Plegar todo</button>
@@ -97,12 +97,12 @@ function renderCorEditor(grupo){
   </div>
   ${rub.map((sec,sIdx)=>renderCxNodoHTML(grupo,sec,0,sIdx,rub.length)).join("")}`}
   <div class="flex">
-    ${esNiv?"":`<button class="btn" onclick="cxAddSeccion()">+ Añadir apartado</button>`}
-    ${!esNiv&&rub.length===1&&!rub[0].sinTitulo&&!cxElegirEf(rub[0])&&(!rub[0].tipo||rub[0].tipo==="apartado")?`<button class="ghost" style="border:1px solid var(--line)" title="Mostrar solo las preguntas, sin cabecera de apartado" onclick="cxOcultarApartado('${rub[0].id}')">Sin apartado</button>`:""}
-    ${!variante?`<button class="ghost" style="border:1px solid var(--line)" onclick="cxGuardarComoPlantilla('${act.id}')">💾 Guardar como plantilla</button>`:""}
+    ${esNiv?"":`<button class="btn" onclick="cxAddSeccion()">+ Afegir apartat</button>`}
+    ${!esNiv&&rub.length===1&&!rub[0].sinTitulo&&!cxElegirEf(rub[0])&&(!rub[0].tipo||rub[0].tipo==="apartado")?`<button class="ghost" style="border:1px solid var(--line)" title="Mostrar només les preguntes, sense capçalera d'apartat" onclick="cxOcultarApartado('${rub[0].id}')">Sense apartat</button>`:""}
+    ${!variante?`<button class="ghost" style="border:1px solid var(--line)" onclick="cxGuardarComoPlantilla('${act.id}')">💾 Guardar com a plantilla</button>`:""}
     <button class="ghost" style="border:1px solid var(--line)" title="Sustituye esta rúbrica por una de tus plantillas guardadas (sirven para cualquier grupo)" onclick="cxCargarPlantilla()">📂 Cargar plantilla</button>
-    <button class="ghost" style="border:1px solid var(--line)" title="${esNiv?"Convierte las categorías en preguntas con puntos":"Convierte las preguntas en categorías de una tabla de niveles de logro"}" onclick="cxCambiarTipoRubrica()">⇄ ${esNiv?"Pasar a rúbrica por puntos":"Pasar a rúbrica por niveles"}</button>
-    ${progRef&&!variante?`<button class="ghost" style="border:1px solid var(--line)" title="Guarda esta rúbrica en el examen de la Programación &quot;${esc(progRef.prog.nombre)}&quot;: los demás grupos y los cursos siguientes la recibirán ya hecha al traer el examen" onclick="cxGuardarRubricaEnProgramacion('${act.id}')">📌 ${(progRef.progAct.rubrica||[]).length?"Actualizar la rúbrica de la Programación":"Guardar en la Programación"}</button>`:""}
+    <button class="ghost" style="border:1px solid var(--line)" title="${esNiv?"Convertix les categories en preguntes amb punts":"Convertix les preguntes en categories d'una taula de nivells d'assoliment"}" onclick="cxCambiarTipoRubrica()">⇄ ${esNiv?"Passar a rúbrica per punts":"Passar a rúbrica per nivells"}</button>
+    ${progRef&&!variante?`<button class="ghost" style="border:1px solid var(--line)" title="Guarda esta rúbrica en l'examen de la Programació &quot;${esc(progRef.prog.nombre)}&quot;: els altres grups i els cursos següents la rebran ja feta en portar l'examen" onclick="cxGuardarRubricaEnProgramacion('${act.id}')">📌 ${(progRef.progAct.rubrica||[]).length?"Actualitzar la rúbrica de la Programació":"Guardar en la Programació"}</button>`:""}
     <button class="ghost" style="border:1px solid var(--line)" onclick="cxIrCorregir('${act.id}')">Ir a corregir →</button>
   </div>`;
   document.getElementById("cxNombre").addEventListener("change",e=>{ act.nombre=e.target.value.trim()||act.nombre;
@@ -172,9 +172,9 @@ function renderCxNodoHTML(grupo,sec,depth,sIdx,nHermanos){
     ${nHijos>=2?`<label style="font-size:12.5px;color:var(--mut);display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap">El alumnado responde
       <select class="in" style="padding:4px 8px" onchange="cxSetNodoElegir('${sec.id}',this.value)">
         <option value="0" ${!k?"selected":""}>todo (${nHijos} de ${nHijos})</option>
-        ${Array.from({length:nHijos-1},(_,i)=>i+1).map(n=>`<option value="${n}" ${k===n?"selected":""}>solo ${n} de ${nHijos}, a elegir</option>`).join("")}
+        ${Array.from({length:nHijos-1},(_,i)=>i+1).map(n=>`<option value="${n}" ${k===n?"selected":""}>només ${n} de ${nHijos}, a triar</option>`).join("")}
       </select>
-      ${k?`<span>· al corregir, puntúa solo lo que haya respondido: ${k===1?"cuenta la mejor":`cuentan las ${k} mejores`}.</span>`:""}
+      ${k?`<span>· en corregir, puntua només el que haja respost: ${k===1?"compta la millor":`compten les ${k} millors`}.</span>`:""}
     </label>`:""}
     ${items.length?`<div class="grid" style="margin-top:10px;gap:10px">
       ${items.map((it,iIdx)=>renderCxItemHTML(grupo,sec,it,iIdx)).join("")}
@@ -182,7 +182,7 @@ function renderCxNodoHTML(grupo,sec,depth,sIdx,nHermanos){
     ${subs.map((s,i)=>renderCxNodoHTML(grupo,s,depth+1,i,subs.length)).join("")}
     <div class="flex" style="margin-top:10px;gap:6px">
       <button class="ghost" style="border:1px solid var(--line)" onclick="cxAddItem('${sec.id}')">+ Pregunta / ítem</button>
-      ${depth<CX_MAX_NIVELES-1?`<button class="ghost" style="border:1px solid var(--line)" onclick="cxAddSub('${sec.id}')">+ ${sec.tipo==="apartado"?"Pregunta con subpreguntas":sec.tipo==="pregunta"?"Subpregunta con partes":CX_NOMBRE_NIVEL[depth+1]}</button>`:""}
+      ${depth<CX_MAX_NIVELES-1?`<button class="ghost" style="border:1px solid var(--line)" onclick="cxAddSub('${sec.id}')">+ ${sec.tipo==="apartado"?"Pregunta amb subpreguntes":sec.tipo==="pregunta"?"Subpregunta amb parts":CX_NOMBRE_NIVEL[depth+1]}</button>`:""}
     </div>
   </div>`;
 }
@@ -207,7 +207,7 @@ function renderCxItemHTML(grupo,sec,it,iIdx){
   const nCrit=(it.links||[]).length;
   return `<div style="border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--surface,#fff)">
     <div class="flex" style="align-items:flex-start">
-      ${it.unico?`<span style="flex:1;min-width:180px;font-size:12.5px;color:var(--mut)">Puntuación de la pregunta</span>`:`<textarea class="in cx-autogrow" rows="1" placeholder="Pregunta / enunciado / criterio de corrección" style="flex:1;min-width:180px;box-sizing:border-box;resize:vertical;overflow:auto;min-height:38px;line-height:1.45;font-family:inherit" oninput="cxAutoGrow(this)" onchange="cxSetItemLabel('${sec.id}','${it.id}',this.value)">${esc(it.label)}</textarea>`}
+      ${it.unico?`<span style="flex:1;min-width:180px;font-size:12.5px;color:var(--mut)">Puntuació de la pregunta</span>`:`<textarea class="in cx-autogrow" rows="1" placeholder="Pregunta / enunciat / criteri de correcció" style="flex:1;min-width:180px;box-sizing:border-box;resize:vertical;overflow:auto;min-height:38px;line-height:1.45;font-family:inherit" oninput="cxAutoGrow(this)" onchange="cxSetItemLabel('${sec.id}','${it.id}',this.value)">${esc(it.label)}</textarea>`}
       <span class="flex" style="gap:4px;align-items:center">
         <input class="in miniw" type="text" inputmode="decimal" autocomplete="off" value="${String(it.max).replace('.',',')}" style="width:70px" onchange="cxSetItemMax('${sec.id}','${it.id}',this.value)">
         <span style="font-size:12.5px;color:var(--mut)">pts</span>
@@ -238,7 +238,7 @@ function cxCritPickerHTML(grupo,sec,it){
   const visible=cr=> !_cxCritPermitidos || _cxCritPermitidos.has(cr.id) || linkados.has(cr.id);
   const ces=idx.cat.ces.map(ce=>({...ce,criterios:ce.criterios.filter(visible)})).filter(ce=>ce.criterios.length);
   const nota= _cxHayPrevistos
-    ? `<div class="flex" style="justify-content:space-between;align-items:center;margin:2px 0 4px;gap:8px"><span class="sub" style="margin:0;font-size:12px">${_cxCritPermitidos?"Solo se muestran los criterios previstos para este examen.":"Se muestran todos los criterios de la materia."}</span><button class="ghost small" style="padding:2px 8px" onclick="cxToggleVerTodosCrit()">${_cxCritPermitidos?"Ver todos":"Ver solo los previstos"}</button></div>`
+    ? `<div class="flex" style="justify-content:space-between;align-items:center;margin:2px 0 4px;gap:8px"><span class="sub" style="margin:0;font-size:12px">${_cxCritPermitidos?"Només es mostren els criteris previstos per a este examen.":"Es mostren tots els criteris de la matèria."}</span><button class="ghost small" style="padding:2px 8px" onclick="cxToggleVerTodosCrit()">${_cxCritPermitidos?"Vore'ls tots":"Vore només els previstos"}</button></div>`
     : `<div class="sub" style="margin:2px 0 4px;font-size:12px">Este examen no tiene criterios previstos, así que se muestran todos.</div>`;
   return `<div class="scroll" style="margin-top:8px;max-height:260px">${nota}
   ${ces.map(ce=>`
@@ -250,7 +250,7 @@ function cxCritPickerHTML(grupo,sec,it){
           <input type="checkbox" ${l?"checked":""} onchange="cxToggleItemLink('${sec.id}','${it.id}','${cr.id}')">
           <span><strong>${cr.id}</strong> ${esc(cr.texto)}</span>
         </label>
-        ${(cxCritNoPrevisto(cr.id)?'<span class="badge" style="background:var(--danger-soft,#f3dcdc);color:var(--danger,#912525)" title="No estaba entre los criterios previstos de este examen">no previsto</span>':"")}
+        ${(cxCritNoPrevisto(cr.id)?'<span class="badge" style="background:var(--danger-soft,#f3dcdc);color:var(--danger,#912525)" title="No estava entre els criteris previstos d\'este examen">no previst</span>':"")}
         ${l?`<span style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--mut)">peso
           <input class="in miniw" type="number" min="0" value="${l.peso}" onchange="cxSetItemLinkPeso('${it.id}','${cr.id}',this.value)"></span>`:""}
       </div>`;}).join("")}
@@ -278,7 +278,7 @@ window.cxDelSeccion=async secId=>{ const x=cxCtxEd(); if(!x) return;
   if(lista===x.rub && x.rub.length<=1){ mostrarAviso("Debe quedar al menos un apartado. Si quieres vaciarlo, elimina sus ítems o borra el examen entero."); return; }
   const n=lista.find(s=>s.id===secId);
   const nItems=cxItemsFlat([n]).length, nSubs=cxNodosFlat([n]).length-1;
-  if(!await confirmar(`¿Eliminar este ${CX_NOMBRE_NIVEL[cxNivelNodo(x.rub,secId)]?.toLowerCase()||"apartado"}${nSubs?`, sus ${nSubs} subapartado${nSubs===1?"":"s"}`:""} y ${nItems===1?"su ítem":`sus ${nItems} ítems`}?`)) return;
+  if(!await confirmar(`Vols eliminar este ${CX_NOMBRE_NIVEL[cxNivelNodo(x.rub,secId)]?.toLowerCase()||"apartat"}${nSubs?`, els seus ${nSubs} subapartat${nSubs===1?"":"s"}`:""} i ${nItems===1?"el seu ítem":`els seus ${nItems} ítems`}?`)) return;
   lista.splice(lista.indexOf(n),1);
   cxLimpiarPuntuacionesHuerfanas(x.grupo,x.act);
   save(); render(); };
@@ -479,7 +479,7 @@ function cxCrearVariante(grupo,act,datos){
     act.neseGeneral=(act.neseGeneral||[]).filter(id=>!nese.includes(id));
   } else nese=(datos.sinAlumnado||ausencia)?[]:grupo.alumnos.filter(al=>al.nese && !ocupados.has(al.id)).map(al=>al.id);
   const n=cxVariantes(act).filter(v=>(v.tipo==="ausencia")===ausencia).length+1;
-  const v={id:uid(), nombre:datos.nombre||(ausencia?(n===1?"Otro día":"Otro día "+n):(n===1?"Adaptada (NESE)":"Adaptada "+n)), rubrica:cxClonarRubrica(datos.rubrica||act.rubrica,datos.rubrica?grupo.catalogoKey:null),
+  const v={id:uid(), nombre:datos.nombre||(ausencia?(n===1?"Un altre dia":"Un altre dia "+n):(n===1?"Adaptada (NESE)":"Adaptada "+n)), rubrica:cxClonarRubrica(datos.rubrica||act.rubrica,datos.rubrica?grupo.catalogoKey:null),
     escalarA10:datos.escalarA10!==false, alumnos:nese};
   if(ausencia) v.tipo="ausencia";
   if(datos.fecha) v.fecha=String(datos.fecha);
@@ -506,9 +506,9 @@ function cxAvisoNeseHTML(grupo,act){
         : `<select class="in" style="padding:5px 8px" aria-label="Versión adaptada a la que añadirlo" onchange="if(this.value) cxAnadirNeseAVariante(this.value)"><option value="">Añadir a…</option>${vs.map(v=>`<option value="${esc(v.id)}">${esc(v.nombre||"Adaptada")}</option>`).join("")}</select>`)
     : `<button class="btn small" onclick="cxNuevaVariante()">+ Crear versión adaptada</button>`;
   return `<div class="alert-box cx-aviso-nese" style="margin:0 0 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-    <span style="flex:1;min-width:220px">🧩 <strong>${uno?"Alumno/a NESE":faltan.length+" alumnos/as NESE"} con el examen general:</strong> ${nombres}.${vs.length?"":" Este examen todavía no tiene versión adaptada."}</span>
+    <span style="flex:1;min-width:220px">🧩 <strong>${uno?"Alumne/a NESE":faltan.length+" alumnes NESE"} amb l'examen general:</strong> ${nombres}.${vs.length?"":" Este examen encara no té versió adaptada."}</span>
     ${accion}
-    <button class="ghost small" style="border:1px solid var(--line)" title="Deja de avisar: ${uno?"hace":"hacen"} el examen general a propósito" onclick="cxNeseHaceGeneral()">${uno?"Hace":"Hacen"} el general</button>
+    <button class="ghost small" style="border:1px solid var(--line)" title="Deixa d'avisar: ${uno?"fa":"fan"} l'examen general a propòsit" onclick="cxNeseHaceGeneral()">${uno?"Fa":"Fan"} el general</button>
   </div>`;
 }
 window.cxAnadirNeseAVariante=vid=>{
@@ -517,7 +517,7 @@ window.cxAnadirNeseAVariante=vid=>{
   const faltan=cxNeseSinVersion(x.grupo,x.act);
   faltan.forEach(al=>{ v.alumnos=v.alumnos||[]; if(!v.alumnos.includes(al.id)) v.alumnos.push(al.id); cxRecalcAlumno(x.grupo,x.act,al.id); });
   save(); render();
-  mostrarToast(`✓ ${faltan.length} alumno${faltan.length===1?"":"s"} NESE ${faltan.length===1?"pasa":"pasan"} a «${v.nombre||"Adaptada"}»`);
+  mostrarToast(`✓ ${faltan.length} alumne${faltan.length===1?"":"s"} NESE ${faltan.length===1?"passa":"passen"} a «${v.nombre||"Adaptada"}»`);
 };
 window.cxNeseHaceGeneral=()=>{
   const x=cxCtxEd(); if(!x) return;
@@ -531,7 +531,7 @@ window.cxNuevaVariante=()=>{
   state.ui.corVarId=v.id; state.ui.corModelo="";
   save(); render();
   const n=v.alumnos.length, enDiseno=state.ui.corTab==="diseno";
-  mostrarToast((enDiseno?"✓ Examen adaptado creado (copia del general)":"✓ Rúbrica adaptada creada (copia de la general)")+(n?` con ${n} alumno${n===1?"":"s"} NESE`:". Marca qué alumnado lo hace en la pestaña Rúbrica"));
+  mostrarToast((enDiseno?"✓ Examen adaptat creat (còpia del general)":"✓ Rúbrica adaptada creada (còpia de la general)")+(n?` amb ${n} alumne${n===1?"":"s"} NESE`:". Marca quin alumnat el fa en la pestanya Rúbrica"));
 };
 /* «+ Examen alternativo»: tipo (otro día / adaptado NESE), nombre, fecha, alumnado y cómo empieza. */
 window.cxNuevoAlternativo=()=>{
@@ -540,30 +540,30 @@ window.cxNuevoAlternativo=()=>{
   const ocupadoEn=al=>cxVarianteDeAlumno(act,al.id);
   const div=document.createElement("div"); div.className="modal-overlay"; div.style.zIndex="1500";
   div.innerHTML=`<div class="modal-box" style="max-width:600px;max-height:88vh;overflow:auto" role="dialog" aria-modal="true" aria-labelledby="altT">
-    <h2 id="altT" style="font-size:17px">+ Examen alternativo</h2>
-    <p class="sub">Un examen con otras preguntas dentro de «${esc(act.nombre)}»: se corrige con su propia rúbrica, sale en la misma lista de corrección y su nota cuenta en este examen.</p>
-    <fieldset style="border:0;padding:0;margin:10px 0 0"><legend class="section-eyebrow" style="margin-bottom:6px">Para quién es</legend>
-      <label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px;margin-bottom:6px"><input type="radio" name="altTipo" value="ausencia" checked> <span><strong>📅 Otro día</strong> · para quien no vino el día del examen</span></label>
-      <label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px"><input type="radio" name="altTipo" value="nese"> <span><strong>🧩 Adaptado (NESE)</strong> · para el alumnado con necesidades específicas</span></label>
+    <h2 id="altT" style="font-size:17px">+ Examen alternatiu</h2>
+    <p class="sub">Un examen amb altres preguntes dins de «${esc(act.nombre)}»: es corregix amb la seua pròpia rúbrica, ix en la mateixa llista de correcció i la seua nota compta en este examen.</p>
+    <fieldset style="border:0;padding:0;margin:10px 0 0"><legend class="section-eyebrow" style="margin-bottom:6px">Per a qui és</legend>
+      <label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px;margin-bottom:6px"><input type="radio" name="altTipo" value="ausencia" checked> <span><strong>📅 Un altre dia</strong> · per a qui no va vindre el dia de l'examen</span></label>
+      <label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px"><input type="radio" name="altTipo" value="nese"> <span><strong>🧩 Adaptat (NESE)</strong> · per a l'alumnat amb necessitats específiques</span></label>
     </fieldset>
     <div class="flex" style="gap:10px;flex-wrap:wrap;margin-top:12px">
-      <label style="font-size:12.5px;color:var(--mut);font-weight:500;flex:1;min-width:180px">Nombre<input class="in" id="altNombre" style="width:100%;margin-top:4px" value="Otro día"></label>
-      <label style="font-size:12.5px;color:var(--mut);font-weight:500">Fecha (opcional)<input class="in" id="altFecha" type="date" style="display:block;margin-top:4px" value="${iso}"></label>
+      <label style="font-size:12.5px;color:var(--mut);font-weight:500;flex:1;min-width:180px">Nom<input class="in" id="altNombre" style="width:100%;margin-top:4px" value="Un altre dia"></label>
+      <label style="font-size:12.5px;color:var(--mut);font-weight:500">Data (opcional)<input class="in" id="altFecha" type="date" style="display:block;margin-top:4px" value="${iso}"></label>
     </div>
-    <fieldset style="border:0;padding:0;margin:12px 0 0"><legend class="section-eyebrow" style="margin-bottom:6px">Empieza</legend>
-      <label style="display:inline-flex;gap:6px;align-items:center;font-size:13.5px;margin-right:16px"><input type="radio" name="altInicio" value="copia" checked> Como copia del examen general</label>
-      <label style="display:inline-flex;gap:6px;align-items:center;font-size:13.5px"><input type="radio" name="altInicio" value="blanco"> En blanco</label>
+    <fieldset style="border:0;padding:0;margin:12px 0 0"><legend class="section-eyebrow" style="margin-bottom:6px">Comença</legend>
+      <label style="display:inline-flex;gap:6px;align-items:center;font-size:13.5px;margin-right:16px"><input type="radio" name="altInicio" value="copia" checked> Com a còpia de l'examen general</label>
+      <label style="display:inline-flex;gap:6px;align-items:center;font-size:13.5px"><input type="radio" name="altInicio" value="blanco"> En blanc</label>
     </fieldset>
-    <div class="section-eyebrow" style="margin:12px 0 6px">Alumnado que lo hace</div>
+    <div class="section-eyebrow" style="margin:12px 0 6px">Alumnat que el fa</div>
     <div id="altAlumnos" class="flex" style="flex-wrap:wrap;gap:6px 16px">${grupo.alumnos.map(al=>{ const o=ocupadoEn(al);
-      return `<label style="font-size:13px;display:flex;align-items:center;gap:6px" ${o?`title="Ahora hace «${esc(o.nombre||"otro examen alternativo")}»: si lo marcas, pasa a este"`:""}><input type="checkbox" value="${esc(al.id)}" data-nese="${al.nese&&!o&&!(act.neseGeneral||[]).includes(al.id)?1:0}"> ${esc(al.nombre)}${neseBadgeHTML(al)}${o?` <span class="sub" style="margin:0">(${esc(o.nombre||"alternativo")})</span>`:""}</label>`; }).join("")||'<span class="sub">Este grupo todavía no tiene alumnado.</span>'}</div>
+      return `<label style="font-size:13px;display:flex;align-items:center;gap:6px" ${o?`title="Ara fa «${esc(o.nombre||"un altre examen alternatiu")}»: si el marques, passa a este"`:""}><input type="checkbox" value="${esc(al.id)}" data-nese="${al.nese&&!o&&!(act.neseGeneral||[]).includes(al.id)?1:0}"> ${esc(al.nombre)}${neseBadgeHTML(al)}${o?` <span class="sub" style="margin:0">(${esc(o.nombre||"alternatiu")})</span>`:""}</label>`; }).join("")||'<span class="sub">Este grup encara no té alumnat.</span>'}</div>
     <div class="flex" style="justify-content:flex-end;gap:8px;margin-top:16px"><button class="ghost" id="altNo" style="border:1px solid var(--line)">Cancelar</button><button class="btn" id="altSi">Crear</button></div>
   </div>`;
   document.body.appendChild(div);
   const nombre=div.querySelector("#altNombre");
   div.querySelectorAll('input[name="altTipo"]').forEach(r=>r.onchange=()=>{
     const nese=r.value==="nese"&&r.checked;
-    if(/^(Otro día|Adaptada \(NESE\))$/.test(nombre.value.trim())||!nombre.value.trim()) nombre.value=nese?"Adaptada (NESE)":"Otro día";
+    if(/^(Otro día|Un altre dia|Adaptada \(NESE\))$/.test(nombre.value.trim())||!nombre.value.trim()) nombre.value=nese?"Adaptada (NESE)":"Un altre dia";
     div.querySelectorAll("#altAlumnos input").forEach(c=>{ c.checked=nese&&c.dataset.nese==="1"; });
   });
   div.querySelector("#altNo").onclick=()=>div.remove();
@@ -576,7 +576,7 @@ window.cxNuevoAlternativo=()=>{
     state.ui.corVarId=v.id; state.ui.corModelo="";
     save(); render();
     const n=v.alumnos.length;
-    mostrarToast(`✓ «${v.nombre}» creado${enBlanco?" en blanco":""}`+(n?` para ${n} alumno${n===1?"":"s"}`:". Marca qué alumnado lo hace en la pestaña Rúbrica"));
+    mostrarToast(`✓ «${v.nombre}» creat${enBlanco?" en blanc":""}`+(n?` per a ${n} alumne${n===1?"":"s"}`:". Marca quin alumnat el fa en la pestanya Rúbrica"));
   };
   setTimeout(()=>nombre.focus(),0);
 };
@@ -603,7 +603,7 @@ window.cxCopiarGeneralEnVariante=async ()=>{
 };
 window.cxEliminarVariante=async ()=>{
   const x=cxCtxEd(); const va=x&&cxVarEditando(x.act); if(!va) return;
-  if(!await confirmar(`¿Eliminar el examen alternativo «${va.nombre}» (su rúbrica)? ${(va.alumnos||[]).length?"Su alumnado pasará a corregirse con la rúbrica general.":""}`)) return;
+  if(!await confirmar(`Vols eliminar l'examen alternatiu «${va.nombre}» (la seua rúbrica)? ${(va.alumnos||[]).length?"El seu alumnat passarà a corregir-se amb la rúbrica general.":""}`)) return;
   x.act.variantes=cxVariantes(x.act).filter(v=>v.id!==va.id);
   state.ui.corVarId="";
   cxLimpiarPuntuacionesHuerfanas(x.grupo,x.act);

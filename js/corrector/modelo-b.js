@@ -87,9 +87,9 @@ function mbConstruir(general,orden,letra,evitar){
     repetido=prohibidos.has(JSON.stringify(r.orden)) && Object.values(r.orden).some(l=>l.length>1);
   }
   // Para distinguirlo en papel: «Modelo B» (o C) encima del título.
-  const tit=(r.exam.body||[]).find(n=>n&&n.type==="title"), rotulo="Modelo "+(letra||"B");
+  const tit=(r.exam.body||[]).find(n=>n&&n.type==="title"), rotulo="Model "+(letra||"B");
   if(tit){
-    const previo=String(tit.eyebrow||"").replace(/(^|\s*·\s*)Modelo [A-Z]\b/g,"").trim();
+    const previo=String(tit.eyebrow||"").replace(/(^|\s*·\s*)Model[o]? [A-Z]\b/g,"").trim();
     tit.eyebrow=(previo?previo+" · ":"")+rotulo;
   }
   r.repetido=repetido;
@@ -137,13 +137,13 @@ async function mbPreparar(act,letra,general,guardado,win){
     if(guardado&&guardado.exam){
       const enGeneral=new Set(Object.values(mbOrdenDe(general)).flat()), enM=new Set(Object.values(m.orden).flat());
       const faltan=[...enGeneral].filter(id=>!enM.has(id)).length;
-      if(faltan) aviso=`El modelo ${letra} se ha puesto al día con el examen general: le faltaban ${faltan} pregunta${faltan===1?"":"s"}.`;
+      if(faltan) aviso=`El model ${letra} s'ha actualitzat amb l'examen general: li faltaven ${faltan} pregunt${faltan===1?"a":"es"}.`;
     }
     save();
   }
   const r=await mbActualizarModelo(act,letra,general,win);
   if(r&&r.repetido) aviso=`Con tan pocas preguntas no hay otro orden posible: el modelo ${letra} queda igual que otro modelo.`;
-  else if(r&&r.nuevas&&!aviso) aviso=`El modelo ${letra} se ha puesto al día con el examen general (${r.nuevas} pregunta${r.nuevas===1?" nueva":"s nuevas"}).`;
+  else if(r&&r.nuevas&&!aviso) aviso=`El model ${letra} s'ha actualitzat amb l'examen general (${r.nuevas} pregunt${r.nuevas===1?"a nova":"es noves"}).`;
   return {exam:r?r.exam:null,aviso};
 }
 /* Compatibilidad con el nombre anterior. */
@@ -159,7 +159,7 @@ async function mbGuardadoEn(act,letra,exM,win){
   const limpio=e=>JSON.stringify((e&&e.body)||[]);
   if(limpio(r.exam)!==limpio(exM) && !_mbAvisoEdicion[act.id]){
     _mbAvisoEdicion[act.id]=true;
-    mostrarAviso(`En el modelo ${letra} solo cuenta el ORDEN de las preguntas (arrástralas o usa «🔀 Mezclar de nuevo»).\n\nLos cambios de texto, puntos o formato hazlos en «Examen general»: los modelos se generan a partir de él y los cambios hechos aquí no se guardan.`,"Modelo "+letra);
+    mostrarAviso(`En el model ${letra} només compta l'ORDRE de les preguntes (arrossega-les o usa «🔀 Barrejar de nou»).\n\nEls canvis de text, punts o format fes-los en «Examen general»: els models es generen a partir d'ell i els canvis fets ací no es guarden.`,"Model "+letra);
   }
 }
 /* Quita un modelo. Su alumnado pasa al A. Si se quita el B y existe el C, el C pasa a llamarse B. */
@@ -208,7 +208,7 @@ function mbRubricaVista(act,alId){
     if(!a||!b||a===b) return txt;
     const mt=txt.match(new RegExp("^(\\s*)"+a.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"(\\s*[).:\\-–]+)"));
     if(!mt) return txt;
-    return mt[1]+b+mt[2]+txt.slice(mt[0].length)+` (modelo A: ${a})`;
+    return mt[1]+b+mt[2]+txt.slice(mt[0].length)+` (model A: ${a})`;
   };
   // Los nodos con pregunta del modelo ocupan sus huecos en el orden del modelo; el resto no se mueve.
   const ordena=lista=>{
@@ -234,7 +234,7 @@ window.mbSetModelo=(alId,letra)=>{
 function _mbResumen(x){
   const n={}; mbLetras(x.act).forEach(l=>{ n[l]=0; });
   _mbConExamenGeneral(x).forEach(al=>{ n[mbModeloDe(x.act,al.id)]++; });
-  return mbLetras(x.act).map(l=>`${n[l]} con el ${l}`).join(", ");
+  return mbLetras(x.act).map(l=>`${n[l]} amb el ${l}`).join(", ");
 }
 function _mbAplicarReparto(x,porAlumno,texto){
   const a={}; Object.keys(porAlumno).forEach(id=>{ if(porAlumno[id]!=="A") a[id]=porAlumno[id]; });
@@ -256,7 +256,7 @@ window.mbAlternarPlano=()=>{
   const rep={};
   conSitio.forEach(al=>{ const f=Number(pos[al.id].fila)||0, c=Number(pos[al.id].col)||0; rep[al.id]=L[(((n===2?f+c:2*f+c))%n+n)%n]; });
   sinSitio.forEach((al,i)=>{ rep[al.id]=L[i%n]; });
-  _mbAplicarReparto(x,rep,"Alternados según el plano"+(sinSitio.length?` (${sinSitio.length} sin sitio, por lista)`:""));
+  _mbAplicarReparto(x,rep,"Alternats segons el plànol"+(sinSitio.length?` (${sinSitio.length} sense lloc, per llista)`:""));
 };
 window.mbTodosA=()=>{ const x=_mbCtx(); if(!x) return; x.act.modelos.asignados={}; save(); render(); mostrarToast("Todo el grupo con el modelo A","info"); };
 
@@ -264,7 +264,7 @@ window.mbTodosA=()=>{ const x=_mbCtx(); if(!x) return; x.act.modelos.asignados={
 function mbBarraRepartoHTML(grupo,act){
   if(!mbModelos(act)){
     const hayDiseno=(exTodosSync()||[]).some(r=>r.key===act.id);
-    return hayDiseno?`<p class="sub" style="margin:12px 0 0">¿Varios modelos para evitar la copia? Crea el <strong>Modelo B</strong> (y, si quieres, el C) en ✏️ Diseño y luego reparte aquí quién hace cada uno.</p>`:"";
+    return hayDiseno?`<p class="sub" style="margin:12px 0 0">Vols diversos models per a evitar la còpia? Crea el <strong>Model B</strong> (i, si vols, el C) en ✏️ Disseny i després reparteix ací qui fa cadascun.</p>`:"";
   }
   const x={grupo,act}, L=mbLetras(act);
   const hayB=_mbConExamenGeneral(x).some(al=>mbModeloDe(act,al.id)!=="A");
@@ -272,17 +272,17 @@ function mbBarraRepartoHTML(grupo,act){
   const sinEnlazar=act.rubrica&&!mbRubricaEnlazada(act);
   const lista=L.join("/");
   return `<div class="mb-barra" style="margin-top:12px">
-    <span><strong>Modelos:</strong> ${_mbResumen(x)}</span>
-    <button class="ghost small" style="border:1px solid var(--line)" onclick="mbAlternarLista()">Alternar ${lista} por lista</button>
-    ${hayPlano?`<button class="ghost small" style="border:1px solid var(--line)" title="Ni el compañero de al lado ni el de delante tienen el mismo modelo" onclick="mbAlternarPlano()">Alternar según el plano</button>`:""}
-    ${hayB?`<button class="ghost small" style="border:1px solid var(--line)" onclick="mbTodosA()">Todos con el A</button>`:""}
+    <span><strong>Models:</strong> ${_mbResumen(x)}</span>
+    <button class="ghost small" style="border:1px solid var(--line)" onclick="mbAlternarLista()">Alternar ${lista} per llista</button>
+    ${hayPlano?`<button class="ghost small" style="border:1px solid var(--line)" title="Ni el company del costat ni el de davant tenen el mateix model" onclick="mbAlternarPlano()">Alternar segons el plànol</button>`:""}
+    ${hayB?`<button class="ghost small" style="border:1px solid var(--line)" onclick="mbTodosA()">Tots amb l'A</button>`:""}
   </div>
-  ${sinEnlazar&&hayB?`<div class="alert-box" style="margin-top:8px">🔗 La rúbrica no está enlazada con el diseño, así que los modelos ${L.slice(1).join(" y ")} se corregirán en el orden del A. Enlázala en ✏️ Diseño → «🔗 Enlazar la rúbrica con el diseño» (no se pierde nada de lo corregido).</div>`:""}`;
+  ${sinEnlazar&&hayB?`<div class="alert-box" style="margin-top:8px">🔗 La rúbrica no està enllaçada amb el disseny, així que els models ${L.slice(1).join(" i ")} es corregiran en l'ordre de l'A. Enllaça-la en ✏️ Disseny → «🔗 Enllaçar la rúbrica amb el disseny» (no es perd res del que s'ha corregit).</div>`:""}`;
 }
 function mbCeldaHTML(act,al){
   if(!mbModelos(act)) return "";
   const va=cxVarianteDeAlumno(act,al.id);
-  if(va) return `<td><span class="sub" style="margin:0">${va.tipo==="ausencia"?"Otro día":"Adaptado"}</span></td>`;
+  if(va) return `<td><span class="sub" style="margin:0">${va.tipo==="ausencia"?"Un altre dia":"Adaptat"}</span></td>`;
   const actual=mbModeloDe(act,al.id);
   return `<td><span class="mb-ab" role="group" aria-label="Modelo de ${esc(al.nombre)}">${mbLetras(act).map(l=>
     `<button class="${actual===l?"on":""}" aria-pressed="${actual===l?"true":"false"}" onclick="mbSetModelo('${escJS(al.id)}','${l}')">${l}</button>`).join("")}</span></td>`;
@@ -380,7 +380,7 @@ window.mbEnlazarRubrica=async()=>{
   div.innerHTML=`<div class="modal-box" style="max-width:640px" role="dialog" aria-modal="true" aria-labelledby="mbT">
     <h2 id="mbT" style="font-size:17px">🔗 Enlazar la rúbrica con el diseño</h2>
     <p class="sub">Cada ítem de la rúbrica se empareja con su pregunta del examen por el texto. No cambia ningún ítem, punto, criterio ni lo ya corregido: solo quedan enlazados, y así la rúbrica puede salir en el orden de cada modelo (y «Importar a la rúbrica» los actualizará en vez de duplicarlos).</p>
-    <p style="font-size:13.5px;margin:6px 0">✓ <strong>${seguros.length}</strong> enlazados con seguridad${dudosos.length?` · <strong>${dudosos.length}</strong> dudosos (revísalos)`:""}${sinPareja.length?` · <strong>${sinPareja.length}</strong> ítems sin pareja en el diseño: son partes que solo tiene la rúbrica y siguen dentro de su pregunta`:""}</p>
+    <p style="font-size:13.5px;margin:6px 0">✓ <strong>${seguros.length}</strong> enllaçats amb seguretat${dudosos.length?` · <strong>${dudosos.length}</strong> dubtosos (revisa'ls)`:""}${sinPareja.length?` · <strong>${sinPareja.length}</strong> ítems sense parella en el disseny: són parts que només té la rúbrica i continuen dins de la seua pregunta`:""}</p>
     ${dudosos.length?`<div class="scroll" style="max-height:44vh;border:1px solid var(--line);border-radius:10px;padding:6px 10px">${dudosos.map((e,i)=>fila(e,i)).join("")}</div>`:""}
     <div class="flex" style="justify-content:flex-end;gap:8px;margin-top:14px"><button class="ghost" id="mbNo" style="border:1px solid var(--line)">Cancelar</button><button class="btn" id="mbSi">Enlazar</button></div>
   </div>`;
@@ -392,7 +392,7 @@ window.mbEnlazarRubrica=async()=>{
     const deducidos=mbAplicarEnlaces(act.rubrica,elegidos,padre);
     const nIt=elegidos.filter(e=>!e.bloque).length, nBl=elegidos.filter(e=>e.bloque).length+deducidos;
     save(); render();
-    mostrarToast(`✓ ${nIt} ítem${nIt===1?"":"s"} y ${nBl} pregunta${nBl===1?"":"s"} de la rúbrica enlazados con el diseño`);
+    mostrarToast(`✓ ${nIt} ítem${nIt===1?"":"s"} i ${nBl} pregunt${nBl===1?"a":"es"} de la rúbrica enllaçats amb el disseny`);
   };
 };
 /* Ítems de la rúbrica general sin enlazar con el diseño (para el botón del Diseño). */

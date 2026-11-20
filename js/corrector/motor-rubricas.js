@@ -246,15 +246,15 @@ function cxPanelPrevistosHTML(grupo,act,rub,variante){
     <div class="flex" style="justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
       <div style="flex:1;min-width:240px">
         <h2 style="font-size:14.5px;margin:0 0 4px">Criterios previstos para este examen</h2>
-        <p class="sub" style="margin:0">${viaProg?`Marcados en la Programación «${esc(ref.prog.nombre)}»${sdas.length?` · ${sdas.length>1?"abarca":"de"} ${sdas.map(esc).join(", ")}`:""}. Para cambiarlos, hazlo allí.`
-          : prev? "Marcados al crear el examen." : "Este examen no tiene criterios previstos: márcalos para que la rúbrica solo te ofrezca esos y te avise si se queda alguno sin vincular."}</p>
+        <p class="sub" style="margin:0">${viaProg?`Marcats en la Programació «${esc(ref.prog.nombre)}»${sdas.length?` · ${sdas.length>1?"abasta":"de"} ${sdas.map(esc).join(", ")}`:""}. Per a canviar-los, fes-ho allí.`
+          : prev? "Marcats en crear l'examen." : "Este examen no té criteris previstos: marca'ls perquè la rúbrica només t'oferisca eixos i t'avise si en queda algun sense vincular."}</p>
       </div>
-      ${!viaProg?`<button class="ghost small" style="border:1px solid var(--line)" onclick="cxToggleEditarPrevistos()">${editando?"Hecho":prev?"Cambiar criterios previstos":"Marcar criterios previstos"}</button>`:""}
+      ${!viaProg?`<button class="ghost small" style="border:1px solid var(--line)" onclick="cxToggleEditarPrevistos()">${editando?"Fet":prev?"Canviar els criteris previstos":"Marcar els criteris previstos"}</button>`:""}
     </div>
-    ${prev?`<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px 10px">${prev.map(cid=>`<span style="font-size:12.5px;padding:2px 8px;border-radius:999px;${usados.has(cid)?"background:#dcece0;color:#1e5631":"background:#f3dcdc;color:#912525;font-weight:600"}" title="${usados.has(cid)?"Vinculado a algún ítem de la rúbrica":"Sin vincular: no se evaluará en este examen"}">${usados.has(cid)?"✓":"⚠️"} ${critLinkHTML(grupo.catalogoKey,cid)}</span>`).join("")}</div>`:""}
+    ${prev?`<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px 10px">${prev.map(cid=>`<span style="font-size:12.5px;padding:2px 8px;border-radius:999px;${usados.has(cid)?"background:#dcece0;color:#1e5631":"background:#f3dcdc;color:#912525;font-weight:600"}" title="${usados.has(cid)?"Vinculat a algun ítem de la rúbrica":"Sense vincular: no s'avaluarà en este examen"}">${usados.has(cid)?"✓":"⚠️"} ${critLinkHTML(grupo.catalogoKey,cid)}</span>`).join("")}</div>`:""}
     ${editando?cxSelectorCriteriosHTML(grupo.catalogoKey,act.criteriosPrevistos||[],"cxTogglePrevisto"):""}
-    ${faltan.length?`<p style="margin:10px 0 0;font-size:13px;color:var(--danger,#b91c1c);font-weight:600">⚠️ ${faltan.length===1?"Hay 1 criterio previsto":`Hay ${faltan.length} criterios previstos`} sin vincular a ningún ítem${variante?" de esta rúbrica adaptada":""}: ${cxCritChipsHTML(grupo,faltan)}. No se evaluará${faltan.length===1?"":"n"} en este examen hasta que lo${faltan.length===1?"":"s"} vincules a alguna pregunta (botón «Vincular criterios» de cada ítem).</p>`:""}
-    ${extra.length?`<p class="sub" style="margin:8px 0 0">También vinculado${extra.length===1?"":"s"} aunque no estaba${extra.length===1?"":"n"} previsto${extra.length===1?"":"s"}: ${cxCritChipsHTML(grupo,extra)}.</p>`:""}
+    ${faltan.length?`<p style="margin:10px 0 0;font-size:13px;color:var(--danger,#b91c1c);font-weight:600">⚠️ ${faltan.length===1?"Hi ha 1 criteri previst":`Hi ha ${faltan.length} criteris previstos`} sense vincular a cap ítem${variante?" d'esta rúbrica adaptada":""}: ${cxCritChipsHTML(grupo,faltan)}. No s'avaluar${faltan.length===1?"à":"an"} en este examen fins que ${faltan.length===1?"el":"els"} vincules a alguna pregunta (botó «Vincular criteris» de cada ítem).</p>`:""}
+    ${extra.length?`<p class="sub" style="margin:8px 0 0">També vinculat${extra.length===1?"":"s"} encara que no estava${extra.length===1?"":"en"} previst${extra.length===1?"":"os"}: ${cxCritChipsHTML(grupo,extra)}.</p>`:""}
   </div>`;
   return html;
 }

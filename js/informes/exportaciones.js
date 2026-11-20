@@ -13,7 +13,7 @@ window.exportarCSVGrupo = () => {
    const ccKeys = Object.keys(COMP_CLAVE).filter(cc => idx.cat.ces.some(ce => ce.cc.includes(cc)));
    
    const q = s => '"'+String(s??"").replace(/"/g,'""')+'"';
-   let csv = `Alumno;Nota ${TRIMESTRES[trim]} (media);Nota ${TRIMESTRES[trim]} (acta);Calificacion ${TRIMESTRES[trim]};Nota final (media);Nota final (acta);Calificacion final`;
+   let csv = `Alumne;Nota ${TRIMESTRES[trim]} (mitjana);Nota ${TRIMESTRES[trim]} (acta);Qualificacio ${TRIMESTRES[trim]};Nota final (mitjana);Nota final (acta);Qualificacio final`;
    ccKeys.forEach(k => csv += `;${k}`);
    csv += "\n";
 

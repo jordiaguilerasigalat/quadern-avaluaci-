@@ -56,10 +56,10 @@ function cxnNivelCercano(it,v,niveles){
 }
 function cxnTextoPosicion(pos,niveles){
   if(!pos) return "";
-  const nom=id=>{ const l=niveles.find(x=>x.id===id); return l? (l.nombre||"(sin nombre)") : ""; };
+  const nom=id=>{ const l=niveles.find(x=>x.id===id); return l? (l.nombre||"(sense nom)") : ""; };
   if(pos.exacto) return nom(pos.exacto);
   if(pos.entre) return `entre ${nom(pos.entre[0])} i ${nom(pos.entre[1])}`;
-  if(pos.debajo) return `por debajo de ${nom(pos.debajo)}`;
+  if(pos.debajo) return `per davall de ${nom(pos.debajo)}`;
   return nom(pos.encima);
 }
 
@@ -75,10 +75,10 @@ function cxnRubricaNueva(criterios,catalogoKey){
     const textoDe=cid=>{ for(const ce of idx.cat.ces){ const cr=ce.criterios.find(c=>c.id===cid); if(cr) return cr.texto||""; } return ""; };
     const pts=cxRepartirPuntos(crits.map(()=>1),10);
     cats=crits.map((l,i)=>{ let t=textoDe(l.critId); if(t.length>70) t=t.slice(0,67).trim()+"…";
-      return {id:uid(),label:`Criterio ${l.critId}${t?" — "+t:""}`,max:pts[i],desc:[],links:[{critId:l.critId,peso:100}],celdas:{}}; });
+      return {id:uid(),label:`Criteri ${l.critId}${t?" — "+t:""}`,max:pts[i],desc:[],links:[{critId:l.critId,peso:100}],celdas:{}}; });
   } else {
     const pts=cxRepartirPuntos([1,1,1],10);
-    cats=pts.map((p,i)=>({id:uid(),label:`Categoría ${i+1}`,max:p,desc:[],links:[],celdas:{}}));
+    cats=pts.map((p,i)=>({id:uid(),label:`Categoria ${i+1}`,max:p,desc:[],links:[],celdas:{}}));
   }
   return [{id:uid(),title:"",sinTitulo:true,formato:"niveles",niveles:cxnNivelesPorDefecto(),items:cats,subs:[]}];
 }
@@ -165,9 +165,9 @@ function cxnEditorHTML(grupo,act,rub,variante,escalar){
           <button type="button" class="ghost small" title="Bajar" aria-label="Bajar la categoría" ${i===items.length-1?"disabled":""} onclick="cxnMoverCat('${it.id}',1)">↓</button>
           <button type="button" class="ghost small danger" title="Eliminar la categoría" aria-label="Eliminar la categoría ${esc(it.label||String(i+1))}" ${items.length<=1?"disabled":""} onclick="cxnBorrarCat('${it.id}')">✕</button>
         </div>
-        <button type="button" class="ghost small cxn-crit-btn" aria-expanded="${abierto}" onclick="cxToggleItemCriterios('${it.id}')">${abierto?"Ocultar criterios":"Criterios"}${nCrit?` (${(it.links||[]).map(l=>esc(l.critId)).join(", ")})`:" · sin vincular"}</button>
+        <button type="button" class="ghost small cxn-crit-btn" aria-expanded="${abierto}" onclick="cxToggleItemCriterios('${it.id}')">${abierto?"Amagar criteris":"Criteris"}${nCrit?` (${(it.links||[]).map(l=>esc(l.critId)).join(", ")})`:" · sense vincular"}</button>
       </th>
-      ${niv.map((l,j)=>`<td class="cxn-celda-ed" style="border-top:4px solid ${cxnColor(l.color,j)}"><textarea class="in cx-autogrow" rows="3" placeholder="Qué se observa en «${esc(l.nombre||"este nivel")}»" aria-label="Descriptor de ${esc(it.label||"la categoría")} en el nivel ${esc(l.nombre||String(j+1))}" oninput="cxAutoGrow(this)" onchange="cxnSetCelda('${it.id}','${l.id}',this.value)">${esc((it.celdas||{})[l.id]||"")}</textarea></td>`).join("")}
+      ${niv.map((l,j)=>`<td class="cxn-celda-ed" style="border-top:4px solid ${cxnColor(l.color,j)}"><textarea class="in cx-autogrow" rows="3" placeholder="Què s'observa en «${esc(l.nombre||"este nivell")}»" aria-label="Descriptor de ${esc(it.label||"la categoria")} en el nivell ${esc(l.nombre||String(j+1))}" oninput="cxAutoGrow(this)" onchange="cxnSetCelda('${it.id}','${l.id}',this.value)">${esc((it.celdas||{})[l.id]||"")}</textarea></td>`).join("")}
     </tr>
     ${abierto?`<tr><td colspan="${niv.length+1}" class="cxn-crit-fila">${cxCritPickerHTML(grupo,nodo,it)}</td></tr>`:""}`;
   }).join("");
@@ -175,9 +175,9 @@ function cxnEditorHTML(grupo,act,rub,variante,escalar){
     <p class="sub" style="margin:0">Rúbrica <strong>por niveles de logro</strong>: cada fila es una <strong>categoría</strong> con su peso en la nota y los criterios que evalúa; cada columna, un <strong>nivel</strong> con el valor que tú decides. Al corregir se pincha la casilla del nivel alcanzado y la nota se calcula sola (un nivel da su valor dividido entre el del nivel más alto); si hace falta, se afina con el desplegable de puntos.</p>
     <div class="flex" style="margin-top:10px;align-items:center;flex-wrap:wrap">
       <span class="pill" style="background:${ok?'#dcece0':'#f3dcdc'};color:${ok?'#1e5631':'#912525'}">Suma de pesos${variante?" (rúbrica adaptada)":""}: ${cxnPct(suma)} % / 100 %</span>
-      ${!ok?`<button class="ghost small" style="border:1px solid var(--line)" onclick="cxnIgualarPesos()">Repartir los pesos a partes iguales</button>
-      <label style="font-size:12.5px;color:var(--ink);display:inline-flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" ${escalar?"checked":""} onchange="cxSetEscalarA10(this.checked)"> Convertir a nota sobre 10 (los pesos cuentan en proporción)</label>
-      ${escalar?"":'<span style="font-size:12.5px;color:var(--danger,#b91c1c)">Sin convertir, la nota máxima será '+cxFmtPts(suma/10)+'.</span>'}`:""}
+      ${!ok?`<button class="ghost small" style="border:1px solid var(--line)" onclick="cxnIgualarPesos()">Repartir els pesos a parts iguals</button>
+      <label style="font-size:12.5px;color:var(--ink);display:inline-flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" ${escalar?"checked":""} onchange="cxSetEscalarA10(this.checked)"> Convertir a nota sobre 10 (els pesos compten en proporció)</label>
+      ${escalar?"":'<span style="font-size:12.5px;color:var(--danger,#b91c1c)">Sense convertir, la nota màxima serà '+cxFmtPts(suma/10)+'.</span>'}`:""}
     </div>
   </div>
   <div class="card cxn-card">
@@ -188,7 +188,7 @@ function cxnEditorHTML(grupo,act,rub,variante,escalar){
     <div class="flex" style="margin-top:10px;gap:6px;flex-wrap:wrap">
       <button class="btn" onclick="cxnAddCat()">+ Categoría</button>
       <button class="ghost" style="border:1px solid var(--line)" onclick="cxnAddNivel()">+ Nivel</button>
-      ${ok?`<button class="ghost" style="border:1px solid var(--line)" onclick="cxnIgualarPesos()">Repartir los pesos a partes iguales</button>`:""}
+      ${ok?`<button class="ghost" style="border:1px solid var(--line)" onclick="cxnIgualarPesos()">Repartir els pesos a parts iguals</button>`:""}
     </div>
   </div>`;
 }
@@ -218,7 +218,7 @@ window.cxnBorrarNivel=async nivelId=>{
   const x=cxnCtx(); if(!x) return; const niv=x.nodo.niveles, l=niv.find(n=>n.id===nivelId); if(!l) return;
   if(niv.length<=2){ mostrarAviso("La rúbrica necesita al menos dos niveles."); return; }
   const conTexto=(x.nodo.items||[]).some(it=>String((it.celdas||{})[nivelId]||"").trim());
-  if(!await confirmar(`¿Eliminar el nivel «${l.nombre||"sin nombre"}»${conTexto?" y sus descriptores":""}? Lo ya corregido conserva sus puntos.`)) return;
+  if(!await confirmar(`Vols eliminar el nivell «${l.nombre||"sense nom"}»${conTexto?" i els seus descriptors":""}? El que ja s'ha corregit conserva els punts.`)) return;
   cxnRemapear(x.grupo,x.act,x.rub,()=>{ x.nodo.niveles=niv.filter(n=>n.id!==nivelId); (x.nodo.items||[]).forEach(it=>{ if(it.celdas) delete it.celdas[nivelId]; }); });
   save(); render();
 };
@@ -256,7 +256,7 @@ window.cxnMoverCat=(itemId,dir)=>{
 window.cxnBorrarCat=async itemId=>{
   const x=cxnCtx(); if(!x) return; const items=x.nodo.items||[], it=items.find(i=>i.id===itemId); if(!it) return;
   if(items.length<=1){ mostrarAviso("Debe quedar al menos una categoría."); return; }
-  if(!await confirmar(`¿Eliminar la categoría «${it.label||"sin nombre"}»? Se quitan también sus puntuaciones ya corregidas.`)) return;
+  if(!await confirmar(`Vols eliminar la categoria «${it.label||"sense nom"}»? També se'n lleven les puntuacions ja corregides.`)) return;
   x.nodo.items=items.filter(i=>i.id!==itemId);
   cxLimpiarPuntuacionesHuerfanas(x.grupo,x.act);
   save(); render();
@@ -267,7 +267,7 @@ window.cxCambiarTipoRubrica=async()=>{
   const va=cxVarEditando(x.act), aNiv=!cxEsNiveles(x.rub);
   if(aNiv){
     const plano=cxNodosFlat(x.rub).length>1||x.rub.some(n=>cxElegirEf(n));
-    if(!await confirmar(`¿Pasar esta rúbrica a «por niveles de logro»? Cada pregunta o ítem pasa a ser una categoría, con sus puntos como peso y sus criterios. Después escribes los niveles y sus descriptores.${plano?"\n\nOjo: los apartados y subapartados desaparecen (todas las preguntas quedan en una sola tabla) y se pierde el «a elegir».":""}\n\nLo ya corregido se conserva.`,{ok:"Pasar a niveles",peligro:false})) return;
+    if(!await confirmar(`Vols passar esta rúbrica a «per nivells d'assoliment»? Cada pregunta o ítem passa a ser una categoria, amb els seus punts com a pes i els seus criteris. Després escrius els nivells i els seus descriptors.${plano?"\n\nCompte: els apartats i subapartats desapareixen (totes les preguntes queden en una sola taula) i es perd el «a triar».":""}\n\nEl que ja s'ha corregit es conserva.`,{ok:"Passar a nivells",peligro:false})) return;
   } else {
     if(!await confirmar("¿Pasar esta rúbrica a «por puntos» (preguntas e ítems)? Cada categoría pasa a ser un ítem con sus puntos y criterios, y los descriptores de los niveles se guardan como descriptores del ítem.\n\nLo ya corregido se conserva.",{ok:"Pasar a puntos",peligro:false})) return;
   }
@@ -276,17 +276,17 @@ window.cxCambiarTipoRubrica=async()=>{
   cxSyncCriteriosActividad(x.act); cxRecalcTodosLosAlumnos(x.grupo,x.act);
   state.ui.corItemAbierto="";
   save(); render();
-  mostrarToast(aNiv?"✓ Rúbrica por niveles: escribe los descriptores de cada casilla":"✓ Rúbrica por puntos");
+  mostrarToast(aNiv?"✓ Rúbrica per nivells: escriu els descriptors de cada casella":"✓ Rúbrica per punts");
 };
 /* Sustituir la rúbrica que se está editando por una plantilla guardada (de cualquier tipo). */
 window.cxCargarPlantilla=async()=>{
   const x=cxCtxEd(); if(!x) return;
   const pl=state.plantillasRubrica||[];
   if(!pl.length){ mostrarAviso("Todavía no tienes plantillas de rúbrica. Guarda una con «💾 Guardar como plantilla» y podrás usarla en cualquier examen o trabajo de cualquier grupo."); return; }
-  const id=await elegirOpcion("📂 Cargar plantilla","¿Qué plantilla quieres usar en esta rúbrica? Sustituye a la rúbrica actual.",pl.map(p=>({value:p.id,label:p.nombre+(cxEsNiveles(p.rubrica)?" · por niveles":" · por puntos")})));
+  const id=await elegirOpcion("📂 Carregar plantilla","Quina plantilla vols usar en esta rúbrica? Substituïx la rúbrica actual.",pl.map(p=>({value:p.id,label:p.nombre+(cxEsNiveles(p.rubrica)?" · per nivells":" · per punts")})));
   if(!id) return; const p=pl.find(y=>y.id===id); if(!p) return;
   const corregidos=x.grupo.alumnos.filter(al=>cxRubricaDe(x.act,al.id)===x.rub && Object.keys(x.grupo.rubricScores?.[al.id]?.[x.act.id]||{}).length).length;
-  if(corregidos && !await confirmar(`Ya hay ${corregidos} alumno${corregidos===1?"":"s"} corregido${corregidos===1?"":"s"} con esta rúbrica. Al cargar la plantilla se perderán esas puntuaciones.\n\n¿Continuar?`,{ok:"Cargar plantilla"})) return;
+  if(corregidos && !await confirmar(`Ja hi ha ${corregidos} alumne${corregidos===1?"":"s"} corregit${corregidos===1?"":"s"} amb esta rúbrica. En carregar la plantilla es perdran eixes puntuacions.\n\nVols continuar?`,{ok:"Carregar plantilla"})) return;
   const nueva=cxClonarRubrica(p.rubrica,x.grupo.catalogoKey), va=cxVarEditando(x.act);
   if(va) va.rubrica=nueva; else { x.act.rubrica=nueva; delete x.act.rubricaSinElegir; }
   cxLimpiarPuntuacionesHuerfanas(x.grupo,x.act);
@@ -311,11 +311,11 @@ function cxnCorregirHTML(grupo,rub,sc,alId,actId){
       </th>
       ${niv.map((l,i)=>{ const col=cxnColor(l.color,i), on=!!(pos&&pos.exacto===l.id), par=parcial.has(l.id), txt=String((it.celdas||{})[l.id]||"").trim();
         return `<td class="cxn-op${on?" on":""}${par?" parcial":""}" style="--cxn:${col};--cxn-tinta:${cxnTinta(col)}">
-          <button type="button" aria-pressed="${on}" aria-label="${esc(it.label||"Categoría")}: ${esc(l.nombre||"nivel")} (${cxFmtPts(cxnPuntosNivel(it,l,niv))} puntos)" onclick="cxnElegir('${alId}','${actId}','${it.id}','${l.id}')">
+          <button type="button" aria-pressed="${on}" aria-label="${esc(it.label||"Categoria")}: ${esc(l.nombre||"nivell")} (${cxFmtPts(cxnPuntosNivel(it,l,niv))} punts)" onclick="cxnElegir('${alId}','${actId}','${it.id}','${l.id}')">
             ${on?'<span class="cxn-check" aria-hidden="true">✓</span>':""}${txt?esc(txt):`<span class="cxn-solo-nom">${esc(l.nombre||"")}</span>`}
           </button></td>`; }).join("")}
       <td class="cxn-pts">
-        ${cxSelectPuntuacionHTML(it.max,v,"",`onchange="cxSetItemScore('${alId}','${actId}','${it.id}',this.value)" title="Afinar la puntuación"`,np)}
+        ${cxSelectPuntuacionHTML(it.max,v,"",`onchange="cxSetItemScore('${alId}','${actId}','${it.id}',this.value)" title="Afinar la puntuació"`,np)}
         <div class="cxn-pts-max">/ ${cxFmtPts(it.max)}</div>
         ${pos&&!pos.exacto?`<div class="cxn-entre">${esc(cxnTextoPosicion(pos,niv))}</div>`:""}
       </td>
@@ -381,7 +381,7 @@ function cxnRepartoHTML(grupo,act){
     alumnos.forEach(al=>{ const l=cxnNivelCercano(it,grupo.rubricScores?.[al.id]?.[act.id]?.[it.id],niv); if(l) n.set(l.id,n.get(l.id)+1); });
     return `<tr><th scope="row" style="text-align:left;font-weight:500;font-size:12.5px;padding:4px 8px 4px 0">${esc(it.label||"(sin nombre)")}</th>${niv.map(l=>`<td style="text-align:center;font-size:12.5px;padding:4px 6px;${n.get(l.id)?"font-weight:700":"color:var(--mut)"}">${n.get(l.id)}</td>`).join("")}</tr>`;
   }).join("");
-  return `<h3 style="font-size:13.5px;margin:14px 0 6px">Reparto por niveles <span class="sub" style="font-weight:400">· rúbrica general, ${alumnos.length} alumno${alumnos.length===1?"":"s"}</span></h3>
+  return `<h3 style="font-size:13.5px;margin:14px 0 6px">Repartiment per nivells <span class="sub" style="font-weight:400">· rúbrica general, ${alumnos.length} alumne${alumnos.length===1?"":"s"}</span></h3>
     <div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%"><thead><tr><th></th>${niv.map((l,i)=>{ const col=cxnColor(l.color,i); return `<th scope="col" style="background:${col};color:${cxnTinta(col)};font-size:12px;padding:4px 6px">${esc(l.nombre||"")}</th>`; }).join("")}</tr></thead><tbody>${filas}</tbody></table></div>
     <p class="sub" style="margin:4px 0 0;font-size:11px">Las notas afinadas cuentan en el nivel más cercano.</p>`;
 }
@@ -412,7 +412,7 @@ function cxElegirTipoHTML(grupo,act){
     <div class="flex" style="gap:8px;flex-wrap:wrap">
       <button class="btn" onclick="cxElegirTipoInicial('${act.id}','niveles')">▦ Por niveles de logro</button>
       <button class="ghost" style="border:1px solid var(--line)" onclick="cxElegirTipoInicial('${act.id}','puntos')">Por puntos (preguntas e ítems)</button>
-      ${hayPl?`<button class="ghost" style="border:1px solid var(--line)" onclick="cxElegirTipoInicial('${act.id}','plantilla')">📂 Desde una plantilla</button>`:""}
+      ${hayPl?`<button class="ghost" style="border:1px solid var(--line)" onclick="cxElegirTipoInicial('${act.id}','plantilla')">📂 Des d'una plantilla</button>`:""}
     </div>
     <p class="sub" style="margin:8px 0 0;font-size:12px"><strong>Por niveles</strong>: tabla de categorías × niveles (Experto, Avanzado…) que se corrige pinchando casillas; empieza con una categoría por criterio. Si la guardas en la Programación («📌»), los demás grupos la recibirán ya hecha.</p>
   </div>`;
@@ -428,7 +428,7 @@ window.cxElegirTipoInicial=async(actId,tipo)=>{
     act.rubrica=cxnRubricaNueva(crits.map(c=>({critId:c,peso:100})),grupo.catalogoKey);
     act.escalarA10=true;
     cxSyncCriteriosActividad(act); cxRecalcTodosLosAlumnos(grupo,act);
-    mostrarToast("✓ Rúbrica por niveles: escribe los descriptores de cada casilla");
+    mostrarToast("✓ Rúbrica per nivells: escriu els descriptors de cada casella");
   }
   if(tipo==="puntos") act.rubricaSinElegir=false; else delete act.rubricaSinElegir;
   state.ui.corItemAbierto="";

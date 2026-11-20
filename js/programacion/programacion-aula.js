@@ -208,7 +208,7 @@ window.progDuplicar=(id)=>{
   const mapaIds={};
   const nuevasSdas=orig.sdas.map(s=>{ const nid=uid(); mapaIds[s.id]=nid; return {...s,id:nid}; });
   const nuevasActividades=orig.actividades.map(a=>({...a, id:uid(), sdaIds:(a.sdaIds||[]).map(sid=>mapaIds[sid]).filter(Boolean), criterios:(a.criterios||[]).map(c=>({...c})), ...(a.rubrica?{rubrica:JSON.parse(JSON.stringify(a.rubrica))}:{}), ...(a.variantes?{variantes:JSON.parse(JSON.stringify(a.variantes))}:{})}));
-  const copia={id:uid(), nombre:orig.nombre+" (copia)", catalogoKey:orig.catalogoKey, sdas:nuevasSdas, actividades:nuevasActividades,
+  const copia={id:uid(), nombre:orig.nombre+" (còpia)", catalogoKey:orig.catalogoKey, sdas:nuevasSdas, actividades:nuevasActividades,
     recursos:{...(orig.recursos||progRecursosDefault())}, cursoEscolar:"", profesorNombre:orig.profesorNombre||"",
     metodologia:orig.metodologia||"", criteriosCalifCualitativa:orig.criteriosCalifCualitativa||"", criteriosCalifCuantitativa:orig.criteriosCalifCuantitativa||""};
   if(!Array.isArray(state.programaciones)) state.programaciones=[];

@@ -140,11 +140,11 @@ window.ncPreparar=async()=>{
   const viejo=(state.cursoEscolarGlobal||cursoAcademicoActual()).replace(/[^0-9A-Za-z-]+/g,"-");
   const nombre=`curso-${viejo}-cuaderno${pass?"-CIFRADO":""}-${fechaISOLocal()}.json`;
   _ncArchivo={blob:new Blob([texto],{type:"application/json"}),nombre,opc};
-  const lista=[opc.grupos?(opc.alumnado?"los grupos con su alumnado (sin notas)":"los grupos, vacíos"):null, opc.programaciones?"las Programaciones de Aula":null, opc.horario?"el horario":null, opc.festivos?"los festivos":null].filter(Boolean);
+  const lista=[opc.grupos?(opc.alumnado?"els grups amb el seu alumnat (sense notes)":"els grups, buits"):null, opc.programaciones?"les programacions d'aula":null, opc.horario?"l'horari":null, opc.festivos?"els festius":null].filter(Boolean);
   _ncModal.querySelector("#ncCuerpo").innerHTML=`
-    <p class="sub" style="margin-top:6px">El archivo del curso ${esc(state.cursoEscolarGlobal||"")} está listo:</p>
-    <div class="card" style="margin:8px 0;padding:10px 14px"><strong style="font-size:13.5px">${esc(nombre)}</strong><div class="sub" style="margin:2px 0 0">${_fmtBytes(texto.length)}${pass?" · cifrado":""} · contiene todo lo que hay ahora en el Cuaderno</div></div>
-    <p class="sub">Al pulsar el botón se guarda el archivo y, <strong>solo si se ha guardado</strong>, empieza el curso <strong>${esc(opc.curso)}</strong> conservando ${lista.length?esc(lista.join(", ")):"solo las materias, plantillas y ajustes"}. Guárdalo en un sitio seguro: es tu expediente del curso que termina.</p>
+    <p class="sub" style="margin-top:6px">El fitxer del curs ${esc(state.cursoEscolarGlobal||"")} està preparat:</p>
+    <div class="card" style="margin:8px 0;padding:10px 14px"><strong style="font-size:13.5px">${esc(nombre)}</strong><div class="sub" style="margin:2px 0 0">${_fmtBytes(texto.length)}${pass?" · xifrat":""} · conté tot el que hi ha ara en el Quadern</div></div>
+    <p class="sub">En polsar el botó es guarda el fitxer i, <strong>només si s'ha guardat</strong>, comença el curs <strong>${esc(opc.curso)}</strong> conservant ${lista.length?esc(lista.join(", ")):"només les matèries, plantilles i ajustos"}. Guarda'l en un lloc segur: és el teu expedient del curs que acaba.</p>
     <div class="flex" style="justify-content:flex-end;gap:8px;margin-top:16px">
       <button class="ghost" style="border:1px solid var(--line)" onclick="ncCerrar()">Cancelar</button>
       <button class="btn" id="ncConfirmar" onclick="ncConfirmar()">💾 Guardar el archivo y empezar el curso ${esc(opc.curso)}</button>
@@ -161,7 +161,7 @@ window.ncConfirmar=async()=>{
   if(!ok){ if(btn) btn.disabled=false; mostrarToast("No se ha guardado el archivo: no se ha cambiado nada","info"); return; }
   const viejo=state.cursoEscolarGlobal||"anterior";
   const copia=await crearCopiaAuto("Antes de empezar el curso "+opc.curso+" (curso "+viejo+" completo)",true);
-  if(!copia && !await confirmar("No se ha podido crear la copia interna de seguridad en este dispositivo. El archivo del curso sí se ha guardado. ¿Empezar el curso nuevo igualmente?",{ok:"Sí, continuar",peligro:true})){ if(btn) btn.disabled=false; return; }
+  if(!copia && !await confirmar("No s'ha pogut crear la còpia interna de seguretat en este dispositiu. El fitxer del curs sí que s'ha guardat. Vols començar el curs nou igualment?",{ok:"Sí, continua",peligro:true})){ if(btn) btn.disabled=false; return; }
   ncAplicar(opc);
   state.lastBackupAt=Date.now(); state.cambiosSinCopia=0;
   save();

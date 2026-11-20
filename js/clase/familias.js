@@ -137,7 +137,7 @@ window.famImprimirHistorial=()=>{
   const filas=entradas.map(e=>`<tr><td style="white-space:nowrap;font-size:12px">${fmt2(e.fecha)}</td><td>${esc(nombreAl(e.alumnoId))}</td><td>${famMedioInfo(e.medio).label}</td><td>${esc(e.asunto)||"—"}</td><td>${esc(e.notas)||"—"}</td></tr>`).join("");
   const body=`
     <h1>Contacto con familias</h1>
-    <div class="meta">${esc(grupo.nombre)} · Generado el ${new Date().toLocaleDateString("es-ES")}</div>
+    <div class="meta">${esc(grupo.nombre)} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     <table><thead><tr><th style="width:90px">Fecha</th><th>Alumno/a</th><th>Medio</th><th>Asunto</th><th>Notas</th></tr></thead><tbody>${filas}</tbody></table>
   `;
   const portada=generarPortadaHTML(`Contacto con familias — ${grupo.nombre}`,

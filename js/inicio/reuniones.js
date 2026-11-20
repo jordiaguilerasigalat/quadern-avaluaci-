@@ -12,7 +12,7 @@ const RE_TIPOS=[
   {id:"familia",label:"Familia",color:"#0d9488"},
   {id:"alumno",label:"Alumno/a",color:"#2563eb"},
   {id:"directiva",label:"Equipo directivo",color:"#dc2626"},
-  {id:"otro",label:"Otro",color:"#64748b"}
+  {id:"otro",label:"Altre",color:"#64748b"}
 ];
 function reTipoInfo(id){ return RE_TIPOS.find(t=>t.id===id)||RE_TIPOS[3]; }
 const RE_PLANTILLAS_BASE=[
@@ -83,19 +83,19 @@ function renderReListaHTML(root){
       <div class="flex" style="justify-content:space-between;align-items:flex-start">
         <div style="min-width:0">
           <span class="pill" style="${pillTinte(info.color)};margin-bottom:6px">${info.label}</span>
-          <div style="font-size:15px;font-weight:700">${esc(r.titulo||"Sin título")}</div>
+          <div style="font-size:15px;font-weight:700">${esc(r.titulo||"Sense títol")}</div>
           <div style="font-size:12.5px;color:var(--mut);margin-top:2px">
-            ${r.fecha?fmt2(r.fecha):"Sin fecha"}${r.horaInicio?" · "+r.horaInicio:""}${alV?" · "+esc(alV.al.nombre):""}${r.grupoId&&!alV?" · "+esc((state.grupos.find(g=>g.id===r.grupoId)||{}).nombre||""):""}
+            ${r.fecha?fmt2(r.fecha):"Sense data"}${r.horaInicio?" · "+r.horaInicio:""}${alV?" · "+esc(alV.al.nombre):""}${r.grupoId&&!alV?" · "+esc((state.grupos.find(g=>g.id===r.grupoId)||{}).nombre||""):""}
           </div>
           <div style="font-size:12.5px;color:var(--mut);margin-top:6px;max-width:560px">${esc(resumen)}</div>
         </div>
         <div style="text-align:right;flex-shrink:0">
-          <span class="badge">${nAsist} asistente${nAsist===1?"":"s"}</span>
-          <div style="margin-top:6px"><span class="pill" style="background:${r.estado==="cerrada"?"#dcfce7":"#f1f5f9"};color:${r.estado==="cerrada"?"#166534":"#4b5768"}">${r.estado==="cerrada"?"✓ Cerrada":"Borrador"}</span></div>
+          <span class="badge">${nAsist} assistent${nAsist===1?"":"s"}</span>
+          <div style="margin-top:6px"><span class="pill" style="background:${r.estado==="cerrada"?"#dcfce7":"#f1f5f9"};color:${r.estado==="cerrada"?"#166534":"#4b5768"}">${r.estado==="cerrada"?"✓ Tancada":"Esborrany"}</span></div>
         </div>
       </div>
     </div>`;
-  }).join("") : `<div class="card"><p class="sub" style="margin:0">${total===0?"Todavía no has registrado ninguna reunión.":"Sin resultados con este filtro/búsqueda."}</p></div>`;
+  }).join("") : `<div class="card"><p class="sub" style="margin:0">${total===0?"Encara no has registrat cap reunió.":"No hi ha resultats amb este filtre o cerca."}</p></div>`;
 
   root.innerHTML=`
   <div class="card">
@@ -124,7 +124,7 @@ function renderReListaHTML(root){
       <label style="font-size:12.5px;color:var(--mut);display:flex;align-items:center;gap:6px">Hasta
         <input type="date" class="in" id="reFiltroHastaInput" style="min-width:150px" value="${esc(state.ui.reFiltroHasta||"")}">
       </label>
-      ${(state.ui.reFiltroDesde||state.ui.reFiltroHasta)?`<button class="ghost" style="border:1px solid var(--line)" onclick="reLimpiarFiltroFecha()">✕ Quitar fechas</button>`:""}
+      ${(state.ui.reFiltroDesde||state.ui.reFiltroHasta)?`<button class="ghost" style="border:1px solid var(--line)" onclick="reLimpiarFiltroFecha()">✕ Llevar les dates</button>`:""}
     </div>
   </div>
   <div class="grid" style="gap:10px">${filas}</div>`;
@@ -254,7 +254,7 @@ function renderReDetalleHTML(root){
     <div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:10px">
       <button class="ghost" style="border:1px solid var(--line)" onclick="reIrLista()">← Reuniones</button>
       <div class="flex">
-        <button class="ghost" style="border:1px solid var(--line);color:${r.estado==='cerrada'?'#166534':'inherit'}" onclick="reToggleEstado()">${r.estado==="cerrada"?"✓ Cerrada":"Marcar como cerrada"}</button>
+        <button class="ghost" style="border:1px solid var(--line);color:${r.estado==='cerrada'?'#166534':'inherit'}" onclick="reToggleEstado()">${r.estado==="cerrada"?"✓ Tancada":"Marcar com a tancada"}</button>
         <button class="btn" onclick="reImprimirActa('${r.id}')">🖨️ Imprimir acta</button>
         <button class="ghost danger" onclick="reEliminarReunion('${r.id}')">Eliminar</button>
       </div>
@@ -383,7 +383,7 @@ window.reGuardarComoPlantilla=async ()=>{
   const r=(state.reuniones||[]).find(x=>x.id===state.ui.reId);
   const temas=(r.ordenDia||[]).filter(t=>t&&t.trim());
   if(!temas.length){ mostrarAviso("Añade al menos un tema al orden del día antes de guardarlo como plantilla."); return; }
-  const nombre=await pedirTexto("Nombre para esta plantilla de orden del día:", r.titulo||"");
+  const nombre=await pedirTexto("Nom per a esta plantilla d'ordre del dia:", r.titulo||"");
   if(!nombre || !nombre.trim()) return;
   if(!Array.isArray(state.plantillasReunion)) state.plantillasReunion=[];
   state.plantillasReunion.push({ id:uid(), nombre:nombre.trim(), ordenDia:temas.slice() });
@@ -438,9 +438,9 @@ function campoFechaDualHTML(dateId,isoValue,onChangeTexto,onChangeCalendario){
 }
 window.reExportarCSV=()=>{
   const lista=reListaFiltrada();
-  if(!lista.length){ mostrarAviso("No hay reuniones para exportar"+(state.ui.reFiltroTipo||state.ui.reBusqueda?" con este filtro/búsqueda.":".")); return; }
+  if(!lista.length){ mostrarAviso("No hi ha reunions per a exportar"+(state.ui.reFiltroTipo||state.ui.reBusqueda?" amb este filtre o cerca.":".")); return; }
   const esc2=s=>'"'+String(s??"").replace(/"/g,'""')+'"';
-  let csv="Titulo;Tipo;Fecha;Hora;Grupo;Alumno;Estado;Asistentes;Temas orden del dia;Acuerdos\n";
+  let csv="Titol;Tipus;Data;Hora;Grup;Alumne;Estat;Assistents;Temes ordre del dia;Acords\n";
   lista.forEach(r=>{
     const info=reTipoInfo(r.tipo);
     const alV=reAlumno(r);
@@ -469,7 +469,7 @@ window.reImprimirActa=id=>{
     </div>`).join("");
   const body=`
     <h1>Acta de reunión</h1>
-    <div class="meta">${info.label}${r.grupoId?" · "+esc((state.grupos.find(g=>g.id===r.grupoId)||{}).nombre||""):""}${alV?" · "+esc(alV.al.nombre):""} · Generada el ${new Date().toLocaleDateString("es-ES")}</div>
+    <div class="meta">${info.label}${r.grupoId?" · "+esc((state.grupos.find(g=>g.id===r.grupoId)||{}).nombre||""):""}${alV?" · "+esc(alV.al.nombre):""} · Generada el ${new Date().toLocaleDateString("ca-ES")}</div>
     <table>
       <tr><th style="width:160px">Título / motivo</th><td>${esc(r.titulo||"—")}</td></tr>
       <tr><th>Fecha</th><td>${fmt2(r.fecha)}${r.horaInicio?" · "+r.horaInicio+(r.horaFin?" a "+r.horaFin:""):""}</td></tr>
@@ -477,22 +477,22 @@ window.reImprimirActa=id=>{
       <tr><th>Estado</th><td><span class="pill" style="background:${r.estado==="cerrada"?"#dcfce7":"#f1f5f9"};color:${r.estado==="cerrada"?"#166534":"#666"}">${r.estado==="cerrada"?"Cerrada":"Borrador"}</span></td></tr>
     </table>
     <h2>Asistentes</h2>
-    ${asistRows?`<table><thead><tr><th style="width:30px"></th><th>Nombre</th><th>Rol / relación</th></tr></thead><tbody>${asistRows}</tbody></table>`:'<p style="color:#999;font-style:italic">Sin asistentes registrados.</p>'}
+    ${asistRows?`<table><thead><tr><th style="width:30px"></th><th>Nom</th><th>Rol / relació</th></tr></thead><tbody>${asistRows}</tbody></table>`:'<p style="color:#999;font-style:italic">No s\'han registrat assistents.</p>'}
     <h2>Orden del día</h2>
-    ${ordenLis?`<ol style="margin-left:18px">${ordenLis}</ol>`:'<p style="color:#999;font-style:italic">Sin orden del día registrado.</p>'}
+    ${ordenLis?`<ol style="margin-left:18px">${ordenLis}</ol>`:'<p style="color:#999;font-style:italic">No s\'ha registrat l\'ordre del dia.</p>'}
     <h2>Desarrollo de la reunión</h2>
     <p style="white-space:pre-wrap;line-height:1.6">${r.desarrollo?esc(r.desarrollo):'<em style="color:#999">Sin desarrollo registrado.</em>'}</p>
     <h2>Acuerdos y compromisos adoptados</h2>
-    ${acuerdosLis?`<ol style="margin-left:18px">${acuerdosLis}</ol>`:'<p style="color:#999;font-style:italic">Sin acuerdos registrados.</p>'}
+    ${acuerdosLis?`<ol style="margin-left:18px">${acuerdosLis}</ol>`:'<p style="color:#999;font-style:italic">No s\'han registrat acords.</p>'}
     ${(r.observaciones||r.proximaFecha)?`<h2>Observaciones</h2>
       ${r.observaciones?`<p style="white-space:pre-wrap;line-height:1.6;margin-bottom:10px">${esc(r.observaciones)}</p>`:""}
-      ${r.proximaFecha?`<p><strong>Próxima reunión:</strong> ${fmt2(r.proximaFecha)}${r.proximaHora?" · "+r.proximaHora:""}</p>`:""}`:""}
+      ${r.proximaFecha?`<p><strong>Pròxima reunió:</strong> ${fmt2(r.proximaFecha)}${r.proximaHora?" · "+r.proximaHora:""}</p>`:""}`:""}
     <h2>Firmas de los asistentes</h2>
-    ${firmasBoxes?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:8px">${firmasBoxes}</div>`:'<p style="color:#999;font-style:italic">Sin firmantes definidos.</p>'}
+    ${firmasBoxes?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:8px">${firmasBoxes}</div>`:'<p style="color:#999;font-style:italic">No s\'han definit signants.</p>'}
   `;
-  const portada=generarPortadaHTML(`Acta — ${r.titulo||"reunión"}`,
+  const portada=generarPortadaHTML(`Acta — ${r.titulo||"reunió"}`,
     [info.label, `Curso escolar: <strong>${esc(cursoEscolarEfectivo(null))}</strong>`, profesorNombreEfectivo(null)?`Elaborada por: <strong>${esc(profesorNombreEfectivo(null))}</strong>`:""],
     ["Asistentes","Orden del día","Desarrollo de la reunión","Acuerdos y compromisos adoptados",(r.observaciones||r.proximaFecha)?"Observaciones":"","Firmas de los asistentes"]);
-  abrirVentanaInforme(`Acta — ${r.titulo||"reunión"}`, body, {portada});
+  abrirVentanaInforme(`Acta — ${r.titulo||"reunió"}`, body, {portada});
 };
 

@@ -33,7 +33,7 @@ function renderDiario(grupo){
           <option value="">— Ninguna —</option>
           ${sdas.map(s=>`<option value="${s.id}" ${entradaActual.unidadId===s.id?"selected":""}>${TRIMESTRES[s.trimestre]} · ${esc(sdaNom(s)||"(sin título)")}</option>`).join("")}
         </select>
-      </label>`:`<p class="sub" style="margin:0">${prog?"La Programación vinculada todavía no tiene Situaciones de Aprendizaje.":"Este grupo no tiene una Programación de Aula vinculada (ver Ajustes) — puedes seguir usando el Diario con normalidad."}</p>`}
+      </label>`:`<p class="sub" style="margin:0">${prog?"La Programació vinculada encara no té situacions d'aprenentatge.":"Este grup no té cap Programació d'aula vinculada (vegeu Ajustos); pots continuar usant el Diari amb normalitat."}</p>`}
       <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
         <label style="font-size:12.5px;color:var(--mut);font-weight:500">¿Qué se ha dado?
           <textarea class="in" style="width:100%;margin-top:4px;min-height:120px;resize:vertical" id="diarioNotaInput" placeholder="Ej. Tema 3, apartado 2: causas de la Revolución Industrial. Actividad de comentario de gráficos.">${esc(entradaActual.nota||"")}</textarea>
@@ -51,17 +51,17 @@ function renderDiario(grupo){
   </div>
   <div class="card">
     <div class="flex" style="justify-content:space-between;align-items:center">
-      <h2 style="font-size:15px">Historial (${entradas.length} entrada${entradas.length===1?"":"s"})</h2>
+      <h2 style="font-size:15px">Historial (${entradas.length} entrad${entradas.length===1?"a":"es"})</h2>
       <div class="flex" style="gap:6px;flex-wrap:wrap">
-        ${entradas.length>1?`<div class="flex" style="gap:0;align-items:center" role="group" aria-label="Orden del historial">
-          <span class="sub" style="font-size:12.5px;margin:0 6px 0 0;align-self:center">Orden:</span>
-          <button class="${ordenManual?"ghost":"btn"}" style="border:1px solid var(--line);border-radius:8px 0 0 8px;padding:5px 10px" aria-pressed="${!ordenManual}" title="De más reciente a más antigua" onclick="diarioRestablecerOrden()">📅 Por fecha</button>
-          <button class="${ordenManual?"btn":"ghost"}" style="border:1px solid var(--line);border-left:none;border-radius:0 8px 8px 0;padding:5px 10px" aria-pressed="${ordenManual}" title="Colocar las entradas a mano" onclick="diarioActivarOrdenManual()">✋ Manual</button>
+        ${entradas.length>1?`<div class="flex" style="gap:0;align-items:center" role="group" aria-label="Ordre de l'historial">
+          <span class="sub" style="font-size:12.5px;margin:0 6px 0 0;align-self:center">Ordre:</span>
+          <button class="${ordenManual?"ghost":"btn"}" style="border:1px solid var(--line);border-radius:8px 0 0 8px;padding:5px 10px" aria-pressed="${!ordenManual}" title="De més recent a més antiga" onclick="diarioRestablecerOrden()">📅 Per data</button>
+          <button class="${ordenManual?"btn":"ghost"}" style="border:1px solid var(--line);border-left:none;border-radius:0 8px 8px 0;padding:5px 10px" aria-pressed="${ordenManual}" title="Col·locar les entrades a mà" onclick="diarioActivarOrdenManual()">✋ Manual</button>
         </div>`:""}
-        ${entradas.length?`<button class="ghost" style="border:1px solid var(--line)" onclick="diarioImprimir()">🖨️ Imprimir diario</button>`:""}
+        ${entradas.length?`<button class="ghost" style="border:1px solid var(--line)" onclick="diarioImprimir()">🖨️ Imprimir el diari</button>`:""}
       </div>
     </div>
-    ${entradas.length>1?`<p class="sub" style="margin:6px 0 0;font-size:12px">${ordenManual?"Orden manual: arrastra una entrada (⠿) o usa ▲▼ para cambiar su posición.":"Ordenadas de más reciente a más antigua. Si mueves una entrada (⠿ o ▲▼), el orden pasa a Manual."}</p>`:""}
+    ${entradas.length>1?`<p class="sub" style="margin:6px 0 0;font-size:12px">${ordenManual?"Ordre manual: arrossega una entrada (⠿) o usa ▲▼ per a canviar-ne la posició.":"Ordenades de més recent a més antiga. Si mous una entrada (⠿ o ▲▼), l'ordre passa a Manual."}</p>`:""}
     <div class="grid" style="gap:6px;margin-top:8px">
       ${entradas.length?entradas.map(([fecha,e],i)=>`
         <div class="row diario-row" draggable="true" data-fecha="${fecha}" style="cursor:pointer;flex-direction:column;align-items:flex-start;gap:2px" onclick="diarioSeleccionarFecha('${fecha}')" ondragstart="diarioDragStart(event,'${fecha}')" ondragend="diarioDragEnd()" ondragover="diarioDragOver(event,this)" ondragleave="this.classList.remove('diario-drop')" ondrop="diarioDrop(event,'${fecha}')">
@@ -186,13 +186,13 @@ window.diarioImprimir=()=>{
   const filas=entradas.map(([fecha,e])=>`<tr><td style="white-space:nowrap;font-size:12px;color:#666">${fmt2(fecha)}</td><td style="font-size:12px;color:#666">${e.unidadId?esc(nombreSda(e.unidadId)):"—"}</td><td style="white-space:pre-wrap">${esc(e.nota||"")}</td><td style="white-space:pre-wrap">${esc(e.incidencias||"")}</td></tr>`).join("");
   const body=`
     <h1>Diario de clase</h1>
-    <div class="meta">${esc(grupo.nombre)} · ${esc(cat.materia)} · ${esc(cat.curso)} · Generado el ${new Date().toLocaleDateString("es-ES")}</div>
+    <div class="meta">${esc(grupo.nombre)} · ${esc(cat.materia)} · ${esc(cat.curso)} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     <table><thead><tr><th style="width:110px">Fecha</th><th style="width:160px">Situación de Aprendizaje</th><th>¿Qué se ha dado?</th><th>Incidencias</th></tr></thead><tbody>${filas}</tbody></table>
   `;
-  const portada=generarPortadaHTML(`Diario de clase — ${grupo.nombre}`,
+  const portada=generarPortadaHTML(`Diari de classe — ${grupo.nombre}`,
     [`${esc(cat.materia)} · ${esc(cat.curso)}`,
      `Curso escolar: <strong>${esc(cursoEscolarEfectivo(null))}</strong>`,
      profesorNombreEfectivo(null)?`Elaborado por: <strong>${esc(profesorNombreEfectivo(null))}</strong>`:""], []);
-  abrirVentanaInforme(`Diario de clase — ${grupo.nombre}`, body, {portada});
+  abrirVentanaInforme(`Diari de classe — ${grupo.nombre}`, body, {portada});
 };
 

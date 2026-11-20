@@ -80,7 +80,7 @@ window.claseCrearGrupos=()=>{
 };
 window.claseCopiarGrupos=async()=>{
   if(!claseEquipos) return;
-  const txt=claseEquipos.equipos.map((e,i)=>`Grupo ${i+1}: ${e.join(", ")}`).join("\n");
+  const txt=claseEquipos.equipos.map((e,i)=>`Grup ${i+1}: ${e.join(", ")}`).join("\n");
   try{ await navigator.clipboard.writeText(txt); mostrarToast("✓ Grupos copiados"); }
   catch(e){ mostrarAviso(txt,"Grupos (copia el texto)"); }
 };
@@ -97,12 +97,12 @@ function claseSorteoHTML(){
   const ausentes=g.alumnos.length-candidatos.length;
   const elegido=claseUltimo && claseUltimo.grupoId===g.id ? claseUltimo.nombre : "";
   return `${claseSelectorGrupoHTML(g)}
-    <div id="claseElegido" class="clase-elegido ${elegido?"":"clase-vacio"}" role="status" aria-live="polite">${elegido?esc(elegido):"¿A quién le toca?"}</div>
-    <button class="btn" style="width:100%;font-size:15px;padding:11px" onclick="claseSortear()" ${candidatos.length?"":"disabled"}>🎲 ${elegido?"Otra persona":"Elegir a alguien"}</button>
-    <div class="sub" style="margin:8px 0 6px;text-align:center">${candidatos.length?(claseSinRepetir?`Quedan ${quedan} de ${candidatos.length}`:`${candidatos.length} en el sorteo`):"No hay nadie en el sorteo"}${ausentes?` · ${ausentes} ausente${ausentes===1?"":"s"} hoy`:""}</div>
+    <div id="claseElegido" class="clase-elegido ${elegido?"":"clase-vacio"}" role="status" aria-live="polite">${elegido?esc(elegido):"A qui li toca?"}</div>
+    <button class="btn" style="width:100%;font-size:15px;padding:11px" onclick="claseSortear()" ${candidatos.length?"":"disabled"}>🎲 ${elegido?"Una altra persona":"Triar algú"}</button>
+    <div class="sub" style="margin:8px 0 6px;text-align:center">${candidatos.length?(claseSinRepetir?`Queden ${quedan} de ${candidatos.length}`:`${candidatos.length} en el sorteig`):"No hi ha ningú en el sorteig"}${ausentes?` · ${ausentes} absent${ausentes===1?"":"s"} hui`:""}</div>
     <label class="clase-op"><input type="checkbox" ${claseSinRepetir?"checked":""} onchange="claseOpcion('repetir',this.checked)"> No repetir hasta que salgan todos</label>
     <label class="clase-op"><input type="checkbox" ${claseSinAusentes?"checked":""} onchange="claseOpcion('ausentes',this.checked)"> Dejar fuera a quien falta hoy</label>
-    ${claseSinRepetir&&ya.size?`<button class="ghost small" style="border:1px solid var(--line);margin-top:8px;width:100%" onclick="claseReiniciarSorteo()">↺ Empezar de nuevo</button>`:""}`;
+    ${claseSinRepetir&&ya.size?`<button class="ghost small" style="border:1px solid var(--line);margin-top:8px;width:100%" onclick="claseReiniciarSorteo()">↺ Tornar a començar</button>`:""}`;
 }
 function claseGruposHTML(){
   const g=claseGrupo();
@@ -118,9 +118,9 @@ function claseGruposHTML(){
       <input class="in" id="claseNum" type="number" min="1" max="40" style="width:64px" value="${claseNumGrupos}" aria-label="${claseModoGrupos==="num"?"Número de grupos":"Personas por grupo"}" onchange="claseOpcion('num',this.value)">
     </div>
     <label class="clase-op" style="margin-top:6px"><input type="checkbox" ${claseSinAusentes?"checked":""} onchange="claseOpcion('ausentes',this.checked)"> Dejar fuera a quien falta hoy</label>
-    <button class="btn" style="width:100%;margin-top:8px" onclick="claseCrearGrupos()" ${candidatos.length?"":"disabled"}>👥 ${eq?"Repartir otra vez":"Hacer grupos"} (${candidatos.length})</button>
-    ${eq?`<div class="clase-equipos scroll" role="status" aria-live="polite">${eq.map((e,i)=>`<div class="clase-equipo"><strong>Grupo ${i+1}</strong> <span class="sub" style="margin:0">(${e.length})</span><div>${e.map(n=>esc(n)).join("<br>")}</div></div>`).join("")}</div>
-      <button class="ghost small" style="border:1px solid var(--line);margin-top:8px;width:100%" onclick="claseCopiarGrupos()">📋 Copiar los grupos</button>`:""}`;
+    <button class="btn" style="width:100%;margin-top:8px" onclick="claseCrearGrupos()" ${candidatos.length?"":"disabled"}>👥 ${eq?"Repartir una altra vegada":"Fer grups"} (${candidatos.length})</button>
+    ${eq?`<div class="clase-equipos scroll" role="status" aria-live="polite">${eq.map((e,i)=>`<div class="clase-equipo"><strong>Grup ${i+1}</strong> <span class="sub" style="margin:0">(${e.length})</span><div>${e.map(n=>esc(n)).join("<br>")}</div></div>`).join("")}</div>
+      <button class="ghost small" style="border:1px solid var(--line);margin-top:8px;width:100%" onclick="claseCopiarGrupos()">📋 Copiar els grups</button>`:""}`;
 }
 function clasePintar(){
   const panel=document.getElementById("cronoPanel"); if(!panel) return;
