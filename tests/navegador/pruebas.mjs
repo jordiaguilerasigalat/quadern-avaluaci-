@@ -1434,7 +1434,7 @@ export const PRUEBAS = [
       out.persisteix = state.ui.grafObert.grup === true;
       state.ui.resAl = ids[1]; state.ui.grafObert.alumne = true; save(); render();
       const da = document.querySelector('.grafCard');
-      out.alumne = !!da.querySelector('path.grLinAl') && !!da.querySelector('path.grLinGrup') && /Evolució de Luis/.test(da.textContent);
+      out.alumne = !!da.querySelector('path.grLinAl') && !!da.querySelector('path.grLinGrup') && /Evolució de l'alumne/.test(da.textContent);
       out.mateix = JSON.stringify([notaTrimestre(g, ids[0], 0), notaFinal(g, ids[1])]) === abans;
       return out;
     }, ids);

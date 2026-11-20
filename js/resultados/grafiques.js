@@ -122,7 +122,7 @@ function grafiquesGrupHTML(grupo){
 }
 /* ---------- Alumne/a ---------- */
 function grafiquesAlumneHTML(grupo,al){
-  return _grDetalls("alumne","📈 Evolució de "+esc((al.nombreP||al.nombre||"").trim().split(/\s+/)[0]||al.nombre),()=>{
+  return _grDetalls("alumne","📈 Evolució de l'alumne/a",()=>{
     const acts=_grActivitats(grupo).filter(a=>_grNotaAct(grupo,al.id,a)!=null);
     const s1= acts.length
       ? svgLinies(acts.map(a=>a.nombre),[
