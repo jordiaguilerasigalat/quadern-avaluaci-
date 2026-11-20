@@ -17,8 +17,7 @@ function _renderActividadesLlista(grupo){
   if(!f.bloqueId) f.bloqueId=defBloque(f.tipo,grupo.bloques);
   const editando=!!f.editId;
   const bloqueSel=grupo.bloques.find(b=>b.id===f.bloqueId);
-  const previewCount=grupo.actividades.filter(a=>a.trimestre===state.ui.trim && a.bloqueId===f.bloqueId && a.id!==f.editId && !a.recupera).length+1;
-  const previewPct=(100/previewCount).toFixed(0);
+  const previewPct=pesoActividadEnBloque({actividades:[...grupo.actividades.filter(a=>a.id!==f.editId),{id:"_nova",trimestre:state.ui.trim,bloqueId:f.bloqueId,pesoBloque:""}]},{trimestre:state.ui.trim,bloqueId:f.bloqueId,pesoBloque:""}).toFixed(0);
   const prog=progDeGrupo(grupo);
   const c=document.getElementById("tabContent");
   const formularioLibreHTML=`
@@ -107,6 +106,7 @@ function _renderActividadesLlista(grupo){
             ${a.recupera?`<div style="font-size:12.5px;margin-top:2px;color:var(--accent-texto,#7d5a12);font-weight:600">🔁 ${recResumenTexto(grupo,a)}</div>`:`<div style="font-size:12.5px;color:var(--mut);margin-top:2px">Pes dins del bloc: ${pctEnBloque} %${(a.pesoBloque==null||a.pesoBloque==="")?" (automàtic)":""}</div>`}
             ${!a.recupera && recuperacionesDe(grupo,a.id).length?`<div style="font-size:12.5px;color:var(--mut);margin-top:2px">🔁 Té recuperació: ${recuperacionesDe(grupo,a.id).map(r=>esc(r.nombre)).join(", ")}</div>`:""}
             ${cxAvisoCriteriosBadgeHTML(grupo,a)}
+            ${!a.recupera && modoNotaGrupo(grupo)==="ce" && !criterisActivitatCE(a).length?`<div style="font-size:12.5px;margin-top:2px;color:#b45309">⚠️ No compta en la nota: este grup qualifica per competències i l'activitat no té cap criteri.</div>`:""}
             <div style="font-size:12.5px;color:var(--mut);margin-top:4px">Criterios: ${a.criterios.length?a.criterios.map(l=>`${critLinkHTML(grupo.catalogoKey,l.critId)} (${l.peso})`).join(" · "):"cap encara"}</div>
           </div>
           <div class="flex">
