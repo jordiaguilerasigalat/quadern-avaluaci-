@@ -193,7 +193,7 @@ function homeGrupsActiusHTML(){
   const chip=g=>{
     const cat=getCatalogo(g.catalogoKey);
     const prog=typeof progDeGrupo==="function"?progDeGrupo(g):null;
-    return `<button class="home-grup" onclick="buscarIrGrupo('${escJS(g.id)}')" title="Obrir el grup ${esc(g.nombre)}">
+    return `<button class="home-grup" data-ordre-grup="${esc(g.id)}" onclick="buscarIrGrupo('${escJS(g.id)}')" title="Obrir el grup ${esc(g.nombre)} (arrossega per a canviar l'ordre)">
       <span class="home-grup-nom">${esc(g.nombre)}</span>
       <span class="home-grup-meta">${esc(cat?cat.materia+" · "+cat.curso:"")}</span>
       <span class="home-grup-meta">${(g.alumnos||[]).length} alumne${(g.alumnos||[]).length===1?"":"s"}${prog?" · 📘 "+esc(prog.nombre.replace(/ · Programació del departament.*/,"")):""}</span>
@@ -204,7 +204,7 @@ function homeGrupsActiusHTML(){
       <h2 style="font-size:15px;margin:0">👥 Els meus grups${state.cursoEscolarGlobal?" · "+esc(state.cursoEscolarGlobal):""}</h2>
       <button class="ghost small" style="border:1px dashed var(--line)" onclick="state.ui.appMode='competencial';irAGrupo(null)">+ Nou grup</button>
     </div>
-    ${gs.length?`<div class="home-grups">${gs.map(chip).join("")}</div>`
+    ${gs.length?`<div class="home-grups" data-ordre-grups>${gs.map(chip).join("")}</div>`
       :`<p class="sub" style="margin:0">Encara no tens grups. Crea'n un amb «+ Nou grup».</p>`}
   </div>`;
 }
