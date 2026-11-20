@@ -27,7 +27,8 @@ function avisoCopiaHTML(){
 function renderLanding(){
   const app=document.getElementById("app");
   const ng=state.ui.nuevoGrupo;
-  if(!getCatalogo(ng.catalogoKey) || catalogoEstaOculto(ng.catalogoKey)) ng.catalogoKey=ORDEN_CATALOGOS.find(k=>!catalogoEstaOculto(k))||ORDEN_CATALOGOS[0];
+  const esLliure=ng.catalogoKey===NG_LLIURE;
+  if(!esLliure && (!getCatalogo(ng.catalogoKey) || catalogoEstaOculto(ng.catalogoKey))) ng.catalogoKey=ORDEN_CATALOGOS.find(k=>!catalogoEstaOculto(k))||ORDEN_CATALOGOS[0];
   const hayGrupos=state.grupos.length>0;
   app.innerHTML=`
   <div class="hero">
@@ -74,19 +75,31 @@ function renderLanding(){
   </div>
   <div class="card">
     <h2>Crear grup nou</h2>
-    <p class="sub">Tria la matèria i el curs: el catàleg de competències específiques, criteris i competències clau es carrega automàticament. Si la teua matèria no està en la llista, o en vols editar o eliminar alguna, fes-ho en "Matèries: importar, editar o eliminar plantilles" (just davall) i després torna ací.</p>
+    <p class="sub">Tria la matèria i el curs: el catàleg de competències específiques, criteris i competències clau es carrega automàticament. Per a un grup d'una altra matèria (tallers, atenció educativa, PAC, FP…) tria «Una altra matèria» al final de la llista i escriu-ne el nom. Si vols el currículum complet d'una altra matèria, o en vols editar o eliminar alguna, fes-ho en "Matèries: importar, editar o eliminar plantilles" (just davall) i després torna ací.</p>
     <div class="grid" style="max-width:440px">
       <input class="in" id="ngNombre" placeholder="Nom del grup (p. ex. 1r Batx A)" value="${esc(ng.nombre)}">
-      <select class="in" id="ngCat">${opcionesCatalogosHTML(ng.catalogoKey)}</select>
-      <button class="btn" onclick="crearGrupo()" ${!ng.nombre.trim()?"disabled":""} style="justify-self:start">Crear grup</button>
+      <select class="in" id="ngCat">${opcionesCatalogosHTML(ng.catalogoKey)}<option value="${NG_LLIURE}" ${esLliure?"selected":""}>✏️ Una altra matèria (taller, atenció educativa, PAC, FP…)</option></select>
+      <div id="ngLliure" class="grid" style="gap:8px;${esLliure?"":"display:none"}">
+        <input class="in" id="ngMateria" placeholder="Matèria (p. ex. Taller de robòtica, Atenció educativa, PAC, FP…)" value="${esc(ng.materia||"")}">
+        <input class="in" id="ngCurso" placeholder="Curs o nivell (p. ex. 3r ESO, 1r CFGM…)" value="${esc(ng.curso||"")}">
+        <p class="sub" style="margin:0">Sense currículum de FiQ: el grup tindrà alumnat, assistència, activitats i notes amb uns criteris generals senzills (treball, activitats i actitud). Els pots canviar després en «Matèries: importar, editar o eliminar plantilles».</p>
+      </div>
+      <button class="btn" onclick="crearGrupo()" ${!ngPotCrear()?"disabled":""} style="justify-self:start">Crear grup</button>
     </div>
   </div>
 
   ${renderGestionCatalogosHTML()}`;
-  document.getElementById("ngNombre").addEventListener("input",e=>{ state.ui.nuevoGrupo.nombre=e.target.value; save();
-    document.querySelector("main .btn[onclick=\"crearGrupo()\"]").disabled=!state.ui.nuevoGrupo.nombre.trim(); });
-  document.getElementById("ngCat").addEventListener("change",e=>{ state.ui.nuevoGrupo.catalogoKey=e.target.value; save(); });
-  document.getElementById("ngNombre").addEventListener("keydown",e=>{ if(e.key==="Enter") crearGrupo(); });
+  const ngBoto=()=>{ const b=document.querySelector("main .btn[onclick=\"crearGrupo()\"]"); if(b) b.disabled=!ngPotCrear(); };
+  [["ngNombre","nombre"],["ngMateria","materia"],["ngCurso","curso"]].forEach(([id,camp])=>{
+    const el=document.getElementById(id);
+    el.addEventListener("input",e=>{ state.ui.nuevoGrupo[camp]=e.target.value; save(); ngBoto(); });
+    el.addEventListener("keydown",e=>{ if(e.key==="Enter") crearGrupo(); });
+  });
+  document.getElementById("ngCat").addEventListener("change",e=>{ state.ui.nuevoGrupo.catalogoKey=e.target.value; save();
+    const lliure=e.target.value===NG_LLIURE;
+    document.getElementById("ngLliure").style.display=lliure?"":"none";
+    if(lliure) document.getElementById("ngMateria").focus();
+    ngBoto(); });
   bindGestionCatalogosEventos();
 }
 window.cargarArchivoCatalogo=inp=>{
@@ -99,12 +112,46 @@ window.cargarArchivoCatalogo=inp=>{
   };
   rd.readAsText(file);
 };
+/* Grups d'altres matèries (tallers, atenció educativa, PAC, FP…): en lloc d'un
+   catàleg de la llista, es crea (o es reutilitza) una plantilla mínima amb la
+   matèria i el curs escrits a mà, uns criteris generals i tres blocs de nota. */
+const NG_LLIURE="__lliure__";
+function ngPotCrear(){
+  const ng=state.ui.nuevoGrupo;
+  if(!ng.nombre.trim()) return false;
+  if(ng.catalogoKey===NG_LLIURE) return !!(ng.materia||"").trim();
+  return true;
+}
+function catalogoLliure(materia,curso){
+  return {
+    materia, curso, lliure:true,
+    ces:[{id:"CE1", titulo:"Criteris generals de la matèria", cc:["CPSAA","CC"], criterios:[
+      {id:"1.1", texto:"Treball i participació a classe"},
+      {id:"1.2", texto:"Activitats, tasques i treballs"},
+      {id:"1.3", texto:"Actitud, respecte i esforç"}
+    ]}],
+    bloques:[{label:"Activitats i treballs",peso:50},{label:"Treball diari i participació",peso:30},{label:"Actitud",peso:20}],
+    saberes:{}
+  };
+}
+function claveCatalogoLliure(materia,curso){
+  if(!state.catalogosPersonalizados) state.catalogosPersonalizados={};
+  const key=slugCatalogo(materia,curso);
+  if(!state.catalogosPersonalizados[key] && !CATALOGOS[key]){
+    state.catalogosPersonalizados[key]=catalogoLliure(materia,curso);
+    delete CAT_CACHE[key];
+  }
+  return key;
+}
 window.crearGrupo=()=>{
-  const ng=state.ui.nuevoGrupo; if(!ng.nombre.trim()) return;
-  const g=defGrupo(ng.nombre.trim(),ng.catalogoKey);
+  const ng=state.ui.nuevoGrupo; if(!ngPotCrear()) return;
+  const catKey=ng.catalogoKey===NG_LLIURE
+    ? claveCatalogoLliure(ng.materia.trim(), (ng.curso||"").trim()||"—")
+    : ng.catalogoKey;
+  const g=defGrupo(ng.nombre.trim(),catKey);
   state.grupos.push(g);
   state.ui.grupoId=g.id; state.ui.tab="alumnos";
-  state.ui.nuevoGrupo={nombre:"",catalogoKey:ORDEN_CATALOGOS[0]};
+  state.ui.nuevoGrupo={nombre:"",catalogoKey:ORDEN_CATALOGOS[0],materia:"",curso:""};
   save(); render();
 };
 
