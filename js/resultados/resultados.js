@@ -25,7 +25,7 @@ const COM_TXT={
 };
 function _ceCorto(txt){ const w=String(txt||"").replace(/[.:;]+$/,"").split(/\s+/); const c=w.slice(0,9).join(" "); return (w.length>9?c+"…":c).replace(/^./,m=>m.toLowerCase()); }
 function comentarioSugerido(grupo,al,trim,lang){
-  const T=COM_TXT[lang]||COM_TXT.es;
+  const T=COM_TXT[lang]||COM_TXT.va;
   const v=notaTrimestre(grupo,al.id,trim); if(v==null) return "";
   const acta=notaActa(v,grupo);
   const nombre=(al.nombreP||al.nombre||"").trim().split(/\s+/)[0]||al.nombre;
@@ -52,17 +52,17 @@ window.comSugerir=async(alId,trim,lang)=>{
   if(!txt){ mostrarAviso(lang==="va"?"Encara no té nota en aquesta avaluació.":"Todavía no tiene nota en esta evaluación."); return; }
   const ta=document.getElementById("resComentario");
   const actual=(ta?ta.value:al.comentariosEval[trim]||"").trim();
-  if(actual && !(await confirmar(`Ya tiene un comentario escrito. ¿Sustituirlo por este borrador?\n\n«${txt}»`,{ok:"Sustituir",peligro:false}))) return;
+  if(actual && !(await confirmar(`Ja té un comentari escrit. Vols substituir-lo per aquest esborrany?\n\n«${txt}»`,{ok:"Substituir",peligro:false}))) return;
   al.comentariosEval[trim]=txt; save(); render();
-  mostrarToast("✓ Borrador escrito: revísalo antes de imprimir");
+  mostrarToast("✓ Esborrany escrit: revisa'l abans d'imprimir");
 };
 window.comSugerirGrupo=async(lang)=>{
   const grupo=grupoActual(); if(!grupo) return; const trim=state.ui.trim;
   const vacios=grupo.alumnos.filter(al=>!((al.comentariosEval||[])[trim]||"").trim() && notaTrimestre(grupo,al.id,trim)!=null);
-  if(!vacios.length){ mostrarAviso("Todo el alumnado con nota ya tiene comentario en esta evaluación (no se sobrescribe ninguno)."); return; }
+  if(!vacios.length){ mostrarAviso("Tot l'alumnat amb nota ja té comentari en aquesta avaluació (no se'n sobreescriu cap)."); return; }
   if(!(await confirmar(`Es redactarà un esborrany de comentari (${lang==="va"?"en valencià":"en castellà"}) per a ${vacios.length} alumne${vacios.length===1?"":"s"} amb nota i sense comentari en la ${TRIMESTRES[trim]}. Els comentaris ja escrits no es toquen.`,{ok:"Redactar",peligro:false}))) return;
   vacios.forEach(al=>{ al.comentariosEval[trim]=comentarioSugerido(grupo,al,trim,lang); });
-  save(); render(); mostrarToast(`✓ ${vacios.length} borradores escritos: revísalos antes de imprimir`);
+  save(); render(); mostrarToast(`✓ ${vacios.length} esborranys escrits: revisa'ls abans d'imprimir`);
 };
 /* =================================================================
    v5 · DEL CUADERNO A LA TUTORÍA
@@ -108,8 +108,7 @@ function renderResultados(grupo){
         <button class="ghost" style="border:1px solid var(--line)" onclick="exportarInformesFinalesTodos()">Exportar informes finales de curso</button>
         <button class="ghost" style="border:1px solid var(--line)" title="Archivo con los suspensos de tu materia en cada evaluación, para cargarlo en el Gestor de Tutoría del tutor/a del grupo" onclick="exportarParaTutoria()">👥 Para la tutoría</button>
         <button class="ghost" style="border:1px solid var(--line)" title="Sumar puntos a la nota de la evaluación o a la nota final (p. ej. +0,5 por presentarse voluntario/a)" onclick="abrirExtrasEvaluacion(${trim})">➕ Puntos extra</button>
-        <button class="ghost" style="border:1px solid var(--line)" title="Borradores de comentario para quien todavía no tenga (no sobrescribe)" onclick="comSugerirGrupo('es')">💬 Comentarios vacíos</button>
-        <button class="ghost" style="border:1px solid var(--line)" title="Esborranys de comentari en valencià per a qui encara no en tinga" onclick="comSugerirGrupo('va')">💬 En valencià</button>
+        <button class="ghost" style="border:1px solid var(--line)" title="Esborranys de comentari per a qui encara no en tinga (no en sobreescriu cap)" onclick="comSugerirGrupo('va')">💬 Comentaris buits</button>
         <span class="flex" style="gap:6px;align-items:center">
           <select class="in" id="repGrupoSel" style="padding:6px 9px">
             ${TRIMESTRES.map((t,i)=>`<option value="${i}" ${i===state.ui.trim?"selected":""}>${t}</option>`).join("")}
@@ -270,8 +269,7 @@ function renderResultados(grupo){
     <p class="sub">Específico de ${TRIMESTRES[trim]}. Se imprime en el informe individual, junto a la nota de este periodo.</p>
     <textarea class="in" id="resComentario" style="width:100%;min-height:90px;resize:vertical" placeholder="Comentario sobre la calificación de ${TRIMESTRES[trim]}…">${esc((al.comentariosEval&&al.comentariosEval[trim])||"")}</textarea>
     <div class="flex" style="gap:6px;margin-top:8px;flex-wrap:wrap">
-      <button class="ghost small" style="border:1px solid var(--line)" onclick="comSugerir('${al.id}',${trim},'es')" title="Redacta un borrador a partir de su nota, sus competencias, entregas y asistencia. Revísalo antes de imprimir.">💬 Sugerir comentario</button>
-      <button class="ghost small" style="border:1px solid var(--line)" onclick="comSugerir('${al.id}',${trim},'va')" title="Redacta un esborrany en valencià. Revisa'l abans d'imprimir.">💬 Suggerir comentari (valencià)</button>
+      <button class="ghost small" style="border:1px solid var(--line)" onclick="comSugerir('${al.id}',${trim},'va')" title="Redacta un esborrany a partir de la nota, les competències, les entregues i l'assistència. Revisa'l abans d'imprimir.">💬 Suggerir comentari</button>
     </div>
   </div>
 
