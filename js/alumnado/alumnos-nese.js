@@ -44,7 +44,7 @@ window.neCerrarModalCrear=()=>{ state.ui.neModalCrear=null; save(); render(); };
 
 function renderNeseApp(){
   const app=document.getElementById("app");
-  app.innerHTML=`${divCapcaleraHTML("nese")}${typeof rfDocumentsHTML==="function"? rfDocumentsHTML([0,1],RF_TEXT_NESE) : ""}<div id="neRoot"></div>`;
+  app.innerHTML=`${divCapcaleraHTML("nese")}${typeof neTornarHTML==="function"? neTornarHTML() : ""}${typeof rfDocumentsHTML==="function"? rfDocumentsHTML([0,1],RF_TEXT_NESE) : ""}<div id="neRoot"></div>`;
   const root=document.getElementById("neRoot");
   if(state.ui.neTab==="detalle" && state.ui.neId && (state.planesNESE||[]).find(p=>p.id===state.ui.neId)){
     renderNeDetalleHTML(root);

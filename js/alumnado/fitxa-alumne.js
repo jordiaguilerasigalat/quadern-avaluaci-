@@ -8,7 +8,7 @@
    plans (NESE, repetició, reforç). Les dades no es mouen: només es mostren.
    ============================================================================ */
 function nomFitxaHTML(al,extra){
-  return `<button type="button" class="nom-fitxa" title="Obrir la fitxa de ${esc(al.nombre)}" onclick="abrirFichaAlumno('${escJS(al.id)}')">${typeof avatarAlumneHTML==="function"?avatarAlumneHTML(al):""}${esc(al.nombre)}</button>${extra||""}`;
+  return `<button type="button" class="nom-fitxa" title="${al.nese?"Obrir el seguiment NESE de":"Obrir la fitxa i el seguiment de"} ${esc(al.nombre)}" onclick="obrirSeguimentAlumne('${escJS(al.id)}')">${typeof avatarAlumneHTML==="function"?avatarAlumneHTML(al):""}${esc(al.nombre)}</button>${extra||""}`;
 }
 function fitxaResumHTML(g,a){
   const bloc=(tit,cos)=>`<div style="border:1px solid var(--line);border-radius:10px;padding:8px 10px"><div style="font-size:12px;font-weight:700;color:var(--mut);margin-bottom:4px">${tit}</div>${cos}</div>`;
@@ -52,3 +52,36 @@ function fitxaResumHTML(g,a){
     <div class="flex" style="gap:6px;flex-wrap:wrap">${anar("resultados","📄 Informe complet")}<button class="ghost small" style="border:1px solid var(--line)" title="Una pàgina per a la família amb les notes, faltes i observacions (${esc(TRIMESTRES[state.ui.trim]||"")})" onclick="cerrarFichaAlumno();exportarInformeFamilia('${escJS(a.id)}')">👪 Informe per a la família</button>${anar("asistencia","✅ Assistència")}${anar("convivencia","⚖️ Convivència")}${anar("familias","👪 Famílies")}</div>
     <details><summary style="cursor:pointer;font-weight:600;font-size:13px">✏️ Dades de l'alumne/a</summary>`;
 }
+/* Seguiment de l'alumne/a: tocar el nom (o el botó «Seguiment» de la llista)
+   mostra la fitxa amb el resum (notes, faltes, plans). Si és NESE, va
+   directament a la pantalla NESE del seu pla, amb un botó per a tornar al
+   grup al mateix lloc on estaves. */
+let _segTornarPos=null;
+window.obrirSeguimentAlumne=id=>{
+  const g=grupoActual(); const a=g&&g.alumnos.find(x=>x.id===id);
+  if(!a) return;
+  if(!a.nese){ state.ui.fichaAlumnoId=id; state.ui.fichaSeguiment=true; save(); render(); return; }
+  const ne=typeof nePlanDe==="function"? nePlanDe(a.id) : null;
+  _segTornarPos=typeof capturarPosicio==="function"? capturarPosicio() : null;
+  state.ui.neTornar={appMode:state.ui.appMode, grupoId:g.id, tab:state.ui.tab, neId:ne?ne.id:"", grupNom:g.nombre};
+  state.ui.fichaAlumnoId="";
+  if(ne){ neAbrirDesdeOtroModo(ne.id); return; }
+  state.ui.appMode="nese"; state.ui.neTab="lista"; state.ui.neId="";
+  neAbrirModalCrear(g.id,a.id);
+};
+function neTornarHTML(){
+  const t=state.ui.neTornar;
+  if(!t || !state.grupos.some(g=>g.id===t.grupoId)) return "";
+  const onDetall=state.ui.neTab==="detalle" && state.ui.neId===t.neId;
+  const onLlista=!t.neId && state.ui.neTab!=="detalle";
+  if(!onDetall && !onLlista) return "";
+  return `<div style="margin:0 0 10px"><button class="btn small" onclick="neTornarAlGrup()">← Tornar a ${esc(t.grupNom||"el grup")}</button></div>`;
+}
+window.neTornarAlGrup=()=>{
+  const t=state.ui.neTornar; if(!t) return;
+  state.ui.neTornar=null; state.ui.neModalCrear=null;
+  state.ui.appMode=t.appMode; state.ui.grupoId=t.grupoId; state.ui.tab=t.tab;
+  save(); render();
+  const pos=_segTornarPos; _segTornarPos=null;
+  if(pos && typeof restaurarPosicio==="function") restaurarPosicio(pos);
+};

@@ -165,7 +165,7 @@ function desgloseBloqueHTML(grupo,al,b,trim){
       <tr><td colspan="3" style="padding:0 14px 14px">${desgloseNotaActividadHTML(grupo,al,a)}</td></tr>`;
   }).join("");
   return `<div class="dsg-bloque">
-    <div class="dsg-bloque-head"><span>${esc(b.label)}</span><span>${v==null?"—":fmt(v)} <small>peso ${fmtPct(b.peso)} del trimestre</small></span></div>
+    <div class="dsg-bloque-head"><span>${esc(b.label)}</span><span>${v==null?"—":fmt(v)} <small>${b.inactiu?"desactivat: no compta":"pes "+fmtPct(b.peso)+" del trimestre"}</small></span></div>
     <table class="dsg-tabla"><thead><tr><th>Actividad</th><th style="text-align:right">Nota</th><th style="text-align:right">Peso en el bloque</th></tr></thead><tbody>${filas}</tbody></table>
   </div>`;
 }
@@ -207,7 +207,7 @@ function dsgExtraEvalHTML(grupo,al,periodo,base,etiqueta){
 function desgloseTrimResumenBloquesHTML(grupo,al,trim){
   const filas=grupo.bloques.map(b=>{
     const v=notaBloque(grupo,al.id,b.id,trim);
-    return `<tr><td>${esc(b.label)}</td><td style="text-align:right">${v==null?"—":fmt(v)}</td><td style="text-align:right">${fmtPct(b.peso)}</td></tr>`;
+    return `<tr><td>${esc(b.label)}</td><td style="text-align:right">${v==null?"—":fmt(v)}</td><td style="text-align:right">${b.inactiu?"desactivat":fmtPct(b.peso)}</td></tr>`;
   }).join("");
   return `<table class="dsg-mini"><thead><tr><th>Bloque</th><th style="text-align:right">Nota</th><th style="text-align:right">Peso</th></tr></thead><tbody>${filas}</tbody></table>`;
 }

@@ -295,7 +295,7 @@ function validarCatalogo(obj){
   bloques.forEach((b,i)=>{
     if(!((b&&b.label||"").toString().trim())) errores.push(`El bloque nº${i+1} no tiene nombre.`);
     const peso=Number(b&&b.peso);
-    if(!isFinite(peso)||peso<=0) errores.push(`El bloque "${(b&&b.label)||i+1}" no tiene un porcentaje válido.`);
+    if(!isFinite(peso)||peso<0) errores.push(`El bloque "${(b&&b.label)||i+1}" no tiene un porcentaje válido.`);
     else sumaPesos+=peso;
   });
   let aviso=null;

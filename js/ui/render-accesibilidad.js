@@ -82,6 +82,40 @@ document.addEventListener("keydown",e=>{
   }
 });
 new MutationObserver(ms=>{ for(const m of ms) m.addedNodes.forEach(n=>{ if(n.nodeType===1 && n.classList && n.classList.contains("modal-overlay")) try{ accesibilidadPasada(n); }catch(e){} }); }).observe(document.body,{childList:true});
+/* Posició de la pantalla entre repintats: desplaçament de la finestra, de cada
+   caixa .scroll del contingut (no dels modals) i el camp on estava el cursor.
+   Així, en editar un alumne/a de la llista, la pantalla no torna dalt i el
+   cursor continua en el camp següent. */
+function _clauFocus(el){
+  if(!el || el===document.body || !el.tagName || !document.getElementById("app")?.contains(el)) return null;
+  if(el.id) return {id:el.id};
+  const anc=el.closest("[data-id]"); if(!anc) return null;
+  const tots=[...anc.querySelectorAll("input,select,textarea,button")];
+  return {dataId:anc.getAttribute("data-id"), tag:anc.tagName, i:tots.indexOf(el)};
+}
+function _tornarFocus(k){
+  if(!k || document.querySelector(".modal-overlay")) return;
+  let el=null;
+  if(k.id) el=document.getElementById(k.id);
+  else{
+    const anc=[...document.querySelectorAll(k.tag+"[data-id]")].find(x=>x.getAttribute("data-id")===k.dataId);
+    if(anc) el=[...anc.querySelectorAll("input,select,textarea,button")][k.i];
+  }
+  if(el && el!==document.activeElement){ try{ el.focus({preventScroll:true}); }catch(e){} }
+}
+function _cxScroll(){ return [...document.querySelectorAll("#app .scroll")].filter(el=>!el.closest(".modal-overlay")); }
+function capturarPosicio(){
+  return {y:window.scrollY||0, x:window.scrollX||0, inner:_cxScroll().map(el=>[el.scrollTop,el.scrollLeft]), focus:_clauFocus(document.activeElement)};
+}
+function restaurarPosicio(pos){
+  if(!pos) return;
+  _tornarFocus(pos.focus);
+  _cxScroll().forEach((el,i)=>{ const v=pos.inner[i]; if(v){ el.scrollTop=v[0]; el.scrollLeft=v[1]; } });
+  window.scrollTo(pos.x,pos.y);
+}
+/* Repinta el grup sense moure la pantalla (les funcions que criden
+   renderShell() directament, sense passar per render()). */
+function repintarGrupQuiet(){ const pos=capturarPosicio(); renderShell(); restaurarPosicio(pos); }
 function render(){
   _invalidarCaches();
   const sig=[_mostrarBienvenida?1:0,state.ui.appMode,state.ui.grupoId,state.ui.tab,state.ui.trim,
@@ -89,11 +123,10 @@ function render(){
              state.ui.reTab,state.ui.reId,state.ui.reModalNueva,
              state.ui.rfTab,state.ui.rfId,state.ui.rfModalNueva,
              state.ui.rpTab,state.ui.rpId,state.ui.rpModalNueva,
-             state.ui.neTab,state.ui.neId,state.ui.neModalCrear?1:0,state.ui.prepNuevoModal?1:0].join("|");
+             state.ui.neTab,state.ui.neId,state.ui.neModalCrear?1:0,state.ui.prepNuevoModal?1:0,state.ui.pdCurs].join("|");
   const mismaVista = sig===_lastViewSig;
   _lastViewSig=sig;
-  const sy = mismaVista? (window.scrollY||0) : 0;
-  const innerScrolls = mismaVista? [...document.querySelectorAll(".scroll")].map(el=>el.scrollTop) : [];
+  const pos = mismaVista? capturarPosicio() : null;
 
   const tabs=document.getElementById("groupTabs"), bar=document.getElementById("backupBar"), header=document.getElementById("appHeader");
   try{
@@ -121,6 +154,10 @@ function render(){
       if(header) header.style.display="";
       tabs.style.display="none"; bar.style.display="";
       renderTopBar(); renderRepeticionApp();
+    }else if(state.ui.appMode==="pendents"){
+      if(header) header.style.display="";
+      tabs.style.display=""; bar.style.display="";
+      renderTopBar(); renderPendentsApp();
     }else if(state.ui.appMode==="nese"){
       if(header) header.style.display="";
       tabs.style.display="none"; bar.style.display="";
@@ -157,10 +194,10 @@ ${esc(err.stack||"")}</pre>
   }
 
   try{ accesibilidadPasada(document); }catch(e){}
-  window.scrollTo(0,sy);
   if(mismaVista){
-    [...document.querySelectorAll(".scroll")].forEach((el,i)=>{ if(innerScrolls[i]!=null) el.scrollTop=innerScrolls[i]; });
+    restaurarPosicio(pos);
   }else{
+    window.scrollTo(0,0);
     const appEl=document.getElementById("app");
     appEl.classList.remove("view-enter"); void appEl.offsetWidth; appEl.classList.add("view-enter");
   }

@@ -77,7 +77,7 @@ function divCapcaleraHTML(actiu){
     </div>
     <div class="flex" style="flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:10px">
       <div class="flex" style="gap:6px;align-items:center"><span class="sub" style="margin:0;font-size:12px;font-weight:700">NESE</span>${tab("nese","🧩 Alumnat NESE")}</div>
-      <div class="flex" style="gap:6px;align-items:center;flex-wrap:wrap"><span class="sub" style="margin:0;font-size:12px;font-weight:700">Repetició i pendents</span>${tab("repeticion","🔁 Pla de repetició")}${tab("refuerzo","📈 Pla de reforç")}</div>
+      <div class="flex" style="gap:6px;align-items:center;flex-wrap:wrap"><span class="sub" style="margin:0;font-size:12px;font-weight:700">Repetició i pendents</span>${tab("repeticion","🔁 Pla de repetició")}${tab("refuerzo","📈 Pla de reforç")}${tab("pendents","📌 Pendents (no els tinc)")}</div>
     </div>
   </div>`;
 }

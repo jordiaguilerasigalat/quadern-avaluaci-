@@ -70,7 +70,7 @@ function diagnosticarDatos(){
     const recVacias=g.actividades.filter(a=>a.recupera && !(a.recupera.ids||[]).filter(id=>actIds.has(id)).length);
     if(recVacias.length) add("aviso",donde,`${recVacias.length} recuperación(es) no recuperan nada: ${recVacias.map(a=>"«"+a.nombre+"»").join(", ")}. Ábrelas en Actividades (🔁) y marca qué recuperan.`);
     // 7. Bloques
-    const suma=g.bloques.reduce((n,b)=>n+(Number(b.peso)||0),0);
+    const suma=g.bloques.reduce((n,b)=>n+pesoBloqueNota(b),0);
     if(Math.abs(suma-100)>0.01) add("aviso",donde,`Los bloques de calificación suman ${String(Math.round(suma*100)/100).replace(".",",")} % (Ajustes).`);
     const bIds=new Set(g.bloques.map(b=>b.id));
     const sinBloque=g.actividades.filter(a=>!bIds.has(a.bloqueId));

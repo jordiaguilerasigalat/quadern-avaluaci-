@@ -14,7 +14,12 @@ const SEG_TIPUS=[
   {k:"laboratori", nom:"Laboratori",                 ico:"⚗️", plantilla:"Laboratori",                         tipo:"Pràctica de laboratori / informe",    bloc:[/laborat|experimental/i]},
   {k:"actitud",    nom:"Actitud",                    ico:"🙋", plantilla:"Actitud",                            tipo:"Proactivitat i hàbits de treball",    bloc:[/proactiv|altres/i,/activitats avaluables/i]},
   {k:"dossier",    nom:"Dossier / llibreta",         ico:"📒", plantilla:"Dossier de feina / llibreta",        tipo:"Quadern / llibreta",                  bloc:[/quadern|llibreta|activitats avaluables/i]},
-  {k:"treballs",   nom:"Treballs i exposicions",     ico:"🎤", plantilla:"Elaboració i exposició de treballs", tipo:"Treball / projecte / SdA",            bloc:[/altres|activitats avaluables/i,/laborat|experimental/i]}
+  /* Treballs: primer un bloc de treballs/exposicions/projectes o d'investigació
+     (2n i 3r: «Treball experimental i d'investigació»), després el d'activitats
+     avaluables (4t). Mai el de proactivitat, que és el de l'Actitud: abans
+     «altres» el feia caure en «Altres activitats avaluables (proactivitat)» i
+     els treballs comptaven com a actitud. */
+  {k:"treballs",   nom:"Treballs i exposicions",     ico:"🎤", plantilla:"Elaboració i exposició de treballs", tipo:"Treball / projecte / SdA",            bloc:[/exposici|projecte|investigaci/i,/^(?!.*proactiv).*activitats avaluables/i,/laborat|experimental/i]}
 ];
 function segTipus(k){ return SEG_TIPUS.find(t=>t.k===k); }
 function segNorm(x){ return String(x||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g," "); }
@@ -35,7 +40,7 @@ function segTriats(grupo,k){
 }
 function segBlocAuto(grupo,t){
   const paraula=segNorm(t.nom).split(/[\s\/]+/)[0];
-  const perNom=grupo.bloques.find(b=>segNorm(b.label).split(/[^a-z0-9]+/).includes(paraula)); if(perNom) return perNom;
+  const perNom=grupo.bloques.find(b=>!b.inactiu && segNorm(b.label).split(/[^a-z0-9]+/).includes(paraula))||grupo.bloques.find(b=>segNorm(b.label).split(/[^a-z0-9]+/).includes(paraula)); if(perNom) return perNom;
   for(const re of t.bloc){ const b=grupo.bloques.find(b=>re.test(b.label||"")); if(b) return b; }
   return grupo.bloques.find(b=>!SEG_RE_EXAMEN.test(b.label||""))||grupo.bloques[0];
 }
@@ -57,25 +62,25 @@ function segAplicarBlocs(g,k){
 function segSelectorBlocHTML(grupo,k){
   const ids=segBlocsIds(grupo,k);
   const tria=grupo.bloques.filter(b=>ids.includes(b.id));
-  const total=Math.round(grupo.bloques.reduce((n,b)=>n+(Number(b.peso)||0),0)*100)/100;
+  const total=Math.round(grupo.bloques.reduce((n,b)=>n+pesoBloqueNota(b),0)*100)/100;
   const altres=b=>[["examens","Exàmens"],...SEG_TIPUS.map(t=>[t.k,t.nom])].filter(([kk])=>kk!==k && segBlocsIds(grupo,kk).includes(b.id)).map(x=>x[1]);
   return `<div style="margin:2px 0 6px;padding:6px 8px;border-radius:8px;background:var(--soft,rgba(127,127,127,.08));font-size:12.5px">
       <div style="font-weight:600;margin-bottom:4px">⚖️ Pes en la nota${total!==100?` <span class="sub" style="font-weight:400">(els blocs sumen ${String(total).replace(".",",")} %)</span>`:""}</div>
       ${tria.map(b=>{ const comp=altres(b); return `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:2px 0">
         <span>${esc(b.label)}</span>
-        <input class="in" type="number" min="0" max="100" step="1" style="width:68px;padding:2px 6px" value="${esc(b.peso)}" aria-label="Pes del bloc ${esc(b.label)} (%)" onchange="segPesBloc('${escJS(b.id)}',this.value)"> %
+        <input class="in" type="number" min="0" max="100" step="1" style="width:68px;padding:2px 6px" value="${esc(b.peso)}" aria-label="Pes del bloc ${esc(b.label)} (%)" onchange="segPesBloc('${escJS(b.id)}',this.value)"> %${b.inactiu?` <span class="sub" style="margin:0;font-size:11.5px"><strong>desactivat</strong>: ara no compta (Ajustos)</span>`:""}
         ${comp.length?`<span class="sub" style="margin:0;font-size:11.5px">compartit amb ${esc(comp.join(", "))}</span>`:""}
       </div>`; }).join("")}
     </div>
     <details class="gcard-meta"><summary style="cursor:pointer">Canviar en quin bloc compta</summary>
     <div style="display:flex;align-items:center;gap:4px 10px;flex-wrap:wrap;margin-top:4px" role="group" aria-label="Blocs on compta l'apartat">
-    ${grupo.bloques.map(x=>`<label style="display:inline-flex;align-items:center;gap:3px;cursor:pointer"><input type="checkbox" ${ids.includes(x.id)?"checked":""} onchange="segTriarBloc('${k}','${escJS(x.id)}',this.checked)"> ${esc(x.label)} (${esc(x.peso)} %)</label>`).join("")}
+    ${grupo.bloques.map(x=>`<label style="display:inline-flex;align-items:center;gap:3px;cursor:pointer"><input type="checkbox" ${ids.includes(x.id)?"checked":""} onchange="segTriarBloc('${k}','${escJS(x.id)}',this.checked)"> ${esc(x.label)} (${x.inactiu?"desactivat":esc(x.peso)+" %"})</label>`).join("")}
     ${ids.length>1?`<span class="sub" style="font-size:11.5px;margin:0">La nota de cada activitat compta en els ${ids.length} blocs.</span>`:""}</div></details>`;
 }
 window.segPesBloc=(id,v)=>{
   const g=grupoActual(); const b=g&&g.bloques.find(x=>x.id===id); if(!b) return;
   b.peso=Math.max(0,Number(String(v).replace(",","."))||0); save(); render();
-  const t=Math.round(g.bloques.reduce((n,x)=>n+(Number(x.peso)||0),0)*100)/100;
+  const t=Math.round(g.bloques.reduce((n,x)=>n+pesoBloqueNota(x),0)*100)/100;
   mostrarToast(t===100? `✓ «${b.label}» pesa ${b.peso} %. Els blocs sumen 100 %.` : `⚠️ «${b.label}» pesa ${b.peso} %. Ara els blocs sumen ${String(t).replace(".",",")} %: ajusta'n algun perquè sumen 100.`);
 };
 window.segTriarBloc=(k,id,on)=>{
