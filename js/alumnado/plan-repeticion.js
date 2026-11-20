@@ -13,10 +13,10 @@
    el expediente de fin de curso, no el seguimiento del día a día.
    ================================================================= */
 const RP_ESTADOS=[
-  {id:"activo",label:"Activo",color:"#2563eb"},
-  {id:"pausado",label:"Pausado",color:"#b45309"},
-  {id:"superado",label:"Superado",color:"#16a34a"},
-  {id:"no_superado",label:"No superado",color:"#dc2626"}
+  {id:"activo",label:"Actiu",color:"#2563eb"},
+  {id:"pausado",label:"Pausat",color:"#b45309"},
+  {id:"superado",label:"Superat",color:"#16a34a"},
+  {id:"no_superado",label:"No superat",color:"#dc2626"}
 ];
 function rpEstadoInfo(id){ return RP_ESTADOS.find(e=>e.id===id)||RP_ESTADOS[0]; }
 function rpAlumno(p){ const g=state.grupos.find(x=>x.id===p.grupoId); if(!g) return null; const al=g.alumnos.find(x=>x.id===p.alumnoId); return al?{al,g}:null; }
@@ -29,10 +29,12 @@ function rpListaFiltrada(){
     return true;
   }).sort((a,b)=>rfrpComparaPorCurso(a,b,rpAlumno,rpNombre));
 }
-window.rpTab=k=>{ state.ui.rpTab=k; if(k==="lista") state.ui.rpId=""; save(); render(); };
-window.rpIrLista=()=>{ state.ui.rpTab="lista"; state.ui.rpId=""; save(); render(); };
-window.rpAbrirDetalle=id=>{ state.ui.rpTab="detalle"; state.ui.rpId=id; save(); render(); };
-window.rpAbrirDesdeOtroModo=id=>{ state.ui.appMode="repeticion"; state.ui.rpTab="detalle"; state.ui.rpId=id; save(); render(); };
+window.rpTab=k=>{ state.ui.rpTab=k; if(k==="lista") state.ui.rpId=""; state.ui.rpTornar=""; save(); render(); };
+window.rpIrLista=()=>{ state.ui.rpTab="lista"; state.ui.rpId="";
+  if(state.ui.rpTornar==="pendents"){ state.ui.rpTornar=""; state.ui.appMode="pendents"; }
+  save(); render(); };
+window.rpAbrirDetalle=id=>{ state.ui.rpTab="detalle"; state.ui.rpId=id; state.ui.rpTornar=""; save(); render(); };
+window.rpAbrirDesdeOtroModo=id=>{ const _p=(state.planesRepeticion||[]).find(x=>x.id===id); state.ui.rpTornar=_p&&_p.extern?"pendents":""; state.ui.appMode="repeticion"; state.ui.rpTab="detalle"; state.ui.rpId=id; save(); render(); };
 window.rpSetFiltroEstado=v=>{ state.ui.rpFiltroEstado=v; save(); render(); };
 window.rpSetBusqueda=v=>{ state.ui.rpBusqueda=v; save(); render(); };
 window.rpAbrirModalNueva=()=>{ if(!state.grupos.length){ mostrarAviso("Crea primero un grupo con alumnado desde Evaluación por Competencias."); return; } state.ui.rpModalNueva=true; save(); render(); };
@@ -66,7 +68,7 @@ function renderRpListaHTML(root){
         <div style="min-width:0">
           <span class="pill" style="${pillTinte(info.color)};margin-bottom:6px">${info.label}</span>
           <div style="font-size:15px;font-weight:700">${esc(rpNombre(p))}</div>
-          <div style="font-size:12.5px;color:var(--mut);margin-top:2px">${alV?esc(alV.g.nombre):"pendiente de asignar"}${p.cursoRepite?" · "+esc(p.cursoRepite):""}</div>
+          <div style="font-size:12.5px;color:var(--mut);margin-top:2px">${alV?esc(alV.g.nombre):p.extern?"📌 No el tens este curs"+(p.grupActual?" · ara a "+esc(p.grupActual):""):"pendiente de asignar"}${p.cursoRepite?" · "+esc(p.cursoRepite):""}</div>
           <div style="font-size:12.5px;color:var(--mut);margin-top:6px">${p.fechaInicio?"Des del "+fmt2(p.fechaInicio):""}</div>
         </div>
         <span class="badge">${objetivosTotal} objectiu${objetivosTotal===1?"":"s"}</span>
@@ -263,7 +265,7 @@ function renderRpDetalleHTML(root){
   root.innerHTML=`
   <div class="card">
     <div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:10px">
-      <button class="ghost" style="border:1px solid var(--line)" onclick="rpIrLista()">← Planes de repetición</button>
+      <button class="ghost" style="border:1px solid var(--line)" onclick="rpIrLista()">${state.ui.rpTornar==="pendents"?"← 📌 Pendents":"← Planes de repetición"}</button>
       <div class="flex">
         <select class="in" id="rpDEstado" style="font-weight:600">${RP_ESTADOS.map(e=>`<option value="${e.id}" ${p.estado===e.id?"selected":""}>${e.label}</option>`).join("")}</select>
         <button class="ghost" style="border:1px solid var(--line)" onclick="prepararSiguienteCurso('repeticion','${p.id}')" title="Crear el plan del curso que viene para este alumno/a">➜ Preparar curso siguiente</button>
@@ -271,7 +273,8 @@ function renderRpDetalleHTML(root){
         <button class="ghost danger" onclick="rpEliminarPlan('${p.id}')">Eliminar</button>
       </div>
     </div>
-    ${!alV?`<div class="alert-box" style="align-items:flex-start;flex-direction:column;gap:8px;margin-top:14px">
+    ${!alV && p.extern && typeof pdDetallExternHTML==="function"? pdDetallExternHTML(p) : ""}
+    ${!alV && !p.extern?`<div class="alert-box" style="align-items:flex-start;flex-direction:column;gap:8px;margin-top:14px">
       <div>👤 <strong>${esc(p.alumnoNombre||"Sense assignar")}</strong> — pendent d'assignar a un grup d'este curs.</div>
       <div class="flex" style="width:100%">
         <select class="in" id="rpReasignGrupo" style="flex:1" onchange="rpRefrescarReasignAlumno()">
@@ -284,7 +287,7 @@ function renderRpDetalleHTML(root){
     </div>`:""}
     ${p.planOrigenId?`<p class="sub" style="margin:10px 0 0">➜ Continuació d'un pla de ${p.planOrigenTipo==="repeticion"?"repetició":"reforç"} del curs anterior.</p>`:""}
     <div class="grid" style="gap:12px;margin-top:14px">
-      <div style="font-size:14px"><strong>${esc(rpNombre(p))}</strong>${alV?neseBadgeHTML(alV.al)+planBadgeHTML(alV.al)+repetidorBadgeHTML(alV.al)+` <span class="sub">· ${esc(alV.g.nombre)}</span>`:""}</div>
+      <div style="font-size:14px"><strong>${esc(rpNombre(p))}</strong>${!alV&&p.extern&&p.grupActual?` <span class="sub">· ara a ${esc(p.grupActual)}</span>`:""}${alV?neseBadgeHTML(alV.al)+planBadgeHTML(alV.al)+repetidorBadgeHTML(alV.al)+` <span class="sub">· ${esc(alV.g.nombre)}</span>`:""}</div>
       <label style="font-size:12.5px;color:var(--mut);font-weight:500">Curso y materia que repite
         <select class="in" style="width:100%;margin-top:4px;font-size:15px;font-weight:600" id="rpDCurso" onchange="rpSetCursoRepiteCatalogo(this.value)">
           <option value="" ${!catalogoCursoKey?"selected":""}>${(!catalogoCursoKey && p.cursoRepite)?"— "+esc(p.cursoRepite)+" (elige de la lista) —":"— Selecciona curso y materia —"}</option>
@@ -338,6 +341,7 @@ function renderRpDetalleHTML(root){
   campo("rpDCursoAcademico",v=>p.cursoAcademico=v.trim());
   campo("rpDFechaInicio",v=>p.fechaInicio=v);
   campo("rpDObservaciones",v=>p.observacionesFinales=v);
+  if(!alV && p.extern && typeof pdDetallExternLligar==="function") pdDetallExternLligar(p);
   if(document.getElementById("rpDMotivoOtros")) campo("rpDMotivoOtros",v=>p.motivos.otrosTexto=v);
   if(document.getElementById("rpD_medidasNivelII_Otros")) campo("rpD_medidasNivelII_Otros",v=>p.medidasNivelII.otrosTexto=v);
   if(document.getElementById("rpD_medidasNivelIII_Otros")) campo("rpD_medidasNivelIII_Otros",v=>p.medidasNivelIII.otrosTexto=v);
@@ -485,6 +489,7 @@ window.rpConfirmarReasignacion=id=>{
   const p=(state.planesRepeticion||[]).find(x=>x.id===id);
   const g=state.grupos.find(x=>x.id===gid); const al=g.alumnos.find(x=>x.id===alId);
   p.grupoId=gid; p.alumnoId=alId; p.alumnoNombre=al.nombre;
+  if(p.extern){ p.extern=false; if(state.ui.rpTornar==="pendents") state.ui.rpTornar=""; mostrarToast("✓ Enllaçat amb "+al.nombre+" ("+g.nombre+")"); }
   save(); render();
 };
 
@@ -506,7 +511,7 @@ window.rpImprimirInforme=id=>{
   const vfinal=rfrpValoracionPNInfo(p.valoracionFinal);
   const body=`
     <h1>Plan de repetición</h1>
-    <div class="meta">${esc(rpNombre(p))}${alV?" · "+esc(alV.g.nombre):""}${p.cursoRepite?" · "+esc(p.cursoRepite):""} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
+    <div class="meta">${esc(rpNombre(p))}${alV?" · "+esc(alV.g.nombre):p.extern&&p.grupActual?" · "+esc(p.grupActual):""}${p.cursoRepite?" · "+esc(p.cursoRepite):""} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     <table>
       <tr><th style="width:170px">Curso académico</th><td>${esc(p.cursoAcademico)||"—"}</td></tr>
       <tr><th>Fecha de inicio</th><td>${fmt2(p.fechaInicio)}</td></tr>
@@ -524,7 +529,7 @@ window.rpImprimirInforme=id=>{
     ${rfrpCeLegendPrintHTML()}
   `;
   const portada=generarPortadaHTML(`Plan de repetición — ${rpNombre(p)}`,
-    [alV?`Alumno/a: <strong>${esc(alV.al.nombre)}</strong> · ${esc(alV.g.nombre)}`:`Alumno/a: <strong>${esc(p.alumnoNombre||"—")}</strong>`,
+    [alV?`Alumno/a: <strong>${esc(alV.al.nombre)}</strong> · ${esc(alV.g.nombre)}`:`Alumno/a: <strong>${esc(p.alumnoNombre||"—")}</strong>${p.extern&&p.grupActual?" · "+esc(p.grupActual):""}${p.extern&&p.tutor?" · Tutor/a: "+esc(p.tutor):""}`,
      p.cursoRepite?`Curso que repite: <strong>${esc(p.cursoRepite)}</strong>`:"",
      `Curso escolar: <strong>${esc(p.cursoAcademico||cursoEscolarEfectivo(null))}</strong>`,
      profesorNombreEfectivo(null)?`Elaborado por: <strong>${esc(profesorNombreEfectivo(null))}</strong>`:""],

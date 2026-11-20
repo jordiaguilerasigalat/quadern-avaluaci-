@@ -188,6 +188,15 @@ function renderHome(){
 
 /* Pestanyetes amb els grups del curs: un clic obri el grup amb tot el seu
    (alumnat, activitats, rúbriques, programació vinculada…). */
+function homePendentsChipHTML(){
+  if(typeof pdCursos!=="function") return "";
+  const cs=pdCursos(), n=cs.reduce((s,c)=>s+c.plans.length,0);
+  return `<button class="home-grup pd" onclick="irPendents('')" title="Alumnat amb la matèria pendent que no tens este curs" style="border-style:dashed">
+      <span class="home-grup-nom">📌 Pendents</span>
+      <span class="home-grup-meta">No els tinc este curs</span>
+      <span class="home-grup-meta">${n?n+" alumne"+(n===1?"":"s")+(cs.length?" · "+cs.map(c=>esc(c.curs)+" ("+c.plans.length+")").join(", "):""):"Cap encara"}</span>
+    </button>`;
+}
 function homeGrupsActiusHTML(){
   const gs=state.grupos||[];
   const chip=g=>{
@@ -204,7 +213,7 @@ function homeGrupsActiusHTML(){
       <h2 style="font-size:15px;margin:0">👥 Els meus grups${state.cursoEscolarGlobal?" · "+esc(state.cursoEscolarGlobal):""}</h2>
       <button class="ghost small" style="border:1px dashed var(--line)" onclick="state.ui.appMode='competencial';irAGrupo(null)">+ Nou grup</button>
     </div>
-    ${gs.length?`<div class="home-grups" data-ordre-grups>${gs.map(chip).join("")}</div>`
+    ${gs.length?`<div class="home-grups" data-ordre-grups>${gs.map(chip).join("")}${homePendentsChipHTML()}</div>`
       :`<p class="sub" style="margin:0">Encara no tens grups. Crea'n un amb «+ Nou grup».</p>`}
   </div>`;
 }
