@@ -47,11 +47,11 @@ function renderLanding(){
 
   ${hayGrupos ? `
   <div>
-    <div class="section-eyebrow">Els teus grups</div>
-    <div class="gcard-grid">
+    <div class="section-eyebrow">Els teus grups <span style="text-transform:none;letter-spacing:0;font-weight:400">· arrossega'ls per a ordenar-los</span></div>
+    <div class="gcard-grid" data-ordre-grups>
       ${state.grupos.map(g=>{
         const cat=getCatalogo(g.catalogoKey);
-        return `<div class="gcard">
+        return `<div class="gcard" data-ordre-grup="${esc(g.id)}" title="Arrossega per a canviar l'ordre">
           <div class="gcard-title">${esc(g.nombre)}</div>
           <div class="gcard-meta">${esc(cat.materia)} · ${esc(cat.curso)}</div>
           <div class="gcard-count">${g.alumnos.length} alumne${g.alumnos.length===1?"":"s"} · ${g.actividades.length} activitat${g.actividades.length===1?"":"s"}</div>
