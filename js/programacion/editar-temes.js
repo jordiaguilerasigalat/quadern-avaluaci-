@@ -123,7 +123,15 @@ window.tempEditarCancel=()=>{
 };
 window.tempSetAval=(id,t)=>{
   const c=_tempCtx(); if(!c) return; const s=c.p.sdas.find(x=>x.id===id); if(!s) return;
-  t=Number(t); if(s.trimestre===t) return;
+  if(t==="altres"){
+    if(s.altres) return;
+    s.altres=true; delete s.sessionsManual;
+    state.grupos.filter(x=>x.programacionId===c.p.id && x.temaActual===id).forEach(x=>{ x.temaActual=""; });
+    if(state.ui.tempAuto!==false) tempRecalcular(c.g,c.p);
+    save(); render(); return;
+  }
+  t=Number(t); if(s.trimestre===t && !s.altres) return;
+  delete s.altres;
   c.p.sdas.splice(c.p.sdas.indexOf(s),1); s.trimestre=t;
   let ult=-1; c.p.sdas.forEach((x,i)=>{ if(x.trimestre===t) ult=i; });
   c.p.sdas.splice(ult+1,0,s);
@@ -165,6 +173,17 @@ window.tempRecalcularTot=async (totsAuto)=>{
     c.p.sdas.forEach(s=>{ delete s.sessionsManual; });
   }
   tempRecalcular(c.g,c.p); save(); render(); mostrarToast("✓ Temporització recalculada");
+};
+/* Canviar el nom (tema) o la situació d'aprenentatge (titulo). Les activitats van lligades per id,
+   i el material pel número del tema: es guarda el número original perquè no es perda en reanomenar. */
+window.tempRenomenar=(id,camp,valor)=>{
+  const c=_tempCtx(); if(!c) return; const s=c.p.sdas.find(x=>x.id===id); if(!s) return;
+  if(camp!=="tema" && camp!=="titulo") return;
+  if(s.materialNum==null && typeof materialNumTema==="function"){ const n=materialNumTema(s); if(n) s.materialNum=n; }
+  valor=String(valor||"").trim();
+  if(camp==="tema" && !valor && !s.titulo){ mostrarAviso("El tema ha de tindre un nom."); render(); return; }
+  if(camp==="titulo" && !s.tema && valor){ s.tema=s.titulo; }
+  s[camp]=valor; save(); render();
 };
 /* Afegir un tema nou a una avaluació (des del formulari de la secció). */
 window.tempAfegir=t=>{
@@ -235,12 +254,14 @@ function tempEditorHTML(g,p){
           <button class="ghost small" style="padding:0 6px;line-height:1.2" title="Baixar" aria-label="Baixar ${esc(temaNomCurt(s))}" ${i===ts.length-1?"disabled":""} onclick="tempMoure('${escJS(s.id)}',1)">▼</button>
         </span>
         <span style="min-width:0">
-          <span style="font-weight:600;font-size:13.5px">${esc(temaNomCurt(s))}</span>${s.tema&&s.titulo?`<span class="sub" style="margin:0;font-style:italic"> · ${esc(s.titulo)}</span>`:""}
-          <span class="sub" style="display:block;margin:0;font-size:12px">${dates[s.id]?"📅 "+tempDatesText(dates[s.id]):""}${s.sessionsOriginals?`${dates[s.id]?" · ":""}en la programació: ${esc(String(s.sessionsOriginals))} s.`:""}</span>
+          <input class="in" style="width:100%;font-weight:600;font-size:13.5px;padding:3px 8px" value="${esc(s.tema||"")}" placeholder="${esc(s.titulo||"Nom del tema")}" aria-label="Nom del tema" title="Nom del tema (clica per a canviar-lo)" onchange="tempRenomenar('${escJS(s.id)}','tema',this.value)">
+          <input class="in" style="width:100%;font-size:12.5px;font-style:italic;padding:2px 8px;margin-top:3px" value="${esc(s.tema?(s.titulo||""):"")}" placeholder="Situació d'aprenentatge (opcional)" aria-label="Situació d'aprenentatge de ${esc(temaNomCurt(s))}" onchange="tempRenomenar('${escJS(s.id)}','titulo',this.value)">
+          <span class="sub" style="display:block;margin:2px 0 0;font-size:12px">${dates[s.id]?"📅 "+tempDatesText(dates[s.id]):""}${s.sessionsOriginals?`${dates[s.id]?" · ":""}en la programació: ${esc(String(s.sessionsOriginals))} s.`:""}</span>
         </span>
         <span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
           <select class="in" style="width:auto" aria-label="Avaluació de ${esc(temaNomCurt(s))}" onchange="tempSetAval('${escJS(s.id)}',this.value)">
-            ${[0,1,2].map(k=>`<option value="${k}" ${k===t?"selected":""}>${k+1}a av.</option>`).join("")}
+            ${[0,1,2].map(k=>`<option value="${k}" ${k===t&&!s.altres?"selected":""}>${k+1}a av.</option>`).join("")}
+            <option value="altres" ${s.altres?"selected":""}>Altres (no es fa)</option>
           </select>
           <input class="in" type="number" min="0" step="1" style="width:64px;${man?"border-color:var(--accent,#b7893a);font-weight:700":""}" aria-label="Sessions de ${esc(temaNomCurt(s))}" value="${esc(String(s.sesionesPrevistas||""))}" onchange="tempSetSessions('${escJS(s.id)}',this.value)">
           <button class="ghost small" style="border:1px solid var(--line)" title="Eliminar este tema" aria-label="Eliminar ${esc(temaNomCurt(s))}" onclick="tempEliminar('${escJS(s.id)}')">🗑</button>
@@ -264,7 +285,7 @@ function tempEditorHTML(g,p){
   };
   return `<div class="card">
       <h2>✏️ Editar temes i sessions · ${esc(p.nombre)}</h2>
-      <p class="sub" style="margin:0">Tria en quina avaluació va cada tema i ordena'ls amb ▲▼. Les sessions es calculen soles amb les dates de cada avaluació, el teu horari (${perSetmana} sessió${perSetmana===1?"":"ns"} a la setmana amb este grup) i els festius, repartides segons el pes de cada tema en la programació. Si escrius un número, eixe tema queda ajustat a mà (🔒) i el càlcul reparteix la resta entre els altres. Pots afegir temes nous al final de cada avaluació o eliminar-ne amb 🗑 (les activitats d'eixe tema es queden «sense tema»).</p>
+      <p class="sub" style="margin:0">Tria en quina avaluació va cada tema i ordena'ls amb ▲▼. Les sessions es calculen soles amb les dates de cada avaluació, el teu horari (${perSetmana} sessió${perSetmana===1?"":"ns"} a la setmana amb este grup) i els festius, repartides segons el pes de cada tema en la programació. Si escrius un número, eixe tema queda ajustat a mà (🔒) i el càlcul reparteix la resta entre els altres. Pots afegir temes nous al final de cada avaluació o eliminar-ne amb 🗑 (les activitats d'eixe tema es queden «sense tema»). Els temes que no faràs, posa'ls en «Altres (no es fa)»: es guarden plegats al final.</p>
       ${falta.length?`<p style="margin:8px 0 0;padding:8px 10px;border-radius:8px;background:var(--warn-soft,#fef3c7);font-size:13px">⚠️ ${esc(tempQueFaltaText(falta))}</p>`:""}
       ${altres.length?`<p class="sub" style="margin:6px 0 0">Esta programació també la té vinculada ${esc(altres.map(x=>x.nombre).join(", "))}: els canvis valen per a tots.</p>`:""}
       <div class="flex" style="gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px">
@@ -278,5 +299,25 @@ function tempEditorHTML(g,p){
         <button class="ghost" style="border:1px solid var(--line)" onclick="tempEditarCancel()">Cancel·lar</button>
       </div>
     </div>
-    ${[0,1,2].map(seccio).join("")}`;
+    ${[0,1,2].map(seccio).join("")}
+    ${tempAltresHTML(g)}`;
+}
+/* Temes marcats com «Altres (no es fa)»: separats, davall de la 3a avaluació i plegats. */
+function tempAltresHTML(g){
+  const al=temesAltresGrup(g);
+  const files=al.map(s=>`<div class="temp-fila" style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line)">
+      <span style="min-width:0"><span style="font-weight:600;font-size:13.5px">${esc(temaNomCurt(s))}</span>${s.tema&&s.titulo?`<span class="sub" style="margin:0;font-style:italic"> · ${esc(s.titulo)}</span>`:""}</span>
+      <span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+        <select class="in" style="width:auto" aria-label="Avaluació de ${esc(temaNomCurt(s))}" onchange="tempSetAval('${escJS(s.id)}',this.value)">
+          ${[0,1,2].map(k=>`<option value="${k}">${k+1}a av.</option>`).join("")}
+          <option value="altres" selected>Altres (no es fa)</option>
+        </select>
+        <button class="ghost small" style="border:1px solid var(--line)" title="Eliminar este tema" aria-label="Eliminar ${esc(temaNomCurt(s))}" onclick="tempEliminar('${escJS(s.id)}')">🗑</button>
+      </span>
+    </div>`).join("");
+  return `<details class="card" id="tempAltres" style="padding:10px 14px;margin-top:26px;opacity:.9" ${state.ui.tempAltresObert?"open":""} ontoggle="state.ui.tempAltresObert=this.open">
+      <summary style="cursor:pointer;font-weight:700">Altres temes · no es fan (${al.length})</summary>
+      <p class="sub" style="margin:4px 0 0;font-size:12px">No compten per a la temporització ni apareixen en el grup. Per a recuperar-ne un, tria-li una avaluació.</p>
+      ${files||`<p class="sub" style="margin:6px 0 0">Cap. Per a amagar un tema que no faràs, tria «Altres (no es fa)» en el seu desplegable.</p>`}
+    </details>`;
 }

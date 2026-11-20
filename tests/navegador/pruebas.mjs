@@ -1295,6 +1295,17 @@ export const PRUEBAS = [
       out.afegitMa = nou2 && nou2.sesionesPrevistas === '4' && nou2.sessionsManual;
       tempEditarCancel();
       out.desfet = prog.sdas.length === nTemes && g.actividades[0].temaId === tercer.id && g.diario['2027-04-05'].unidadId === tercer.id && !prog.sdas.some(s => /Tema (9|10)\.-/.test(s.tema));
+      tempEditarObrir();
+      const quart = temesDeGrup(g).find(s => s.trimestre === 1);
+      tempSetAval(quart.id, 'altres');
+      out.altres = quart.altres === true && !temesDeGrup(g).includes(quart) && temesAltresGrup(g).length === 1 && suma(1) === tempSessionsAval(g, 1).length
+        && /Altres temes · no es fan \(1\)/.test(document.getElementById('tempAltres').textContent);
+      tempEditarTancar(); out.altresVista = /Altres temes · no es fan \(1\)/.test(document.getElementById('tabContent').textContent) && !temaSelectHTML(g, '').includes(quart.id);
+      tempEditarObrir(); tempSetAval(quart.id, '2'); out.recuperat = !quart.altres && quart.trimestre === 2 && temesAltresGrup(g).length === 0;
+      const t1 = temesDeGrup(g)[0]; const num = materialNumTema(t1);
+      tempRenomenar(t1.id, 'tema', 'Mesures i unitats'); tempRenomenar(t1.id, 'titulo', 'Nova SdA');
+      out.renomenat = t1.tema === 'Mesures i unitats' && t1.titulo === 'Nova SdA' && materialNumTema(t1) === num && !!num && temaNomCurt(temaPerId(g, t1.id)) === 'Mesures i unitats';
+      tempEditarCancel(); out.altresDesfet = !prog.sdas.find(s => s.id === quart.id).altres;
       tempEditarObrir(); tempEditarCancel(); out.cancel = temesDeGrup(g).find(s => s.id === primer.id).trimestre === 0 && !temesDeGrup(g).some(s => s.sessionsManual);
       out.tornat = !/Editar temes i sessions ·/.test(document.getElementById('tabContent').textContent);
       return out;
@@ -1308,6 +1319,8 @@ export const PRUEBAS = [
     t.ok(r.eliminat, 'eliminar un tema deixa les seues activitats i sessions del Diari sense tema i recalcula', JSON.stringify(r));
     t.ok(r.afegit && r.afegitMa, 'afegir un tema nou (automàtic o amb sessions a mà) i el recàlcul quadra', JSON.stringify(r));
     t.ok(r.desfet, 'Cancel·lar desfà també els temes afegits i eliminats');
+    t.ok(r.renomenat, 'reanomenar un tema conserva el seu material i les activitats', JSON.stringify(r));
+    t.ok(r.altres && r.altresVista && r.recuperat, "un tema en «Altres» no té sessions, ix plegat al final i es pot recuperar", JSON.stringify(r));
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
 ];

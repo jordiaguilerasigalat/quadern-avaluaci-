@@ -45,6 +45,7 @@ function materialCarregar(clau){
   document.head.appendChild(s);
 }
 function materialNumTema(s){
+  if(s && s.materialNum) return String(s.materialNum);
   const m=/tema\s*(\d+)/i.exec(String(s&&s.tema||"")) || /^(?:unitat|u|ud)\s*(\d+)/i.exec(String(s&&s.titulo||""));
   return m? String(parseInt(m[1],10)) : null;
 }
