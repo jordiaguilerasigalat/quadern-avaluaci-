@@ -94,7 +94,7 @@ function renderResultados(grupo){
   const idx=catIndex(grupo.catalogoKey);
   if(!grupo.alumnos.length){ c.innerHTML='<div class="card"><h2>Resultados</h2><p style="color:var(--mut);font-size:14px">Añade alumnado, crea actividades y califícalas: aquí verás la nota cuantitativa y la adquisición de cada competencia.</p></div>'; return; }
   if(state.ui.resAl && !grupo.alumnos.find(a=>a.id===state.ui.resAl)) state.ui.resAl="";
-  const al=grupo.alumnos.find(a=>a.id===state.ui.resAl)||null;
+  const al=grupo.alumnos.find(a=>a.id===state.ui.resAl)||null; let banc={boto:"",panell:""};
   const trim=state.ui.trim;
 
   // ---- "Toda la clase": tabla siempre visible, cada fila abre el detalle del alumno debajo ----
@@ -279,7 +279,9 @@ function renderResultados(grupo){
     <textarea class="in" id="resComentario" style="width:100%;min-height:90px;resize:vertical" placeholder="Comentario sobre la calificación de ${TRIMESTRES[trim]}…">${esc((al.comentariosEval&&al.comentariosEval[trim])||"")}</textarea>
     <div class="flex" style="gap:6px;margin-top:8px;flex-wrap:wrap">
       <button class="ghost small" style="border:1px solid var(--line)" onclick="comSugerir('${al.id}',${trim},'va')" title="Redacta un esborrany a partir de la nota, les competències, les entregues i l'assistència. Revisa'l abans d'imprimir.">💬 Suggerir comentari</button>
+      ${(banc=bancComentarisHTML(grupo,al,trim)).boto}
     </div>
+    ${banc.panell}
   </div>
 
   <div class="card">

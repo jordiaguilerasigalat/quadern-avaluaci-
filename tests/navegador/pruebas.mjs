@@ -1380,4 +1380,36 @@ export const PRUEBAS = [
     t.ok(!/Qualitativa/.test(r.ambInstr), 'només per instruments no apareix cap qualitativa');
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'banc-comentaris', descripcion: 'Banc de comentaris: frases per categoria, la de la nota primer, inserir amb el nom posat, editar i desar al banc', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const ids = await cuadernoConGrupo(p, t.url);
+    const r = await p.evaluate(async ids => {
+      const g = state.grupos[0], c1 = getCatalogo('FiQ_2ESO').ces[0].criterios[0].id;
+      g.actividades = [{ id: 'e1', nombre: 'Examen 1', tipo: TIPOS[0], trimestre: 0, bloqueId: g.bloques[0].id, esExamen: true, criterios: [{ critId: c1, peso: 100 }] }];
+      g.notasCuant = { [ids[0]]: { e1: 3 } }; g.notas = { [ids[0]]: { e1: { [c1]: 3 } } };
+      state.ui.appMode = 'competencial'; state.ui.tab = 'resultados'; state.ui.trim = 0; state.ui.resAl = ids[0]; save(); render();
+      const out = {};
+      const boto = [...document.querySelectorAll('#tabContent button')].find(b => /Banc de comentaris/.test(b.textContent));
+      out.boto = !!boto; boto.click(); await new Promise(r => setTimeout(r, 50));
+      out.panell = !!document.querySelector('.bancPanell');
+      out.primera = document.querySelector('.bancGrup').textContent;
+      const ta = document.getElementById('resComentario'); ta.value = 'Inici.'; ta.dispatchEvent(new Event('change'));
+      document.querySelector('.bancFrase').click(); await new Promise(r => setTimeout(r, 50));
+      out.text = g.alumnos[0].comentariosEval[0]; out.ta = document.getElementById('resComentario').value;
+      const n0 = state.bancComentaris.length;
+      document.getElementById('resComentario').value = 'Ana ha millorat molt en els problemes.';
+      const desa = [...document.querySelectorAll('.bancPanell button')].find(b => /Desa al banc/.test(b.textContent)); desa.click();
+      await new Promise(r => setTimeout(r, 50));
+      out.desada = state.bancComentaris.length === n0 + 1 && state.bancComentaris.at(-1).text === '{nom} ha millorat molt en els problemes.' && state.bancComentaris.at(-1).cat === 'millora';
+      bancFiltre('lab'); out.filtre = document.querySelectorAll('.bancGrup').length === 1 && /Laboratori/.test(document.querySelector('.bancGrup').textContent);
+      bancGestio(true); out.gestio = !!document.querySelector('[aria-label="Esborrar la frase"]');
+      return out;
+    }, ids);
+    t.ok(r.boto && r.panell, 'Resultats: botó «Banc de comentaris» que obri el panell');
+    t.ok(/Ha de millorar/.test(r.primera) && /segons la nota/.test(r.primera), 'amb un 3 apareixen primer les frases de «Ha de millorar»', r.primera.slice(0, 80));
+    t.ok(/^Inici\. Ana encara no ha assolit els aprenentatges de la primera avaluació\.$/.test(r.text) && r.ta === r.text, 'la frase s\'afig al comentari amb el nom i l\'avaluació', r.text);
+    t.ok(r.desada, '«Desa al banc» guarda el comentari amb {nom} en la categoria de la nota');
+    t.ok(r.filtre && r.gestio, 'filtre per categoria i mode d\'edició del banc');
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
 ];
