@@ -144,7 +144,7 @@ function imageSourceToBytes(dataUrl) {
         if (/;base64/i.test(meta)) { const bin = atob(payload); const b = new Uint8Array(bin.length); for (let i=0;i<bin.length;i++) b[i] = bin.charCodeAt(i); blob = new Blob([b], { type: mime }); }
         else blob = new Blob([decodeURIComponent(payload)], { type: mime });
       } else {
-        const resp = await fetch(dataUrl); if (!resp.ok) throw new Error('No se pudo obtener una imagen del examen.');
+        const resp = await fetch(dataUrl); if (!resp.ok) throw new Error('No s\'ha pogut obtindre una imatge de l\'examen.');
         blob = await resp.blob(); mime = (blob.type || 'image/png').toLowerCase();
       }
       const src = URL.createObjectURL(blob);
@@ -155,20 +155,20 @@ function imageSourceToBytes(dataUrl) {
           if (mime.includes('svg')) {
             const canvas = document.createElement('canvas'); canvas.width = Math.max(1, im.naturalWidth || 1200); canvas.height = Math.max(1, im.naturalHeight || 800);
             canvas.getContext('2d').drawImage(im, 0, 0, canvas.width, canvas.height);
-            outBlob = await new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(new Error('No se pudo convertir la imagen SVG')), 'image/png'));
+            outBlob = await new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(new Error('No s\'ha pogut convertir la imatge SVG')), 'image/png'));
             mime = 'image/png'; ext = 'png';
           }
           const bytes = new Uint8Array(await outBlob.arrayBuffer()); URL.revokeObjectURL(src);
           resolve({ bytes, ext, mime, width: im.naturalWidth || 1000, height: im.naturalHeight || 700 });
         } catch (err) { URL.revokeObjectURL(src); reject(err); }
       };
-      im.onerror = () => { URL.revokeObjectURL(src); reject(new Error('Una imagen del examen no se pudo leer.')); };
+      im.onerror = () => { URL.revokeObjectURL(src); reject(new Error('Una imatge de l\'examen no s\'ha pogut llegir.')); };
       im.src = src;
     } catch (err) { reject(err); }
   });
 }
 function imageDrawingXml(relId, id, cx, cy) {
-  return '<w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="' + cx + '" cy="' + cy + '"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:docPr id="' + id + '" name="Imagen ' + id + '"/><wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="' + id + '" name="Imagen ' + id + '"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="' + relId + '"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="' + cx + '" cy="' + cy + '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing>';
+  return '<w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="' + cx + '" cy="' + cy + '"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:docPr id="' + id + '" name="Imatge ' + id + '"/><wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="' + id + '" name="Imatge ' + id + '"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="' + relId + '"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="' + cx + '" cy="' + cy + '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing>';
 }
 function crc32(bytes) {
   if (!crc32.table) { crc32.table = new Uint32Array(256); for (let n=0;n<256;n++) { let c=n; for (let k=0;k<8;k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; crc32.table[n] = c >>> 0; } }
@@ -345,8 +345,8 @@ async function buildDocxBlob(exam, options = {}) {
   if (headerFirstRid) files.push({ name: 'word/headerFirst.xml', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:hdr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p/></w:hdr>' });
   if (ext.footer.on) files.push({ name: 'word/footer1.xml', data: wordHeaderXml(ext.footer, { font: ext.footer.font || ext.base.font, size: num(ext.footer.size,9), color: ext.footer.color || '#333333' }, true, mmTwips(contentWmm)) });
   if (footerFirstRid) files.push({ name: 'word/footerFirst.xml', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p/></w:ftr>' });
-  files.push({ name: 'docProps/core.xml', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>' + xmlEsc(ext.name || 'Examen') + '</dc:title><dc:creator>Editor de exámenes</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">' + date + '</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">' + date + '</dcterms:modified></cp:coreProperties>' });
-  files.push({ name: 'docProps/app.xml', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>Editor de exámenes</Application></Properties>' });
+  files.push({ name: 'docProps/core.xml', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>' + xmlEsc(ext.name || 'Examen') + '</dc:title><dc:creator>Editor d\'exàmens</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">' + date + '</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">' + date + '</dcterms:modified></cp:coreProperties>' });
+  files.push({ name: 'docProps/app.xml', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>Editor d\'exàmens</Application></Properties>' });
   files.push(...media);
   return zipStore(files);
 }
@@ -355,24 +355,24 @@ function openDocxOptions() {
   const breaks = h('input', { type: 'checkbox', checked: true });
   const rows = h('input', { type: 'checkbox', checked: true });
   const paragraphs = h('input', { type: 'checkbox', checked: true });
-  openDialog('Opciones de exportación a Word', h('div', {},
-    h('p', { style: { marginTop: 0 } }, 'El documento será editable. Como Word recompone el texto de forma distinta al navegador, estas opciones priorizan una paginación legible.'),
-    h('label', { class: 'chk' }, breaks, 'Respetar los saltos de página definidos en el editor'),
-    h('label', { class: 'chk' }, rows, 'Evitar que una fila de tabla se divida entre páginas'),
-    h('label', { class: 'chk' }, paragraphs, 'Mantener las líneas de cada párrafo juntas cuando sea posible'),
-    h('div', { class: 'note' }, 'Los encabezados de las tablas marcadas como tales se configurarán para repetirse automáticamente en Word.')),
-    [{ label: 'Cancelar' }, { label: 'Generar Word', primary: true, fn: () => exportDocxDirect({ preserveBreaks: breaks.checked, keepRows: rows.checked, keepParagraphs: paragraphs.checked }) }]);
+  openDialog('Opcions d\'exportació a Word', h('div', {},
+    h('p', { style: { marginTop: 0 } }, 'El document serà editable. Com que Word recompon el text de manera diferent del navegador, aquestes opcions prioritzen una paginació llegible.'),
+    h('label', { class: 'chk' }, breaks, 'Respectar els salts de pàgina definits en l\'editor'),
+    h('label', { class: 'chk' }, rows, 'Evitar que una fila de taula es dividisca entre pàgines'),
+    h('label', { class: 'chk' }, paragraphs, 'Mantindre juntes les línies de cada paràgraf quan siga possible'),
+    h('div', { class: 'note' }, 'Les capçaleres de les taules marcades com a tals es configuraran per a repetir-se automàticament en Word.')),
+    [{ label: 'Cancel·lar' }, { label: 'Generar Word', primary: true, fn: () => exportDocxDirect({ preserveBreaks: breaks.checked, keepRows: rows.checked, keepParagraphs: paragraphs.checked }) }]);
 }
 async function exportDocxDirect(options = {}) {
-  if (!S.exam.body.length) return toast('Añade contenido al examen antes de exportar');
-  const b = $('#btnDocx'); b.disabled = true; const old = b.textContent; b.textContent = 'Generando…';
+  if (!S.exam.body.length) return toast('Afig contingut a l\'examen abans d\'exportar');
+  const b = $('#btnDocx'); b.disabled = true; const old = b.textContent; b.textContent = 'Generant…';
   try {
     const blob = await buildDocxBlob(S.exam, options);
     const a = h('a', { href: URL.createObjectURL(blob), download: slug(S.exam.name) + '.docx' });
     document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-    toast('Word descargado. Texto y tablas editables; encabezados repetibles y opciones de paginación aplicadas.');
+    toast('Word descarregat. Text i taules editables; capçaleres repetibles i opcions de paginació aplicades.');
   } catch (err) {
-    console.error(err); toast('No se pudo generar el Word: ' + (err?.message || 'error inesperado'));
+    console.error(err); toast('No s\'ha pogut generar el Word: ' + (err?.message || 'error inesperat'));
   } finally { b.disabled = false; b.textContent = old; DOCX_BUILD_OPTIONS = { preserveBreaks: true, keepRows: true, keepParagraphs: true }; }
 }
 function bufferToBase64(buf) {

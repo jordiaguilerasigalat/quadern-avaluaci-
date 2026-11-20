@@ -141,7 +141,7 @@ function printPropuestasFinales() {
 <body>
   <h1>✅ Propuestas Finales de Evaluación</h1>
   <div class="subtitle">
-    ${esc(iesName)} &nbsp;·&nbsp; ${dateStr.charAt(0).toUpperCase()+dateStr.slice(1)} &nbsp;·&nbsp; Informe para el Departamento de Orientación
+    ${esc(iesName)} &nbsp;·&nbsp; ${dateStr.charAt(0).toUpperCase()+dateStr.slice(1)} &nbsp;·&nbsp; Informe per al Departament d'Orientació
   </div>
   <div class="gstats">
     ${gChip('Total alumnado', gTotal, '#1a3a6b')}
@@ -426,7 +426,7 @@ function printPromocionaEtapa(etapa) {
   const etapaLabel = esBach ? 'Bachillerato' : 'ESO';
   _openPromocionaReport(
     `Informes de Promoción — ${etapaLabel}`,
-    `Informes de promoción · ${etapaLabel} · ${grupos} grupo${grupos!==1?'s':''} (A4 apaisado, uno por hoja)`,
+    `Informes de promoció · ${etapaLabel} · ${grupos} grup${grupos!==1?'s':''} (A4 apaïsat, un per full)`,
     sections.join('\n')
   );
 }
@@ -522,7 +522,7 @@ function printPendientesNivel(nivel) {
   ).sort((a,b) => (a.nombre||'').localeCompare(b.nombre||'', 'es'));
 
   if (!alumnos.length) {
-    showToast(`ℹ ${nivel}: sin alumnos con materias pendientes`);
+    showToast(`ℹ ${nivel}: sense alumnat amb matèries pendents`);
     return;
   }
 
@@ -680,7 +680,7 @@ function printPendientesReport() {
       <div class="nivel-section">
         <div class="nivel-header">
           <span>${_tEsc(n)}</span>
-          <span class="nivel-count">${todosAlumnos.length} alumne${todosAlumnos.length!==1?'s':''} con materias pendientes</span>
+          <span class="nivel-count">${todosAlumnos.length} alumne${todosAlumnos.length!==1?'s':''} amb matèries pendents</span>
         </div>
         <table>
           <thead>
@@ -698,7 +698,7 @@ function printPendientesReport() {
   });
 
   if (!bodyHtml) {
-    showToast('ℹ No hay alumnos con materias pendientes registradas');
+    showToast('ℹ No hi ha alumnat amb matèries pendents registrades');
     return;
   }
 
@@ -812,7 +812,7 @@ function printPendientesReport() {
     <div class="doc-meta">
       <span>🏫 ${_tEsc(iesName)}</span>
       <span>📅 ${dateStr}</span>
-      <span>👥 ${totalAlumnosConPend} alumnes con materias pendientes</span>
+      <span>👥 ${totalAlumnosConPend} alumnes amb matèries pendents</span>
     </div>
   </div>
 
@@ -896,7 +896,7 @@ function buildRecuperadasDisplay(a, nivel, grupo, idx) {
     </div>`;
   }
   if (!recValid.length && !norecValid.length) {
-    return `<div class="pendientes-display rec-mode" onclick="openRecuperadasPanel(event,'${jsAttr(nivel)}','${jsAttr(grupo)}',${idx})" title="Marcar materias recuperadas / no recuperadas (${pend.length} pendiente${pend.length>1?'s':''})">
+    return `<div class="pendientes-display rec-mode" onclick="openRecuperadasPanel(event,'${jsAttr(nivel)}','${jsAttr(grupo)}',${idx})" title="Marcar les matèries recuperades / no recuperades (${pend.length} pendiente${pend.length>1?'s':''})">
       <span class="pendientes-placeholder">— marcar</span>
     </div>`;
   }

@@ -259,7 +259,7 @@ function renderSegFamiliaListado() {
         </select>
         <span style="flex:1"></span>
         <button class="btn btn-ghost btn-sm" ${nSel?'':'disabled style="opacity:.4"'} onclick="printSegFamiliaVarios([..._segListState.seleccionados])">🖨 Imprimir seleccionados (${nSel})</button>
-        <button class="btn btn-primary btn-sm" ${registros.length?'':'disabled style="opacity:.4"'} onclick="printSegFamiliaVarios(_segTodosDelGrupo('${jsAttr(nivel)}','${jsAttr(grupo)}').map(r=>r.reg.id))">🖨 Imprimir todos (${registros.length})</button>
+        <button class="btn btn-primary btn-sm" ${registros.length?'':'disabled style="opacity:.4"'} onclick="printSegFamiliaVarios(_segTodosDelGrupo('${jsAttr(nivel)}','${jsAttr(grupo)}').map(r=>r.reg.id))">🖨 Imprimir-los tots (${registros.length})</button>
       </div>
 
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:6px 16px">

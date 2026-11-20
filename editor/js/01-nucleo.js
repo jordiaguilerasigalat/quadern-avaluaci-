@@ -70,22 +70,22 @@ const PAPERS = { A4: [210, 297], A5: [148, 210], Carta: [215.9, 279.4], Legal: [
 
 /* ---------- Tipos de bloque ---------- */
 const TYPES = {
-  title:       { name: 'Título del examen', badge: 'Tt', hint: 'Cabecera grande con asignatura, título y subtítulo', container: false },
-  datos:       { name: 'Datos del alumno', badge: 'Dt', hint: 'Nombre, curso, fecha y nota', container: false },
-  section:     { name: 'Apartado', badge: 'Ap', hint: 'Parte del examen (I, II, III…) con subapartados', container: true },
-  question:    { name: 'Pregunta', badge: 'Pr', hint: 'Pregunta numerada con enunciado y puntuación', container: true },
-  subquestion: { name: 'Subpregunta', badge: '↳', hint: 'Subapartado a), b), c)…', container: true },
-  text:        { name: 'Texto', badge: 'Tx', hint: 'Párrafos, textos de fuentes, citas', container: false },
-  table:       { name: 'Tabla', badge: 'Tb', hint: 'Tabla para completar o relacionar', container: false },
-  image:       { name: 'Imagen', badge: 'Im', hint: 'Mapa, gráfico, fotografía…', container: false },
-  lines:       { name: 'Líneas de respuesta', badge: '≡', hint: 'Renglones para escribir', container: false },
-  box:         { name: 'Recuadro', badge: '▭', hint: 'Instrucciones o zona de respuesta con borde', container: false },
-  spacer:      { name: 'Espacio en blanco', badge: '␣', hint: 'Hueco vertical', container: false },
+  title:       { name: 'Títol de l\'examen', badge: 'Tt', hint: 'Capçalera gran amb assignatura, títol i subtítol', container: false },
+  datos:       { name: 'Dades de l\'alumne', badge: 'Dt', hint: 'Nom, curs, data i nota', container: false },
+  section:     { name: 'Apartat', badge: 'Ap', hint: 'Part de l\'examen (I, II, III…) amb subapartats', container: true },
+  question:    { name: 'Pregunta', badge: 'Pr', hint: 'Pregunta numerada amb enunciat i puntuació', container: true },
+  subquestion: { name: 'Subpregunta', badge: '↳', hint: 'Subapartat a), b), c)…', container: true },
+  text:        { name: 'Text', badge: 'Tx', hint: 'Paràgrafs, textos, cites', container: false },
+  table:       { name: 'Taula', badge: 'Tb', hint: 'Taula per a completar o relacionar', container: false },
+  image:       { name: 'Imatge', badge: 'Im', hint: 'Gràfic, esquema, fotografia…', container: false },
+  lines:       { name: 'Línies de resposta', badge: '≡', hint: 'Línies per a escriure', container: false },
+  box:         { name: 'Requadre', badge: '▭', hint: 'Instruccions o zona de resposta amb vora', container: false },
+  spacer:      { name: 'Espai en blanc', badge: '␣', hint: 'Buit vertical', container: false },
 };
 const MENU_GROUPS = [
   ['Estructura', ['section', 'question', 'subquestion']],
-  ['Contenido', ['text', 'table', 'image', 'lines', 'box', 'spacer']],
-  ['Cabecera del examen', ['title', 'datos']],
+  ['Contingut', ['text', 'table', 'image', 'lines', 'box', 'spacer']],
+  ['Capçalera de l\'examen', ['title', 'datos']],
 ];
 const CONTAINERS = new Set(Object.keys(TYPES).filter(t => TYPES[t].container));
 const STYLE_FIELDS = {   // qué controles tipográficos tiene cada tipo
@@ -97,19 +97,19 @@ const STYLE_FIELDS = {   // qué controles tipográficos tiene cada tipo
 function newNode(type) {
   const n = { id: uid(), type, style: { font: '', size: '', align: '' }, spaceBefore: '', breakBefore: false, keepTogether: false, collapsed: false };
   switch (type) {
-    case 'title': Object.assign(n, { eyebrow: 'Asignatura · Curso', title: 'Título del examen', subtitle: '', rule: true }); break;
+    case 'title': Object.assign(n, { eyebrow: 'Assignatura · Curs', title: 'Títol de l\'examen', subtitle: '', rule: true }); break;
     case 'datos': Object.assign(n, { fields: [
-      { label: 'Nombre y apellidos', w: 50, pre: '' }, { label: 'Curso / Grupo', w: 20, pre: '' },
-      { label: 'Fecha', w: 15, pre: '' }, { label: 'Nota', w: 15, pre: '/ 10' }] }); break;
-    case 'section': Object.assign(n, { title: 'Nuevo apartado', meta: '', text: '', points: '', numMode: 'auto', customLabel: '', children: [] }); break;
-    case 'question': Object.assign(n, { title: '', meta: '', text: 'Escribe aquí el enunciado de la pregunta.', points: '', numMode: 'auto', customLabel: '', children: [] }); break;
-    case 'subquestion': Object.assign(n, { text: 'Texto del subapartado.', points: '', numMode: 'auto', customLabel: '', children: [] }); break;
-    case 'text': Object.assign(n, { text: 'Escribe aquí el texto.', variant: 'plain' }); break;
+      { label: 'Nom i cognoms', w: 50, pre: '' }, { label: 'Curs / Grup', w: 20, pre: '' },
+      { label: 'Data', w: 15, pre: '' }, { label: 'Nota', w: 15, pre: '/ 10' }] }); break;
+    case 'section': Object.assign(n, { title: 'Apartat nou', meta: '', text: '', points: '', numMode: 'auto', customLabel: '', children: [] }); break;
+    case 'question': Object.assign(n, { title: '', meta: '', text: 'Escriu ací l\'enunciat de la pregunta.', points: '', numMode: 'auto', customLabel: '', children: [] }); break;
+    case 'subquestion': Object.assign(n, { text: 'Text del subapartat.', points: '', numMode: 'auto', customLabel: '', children: [] }); break;
+    case 'text': Object.assign(n, { text: 'Escriu ací el text.', variant: 'plain' }); break;
     case 'table': Object.assign(n, { table: { header: true, border: 'grid', zebra: false, hshade: true, rowH: 0,
       widths: ['', '', ''], cells: [['Columna 1', 'Columna 2', 'Columna 3'], ['', '', ''], ['', '', '']] } }); break;
     case 'image': Object.assign(n, { src: '', widthPct: 80, imgAlign: 'center', caption: '' }); break;
     case 'lines': Object.assign(n, { count: 6, spacing: 8, lineStyle: 'solid' }); break;
-    case 'box': Object.assign(n, { title: 'Instrucciones', text: 'Lee con atención cada pregunta.', minH: 0 }); break;
+    case 'box': Object.assign(n, { title: 'Instruccions', text: 'Llig amb atenció cada pregunta.', minH: 0 }); break;
     case 'spacer': Object.assign(n, { height: 20 }); break;
   }
   return n;
@@ -118,22 +118,22 @@ function newNode(type) {
 /* ---------- Examen nuevo ---------- */
 function defaultExam() {
   return {
-    v: 1, id: uid(), name: 'Examen sin título', updated: Date.now(),
+    v: 1, id: uid(), name: 'Examen sense títol', updated: Date.now(),
     page: { size: 'A4', orient: 'portrait', mt: 20, mb: 18, ml: 22, mr: 22 },
     base: { font: 'times', size: 11, lh: 1.4, align: 'justify', hyphens: false },
     typeStyles: {},
     accent: '#111111',
     num: { sec: ['{I}.', '{A}.', '{n}.'], q: '{n}.-', sub: ['{a})', '{i})', '–'], restart: false,
-           ptsFmt: '(hasta {p} puntos)', ptsPlace: 'inline', total: 10 },
-    header: { on: true, first: true, l: 'Nombre del instituto', c: '', r: 'Curso 2026-2027', font: '', size: 9, color: '#333333', rule: true, off: 9,
+           ptsFmt: '(fins a {p} punts)', ptsPlace: 'inline', total: 10 },
+    header: { on: true, first: true, l: 'Nom de l\'institut', c: '', r: 'Curs 2026-2027', font: '', size: 9, color: '#333333', rule: true, off: 9,
               logo: '', logoPos: 'l', logoH: 10 },
-    footer: { on: true, first: true, l: 'Asignatura · Curso', c: '', r: 'Página {pagina} de {paginas}', font: '', size: 9, color: '#333333', rule: true, off: 8 },
+    footer: { on: true, first: true, l: 'Assignatura · Curs', c: '', r: 'Pàgina {pagina} de {paginas}', font: '', size: 9, color: '#333333', rule: true, off: 8 },
     body: [],
   };
 }
 function blankExam() {
   const e = defaultExam();
-  const t = newNode('title'); t.eyebrow = 'Asignatura · Curso'; t.title = 'Examen de …'; t.subtitle = '';
+  const t = newNode('title'); t.eyebrow = 'Assignatura · Curs'; t.title = 'Examen de …'; t.subtitle = '';
   e.body = [t, newNode('datos')];
   return e;
 }
@@ -199,7 +199,7 @@ function fmtPoints(exam, raw) {
   const v = num(t, NaN);
   const p = isFinite(v) ? fmtNum(v) : t;
   let s = String(exam.num.ptsFmt || '{p}').replace('{p}', p);
-  if (isFinite(v) && v === 1) s = s.replace(/puntos/g, 'punto');
+  if (isFinite(v) && v === 1) s = s.replace(/puntos/g, 'punto').replace(/punts/g, 'punt');
   return s;
 }
 function sumPoints(list) {
@@ -316,7 +316,7 @@ let EE_DB_PROMISE = null;
 function eeDbOpen() {
   if (EE_DB_PROMISE) return EE_DB_PROMISE;
   EE_DB_PROMISE = new Promise((resolve, reject) => {
-    if (!('indexedDB' in window)) return reject(new Error('IndexedDB no está disponible en este navegador.'));
+    if (!('indexedDB' in window)) return reject(new Error('IndexedDB no està disponible en aquest navegador.'));
     const req = indexedDB.open('editorExamenesDB', 1);
     req.onupgradeneeded = () => {
       const db = req.result;
@@ -324,8 +324,8 @@ function eeDbOpen() {
       if (!db.objectStoreNames.contains('snippets')) db.createObjectStore('snippets', { keyPath: 'id' });
     };
     req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error || new Error('No se pudo abrir el almacenamiento local.'));
-    req.onblocked = () => reject(new Error('El almacenamiento está bloqueado por otra pestaña del editor.'));
+    req.onerror = () => reject(req.error || new Error('No s\'ha pogut obrir l\'emmagatzematge local.'));
+    req.onblocked = () => reject(new Error('L\'emmagatzematge està bloquejat per una altra pestanya de l\'editor.'));
   }).catch(err => { EE_DB_PROMISE = null; throw err; });
   return EE_DB_PROMISE;
 }
@@ -371,14 +371,14 @@ function examSignature(exam) {
   const x = clone(exam); delete x.updated;
   return JSON.stringify(x);
 }
-async function createRecoverySnapshot(exam, reason = 'Versión manual', force = false) {
+async function createRecoverySnapshot(exam, reason = 'Versió manual', force = false) {
   if (!exam) return false;
   const signature = examSignature(exam), all = await eeDbAll('versions');
   const own = all.filter(v => v.examId === exam.id).sort((a,b) => b.at - a.at);
   if (!force && own[0] && own[0].signature === signature) return false;
   if (!force && own[0] && Date.now() - own[0].at < 120000) return false;
   const now = Date.now();
-  const v = { key: exam.id + '-' + now + '-' + uid(), examId: exam.id, name: exam.name || 'Examen sin título', at: now, reason, signature, exam: clone(exam) };
+  const v = { key: exam.id + '-' + now + '-' + uid(), examId: exam.id, name: exam.name || 'Examen sense títol', at: now, reason, signature, exam: clone(exam) };
   const ok = await eeDbPut('versions', v);
   const after = (await eeDbAll('versions')).filter(x => x.examId === exam.id).sort((a,b) => b.at-a.at);
   // Mantiene las últimas 20 copias automáticas y hasta 20 versiones manuales/restauraciones.
@@ -405,12 +405,12 @@ function deleteExamLocal(id) { LS.del('ee.exam.' + id); LS.set('ee.index', libIn
 function readImageFile(file, maxPx = 1500) {
   return new Promise((resolve, reject) => {
     const fr = new FileReader();
-    fr.onerror = () => reject(new Error('No se pudo leer la imagen'));
+    fr.onerror = () => reject(new Error('No s\'ha pogut llegir la imatge'));
     fr.onload = () => {
       const src = fr.result;
       if (file.type === 'image/svg+xml') return resolve(src);
       const im = new Image();
-      im.onerror = () => reject(new Error('Formato de imagen no válido'));
+      im.onerror = () => reject(new Error('Format d\'imatge no vàlid'));
       im.onload = () => {
         const k = Math.min(1, maxPx / Math.max(im.width, im.height));
         if (k === 1 && file.type === 'image/png' && file.size < 450000) return resolve(src);

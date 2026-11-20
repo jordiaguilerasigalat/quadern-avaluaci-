@@ -281,9 +281,9 @@ function renderGrupoContent(mc, grupoBlock, nivel, grupo, alumnos) {
           <summary class="btn btn-ghost btn-sm" title="Más herramientas del grupo">⋯ Más${_getAsistenciaIndicator(nivel, grupo) || ((window._obsGrupoData||{})[`${nivel}-${grupo}`] ? ' <span class="mas-punto"></span>' : '')}</summary>
           <div class="mas-menu-lista" role="menu">
             <button role="menuitem" onclick="selectNivel('__actasnooficiales__')" title="Las Actas I/II/Final de todos los grupos se gestionan en su propia pestaña">🗂️ Actas no Oficiales</button>
-            <button role="menuitem" onclick="openAsistencia('${jsAttr(nivel)}','${jsAttr(grupo)}')">👥 Asistencia a la sesión${_getAsistenciaIndicator(nivel, grupo)}</button>
+            <button role="menuitem" onclick="openAsistencia('${jsAttr(nivel)}','${jsAttr(grupo)}')">👥 Assistència a la sessió${_getAsistenciaIndicator(nivel, grupo)}</button>
             <button role="menuitem" onclick="openEquipoDocente('${jsAttr(nivel)}','${jsAttr(grupo)}')">👨‍🏫 Equipo docente</button>
-            <button role="menuitem" onclick="openObservacionesGrupo('${jsAttr(nivel)}','${jsAttr(grupo)}')">📝 Observaciones del grupo${(window._obsGrupoData||{})[`${nivel}-${grupo}`] ? ' <span class="mas-punto"></span>' : ''}</button>
+            <button role="menuitem" onclick="openObservacionesGrupo('${jsAttr(nivel)}','${jsAttr(grupo)}')">📝 Observacions del grup${(window._obsGrupoData||{})[`${nivel}-${grupo}`] ? ' <span class="mas-punto"></span>' : ''}</button>
             <button role="menuitem" onclick="openPlanoGrupo('${jsAttr(nivel)}','${jsAttr(grupo)}')">🪑 Plano del grupo</button>
             <button role="menuitem" onclick="openHorarioGrupo('${jsAttr(nivel)}','${jsAttr(grupo)}')">🗓️ Horario del grupo</button>
             <button role="menuitem" onclick="openFotoGaleria('${jsAttr(nivel)}','${jsAttr(grupo)}')">🖼️ Fotos del grupo</button>
@@ -1335,7 +1335,7 @@ function updateTable(nivel, grupo) {
     <div class="table-footer">
       <span>${rawAlumnos.length} alumnes | ${rawAlumnos.filter(a=>a.nese==='Sí').length} NESE | ${rawAlumnos.filter(a=>a.compensatoria==='Sí').length} Comp.${pendienteStr}${criticalStr}${abandonoFooterStr}${pendientesFooterStr}</span>
       <span style="display:flex;align-items:center;gap:6px;">
-        <span style="font-size:10px;color:var(--text3)">${pctDecision}% decidido</span>
+        <span style="font-size:10px;color:var(--text3)">${pctDecision}% decidit</span>
         <div class="decision-progress-bar">
           <div class="decision-progress-fill" style="width:${pctDecision}%;background:${pctDecision===100?'var(--green)':pctDecision>60?'var(--yellow)':'var(--red)'}"></div>
         </div>
@@ -1685,7 +1685,7 @@ function applyBulkEdit(field, value) {
   withUndo(nivel, grupo, () => {
     indices.forEach(idx => updateField(nivel, grupo, idx, field, value));
   });
-  showToast(`✅ ${indices.length} alumne${indices.length !== 1 ? 's' : ''} actualizados`);
+  showToast(`✅ ${indices.length} alumne${indices.length !== 1 ? 's' : ''} actualitzats`);
 }
 
 // Bulk edit for propuesta/promociona fields (object with tipo + destino)
@@ -1713,7 +1713,7 @@ function applyBulkEditPropTipo(field, tipo) {
     updateTabProgress(nivel, grupo);
     if (currentNivel === '__home__') { clearTimeout(_resumenDebounce); _resumenDebounce = setTimeout(renderResumen, 400); }
   }
-  showToast(`✅ ${indices.length} alumne${indices.length !== 1 ? 's' : ''} actualizados`);
+  showToast(`✅ ${indices.length} alumne${indices.length !== 1 ? 's' : ''} actualitzats`);
 }
 
 // Bulk edit destino for propuesta/promociona fields (keeps existing tipo)

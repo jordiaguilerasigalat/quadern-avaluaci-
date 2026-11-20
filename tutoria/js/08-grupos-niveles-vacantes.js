@@ -1,5 +1,5 @@
 /* ============================================================================
-   Gestor de Tutoría · Gestión de grupos y niveles, unidades vacantes
+   Gestor de Tutoría · Gestión de grupos y niveles, unitats vacantes
    tutoria/js/08-grupos-niveles-vacantes.js
    ============================================================================ */
 
@@ -116,8 +116,8 @@ function confirmRenameGrupo() {
 async function confirmDeleteGrupo(nivel, grupo) {
   const alumnos = data[nivel][grupo].length;
   const msg = alumnos > 0
-    ? `¿Eliminar el grupo ${nivel} ${grupo}? Contiene ${alumnos} alumne${alumnos!==1?'s':''} y se perderán todos sus datos.`
-    : `¿Eliminar el grupo ${nivel} ${grupo}?`;
+    ? `Eliminar el grup ${nivel} ${grupo}? Conté ${alumnos} alumne${alumnos!==1?'s':''} i es perdran totes les seues dades.`
+    : `Eliminar el grup ${nivel} ${grupo}?`;
 
   if (!await confirmar(msg)) return;
 
@@ -445,11 +445,11 @@ function importJSON(input) {
       const nObs = Object.keys(parsed.obsGrupoData || {}).length;
       if (nObs) extras.push(`observaciones de ${nObs} grupo(s)`);
       const nPlanos = Object.keys(parsed.planosGrupo || {}).length;
-      if (nPlanos) extras.push(`${nPlanos} plano(s) de aula`);
+      if (nPlanos) extras.push(`${nPlanos} pla(ns) d'aula`);
       const nFotos = Object.keys(parsed.fotoData || {}).length;
       if (nFotos) extras.push(`${nFotos} foto(s)`);
       const nHorarios = Object.keys(parsed.horarioData || {}).length;
-      if (nHorarios) extras.push(`${nHorarios} horario(s)`);
+      if (nHorarios) extras.push(`${nHorarios} horari(s)`);
       if (parsed.materiasCustom && Object.keys(parsed.materiasCustom).length) extras.push('materias personalizadas');
       if (parsed.vacantesCfg) extras.push('configuración de vacantes');
 
@@ -623,7 +623,7 @@ function executeJsonImport() {
   closeJsonImportModal();
   renderAll();
   const totalAl = Object.values(data).reduce((s,nv)=>s+Object.values(nv).reduce((s2,gr)=>s2+gr.length,0),0);
-  showToast(`✓ JSON importado (${mode==='overwrite'?'sobrescrito':'combinado'}) — ${totalAl} alumnes`);
+  showToast(`✓ JSON importat (${mode==='overwrite'?'sobrescrito':'combinado'}) — ${totalAl} alumnes`);
   markDirty();
 }
 
@@ -1198,7 +1198,7 @@ function renderResumen() {
 
       // Show sinDestino only if any exist
       const sinDestinoHtml = sinDestino.length ? `<div style="margin-top:8px;padding:8px 12px;background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.3);border-radius:8px;font-size:12px;color:var(--yellow);">
-        ⚠ ${sinDestino.length} alumne${sinDestino.length!==1?'s':''} con Titulación pero sin destino asignado
+        ⚠ ${sinDestino.length} alumne${sinDestino.length!==1?'s':''} amb titulació però sense destinació assignada
       </div>` : '';
 
       return `<div>
@@ -1329,7 +1329,7 @@ function renderResumen() {
 
 // ===================== DEFINICIÓN DE UNIDADES VACANTES =====================
 // A partir del alumnado que promociona/titula (según la II Evaluación o la
-// Evaluación Final) calcula las unidades (grupos) previstas para el curso
+// Evaluación Final) calcula las unitats (grupos) previstas para el curso
 // siguiente. Reglas: ratio 30 en ESO y 35 en Bachillerato; el alumnado que
 // vota Castellano forma línea aparte (el resto, Valenciano + sin voto, va a la
 // línea de Valenciano); PAC (2º ESO) y PDC (3º/4º ESO) forman grupo aparte.
@@ -1384,11 +1384,11 @@ function computeVacantes(propField) {
     const prev   = prevNivel ? alumnosDe(prevNivel) : [];
     const propio = alumnosDe(target);
     const promueven = prev.filter(a => esPromo(a) && !saleDelCentro(a));
-    const repiten   = propio.filter(a => esRepite(a) && !saleDelCentro(a));
+    const repeteixen   = propio.filter(a => esRepite(a) && !saleDelCentro(a));
     const regProm = promueven.filter(a => destOf(a) !== divDest);
-    const regRep  = repiten.filter(a => destOf(a) !== divDest);
+    const regRep  = repeteixen.filter(a => destOf(a) !== divDest);
     const divTot  = promueven.filter(a => destOf(a) === divDest).length
-                  + repiten.filter(a => destOf(a) === divDest).length;
+                  + repeteixen.filter(a => destOf(a) === divDest).length;
     const reg = [...regProm, ...regRep];
     const cast = reg.filter(a => lang(a) === 'cast').length;
     const val  = reg.filter(a => lang(a) === 'val').length;
@@ -1396,7 +1396,7 @@ function computeVacantes(propField) {
     const fueraFPB = prev.filter(a => esPromo(a) && saleDelCentro(a)).length;
     return {
       target, prevNivel,
-      promueven: regProm.length, repiten: regRep.length, total: reg.length,
+      promueven: regProm.length, repeteixen: regRep.length, total: reg.length,
       cast, val, sinVoto, castU: ceil(cast, rESO), valU: ceil(val, rESO),
       divTot, divLabel, divUnits: divTot > 0 ? 1 : 0, fueraFPB
     };
@@ -1478,7 +1478,7 @@ function renderVacantes() {
 
     // Tarjeta ESO ordinaria
     const esoCard = (r) => {
-      const unidades = r.castU + r.valU;
+      const unitats = r.castU + r.valU;
       const pctBar = (n) => r.total ? Math.round(n / r.total * 100) : 0;
       return `<div class="nivel-summary-card">
         <div class="nivel-summary-header">
@@ -1487,7 +1487,7 @@ function renderVacantes() {
         </div>
         <div style="padding:7px 14px 2px;font-size:11px;color:var(--text2);display:flex;gap:12px;flex-wrap:wrap">
           <span>↑ ${r.promueven} promocionan de ${_tEsc(r.prevNivel)}</span>
-          <span style="color:var(--red)">↻ ${r.repiten} repiten</span>
+          <span style="color:var(--red)">↻ ${r.repiten} repeteixen</span>
           ${r.fueraFPB?`<span style="color:var(--orange)">→ ${r.fueraFPB} a FPB (no computan)</span>`:''}
         </div>
         <div class="nivel-summary-rows">
@@ -1523,16 +1523,16 @@ function renderVacantes() {
       </div>
       <div style="padding:7px 14px 2px;font-size:11px;color:var(--text2);display:flex;gap:12px;flex-wrap:wrap">
         <span>🏫 ${p.nuCast + p.nuVal} nueva entrada (manual)</span>
-        <span style="color:var(--red)">↻ ${p.rep1Cast + p.rep1Val} repiten 1º ESO</span>
+        <span style="color:var(--red)">↻ ${p.rep1Cast + p.rep1Val} repeteixen 1º ESO</span>
       </div>
       <div class="nivel-summary-rows">
         <div class="nivel-summary-row">
-          <span class="ns-label">🟦 Castellano <span style="color:var(--text3);font-weight:400">(${p.nuCast} nuevos + ${p.rep1Cast} repiten)</span></span>
+          <span class="ns-label">🟦 Castellano <span style="color:var(--text3);font-weight:400">(${p.nuCast} nous + ${p.rep1Cast} repeteixen)</span></span>
           <span class="ns-num" style="color:var(--accent)">${p.cast}</span>
           <span class="ns-pct" style="min-width:60px;color:var(--accent);font-weight:700">${p.castU} unid.</span>
         </div>
         <div class="nivel-summary-row">
-          <span class="ns-label">🟩 Valenciano <span style="color:var(--text3);font-weight:400">(${p.nuVal} nuevos + ${p.rep1Val} repiten${p.rep1SinVoto?`, ${p.rep1SinVoto} sin voto`:''})</span></span>
+          <span class="ns-label">🟩 Valenciano <span style="color:var(--text3);font-weight:400">(${p.nuVal} nous + ${p.rep1Val} repeteixen${p.rep1SinVoto?`, ${p.rep1SinVoto} sin voto`:''})</span></span>
           <span class="ns-num" style="color:var(--green)">${p.val}</span>
           <span class="ns-pct" style="min-width:60px;color:var(--green);font-weight:700">${p.valU} unid.</span>
         </div>
@@ -1576,7 +1576,7 @@ function renderVacantes() {
 
     return `<div class="resumen-block">
       <div class="resumen-block-title" style="color:${color}">${icono} ${titulo}</div>
-      <div style="font-size:12px;color:var(--text2);margin:-2px 0 14px;">Total previsto: <strong style="color:${color}">${totalUnidades} unidades</strong> &nbsp;·&nbsp; ratio ESO ${v.rESO} &nbsp;·&nbsp; ratio Bach. ${v.rBach}</div>
+      <div style="font-size:12px;color:var(--text2);margin:-2px 0 14px;">Total previsto: <strong style="color:${color}">${totalUnidades} unitats</strong> &nbsp;·&nbsp; ratio ESO ${v.rESO} &nbsp;·&nbsp; ratio Bach. ${v.rBach}</div>
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);font-weight:700;margin:6px 0 8px">ESO (ratio ${v.rESO})</div>
       <div class="nivel-summary-grid">
         ${primCard}
@@ -1616,7 +1616,7 @@ function renderVacantes() {
     <div style="margin-bottom:18px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
       <div style="flex:1;min-width:300px">
         <div style="font-family:inherit;font-size:22px;font-weight:800;color:var(--text)">🏗️ Definición de Unidades Vacantes</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:6px;max-width:900px;line-height:1.5">Previsión de grupos para el curso siguiente a partir del alumnado que promociona/titula. El alumnado que vota <strong>Castellano</strong> forma línea aparte; el resto (<strong>Valenciano</strong> y sin voto) va a la línea de Valenciano. <strong>PAC</strong> (2º ESO) y <strong>PDC</strong> (3º/4º ESO) forman grupo aparte. Cada curso suma los repetidores del propio nivel; el alumnado a FPB/CFGM no ocupa plaza en el curso ordinario.</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:6px;max-width:900px;line-height:1.5">Previsión de grupos para el curso siguiente a partir del alumnado que promociona/titula. El alumnado que vota <strong>Castellano</strong> forma línia a banda; la resta (<strong>Valenciano</strong> y sin voto) va a la línea de Valenciano. <strong>PAC</strong> (2º ESO) y <strong>PDC</strong> (3r/4t ESO) formen grup a banda. Cada curs suma els repetidors del mateix nivell; l'alumnat que va a FPB/CFGM no ocupa plaça en el curs ordinari.</div>
       </div>
       <button onclick="printVacantes()" class="btn btn-primary" style="white-space:nowrap;font-size:13px;padding:9px 16px">🖨 Imprimir / PDF</button>
     </div>
@@ -1673,7 +1673,7 @@ function printVacantes() {
     return `
       <div style="margin-bottom:22px;page-break-inside:avoid">
         <div style="background:#1a3a6b;color:white;font-weight:700;padding:6px 12px;border-radius:4px 4px 0 0;font-size:10.5pt;display:flex;justify-content:space-between">
-          <span>${esc(titulo)}</span><span style="font-weight:400;font-size:9.5pt">Total previsto: ${totalUnidades} unidades</span>
+          <span>${esc(titulo)}</span><span style="font-weight:400;font-size:9.5pt">Total previsto: ${totalUnidades} unitats</span>
         </div>
         <table style="width:100%;border-collapse:collapse;font-size:9.5pt;margin-bottom:6px">
           <thead><tr style="background:#dce8f5">
@@ -1689,8 +1689,8 @@ function printVacantes() {
           <tbody>
             ${bachRow('1º Bach. Científico', `Titulan 4º ESO: ${b.cient.tit}  +  externos: ${b.cient.ext}`, b.cient.total, b.cient.units)}
             ${bachRow('1º Bach. Humanístico-Social', `Titulan 4º ESO: ${b.hs.tit}  +  externos: ${b.hs.ext}`, b.hs.total, b.hs.units)}
-            ${bachRow('2º Bach. Científico', `Promocionan 1º Bach.: ${s.cient.prom}  +  repiten: ${s.cient.rep}`, s.cient.total, s.cient.units)}
-            ${bachRow('2º Bach. Humanístico-Social', `Promocionan 1º Bach.: ${s.hs.prom}  +  repiten: ${s.hs.rep}`, s.hs.total, s.hs.units)}
+            ${bachRow('2º Bach. Científico', `Promocionan 1º Bach.: ${s.cient.prom}  +  repeteixen: ${s.cient.rep}`, s.cient.total, s.cient.units)}
+            ${bachRow('2º Bach. Humanístico-Social', `Promocionan 1º Bach.: ${s.hs.prom}  +  repeteixen: ${s.hs.rep}`, s.hs.total, s.hs.units)}
           </tbody>
         </table>
       </div>`;
@@ -1725,10 +1725,10 @@ function printVacantes() {
         </div>
         <div style="text-align:right;font-size:8.5pt;color:#888">${esc(dateStr)}</div>
       </div>
-      ${sectionHtml('propuesta2','Según la II Evaluación')}
-      ${sectionHtml('promociona','Según la Evaluación Final')}
+      ${sectionHtml('propuesta2','Segons la II Avaluació')}
+      ${sectionHtml('promociona','Segons l\'Avaluació Final')}
       <div style="margin-top:14px;padding-top:8px;border-top:1px solid #e5e7eb;font-size:8pt;color:#9ca3af;line-height:1.5">
-        El alumnado de Castellano forma línea aparte; el resto (Valenciano y sin voto) va a la línea de Valenciano. PAC/PDC forman grupo aparte. El alumnado a FPB/CFGM no ocupa plaza en el curso ordinario. "u" = unidades. Documento generado por EvalIES el ${esc(dateStr)}.
+        L'alumnat de Castellà forma línia a banda; la resta (Valencià i sense vot) va a la línia de Valencià. PAC/PDC formen grup a banda. L'alumnat que va a FPB/CFGM no ocupa plaça en el curs ordinari. "u" = unitats. Document generat per EvalIES el ${esc(dateStr)}.
       </div>
     </div>
     <script>window.onload=function(){}<\/script>
