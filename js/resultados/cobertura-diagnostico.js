@@ -141,13 +141,14 @@ window.aplicarArreglosDiagnostico=async()=>{
 };
 
 /* v3 · Tarjeta de novedades: se ve una vez tras actualizar, y se cierra. */
-const NOVEDADES_VERSION="fiq-1";
+const NOVEDADES_VERSION="fiq-2";
 window.cerrarNovedades=()=>{ state.novedadesVistas=NOVEDADES_VERSION; save(); render(); };
 const NOVEDADES_V3=[
-  ["⚗️ Currículum de Física i Química","2n, 3r i 4t d'ESO, 1r de Batxillerat, i Química i Física de 2n de Batxillerat, amb les CE i els criteris del departament."],
-  ["⚖️ Dos maneres de qualificar","per instruments (blocs de la proposta pedagògica) o per competències específiques (mitjana ponderada de les CE). Es tria en Ajustos de cada grup."],
-  ["📥 Programacions del departament 2026-2027","en Programació d'Aula, un botó per curs carrega totes les SdA amb trimestre, sessions, CE i criteris."],
-  ["🧩 Models NESE i de reforç de FiQ","plantilles de partida per a 2n, 3r i 4t d'ESO (cal que el departament les revise)."]
+  ["🧾 Acta de la sessió d'avaluació","en Resultats: mitjanes, distribució de notes, suspesos per tema, alumnat amb mesures, faltes i espai per als acords."],
+  ["👪 Informes per a les famílies","una pàgina per alumne/a amb notes, temes, faltes, observacions i signatures (Resultats o la fitxa de l'alumne/a)."],
+  ["🔁 Repàs per temes","en la Programació del grup, cada tema té un dossier de repàs en PDF (exercicis + models d'examen) i fitxes personalitzades per a qui ha de recuperar."],
+  ["🛟 Més recordatoris de còpia","cada dispositiu guarda les seues dades: l'app avisa en Inici als 3 dies o 20 canvis sense còpia."],
+  ["✍️ Crèdits","el material d'altres autors (Nelo Traver, Rafael Bueno, Jesús Escrivà, PAU) porta el seu nom."]
 ];
 function novedadesHTML(){
   if(state.novedadesVistas===NOVEDADES_VERSION) return "";

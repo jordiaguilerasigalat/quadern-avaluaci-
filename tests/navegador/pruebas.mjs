@@ -1221,4 +1221,41 @@ export const PRUEBAS = [
     t.ok(r.pest[0] === 'Actes' && r.tab, 'crea una pestanya nova i la deixa oberta');
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'informes-avaluacio', descripcion: 'Acta de la sessió, informes per a les famílies, fitxes de repàs per tema, dossiers i crèdits del material, recordatori de còpia', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    await cuadernoConGrupo(p, t.url, { nombres: ['Alba Roig, Neus', 'Bosch Vidal, Pau <b>x</b>', 'Climent Mas, Joan'] });
+    const r = await p.evaluate(async () => {
+      const g = state.grupos[0];
+      const prog = progDesDeDepartament('FiQ_3ESO'); state.programaciones = [prog]; g.programacionId = prog.id; g.catalogoKey = 'FiQ_3ESO';
+      const tema = prog.sdas.find(s => /Tema 2\./.test(s.tema));
+      const cr = Object.keys(catIndex('FiQ_3ESO').critMap)[0];
+      g.actividades = [{ id: 'a1', nombre: 'Prova gasos', tipo: TIPOS[0], trimestre: 0, bloqueId: g.bloques[0].id, esExamen: false, criterios: [{ critId: cr, peso: 100 }], temaId: tema.id }];
+      g.notas = { [g.alumnos[0].id]: { a1: { [cr]: 8 } }, [g.alumnos[1].id]: { a1: { [cr]: 3 } }, [g.alumnos[2].id]: { a1: { [cr]: 4 } } };
+      g.alumnos[1].nese = true; g.alumnos[1].comentariosEval[0] = 'Ha de treballar <i>més</i>';
+      state.lastBackupAt = Date.now() - 5 * 86400000; state.cambiosSinCopia = 2; save();
+      const txt = () => { const h = document.querySelector('#printOverlay .print-hoja'); return h && h.shadowRoot ? h.shadowRoot.textContent : ''; };
+      const out = {};
+      exportarActaSessio(0); out.acta = txt(); cerrarImprimible();
+      exportarInformesFamiliaTots(0); out.fam = txt(); { const sh = document.querySelector('#printOverlay .print-hoja').shadowRoot; out.pagines = sh.querySelectorAll('.ia-full').length; out.colat = !!sh.querySelector('.ia i, .ia b'); } cerrarImprimible();
+      exportarFitxesRepas(tema.id, 'suspesos'); out.fitxa = txt(); out.fitxes = document.querySelector('#printOverlay .print-hoja').shadowRoot.querySelectorAll('.ia-full').length; cerrarImprimible();
+      materialDe('FiQ_3ESO'); materialDe('QUI_2BAT'); await new Promise(z => setTimeout(z, 800));
+      out.dossier = _iaDossier(g, tema, false); out.dossierAdaptat = _iaDossier(g, tema, true);
+      out.credits = materialCreditsHTML();
+      state.ui.appMode = 'inicio'; render(); out.recordatori = !!document.querySelector('.copia-recordatori');
+      copiaAjornar(); out.ajornat = !document.querySelector('.copia-recordatori');
+      return out;
+    });
+    t.ok(/Acta de la sessió/.test(r.acta) && /1\/3/.test(r.acta) && /Bosch Vidal, Pau <b>x<\/b>/.test(r.acta), "l'acta ix amb el tema (1 de 3 aprovats) i els noms com a text", r.acta.slice(0, 300));
+    t.ok(/NESE/.test(r.acta) && /Alumnat suspés \(2\)/.test(r.acta), "l'acta llista els suspesos i l'alumnat amb mesures");
+    t.ok(r.pagines === 3 && /Ha de treballar <i>més<\/i>/.test(r.fam) && /Per recuperar/.test(r.fam), 'un informe per a la família per alumne/a, amb observacions i temes', String(r.pagines));
+    t.ok(r.fitxes === 2 && /Què has de reforçar/.test(r.fitxa), 'fitxes de repàs només per a qui té el tema per davall de 5', String(r.fitxes));
+    t.ok(!r.colat, 'cap text es cola com a codi');
+    t.ok(r.dossier && /dossier-repas\.pdf$/.test(r.dossier.url) && r.dossierAdaptat && /adaptat/.test(r.dossierAdaptat.url), 'el tema té dossier de repàs i versió adaptada', JSON.stringify(r.dossier));
+    t.ok(/Nelo Traver/.test(r.credits) && /Rafael Bueno/.test(r.credits), 'els crèdits nomenen els autors del material');
+    t.ok(r.recordatori && r.ajornat, "Inici recorda la còpia als 3 dies i «Recorda-m'ho demà» l'amaga");
+    const fitxers = ['docs/material/FiQ_3ESO/tema-02/dossier-repas.pdf', 'docs/material/FiQ_3ESO/tema-02/dossier-repas-adaptat.pdf'];
+    const falten = fitxers.filter(f => !fs.existsSync(path.join(RAIZ, f)));
+    t.ok(!falten.length, 'els PDF dels dossiers existeixen', falten.join(', '));
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
 ];

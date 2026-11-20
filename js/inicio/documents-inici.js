@@ -130,7 +130,7 @@ function bibIndex(){
     Object.keys(mat).forEach(k=>{
       const s=k==="globals"? null : prog&&(prog.sdas||[]).find(x=>materialNumTema(x)===k);
       const tema=k==="globals"? "Recuperacions i finals" : (s&&s.tema? s.tema : "Tema "+k);
-      (mat[k]||[]).forEach(it=>out.push({t:it.t,sec:`${MATERIAL_CURSOS[clau]} · ${tema} · ${(MATERIAL_TIPUS[it.tipus]||MATERIAL_TIPUS.teoria).nom}`,url:`docs/material/${clau}/${it.f}`}));
+      (mat[k]||[]).forEach(it=>out.push({t:it.t,sec:`${MATERIAL_CURSOS[clau]} · ${tema} · ${(MATERIAL_TIPUS[it.tipus]||MATERIAL_TIPUS.teoria).nom.replace(/ \(.*\)$/,"")}${it.a?" · ✍️ "+it.a:""}`,url:`docs/material/${clau}/${it.f}`}));
     });
   });
   const d=state.documentsInici||{};

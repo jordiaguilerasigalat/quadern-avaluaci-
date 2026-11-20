@@ -4,6 +4,18 @@ window.MATERIAL_TEMES=window.MATERIAL_TEMES||{};
 window.MATERIAL_TEMES["FiQ_3ESO"]={
  "1": [
   {
+   "f": "tema-01/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (3 documents, 11 pàg.)",
+   "tipus": "repas",
+   "kb": 151
+  },
+  {
+   "f": "tema-01/dossier-repas-adaptat.pdf",
+   "t": "Dossier de repàs del tema · versió adaptada (3 documents, 11 pàg.)",
+   "tipus": "repas",
+   "kb": 188
+  },
+  {
    "f": "tema-01/presentacio-tema-1.pdf",
    "t": "Presentació: El mètode científic i la mesura",
    "tipus": "presentacio"
@@ -56,6 +68,18 @@ window.MATERIAL_TEMES["FiQ_3ESO"]={
  ],
  "2": [
   {
+   "f": "tema-02/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (6 documents, 19 pàg.)",
+   "tipus": "repas",
+   "kb": 641
+  },
+  {
+   "f": "tema-02/dossier-repas-adaptat.pdf",
+   "t": "Dossier de repàs del tema · versió adaptada (8 documents, 26 pàg.)",
+   "tipus": "repas",
+   "kb": 843
+  },
+  {
    "f": "tema-02/presentacio-2a-teoria-cineticomolecular.pdf",
    "t": "Presentació 2a: Teoria cineticomolecular",
    "tipus": "presentacio"
@@ -88,22 +112,26 @@ window.MATERIAL_TEMES["FiQ_3ESO"]={
   {
    "f": "tema-02/phet-gasos-ideals.pdf",
    "t": "Simulador PhET: gasos ideals",
-   "tipus": "exercicis"
+   "tipus": "exercicis",
+   "a": "Rafael Bueno"
   },
   {
    "f": "tema-02/phet-tasca-1-p-v.pdf",
    "t": "PhET tasca I: relació P i V",
-   "tipus": "exercicis"
+   "tipus": "exercicis",
+   "a": "Rafael Bueno"
   },
   {
    "f": "tema-02/phet-tasca-2-p-t.pdf",
    "t": "PhET tasca II: relació P i T",
-   "tipus": "exercicis"
+   "tipus": "exercicis",
+   "a": "Rafael Bueno"
   },
   {
    "f": "tema-02/phet-tasca-3-v-t.pdf",
    "t": "PhET tasca III: relació V i T",
-   "tipus": "exercicis"
+   "tipus": "exercicis",
+   "a": "Rafael Bueno"
   },
   {
    "f": "tema-02/practica-05-lleis-gasos.pdf",
@@ -173,6 +201,18 @@ window.MATERIAL_TEMES["FiQ_3ESO"]={
  ],
  "3": [
   {
+   "f": "tema-03/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (3 documents, 13 pàg.)",
+   "tipus": "repas",
+   "kb": 196
+  },
+  {
+   "f": "tema-03/dossier-repas-adaptat.pdf",
+   "t": "Dossier de repàs del tema · versió adaptada (2 documents, 8 pàg.)",
+   "tipus": "repas",
+   "kb": 207
+  },
+  {
    "f": "tema-03/presentacio-tema-3-mescles-dissolucions.pdf",
    "t": "Presentació: Mescles i dissolucions",
    "tipus": "presentacio"
@@ -234,6 +274,18 @@ window.MATERIAL_TEMES["FiQ_3ESO"]={
   }
  ],
  "4": [
+  {
+   "f": "tema-04/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (7 documents, 21 pàg.)",
+   "tipus": "repas",
+   "kb": 289
+  },
+  {
+   "f": "tema-04/dossier-repas-adaptat.pdf",
+   "t": "Dossier de repàs del tema · versió adaptada (7 documents, 20 pàg.)",
+   "tipus": "repas",
+   "kb": 299
+  },
   {
    "f": "tema-04/presentacio-reaccions-quimiques-mol.pdf",
    "t": "Presentació: Les reaccions químiques i el mol",
@@ -316,6 +368,18 @@ window.MATERIAL_TEMES["FiQ_3ESO"]={
   }
  ],
  "5": [
+  {
+   "f": "tema-05/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (6 documents, 19 pàg.)",
+   "tipus": "repas",
+   "kb": 415
+  },
+  {
+   "f": "tema-05/dossier-repas-adaptat.pdf",
+   "t": "Dossier de repàs del tema · versió adaptada (3 documents, 10 pàg.)",
+   "tipus": "repas",
+   "kb": 263
+  },
   {
    "f": "tema-05/presentacio-estructura-atomica.pdf",
    "t": "Presentació: Estructura atòmica",
@@ -405,6 +469,12 @@ window.MATERIAL_TEMES["FiQ_3ESO"]={
   }
  ],
  "7": [
+  {
+   "f": "tema-07/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (2 documents, 3 pàg.)",
+   "tipus": "repas",
+   "kb": 86
+  },
   {
    "f": "tema-07/presentacio-quimica-medi-ambient.pdf",
    "t": "Presentació: Química i medi ambient",

@@ -44,6 +44,7 @@ Completan el repositorio: `manifest.json` e `icons/` (instalación como app), `.
 | `js/nucleo/estado-migraciones.js` | Estado global de la app y migraciones de datos antiguos |
 | `js/nucleo/guardado-copias.js` | Guardado (IndexedDB es el almacén que manda; localStorage, copia rápida si cabe), deshacer/rehacer y copias automáticas |
 | `js/nucleo/cifrado.js` | Copias cifradas con contraseña |
+| `js/nucleo/recordatori-copia.js` | Recordatoris de còpia: targeta en Inici (3 dies o 20 canvis sense còpia, «Recorda-m'ho demà»), barra flotant cada 30 canvis i llindars del botó groc |
 | `js/nucleo/copia-carpeta.js` | Copia automática en una carpeta elegida (ordenador, Chrome/Edge): un archivo por día y dispositivo; avisa si otro dispositivo ha dejado una copia más reciente; cifrado opcional con contraseña |
 | `js/curriculo/catalogos-importador.js` | Autocarga del currículo e importador de materias propias |
 | `js/evaluacion/calculo-notas.js` | Motor de cálculo de notas (criterios, CE, CC, bloques, trimestres, final) y recuperaciones |
@@ -79,6 +80,7 @@ Completan el repositorio: `manifest.json` e `icons/` (instalación como app), `.
 | `js/informes/exportaciones.js` | Informes y exportaciones (CSV) |
 | `js/informes/impresion.js` | Impresión sin ventanas emergentes e informe del alumno |
 | `js/informes/informe-final.js` | Informe final de curso |
+| `js/informes/informes-avaluacio.js` | Acta de la sessió d'avaluació, informes per a les famílies (una pàgina per alumne/a) i fitxes de repàs per tema |
 | `js/resumen/resumen-grupo.js` | Resumen del grupo: aprobados, SdA y estadísticas |
 | `js/corrector/motor-rubricas.js` | Corrector de exámenes: motor de rúbricas |
 | `js/corrector/programacion-corrector.js` | Programación ↔ Corrector: rúbricas para los exámenes planificados y sus versiones adaptadas (`progAct.variantes`; diseño en «prog:<actividad>:<versión>») |
@@ -233,3 +235,7 @@ Los bloques de HTML que había entre los scripts (ventanas de historial, asisten
   que la app no genera no se carga.
 
 - **Rúbrica = estructura del Diseño.** «Importar a la rúbrica →» copia ahora apartado → pregunta → subpregunta, en el mismo orden y con los puntos de cada parte (antes solo importaba una línea por pregunta). El código está en `js/corrector/editor-examenes.js` (`cxImportarEstructura`, `exHojas`, `exPrevisionReimport`); el puente `editor/js/puente-cuaderno.js` entrega ahora el texto completo y la numeración de cada nodo. Los bloques importados llevan `tipo` («apartado», «pregunta», «subpregunta») y las preguntas sueltas dentro de un nivel mixto son bloques de un solo ítem (`unico`).
+
+## Material per temes i dossiers de repàs
+
+`tools/material/dossiers_repas.py` (s'executa a mà quan canvia `docs/material/`) llig l'autoria de cada document (metadades) i l'apunta en l'índex `js/datos/material/<curs>.js` (camp `a`, es mostra com a crèdit), i genera per a cada tema `dossier-repas.pdf` (exercicis + models d'examen, amb portada) i `dossier-repas-adaptat.pdf` si hi ha exàmens adaptats.

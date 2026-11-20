@@ -10,6 +10,12 @@ window.MATERIAL_TEMES=window.MATERIAL_TEMES||{};
 window.MATERIAL_TEMES["FiQ_2ESO"]={
  "1": [
   {
+   "f": "tema-01/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (3 documents, 8 pàg.)",
+   "tipus": "repas",
+   "kb": 465
+  },
+  {
    "f": "tema-01/activitats-metode-cientific-mesura.pdf",
    "t": "Activitats · El mètode científic i la mesura",
    "tipus": "exercicis",
@@ -74,6 +80,18 @@ window.MATERIAL_TEMES["FiQ_2ESO"]={
  ],
  "6": [
   {
+   "f": "tema-06/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (3 documents, 9 pàg.)",
+   "tipus": "repas",
+   "kb": 202
+  },
+  {
+   "f": "tema-06/dossier-repas-adaptat.pdf",
+   "t": "Dossier de repàs del tema · versió adaptada (2 documents, 6 pàg.)",
+   "tipus": "repas",
+   "kb": 176
+  },
+  {
    "f": "tema-06/teoria-moviment.pdf",
    "t": "Teoria · El moviment",
    "tipus": "teoria",
@@ -117,6 +135,18 @@ window.MATERIAL_TEMES["FiQ_2ESO"]={
   }
  ],
  "7": [
+  {
+   "f": "tema-07/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (5 documents, 14 pàg.)",
+   "tipus": "repas",
+   "kb": 493
+  },
+  {
+   "f": "tema-07/dossier-repas-adaptat.pdf",
+   "t": "Dossier de repàs del tema · versió adaptada (4 documents, 11 pàg.)",
+   "tipus": "repas",
+   "kb": 411
+  },
   {
    "f": "tema-07/examen-forces-25-26-a.pdf",
    "t": "Examen · Força i pressió, model A (25-26)",
@@ -185,6 +215,18 @@ window.MATERIAL_TEMES["FiQ_2ESO"]={
   }
  ],
  "8": [
+  {
+   "f": "tema-08/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (8 documents, 25 pàg.)",
+   "tipus": "repas",
+   "kb": 996
+  },
+  {
+   "f": "tema-08/dossier-repas-adaptat.pdf",
+   "t": "Dossier de repàs del tema · versió adaptada (8 documents, 24 pàg.)",
+   "tipus": "repas",
+   "kb": 1288
+  },
   {
    "f": "tema-08/examen-energia-25-26.pdf",
    "t": "Examen · Treball i energia (25-26)",
@@ -265,6 +307,18 @@ window.MATERIAL_TEMES["FiQ_2ESO"]={
   }
  ],
  "9": [
+  {
+   "f": "tema-09/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (5 documents, 9 pàg.)",
+   "tipus": "repas",
+   "kb": 334
+  },
+  {
+   "f": "tema-09/dossier-repas-adaptat.pdf",
+   "t": "Dossier de repàs del tema · versió adaptada (5 documents, 9 pàg.)",
+   "tipus": "repas",
+   "kb": 332
+  },
   {
    "f": "tema-09/examen-calor-temperatura-25-26.pdf",
    "t": "Examen · Calor i temperatura (25-26)",
