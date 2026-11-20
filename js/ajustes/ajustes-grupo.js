@@ -83,42 +83,54 @@ function renderAjustes(grupo){
     </div>
   </div>
 
+  ${(()=>{
+    /* Mode de qualificació en dues columnes: blocs (esquerra) i competències (dreta).
+       Les dues visibles = «Les dues»; amagar-ne una = qualificar només amb l'altra. */
+    const ambdues=teQualitativaCE(grupo), modo=modoNotaGrupo(grupo);
+    const veuBlocs=ambdues||modo!=="ce", veuCE=ambdues||modo==="ce";
+    const etiqBlocs=ambdues?"Nota quantitativa · la de l'acta":"Dona la nota";
+    const etiqCE=ambdues?"Qualificació qualitativa · Insuficient… Excel·lent":"Dona la nota";
+    const colBlocs=`
+      <section class="mqCol" aria-label="Qualificació per blocs">
+        <div class="mqCap"><div><h3>Per blocs (instruments)</h3><span class="pill mqEtiq">${etiqBlocs}</span></div>
+          <button class="ghost small" onclick="mqAmagar('blocs')" title="Amagar esta columna: el grup qualificarà només per competències" aria-label="Amagar la qualificació per blocs">Amagar ✕</button></div>
+        <p class="sub">Mitjana ponderada dels blocs de la proposta pedagògica de ${esc(idx.cat.materia)}. Han de sumar 100.</p>
+        <p id="sumaBloquesAviso" style="font-size:13px;margin:0 0 8px">${sumaBloquesHTML(grupo)}</p>
+        <div class="flex">
+          ${grupo.bloques.map((b,i)=>{ const nAct=(grupo.actividades||[]).filter(x=>typeof actEnBloque==="function"? actEnBloque(x,b.id) : x.bloqueId===b.id).length; return `
+            <div style="font-size:13.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px;max-width:240px">
+              <span style="display:flex;align-items:center;gap:4px">${esc(b.label)} (%)
+                <button class="ghost small" style="padding:0 4px;border:0" title="Canviar el nom del bloc" aria-label="Canviar el nom del bloc ${esc(b.label)}" onclick="blocReanomenar(${i})">✏️</button>
+                ${grupo.bloques.length>1?`<button class="ghost small" style="padding:0 4px;border:0" title="Eliminar el bloc" aria-label="Eliminar el bloc ${esc(b.label)}" onclick="blocEliminar(${i})">🗑️</button>`:""}</span>
+              <input class="in" type="number" value="${b.peso}" aria-label="Pes del bloc ${esc(b.label)} (%)" oninput="setBloqueW(${i},this.value)">
+              <span class="sub" style="font-size:11.5px">${nAct} activitat${nAct===1?"":"s"}</span>
+            </div>`; }).join("")}
+        </div>
+        <button class="ghost" style="border:1px dashed var(--line);margin-top:10px" onclick="blocAfegir()">+ Afegir un bloc (p. ex. Deures)</button>
+      </section>`;
+    const colCE=`
+      <section class="mqCol" aria-label="Qualificació per competències">
+        <div class="mqCap"><div><h3>Per competències específiques</h3><span class="pill mqEtiq">${etiqCE}</span></div>
+          <button class="ghost small" onclick="mqAmagar('ce')" title="Amagar esta columna: el grup qualificarà només per blocs" aria-label="Amagar la qualificació per competències">Amagar ✕</button></div>
+        <p class="sub">Cada criteri és la mitjana de les seues evidències, cada CE la mitjana dels seus criteris i la nota, la mitjana ponderada de les CE (cada avaluació amb tot el que s'ha treballat fins a eixe moment; la final, amb tot el curs).</p>
+        ${ambdues?`<p class="sub">La qualitativa ix de les qualificacions de cada <strong>criteri</strong> (també en els exàmens: la nota numèrica de l'examen va a la quantitativa i la de cada criteri, a la qualitativa).</p>`:""}
+        <p class="sub" style="margin-bottom:6px">Pes de cada CE (%). En blanc = repartiment igual. Si una CE no té cap criteri avaluat, el seu pes es reparteix entre la resta.</p>
+        <p id="sumaPesosCEAviso" style="font-size:13px;margin:0 0 8px">${sumaPesosCEHTML(grupo)}</p>
+        <div class="flex">
+          ${idx.cat.ces.map(ce=>`
+            <label style="font-size:13.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px" title="${esc(ce.titulo)}">${esc(ce.id)} (%)
+              <input class="in" style="width:90px" type="number" min="0" placeholder="${fmt(pesoCEGrupo({...grupo,pesosCE:{}},ce.id))}" value="${grupo.pesosCE[ce.id]??''}" oninput="setPesoCE('${escJS(ce.id)}',this.value)"></label>`).join("")}
+        </div>
+      </section>`;
+    const barra=(qui,text)=>`<button class="mqMostrar" onclick="mqMostrar('${qui}')" aria-label="Mostrar ${text}">👁 Mostrar ${text} <span class="sub" style="margin:0;font-weight:400">(ara amagada: no compta)</span></button>`;
+    return `
   <div class="card">
     <h2>Mode de qualificació</h2>
-    <p class="sub">Tria com es qualifica este grup. <strong>Per instruments</strong>: la nota és la mitjana ponderada dels blocs (proves, quadern, laboratori…). <strong>Per competències</strong>: cada criteri és la mitjana de les seues evidències, cada CE la mitjana dels seus criteris i la nota, la mitjana ponderada de les CE (cada avaluació amb tot el que s'ha treballat fins a eixe moment; la final, amb tot el curs). <strong>Les dues</strong>: dues qualificacions per separat, una nota <em>quantitativa</em> per instruments (la numèrica, la de l'acta) i una qualificació <em>qualitativa</em> per competències (Insuficient, Suficient, Bé, Notable o Excel·lent).</p>
-    <div class="flex" role="radiogroup" aria-label="Mode de qualificació">
-      <label style="display:flex;gap:6px;align-items:center"><input type="radio" name="modoNota" value="bloques" ${modoNotaGrupo(grupo)==="bloques"&&!teQualitativaCE(grupo)?"checked":""} onchange="setModoNota(this.value)"> Per instruments (blocs)</label>
-      <label style="display:flex;gap:6px;align-items:center"><input type="radio" name="modoNota" value="ce" ${modoNotaGrupo(grupo)==="ce"?"checked":""} onchange="setModoNota(this.value)"> Per competències específiques</label>
-      <label style="display:flex;gap:6px;align-items:center"><input type="radio" name="modoNota" value="ambdues" ${teQualitativaCE(grupo)?"checked":""} onchange="setModoNota(this.value)"> Les dues: quantitativa per instruments + qualitativa per competències</label>
-    </div>
-    <div style="${modoNotaGrupo(grupo)==="ce"||teQualitativaCE(grupo)?"":"display:none"};margin-top:12px">
-      ${teQualitativaCE(grupo)?`<p class="sub" style="margin-bottom:6px">La qualitativa ix de les qualificacions de cada <strong>criteri</strong> (també en els exàmens: la nota numèrica de l'examen va a la quantitativa i la de cada criteri, a la qualitativa).</p>`:""}
-      <p class="sub" style="margin-bottom:6px">Pes de cada competència específica (%). En blanc = repartiment igual. Si una CE no té cap criteri avaluat, el seu pes es reparteix entre la resta.</p>
-      <p id="sumaPesosCEAviso" style="font-size:13px;margin:0 0 8px">${sumaPesosCEHTML(grupo)}</p>
-      <div class="flex">
-        ${idx.cat.ces.map(ce=>`
-          <label style="font-size:13.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px" title="${esc(ce.titulo)}">${esc(ce.id)} (%)
-            <input class="in" style="width:90px" type="number" min="0" placeholder="${fmt(pesoCEGrupo({...grupo,pesosCE:{}},ce.id))}" value="${grupo.pesosCE[ce.id]??''}" oninput="setPesoCE('${escJS(ce.id)}',this.value)"></label>`).join("")}
-      </div>
-    </div>
-  </div>
-
-  <div class="card" style="${modoNotaGrupo(grupo)==="ce"?"opacity:.6":""}">
-    <h2>Ponderación de la nota cuantitativa</h2>${modoNotaGrupo(grupo)==="ce"?`<p class="sub"><strong>Este grup qualifica per competències:</strong> els blocs no compten per a la nota, però pots continuar classificant-hi les activitats.</p>`:""}
-    <p class="sub">Bloques de la propuesta pedagógica de ${esc(idx.cat.materia)}. Deben sumar 100.</p>
-    <p id="sumaBloquesAviso" style="font-size:13px;margin:0 0 8px">${sumaBloquesHTML(grupo)}</p>
-    <div class="flex">
-      ${grupo.bloques.map((b,i)=>{ const nAct=(grupo.actividades||[]).filter(x=>typeof actEnBloque==="function"? actEnBloque(x,b.id) : x.bloqueId===b.id).length; return `
-        <div style="font-size:13.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px;max-width:240px">
-          <span style="display:flex;align-items:center;gap:4px">${esc(b.label)} (%)
-            <button class="ghost small" style="padding:0 4px;border:0" title="Canviar el nom del bloc" aria-label="Canviar el nom del bloc ${esc(b.label)}" onclick="blocReanomenar(${i})">✏️</button>
-            ${grupo.bloques.length>1?`<button class="ghost small" style="padding:0 4px;border:0" title="Eliminar el bloc" aria-label="Eliminar el bloc ${esc(b.label)}" onclick="blocEliminar(${i})">🗑️</button>`:""}</span>
-          <input class="in" type="number" value="${b.peso}" aria-label="Pes del bloc ${esc(b.label)} (%)" oninput="setBloqueW(${i},this.value)">
-          <span class="sub" style="font-size:11.5px">${nAct} activitat${nAct===1?"":"s"}</span>
-        </div>`; }).join("")}
-    </div>
-    <button class="ghost" style="border:1px dashed var(--line);margin-top:10px" onclick="blocAfegir()">+ Afegir un bloc (p. ex. Deures)</button>
-  </div>
+    <p class="sub">${ambdues?"Este grup té <strong>dues qualificacions</strong>: la nota quantitativa per blocs i la qualitativa per competències.":veuBlocs?"Este grup qualifica <strong>només per blocs</strong>.":"Este grup qualifica <strong>només per competències</strong>."} Amb les dues columnes visibles es registren les dues; amaga'n una i la nota ix només de l'altra.</p>
+    ${!veuBlocs?barra("blocs","la qualificació per blocs"):""}${!veuCE?barra("ce","la qualificació per competències"):""}
+    <div class="mqCols${ambdues?"":" mqUna"}">${veuBlocs?colBlocs:""}${veuCE?colCE:""}</div>
+  </div>`;
+  })()}
 
   <div class="card">
     <h2>Cortes de las escalas cualitativas</h2>
@@ -291,6 +303,10 @@ window.blocEliminar=async (i)=>{
   if(typeof segSincronitzarBlocs==="function") segSincronitzarBlocs(g);
   save(); render();
 };
+window.mqAmagar=qui=>{ const g=grupoActual(); g.modoNota=(qui==="blocs"?"ce":"bloques"); save(); render();
+  mostrarToast(qui==="blocs"?"✓ Este grup qualifica ara només per competències":"✓ Este grup qualifica ara només per blocs"); };
+window.mqMostrar=()=>{ const g=grupoActual(); g.modoNota="ambdues"; save(); render();
+  mostrarToast("✓ Ara es veuen les dues: quantitativa per blocs i qualitativa per competències"); };
 window.setModoNota=v=>{ const g=grupoActual(); g.modoNota=(v==="ce"||v==="ambdues"?v:"bloques"); save(); render(); };
 window.setPesoCE=(ceId,v)=>{ const g=grupoActual(); if(!g.pesosCE) g.pesosCE={};
   const t=String(v).trim(); if(t==="") delete g.pesosCE[ceId]; else g.pesosCE[ceId]=Math.max(0,Number(t.replace(",","."))||0);

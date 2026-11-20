@@ -651,3 +651,14 @@
 [data-ordre-grups] [data-ordre-grup]{cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .ordre-actiu,.ordre-actiu *{cursor:grabbing!important}
 .ordre-arrossegant{opacity:.55;outline:2px dashed var(--accent);outline-offset:2px;transform:scale(1.02);transition:transform .1s}
+
+/* Ajustos → Mode de qualificació en dues columnes (blocs | competències) */
+.mqCols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}
+.mqCols.mqUna{grid-template-columns:1fr}
+.mqCol{border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0;background:var(--card)}
+.mqCap{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.mqCap h3{margin:0 0 4px;font-size:15.5px}
+.mqEtiq{background:var(--accent-soft);color:var(--accent-ink)}
+.mqMostrar{display:flex;align-items:center;gap:8px;width:100%;margin-top:10px;padding:8px 12px;border:1px dashed var(--line);border-radius:10px;background:transparent;color:var(--ink);font-weight:600;cursor:pointer;text-align:left}
+.mqMostrar:hover{background:var(--overlay-hover)}
+@media(max-width:760px){.mqCols{grid-template-columns:1fr}}
