@@ -219,6 +219,9 @@ function notaActividadBase(grupo,alId,a){
 /* Una activitat compta en el seu bloc (bloqueId) i, si el seu apartat està
    vinculat a més d'un bloc, també en els de bloquesExtra (amb la nota sencera
    en cadascun). Dins de cada bloc la nota és la mitjana de les activitats. */
+/* Pes d'un bloc en la nota numèrica: 0 si està desactivat (b.inactiu), sense
+   perdre el pes escrit, que torna quan es reactiva. Un bloc a 0 % no compta. */
+function pesoBloqueNota(b){ return b && !b.inactiu ? (Number(b.peso)||0) : 0; }
 function actEnBloque(a,bloqueId){ return a.bloqueId===bloqueId || (Array.isArray(a.bloquesExtra) && a.bloquesExtra.includes(bloqueId)); }
 /* Pes d'una activitat dins d'un bloc. Les que tenen pes escrit (pesoBloque)
    el conserven; les que el tenen en blanc es reparteixen a parts iguals el
@@ -253,7 +256,7 @@ function notaBloque(grupo,alId,bloqueId,trim,fins){
 function bloquesSinNota(grupo,alId,trim){
   const out=[];
   for(const b of grupo.bloques){
-    if(!(Number(b.peso)>0)) continue;
+    if(!(pesoBloqueNota(b)>0)) continue;
     const acts=grupo.actividades.filter(a=>a.trimestre===trim && actEnBloque(a,b.id));
     const corregidas=acts.filter(a=>grupo.alumnos.some(x=>notaActividad(grupo,x.id,a)!=null));
     if(!corregidas.length) continue;
@@ -414,8 +417,9 @@ function notaTrimestreSinExtra(grupo,alId,trim,fins){
   if(modoNotaGrupo(grupo)==="ce") return notaPorCE(grupo,alId,trimsFinsA(trim));
   let sw=0,sv=0;
   for(const b of grupo.bloques){
+    const w=pesoBloqueNota(b); if(!(w>0)) continue;
     const v=notaBloque(grupo,alId,b.id,trim,fins); if(v==null) continue;
-    sw+=b.peso; sv+=v*b.peso;
+    sw+=w; sv+=v*w;
   }
   return sw>0? sv/sw : null;
 }
