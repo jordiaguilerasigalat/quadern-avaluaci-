@@ -44,6 +44,7 @@ function fitxaResumHTML(g,a){
   const anar=(tab,txt)=>`<button class="ghost small" style="border:1px solid var(--line)" onclick="cerrarFichaAlumno();state.ui.tab='${tab}';save();render()">${txt}</button>`;
   return `<div style="display:grid;gap:8px;margin-top:10px">
     ${bloc("📊 Notes",notes+qual+temes)}
+    ${typeof anotacionsBlocHTML==="function"?anotacionsBlocHTML(g,a):""}
     <div style="display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
       ${bloc("✅ Assistència",faltes)}${bloc("⚖️ Convivència",convHTML)}${bloc("👪 Família",famHTML)}
     </div>

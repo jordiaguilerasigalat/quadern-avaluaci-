@@ -1447,4 +1447,51 @@ export const PRUEBAS = [
     t.ok(r.mateix, 'les gràfiques no canvien cap nota');
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'anotacions', descripcion: 'Anotacions ràpides en la fitxa: text amb data i tipus, foto reduïda, àudio, esborrar, mode projector i curs nou', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const ids = await cuadernoConGrupo(p, t.url);
+    await p.evaluate(id => { state.ui.appMode = 'competencial'; state.ui.tab = 'alumnos'; save(); render(); abrirFichaAlumno(id); }, ids[0]);
+    await p.waitForSelector('.anotBloc');
+    await p.click('.anotBloc .chip:has-text("Positiva")');
+    await p.fill('#anotText', 'Ha explicat <b>molt bé</b> l\'exercici');
+    await p.click('.anotBloc .chip:has-text("A millorar")');
+    const conservaText = await p.inputValue('#anotText');
+    await p.click('.anotBloc .chip:has-text("Positiva")');
+    // Foto gran (2400×1600) generada al navegador
+    const png = await p.evaluate(() => { const c = document.createElement('canvas'); c.width = 2400; c.height = 1600; const x = c.getContext('2d'); for (let i = 0; i < 400; i++) { x.fillStyle = `hsl(${i},70%,50%)`; x.fillRect((i * 37) % 2400, (i * 53) % 1600, 120, 90); } return c.toDataURL('image/png').split(',')[1]; });
+    await p.setInputFiles('.anotBloc input[type=file]', { name: 'foto.png', mimeType: 'image/png', buffer: Buffer.from(png, 'base64') });
+    await p.waitForSelector('.anotBloc img[alt="Foto adjunta"]');
+    // Àudio: un micròfon fals amb un oscil·lador
+    await p.evaluate(() => { navigator.mediaDevices.getUserMedia = async () => { const ac = new AudioContext(); const o = ac.createOscillator(); const d = ac.createMediaStreamDestination(); o.connect(d); o.start(); return d.stream; }; });
+    await p.click('.anotBloc button:has-text("Àudio")');
+    await p.waitForSelector('.anotBloc button:has-text("Aturar")');
+    await new Promise(r => setTimeout(r, 1200));
+    await p.click('.anotBloc button:has-text("Aturar")');
+    await p.waitForSelector('.anotBloc audio');
+    await p.click('.anotBloc button:has-text("Desa l\'anotació")');
+    await p.waitForSelector('.anotItem');
+    const r = await p.evaluate(async ids => {
+      const g = state.grupos[0], a = g.anotacions[0], out = {};
+      out.n = g.anotacions.length; out.alumne = a.alumnoId === ids[0]; out.tipus = a.tipus; out.text = a.text; out.data = a.fecha === fechaISOLocal();
+      const img = new Image(); img.src = a.foto; await img.decode(); out.foto = [a.foto.slice(0, 15), img.naturalWidth, img.naturalHeight, Math.round(a.foto.length * 3 / 4 / 1024)];
+      out.audio = /^data:audio\//.test(a.audio);
+      out.html = document.querySelector('.anotItem').innerHTML; out.injectat = !!document.querySelector('.anotItem b');
+      out.priv = !!document.querySelector('.anotItem .priv');
+      // una anotació manipulada no pinta res perillós
+      g.anotacions.push({ id: 'x', alumnoId: ids[0], fecha: '2026-01-01', tipus: 'nota', text: '', foto: 'javascript:alert(1)', audio: 'data:text/html;base64,PHNjcmlwdD4=' }); render();
+      out.manip = [...document.querySelectorAll('.anotItem img, .anotItem audio')].every(e => /^data:(image|audio)\//.test(e.getAttribute('src')));
+      g.anotacions = g.anotacions.filter(x => x.id !== 'x');
+      ncAplicar({ curso: '2027-2028', grupos: true, alumnado: true, programaciones: true, festivos: true });
+      out.cursNou = state.grupos[0].anotacions.length === 0;
+      return out;
+    }, ids);
+    t.ok(conservaText === 'Ha explicat <b>molt bé</b> l\'exercici', 'canviar el tipus no esborra el que s\'està escrivint');
+    t.ok(r.n === 1 && r.alumne && r.tipus === 'positiva' && r.data && r.text === 'Ha explicat <b>molt bé</b> l\'exercici', 'es desa amb l\'alumne/a, el tipus i la data de hui', JSON.stringify(r).slice(0, 200));
+    t.ok(r.foto[0] === 'data:image/jpeg' && r.foto[1] === 1024 && r.foto[2] === 683 && r.foto[3] < 400, 'la foto es redueix a 1024 px en JPEG', JSON.stringify(r.foto));
+    t.ok(r.audio, 'l\'àudio gravat es guarda amb l\'anotació');
+    t.ok(!r.injectat && r.priv, 'el text no es converteix en HTML i es difumina en mode projector');
+    t.ok(r.manip, 'una foto o un àudio manipulats en una còpia no es pinten');
+    t.ok(r.cursNou, 'en començar un curs nou les anotacions s\'esborren');
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
 ];

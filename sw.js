@@ -62,6 +62,7 @@ const APP_SHELL = [
   './js/alumnado/plan-repeticion.js',
   './js/alumnado/alumnos-nese.js',
   './js/alumnado/fitxa-alumne.js',
+  './js/alumnado/anotacions.js',
   './js/inicio/horario.js',
   './js/inicio/alertas-home.js',
   './js/inicio/documents-inici.js',
