@@ -1202,6 +1202,8 @@ export const PRUEBAS = [
       bibCercar('dossier 2n');
       const cerca = document.querySelectorAll('#bibResultats a[href^="docs/reforc/dossier-alumnat-nese-fiq-2eso"]').length;
       const amagat = document.getElementById('bibPestanyes').style.display === 'none';
+      bibCercar('dossier 4t');
+      const rep4 = document.querySelectorAll('#bibResultats a[href^="docs/reforc/dossier-alumnat-repeticio-fiq-4eso"]').length;
       bibCercar('');
       const pdfsProg = document.querySelectorAll('a[href^="docs/programacions/PA_"]').length;
       docsTriarPestanya('pp');
@@ -1212,9 +1214,13 @@ export const PRUEBAS = [
       document.getElementById('docsTitol').value = 'Acta'; document.getElementById('docsUrl').value = 'drive.google.com/a';
       docsAfegirEnllac('pp');
       window.__dialogosAuto = { texto: 'Actes' }; await docsNovaPestanya();
-      return { cerca, amagat, pdfsProg, pdfsPP, rebutjat, enl: state.documentsInici.enllacos.pp, pest: state.documentsInici.pestanyes.map(x => x.nom), tab: state.ui.docsTab === state.documentsInici.pestanyes[0]?.id };
+      return { cerca, amagat, rep4, pdfsProg, pdfsPP, rebutjat, enl: state.documentsInici.enllacos.pp, pest: state.documentsInici.pestanyes.map(x => x.nom), tab: state.ui.docsTab === state.documentsInici.pestanyes[0]?.id };
     });
     t.ok(r.cerca === 2 && r.amagat, 'la cerca troba els dossiers de 2n ESO i amaga les pestanyes', JSON.stringify(r));
+    t.ok(r.rep4 === 2, 'la cerca troba el dossier de repetició de 4t (PDF i Word)', JSON.stringify(r));
+    await p.evaluate(() => { state.ui.appMode = 'repeticion'; render(); }); await esperar(200);
+    const nRep = await p.evaluate(() => document.querySelectorAll('#app a[href^="docs/reforc/dossier-alumnat-repeticio-fiq-"]').length);
+    t.ok(nRep === 6, 'Repetició ofereix els 6 fitxers dels dossiers de l\'alumnat', String(nRep));
     t.ok(r.pdfsProg === 6 && r.pdfsPP === 2, 'Programacions mostra les 6 PA i Propostes les 2 PP', JSON.stringify(r));
     t.ok(r.rebutjat, 'no accepta enllaços que no siguen http(s)');
     t.ok(r.enl?.length === 1 && r.enl[0].url === 'https://drive.google.com/a', 'afig un enllaç propi i li posa https://');
@@ -1698,6 +1704,7 @@ export const PRUEBAS = [
     await esperar(300);
     await p.click('#neCicloOpciones .chip[data-ciclo="5"]'); await p.evaluate(() => neCrearPlan()); await esperar(300);
     t.ok(await p.isVisible('#qnQuadern') && await p.inputValue('#qnDossierSel') === '2eso', 'el pla mostra el quadern i suggerix el dossier del curs del grup');
+    t.ok(await p.evaluate(() => document.querySelectorAll('#qnQuadern .rf-dossier-alumnat a[href^="docs/reforc/dossier-alumnat-nese-fiq-2eso."]').length === 2), 'el pla enllaça el dossier NESE de l\'alumnat del seu curs (PDF i Word)');
     await p.evaluate(() => qnCarregar()); await esperar(300);
     let r = await p.evaluate(() => { const pl = state.planesNESE[0]; return { n: pl.quadern.tasques.length, t1: pl.quadern.tasques.filter(x => x.tema === 1).map(x => x.criteris.join('+')).join(' ') }; });
     t.ok(r.n === 46 && r.t1 === '7.2 7.1 6.1 7.2 2.2 9.3+7.1', 'es carreguen les 46 tasques del dossier de 2n amb els seus criteris', JSON.stringify(r));

@@ -95,8 +95,29 @@ const RF_DOCS_DEPARTAMENT=[
   {titol:"Plans específics per a l'alumnat que repetix", docs:[
     {f:"pla-repeticio-fiq-2eso-2026-27.docx",t:"FiQ 2n ESO · Word"},
     {f:"pla-repeticio-fiq-3eso-2026-27.docx",t:"FiQ 3r ESO · Word"},
-    {f:"pla-repeticio-fiq-4eso-2026-27.docx",t:"FiQ 4t ESO · Word"}]}
+    {f:"pla-repeticio-fiq-4eso-2026-27.docx",t:"FiQ 4t ESO · Word"}]},
+  {titol:"Dossiers de treball per a l'alumnat que repetix", docs:[
+    {f:"dossier-alumnat-repeticio-fiq-2eso.pdf",t:"FiQ 2n ESO · PDF"},
+    {f:"dossier-alumnat-repeticio-fiq-2eso.docx",t:"FiQ 2n ESO · Word"},
+    {f:"dossier-alumnat-repeticio-fiq-3eso.pdf",t:"FiQ 3r ESO · PDF"},
+    {f:"dossier-alumnat-repeticio-fiq-3eso.docx",t:"FiQ 3r ESO · Word"},
+    {f:"dossier-alumnat-repeticio-fiq-4eso.pdf",t:"FiQ 4t ESO · PDF"},
+    {f:"dossier-alumnat-repeticio-fiq-4eso.docx",t:"FiQ 4t ESO · Word"}]}
 ];
+/* Dossier de l'alumnat que correspon al curs d'un pla (tipus "nese" | "repeticio"). */
+const RF_DOSSIER_CURS={
+  nese:{FiQ_2ESO:"dossier-alumnat-nese-fiq-2eso",FiQ_3ESO:"dossier-alumnat-nese-fiq-3eso"},
+  repeticio:{FiQ_2ESO:"dossier-alumnat-repeticio-fiq-2eso",FiQ_3ESO:"dossier-alumnat-repeticio-fiq-3eso",FiQ_4ESO:"dossier-alumnat-repeticio-fiq-4eso"}
+};
+function rfDossierAlumnatHTML(tipus,catKey){
+  const f=(RF_DOSSIER_CURS[tipus]||{})[catKey]; if(!f) return "";
+  const cat=typeof getCatalogo==="function"? getCatalogo(catKey) : null;
+  return `<div class="flex rf-dossier-alumnat" style="flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px">
+    <span class="sub" style="margin:0">📎 Dossier de l'alumnat${cat?" de "+esc(cat.curso):""}:</span>
+    <a class="chip" style="text-decoration:none" href="docs/reforc/${f}.pdf" target="_blank" rel="noopener">📕 PDF</a>
+    <a class="chip" style="text-decoration:none" href="docs/reforc/${f}.docx" download>📄 Word</a>
+  </div>`;
+}
 /* Targeta de descàrrega. quins = índexs de RF_DOCS_DEPARTAMENT a mostrar. */
 function rfDocumentsHTML(quins,text){
   const grups=quins.map(i=>RF_DOCS_DEPARTAMENT[i]);
@@ -113,7 +134,7 @@ const RF_TEXT_REPETICIO="Pla específic per a l'alumnat que repetix (2026-27): m
 const RF_TEXT_NESE="Pla de reforç NESE amb adaptacions per tema i els dossiers de treball per a l'alumnat (2026-27). Descarrega'ls i completa'ls per a cada alumne/a: les fitxes personals no s'han de publicar.";
 function renderRefuerzoApp(){
   const app=document.getElementById("app");
-  app.innerHTML=`${divCapcaleraHTML("refuerzo")}${rfDocumentsHTML([2],RF_TEXT_REPETICIO)}<div id="rfRoot"></div>`;
+  app.innerHTML=`${divCapcaleraHTML("refuerzo")}${rfDocumentsHTML([2,3],RF_TEXT_REPETICIO)}<div id="rfRoot"></div>`;
   const root=document.getElementById("rfRoot");
   if(state.ui.rfTab==="detalle" && state.ui.rfId && (state.planesRefuerzo||[]).find(p=>p.id===state.ui.rfId)){
     renderRfDetalleHTML(root);

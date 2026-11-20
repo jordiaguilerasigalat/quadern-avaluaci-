@@ -42,7 +42,7 @@ window.rpCerrarModalNueva=()=>{ state.ui.rpModalNueva=false; save(); render(); }
 
 function renderRepeticionApp(){
   const app=document.getElementById("app");
-  app.innerHTML=`${divCapcaleraHTML("repeticion")}${typeof rfDocumentsHTML==="function"? rfDocumentsHTML([2],RF_TEXT_REPETICIO) : ""}<div id="rpRoot"></div>`;
+  app.innerHTML=`${divCapcaleraHTML("repeticion")}${typeof rfDocumentsHTML==="function"? rfDocumentsHTML([2,3],RF_TEXT_REPETICIO) : ""}<div id="rpRoot"></div>`;
   const root=document.getElementById("rpRoot");
   if(state.ui.rpTab==="detalle" && state.ui.rpId && (state.planesRepeticion||[]).find(p=>p.id===state.ui.rpId)){
     renderRpDetalleHTML(root);
@@ -298,6 +298,7 @@ function renderRpDetalleHTML(root){
         ${catalogoCursoKey?`<span class="sub" style="margin:0">📘 ${esc(getCatalogo(catalogoCursoKey).materia)} · <strong>${esc(getCatalogo(catalogoCursoKey).curso)}</strong> — currículum carregat més avall.</span>`
         :`<span class="sub" style="margin:0">Tria el curs i la matèria que repetix per a carregar-ne les competències, els criteris i els sabers bàsics.</span>`}
       </div>
+      ${catalogoCursoKey&&typeof rfDossierAlumnatHTML==="function"? rfDossierAlumnatHTML("repeticio",catalogoCursoKey) : ""}
       <div class="flex">
         <label style="font-size:12.5px;color:var(--mut);font-weight:500;flex:1">Curso académico
           <input class="in" style="width:100%;margin-top:4px" id="rpDCursoAcademico" value="${esc(p.cursoAcademico||"")}" placeholder="2026-2027">
