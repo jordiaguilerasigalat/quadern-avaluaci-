@@ -21,6 +21,14 @@ function renderAjustes(grupo){
       <button class="ghost" onclick="exportarGrupo()">Exportar solo este grupo (.json)</button>
       <button class="btn danger" onclick="borrarGrupo()">Eliminar este grupo</button>
     </div>
+    ${!CATALOGOS[grupo.catalogoKey] ? (()=>{
+      const altres=state.grupos.filter(g=>g.id!==grupo.id && g.catalogoKey===grupo.catalogoKey).length;
+      return `<div class="flex" style="margin-top:10px">
+      <input class="in" id="gpMateria" value="${esc(idx.cat.materia||"")}" placeholder="Matèria" aria-label="Matèria" style="min-width:220px">
+      <input class="in" id="gpCurso" value="${esc(idx.cat.curso||"")}" placeholder="Curs" aria-label="Curs" style="min-width:160px">
+      <button class="btn" onclick="renombrarMateriaGrupo()">Guardar matèria i curs</button>
+    </div>${altres?`<p class="sub" style="margin:6px 0 0">També canviarà en ${altres===1?"l'altre grup":`els altres ${altres} grups`} d'esta matèria.</p>`:""}`;
+    })() : ""}
   </div>
 
   <div class="card">
@@ -144,7 +152,20 @@ function renderAjustes(grupo){
       </div>`).join("")}
   </div>`;
   document.getElementById("gpNombre").addEventListener("keydown",e=>{ if(e.key==="Enter") renombrarGrupo(); });
+  ["gpMateria","gpCurso"].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener("keydown",e=>{ if(e.key==="Enter") renombrarMateriaGrupo(); }); });
 }
+/* Grups d'altres matèries o importades: corregir el nom de la matèria i el curs
+   (es canvia en la plantilla, sense tocar-ne la clau, així que els grups que la
+   comparteixen continuen enllaçats). Les plantilles oficials de FiQ no s'editen ací. */
+window.renombrarMateriaGrupo=()=>{
+  const grupo=grupoActual(); const key=grupo.catalogoKey;
+  if(CATALOGOS[key] || !state.catalogosPersonalizados || !state.catalogosPersonalizados[key]) return;
+  const m=document.getElementById("gpMateria").value.trim(), c=document.getElementById("gpCurso").value.trim();
+  if(!m) return;
+  const cat=state.catalogosPersonalizados[key]; cat.materia=m; cat.curso=c||"—";
+  delete CAT_CACHE[key];
+  save(); render(); mostrarToast("✓ Matèria i curs guardats");
+};
 window.renombrarGrupo=()=>{ const grupo=grupoActual(); const v=document.getElementById("gpNombre").value.trim(); if(v){ grupo.nombre=v; save(); renderShell(); } };
 window.duplicarGrupo=async ()=>{
   const grupo=grupoActual();
