@@ -1258,4 +1258,38 @@ export const PRUEBAS = [
     t.ok(!falten.length, 'els PDF dels dossiers existeixen', falten.join(', '));
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'editar-temes', descripcion: "Programació del grup: editar en quina avaluació va cada tema i recalcular les sessions amb l'horari, amb ajust a mà", async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    await cuadernoConGrupo(p, t.url, { nombres: ['Alba Roig, Neus'] });
+    const r = await p.evaluate(async () => {
+      const g = state.grupos[0];
+      const prog = progDesDeDepartament('FiQ_3ESO'); state.programaciones = [prog]; g.programacionId = prog.id; g.catalogoKey = 'FiQ_3ESO';
+      g.fechasTrimestre = [{ inicio: '2026-09-07', fin: '2026-12-18' }, { inicio: '2027-01-07', fin: '2027-03-19' }, { inicio: '2027-03-22', fin: '2027-06-18' }];
+      state.horario = state.horario || {}; state.horario.celdas = { '1-L': { tipo: 'clase', grupoId: g.id }, '2-X': { tipo: 'clase', grupoId: g.id }, '3-V': { tipo: 'clase', grupoId: g.id } };
+      state.festivos = [{ id: 'f1', fechaInicio: '2026-10-09', fechaFin: '2026-10-09', etiqueta: '9 d\'Octubre' }];
+      state.ui.appMode = 'competencial'; state.ui.grupoId = g.id; state.ui.tab = 'programa'; save(); render();
+      const out = {};
+      out.boto = !!Array.from(document.querySelectorAll('#tabContent button')).find(b => /Editar temes/.test(b.textContent));
+      tempEditarObrir(); out.editor = /Editar temes i sessions/.test(document.getElementById('tabContent').textContent);
+      out.disp0 = tempSessionsAval(g, 0).length;
+      const suma = t => temesDeGrup(g).filter(s => s.trimestre === t).reduce((n, s) => n + (Number(s.sesionesPrevistas) || 0), 0);
+      tempRecalcularTot(false); out.suma0 = suma(0);
+      const primer = temesDeGrup(g).find(s => s.trimestre === 0);
+      tempSetAval(primer.id, 1); out.mogut = primer.trimestre === 1; out.suma0b = suma(0); out.suma1 = suma(1); out.disp1 = tempSessionsAval(g, 1).length;
+      const segon = temesDeGrup(g).find(s => s.trimestre === 0);
+      tempSetSessions(segon.id, '3'); out.manual = segon.sesionesPrevistas === '3' && segon.sessionsManual; out.suma0c = suma(0);
+      tempSetReserva('2'); out.suma0d = suma(0);
+      out.dates = tempDatesTemes(g, prog)[segon.id];
+      tempEditarCancel(); out.cancel = temesDeGrup(g).find(s => s.id === primer.id).trimestre === 0 && !temesDeGrup(g).some(s => s.sessionsManual);
+      out.tornat = !/Editar temes i sessions ·/.test(document.getElementById('tabContent').textContent);
+      return out;
+    });
+    t.ok(r.boto && r.editor, 'la pestanya Programació té el botó «Editar temes i sessions» i obri l\'editor');
+    t.ok(r.disp0 === 44, "les sessions de la 1a avaluació ixen de l'horari (3 a la setmana) traient el festiu", String(r.disp0));
+    t.ok(r.suma0 === r.disp0 && r.suma0b === r.disp0 && r.suma1 === r.disp1, 'el recàlcul omple exactament les sessions de cada avaluació, també en moure un tema', JSON.stringify(r));
+    t.ok(r.mogut && r.manual && r.suma0c === r.disp0 && r.suma0d === r.disp0 - 2, "l'ajust a mà es respecta i la reserva es descompta", JSON.stringify(r));
+    t.ok(r.dates && r.dates.ini && r.dates.fi >= r.dates.ini, 'cada tema té dates previstes', JSON.stringify(r.dates));
+    t.ok(r.cancel && r.tornat, 'Cancel·lar ho deixa com estava');
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
 ];

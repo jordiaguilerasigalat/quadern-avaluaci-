@@ -92,7 +92,9 @@ function renderProgramaGrup(g){
     return;
   }
   if(temesMigrarGrup(g)) save();
+  if(state.ui.tempEditant===p.id && typeof tempEditorHTML==="function"){ tc.innerHTML=tempEditorHTML(g,p); return; }
   const temes=temesDeGrup(g);
+  const datesTemes=typeof tempDatesTemes==="function"? tempDatesTemes(g,p) : {};
   const actual=temaActualGrup(g);
   const obert=state.ui.progTemaObert || (actual&&actual.id);
   const totalPrev=temes.reduce((n,s)=>n+(Number(s.sesionesPrevistas)||0),0);
@@ -117,7 +119,7 @@ function renderProgramaGrup(g){
     return `<details class="card" style="padding:10px 14px;${esActual?"border:2px solid var(--accent,#b7893a)":""}" ${obert===s.id?"open":""}>
       <summary style="cursor:pointer;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;list-style:revert">
         <span style="font-weight:700;font-size:14px">${esActual?"📍 ":""}${esc(temaNomCurt(s))}${s.tema&&s.titulo?`<span class="sub" style="font-weight:400;font-style:italic;margin:0"> · ${esc(s.titulo)}</span>`:""}</span>
-        <span style="font-size:12.5px;display:flex;gap:10px;align-items:center"><span style="color:${estat[1]};font-weight:600">${estat[0]}</span><span class="sub" style="margin:0">${fets}/${prev||"?"} sessions · ${acts.length} activitat${acts.length===1?"":"s"}</span></span>
+        <span style="font-size:12.5px;display:flex;gap:10px;align-items:center"><span style="color:${estat[1]};font-weight:600">${estat[0]}</span><span class="sub" style="margin:0">${datesTemes[s.id]?"📅 "+tempDatesText(datesTemes[s.id])+" · ":""}${fets}/${prev||"?"} sessions · ${acts.length} activitat${acts.length===1?"":"s"}</span></span>
       </summary>
       ${prev?`<div style="height:6px;background:var(--line);border-radius:4px;margin:8px 0 4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${estat[1]}"></div></div>`:""}
       <div class="flex" style="gap:6px;flex-wrap:wrap;margin:6px 0">
@@ -135,7 +137,7 @@ function renderProgramaGrup(g){
       <h2>📚 Programació · ${esc(p.nombre)}</h2>
       <p class="sub" style="margin:0">Tema a tema: sessions fetes (les que apuntes en el Diari) i previstes, material, activitats i notes. ${actual?`Ara estàs en <strong>${esc(temaNomCurt(actual))}</strong>${g.temaActual?"":" (calculat pel Diari; el pots marcar a mà)"}.`:""}</p>
       <p class="sub" style="margin:6px 0 0">${totalFet} de ${totalPrev} sessions previstes fetes.${senseTema?` · ${senseTema} activitat${senseTema===1?"":"s"} sense tema: assigna'ls-el en la pestanya Activitats.`:""}</p>
-      <div class="flex" style="gap:6px;margin-top:8px;flex-wrap:wrap"><button class="ghost small" style="border:1px solid var(--line)" onclick="progAbrirDetalle('${escJS(p.id)}');irModo('programacion')">📘 Obrir la programació completa</button></div>
+      <div class="flex" style="gap:6px;margin-top:8px;flex-wrap:wrap">${typeof tempEditorHTML==="function"?`<button class="btn small" onclick="tempEditarObrir()">✏️ Editar temes i sessions</button>`:""}<button class="ghost small" style="border:1px solid var(--line)" onclick="progAbrirDetalle('${escJS(p.id)}');irModo('programacion')">📘 Obrir la programació completa</button></div>
     </div>
     ${[0,1,2].map(t=>{ const ts=temes.filter(s=>s.trimestre===t); return ts.length?`<div class="section-eyebrow" style="margin-top:14px">${esc(TRIMESTRES[t])}</div>${ts.map(cardTema).join("")}`:""; }).join("")}`;
 }
