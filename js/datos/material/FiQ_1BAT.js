@@ -10,6 +10,12 @@ window.MATERIAL_TEMES=window.MATERIAL_TEMES||{};
 window.MATERIAL_TEMES["FiQ_1BAT"]={
  "1": [
   {
+   "f": "tema-01/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (2 documents, 25 pàg.)",
+   "tipus": "repas",
+   "kb": 312
+  },
+  {
    "f": "tema-01/examen-formulacio-inorganica-25-26.pdf",
    "t": "Examen Unitat 1 · Formulació inorgànica (25-26)",
    "tipus": "examen",
@@ -68,6 +74,12 @@ window.MATERIAL_TEMES["FiQ_1BAT"]={
  ],
  "3": [
   {
+   "f": "tema-03/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (2 documents, 4 pàg.)",
+   "tipus": "repas",
+   "kb": 121
+  },
+  {
    "f": "tema-03/examen-lleis-basiques-25-26.pdf",
    "t": "Examen Unitat 3 · Lleis i conceptes bàsics (25-26)",
    "tipus": "examen",
@@ -114,6 +126,12 @@ window.MATERIAL_TEMES["FiQ_1BAT"]={
  ],
  "5": [
   {
+   "f": "tema-05/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (2 documents, 19 pàg.)",
+   "tipus": "repas",
+   "kb": 423
+  },
+  {
    "f": "tema-05/examen-quimica-organica-25-26.pdf",
    "t": "Examen Unitat 5 · Química orgànica (25-26)",
    "tipus": "examen",
@@ -139,6 +157,12 @@ window.MATERIAL_TEMES["FiQ_1BAT"]={
   }
  ],
  "6": [
+  {
+   "f": "tema-06/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (3 documents, 8 pàg.)",
+   "tipus": "repas",
+   "kb": 1246
+  },
   {
    "f": "tema-06/examen-cinematica-2026-04.pdf",
    "t": "Examen Unitat 6 · Cinemàtica (abril 2026)",
@@ -171,6 +195,12 @@ window.MATERIAL_TEMES["FiQ_1BAT"]={
   }
  ],
  "7": [
+  {
+   "f": "tema-07/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (2 documents, 7 pàg.)",
+   "tipus": "repas",
+   "kb": 189
+  },
   {
    "f": "tema-07/examen-dinamica-25-26.pdf",
    "t": "Examen Unitat 7 · Dinàmica (25-26)",

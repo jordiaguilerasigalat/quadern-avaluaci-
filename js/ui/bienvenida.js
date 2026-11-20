@@ -34,7 +34,7 @@ function renderBienvenidaHTML(){
   const r=resumenEstado(state);
   const hayDatos=r.total>0;
   const diasSinCopia=state.lastBackupAt?(Date.now()-state.lastBackupAt)/86400000:Infinity;
-  const avisoCopia=hayDatos && diasSinCopia>7;
+  const avisoCopia=hayDatos && diasSinCopia>(typeof COPIA_DIES_AVIS==="number"?COPIA_DIES_AVIS:7);
   const avisoTexto=state.lastBackupAt
     ?`Fa temps que no exportes una còpia externa (${haceTiempo(state.lastBackupAt)}). Conserva-la fora d'este dispositiu des de 🛟 Còpies.`
     :"Encara no has exportat cap còpia de seguretat a un arxiu. Fes-ho des de 🛟 Còpies tan bon punt entres.";

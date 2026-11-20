@@ -126,6 +126,7 @@ function renderProgramaGrup(g){
         <button class="ghost small" style="border:1px solid var(--line)" onclick="state.ui.tab='diario';save();render()">📓 Apuntar una sessió en el Diari</button>
       </div>
       ${mats}
+      ${typeof fitxaRepasBotonsHTML==="function"?fitxaRepasBotonsHTML(g,s):""}
       ${files?`<div style="margin-top:6px"><div class="section-eyebrow">Activitats i exàmens</div>${files}</div>`:`<p class="sub" style="margin:6px 0 0">Encara no hi ha activitats d'este tema.</p>`}
       ${notes}
     </details>`;

@@ -117,6 +117,8 @@ function renderResultados(grupo){
           </select>
           <button class="btn" onclick="exportarInformeGrupo(document.getElementById('repGrupoSel').value)">Informe de grupo</button>
           <button class="ghost" style="border:1px solid var(--line)" onclick="exportarInformesDetalladosTodos(document.getElementById('repGrupoSel').value)">🖨️ Informes detallados</button>
+          <button class="ghost" style="border:1px solid var(--line)" title="Acta per a la sessió d'avaluació: mitjanes, suspesos per tema, alumnat amb mesures, faltes i espai per als acords" onclick="exportarActaSessio(document.getElementById('repGrupoSel').value)">🧾 Acta de la sessió</button>
+          <button class="ghost" style="border:1px solid var(--line)" title="Una pàgina per alumne/a per a les famílies: notes, temes, faltes, observacions i signatures" onclick="(v=>exportarInformesFamiliaTots(v==='final'?2:v))(document.getElementById('repGrupoSel').value)">👪 Informes per a les famílies</button>
         </span>
       </div>
     </div>

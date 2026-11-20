@@ -132,6 +132,7 @@ function save(){
   _invalidarCaches();
   if(cambio) _actualizarBotonesDeshacer();
   if(cambio) state.cambiosSinCopia=(state.cambiosSinCopia||0)+1;
+  if(cambio && typeof copiaComprovarCanvis==="function") setTimeout(copiaComprovarCanvis,0);
   state._guardadoEn=Date.now();
   let json;
   try{

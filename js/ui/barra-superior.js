@@ -18,7 +18,7 @@ function renderTopBar(){
 
   const diasSinCopia = state.lastBackupAt? (Date.now()-state.lastBackupAt)/86400000 : Infinity;
   const cambios = state.cambiosSinCopia||0;
-  const copiaUrge = diasSinCopia>7 || cambios>=40 || !state.lastBackupAt;
+  const copiaUrge = typeof copiaEstat==="function"? copiaEstat().urgeix : (diasSinCopia>7 || cambios>=40 || !state.lastBackupAt);
   const copiaTitulo = state.lastBackupAt?new Date(state.lastBackupAt).toLocaleString('ca-ES'):'Encara no has exportat cap còpia';
   const copiaBadge = copiaUrge
     ? `<button class="tb-copia" onclick="exportarTodo()" title="${copiaTitulo}" aria-label="Convé exportar una còpia de seguretat (última: ${state.lastBackupAt?haceTiempo(state.lastBackupAt):'mai'})" style="border:none;border-radius:20px;padding:4px 11px;font-size:12px;font-weight:600;background:var(--warning-soft);color:var(--warning);border:1px solid var(--warning);cursor:pointer">⚠️<span class="tb-txt"> Convé exportar còpia (${state.lastBackupAt?haceTiempo(state.lastBackupAt):'mai'})</span></button>`
@@ -50,7 +50,9 @@ window.ajudaObrir=()=>{
     <p class="sub" style="margin:8px 0 6px">El teu quadern d'avaluació de Física i Química: programació, seguiment i avaluació, correcció amb rúbriques i el seguiment diari de l'alumnat (assistència, convivència, famílies, reforç, repetició i NESE). Tot compartix el mateix alumnat i les mateixes notes, i tot ix en informes preparats per a imprimir.</p>
     ${bloc("📌 Com està organitzat","<strong>Inici</strong>: el que tens hui (Avui), els teus grups i el que et falta per fer. <strong>Cada grup</strong> té 4 seccions: Alumnat (llista, plànol, assistència, convivència, famílies), Avaluar (programació, diari, activitats, qualificar), Resultats i Ajustos. Toca el nom d'un alumne/a per a obrir la seua fitxa. La <strong>Biblioteca</strong> té tots els documents amb buscador.")}
     ${bloc("🔍 Buscar","El botó Cercar (o Ctrl/Cmd + K) troba alumnat, activitats, exàmens, programacions, reunions i esdeveniments de tots els grups.")}
-    ${bloc("🛟 Còpies de seguretat","Les dades es guarden només en este dispositiu. Exporta una còpia de tant en tant des de 🛟 Còpies; l'app també en fa d'automàtiques.")}
+    ${bloc("🛟 Còpies de seguretat","Les dades es guarden només en este dispositiu: cada ordinador, iPad o mòbil té les seues. Exporta una còpia des de 🛟 Còpies; l'app t'ho recorda en Inici quan fa més de 3 dies o portes 20 canvis sense còpia, i mentre treballes cada 30 canvis. També en fa d'automàtiques dins del dispositiu.")}
+    ${bloc("🧾 Sessió d'avaluació","En <strong>Resultats → Notes i informes</strong> tries l'avaluació i tens l'<strong>Acta de la sessió</strong> (mitjanes, suspesos per tema, alumnat amb mesures, faltes i acords) i els <strong>Informes per a les famílies</strong> (una pàgina per alumne/a). L'informe d'un sol alumne/a ix també des de la seua fitxa.")}
+    ${bloc("🔁 Repàs i recuperació","En <strong>Avaluar → Programació</strong>, cada tema té el seu <strong>dossier de repàs</strong> en PDF (exercicis i models d'examen d'altres cursos, i una versió adaptada si n'hi ha) i les <strong>fitxes de repàs</strong>: una pàgina per alumne/a amb les seues notes del tema, què ha de reforçar i què ha de fer.")}
     ${bloc("📶 Sense connexió","Afig-la a la pantalla d'inici de l'iPad (Safari → compartir → «Afegir a la pantalla d'inici»). Després d'obrir-la una vegada amb connexió, funciona sense wifi.")}
     ${bloc("🎓 Gestor de Tutoria","Viu en la subcarpeta <code>tutoria/</code> i guarda les seues pròpies dades. Pots passar-li els teus suspesos amb «👥 Per a la tutoria» (en Resultats de cada grup) i la llista d'alumnat amb «📥 Del Cuaderno» des de Tutoria, si les dos s'usen en el mateix navegador.")}
     ${bloc("📖 Guia d'ús",`Primers passos, rúbriques, còpies, paperera i preguntes freqüents (guia original, en castellà). <a href="guia_mejorada.html">Obrir la guia</a>`)}

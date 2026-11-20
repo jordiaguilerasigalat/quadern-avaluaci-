@@ -47,6 +47,6 @@ function fitxaResumHTML(g,a){
       ${bloc("✅ Assistència",faltes)}${bloc("⚖️ Convivència",convHTML)}${bloc("👪 Família",famHTML)}
     </div>
     ${plans?bloc("🌈 Atenció a la diversitat",`<div class="flex" style="gap:6px;flex-wrap:wrap">${plans}</div>`):""}
-    <div class="flex" style="gap:6px;flex-wrap:wrap">${anar("resultados","📄 Informe complet")}${anar("asistencia","✅ Assistència")}${anar("convivencia","⚖️ Convivència")}${anar("familias","👪 Famílies")}</div>
+    <div class="flex" style="gap:6px;flex-wrap:wrap">${anar("resultados","📄 Informe complet")}<button class="ghost small" style="border:1px solid var(--line)" title="Una pàgina per a la família amb les notes, faltes i observacions (${esc(TRIMESTRES[state.ui.trim]||"")})" onclick="cerrarFichaAlumno();exportarInformeFamilia('${escJS(a.id)}')">👪 Informe per a la família</button>${anar("asistencia","✅ Assistència")}${anar("convivencia","⚖️ Convivència")}${anar("familias","👪 Famílies")}</div>
     <details><summary style="cursor:pointer;font-weight:600;font-size:13px">✏️ Dades de l'alumne/a</summary>`;
 }

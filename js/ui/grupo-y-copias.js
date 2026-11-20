@@ -116,6 +116,7 @@ window.exportarTodo=async()=>{
   const ok=await guardarArchivo(blob,nombre);
   if(!ok) return; // cancelado en el menú Compartir: no cuenta como copia
   state.lastBackupAt=Date.now(); state.cambiosSinCopia=0; save(); render();
+  if(typeof copiaTancarBarra==="function") copiaTancarBarra();
   if(_copiasModalEl) pintarCopias();
   exLimpiarPendientes();
   mostrarToast("✓ Copia exportada");

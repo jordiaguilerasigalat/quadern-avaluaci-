@@ -4,6 +4,13 @@ window.MATERIAL_TEMES=window.MATERIAL_TEMES||{};
 window.MATERIAL_TEMES["QUI_2BAT"]={
  "0": [
   {
+   "f": "tema-00/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (2 documents, 17 pàg.)",
+   "tipus": "repas",
+   "kb": 1190,
+   "a": "Proves PAU · Generalitat de Catalunya"
+  },
+  {
    "f": "tema-00/presentacio-introduccio-estequiometria.pdf",
    "t": "Presentació: Introducció i estequiometria",
    "tipus": "presentacio"
@@ -16,22 +23,26 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   {
    "f": "tema-00/apunts-magnituds-i-mesures.pdf",
    "t": "Apunts: Magnituds i mesures (tècniques de laboratori)",
-   "tipus": "teoria"
+   "tipus": "teoria",
+   "a": "Nelo Traver"
   },
   {
    "f": "tema-00/apunts-masses-i-volums.pdf",
    "t": "Apunts: Masses i volums (tècniques de laboratori)",
-   "tipus": "teoria"
+   "tipus": "teoria",
+   "a": "Nelo Traver"
   },
   {
    "f": "tema-00/activitat-phet-gasos-ideals.pdf",
    "t": "Activitat PhET: gasos ideals",
-   "tipus": "exercicis"
+   "tipus": "exercicis",
+   "a": "Rafael Bueno"
   },
   {
    "f": "tema-00/exercicis-pau-tema-0.pdf",
    "t": "Exercicis PAU: estequiometria i dissolucions",
-   "tipus": "exercicis"
+   "tipus": "exercicis",
+   "a": "Proves PAU · Generalitat de Catalunya"
   },
   {
    "f": "tema-00/examen-tema-0-2023-24.pdf",
@@ -46,6 +57,13 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
  ],
  "1": [
   {
+   "f": "tema-01/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (2 documents, 28 pàg.)",
+   "tipus": "repas",
+   "kb": 3004,
+   "a": "Proves PAU · Generalitat de Catalunya"
+  },
+  {
    "f": "tema-01/presentacio-teoria-atomica-taula-periodica.pdf",
    "t": "Presentació: Teoria atòmica i taula periòdica",
    "tipus": "presentacio"
@@ -53,7 +71,8 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   {
    "f": "tema-01/exercicis-pau-tema-1.pdf",
    "t": "Exercicis PAU: teoria atòmica i taula periòdica",
-   "tipus": "exercicis"
+   "tipus": "exercicis",
+   "a": "Proves PAU · Generalitat de Catalunya"
   },
   {
    "f": "tema-01/examen-temes-1-2-2023-24.pdf",
@@ -75,6 +94,13 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
  ],
  "3": [
   {
+   "f": "tema-03/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (2 documents, 28 pàg.)",
+   "tipus": "repas",
+   "kb": 494,
+   "a": "Proves PAU · Generalitat de Catalunya"
+  },
+  {
    "f": "tema-03/presentacio-termodinamica.pdf",
    "t": "Presentació: Termodinàmica",
    "tipus": "presentacio"
@@ -82,27 +108,32 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   {
    "f": "tema-03/apunts-termoquimica.pdf",
    "t": "Apunts: Termoquímica",
-   "tipus": "teoria"
+   "tipus": "teoria",
+   "a": "Nelo Traver"
   },
   {
    "f": "tema-03/apunts-calorimetria.pdf",
    "t": "Apunts: Calorimetria",
-   "tipus": "teoria"
+   "tipus": "teoria",
+   "a": "Nelo Traver"
   },
   {
    "f": "tema-03/apunts-espontaneitat.pdf",
    "t": "Apunts: Espontaneïtat",
-   "tipus": "teoria"
+   "tipus": "teoria",
+   "a": "Nelo Traver"
   },
   {
    "f": "tema-03/apunts-energia-i-treball.pdf",
    "t": "Apunts: Energia i treball",
-   "tipus": "teoria"
+   "tipus": "teoria",
+   "a": "Nelo Traver"
   },
   {
    "f": "tema-03/exercicis-pau-tema-3.pdf",
    "t": "Exercicis PAU: termodinàmica",
-   "tipus": "exercicis"
+   "tipus": "exercicis",
+   "a": "Proves PAU · Generalitat de Catalunya"
   },
   {
    "f": "tema-03/examen-tema-3-2023-24.pdf",
@@ -112,6 +143,13 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
  ],
  "4": [
   {
+   "f": "tema-04/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (3 documents, 37 pàg.)",
+   "tipus": "repas",
+   "kb": 1323,
+   "a": "Nelo Traver, Proves PAU · Generalitat de Catalunya"
+  },
+  {
    "f": "tema-04/presentacio-cinetica-quimica.pdf",
    "t": "Presentació: Cinètica química",
    "tipus": "presentacio"
@@ -119,12 +157,14 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   {
    "f": "tema-04/practiques-cinetica-quimica.pdf",
    "t": "Experiències de cinètica química (laboratori)",
-   "tipus": "exercicis"
+   "tipus": "exercicis",
+   "a": "Nelo Traver"
   },
   {
    "f": "tema-04/exercicis-pau-tema-4.pdf",
    "t": "Exercicis PAU: cinètica química",
-   "tipus": "exercicis"
+   "tipus": "exercicis",
+   "a": "Proves PAU · Generalitat de Catalunya"
   },
   {
    "f": "tema-04/examen-tema-4-2023-24.pdf",
@@ -133,6 +173,13 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   }
  ],
  "5": [
+  {
+   "f": "tema-05/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (4 documents, 61 pàg.)",
+   "tipus": "repas",
+   "kb": 6461,
+   "a": "Proves PAU · Generalitat de Catalunya"
+  },
   {
    "f": "tema-05/presentacio-equilibri-quimic.pdf",
    "t": "Presentació: Equilibri químic",
@@ -146,12 +193,14 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   {
    "f": "tema-05/exercicis-pau-equilibri-quimic.pdf",
    "t": "Exercicis PAU: equilibri químic",
-   "tipus": "exercicis"
+   "tipus": "exercicis",
+   "a": "Proves PAU · Generalitat de Catalunya"
   },
   {
    "f": "tema-05/exercicis-pau-solubilitat.pdf",
    "t": "Exercicis PAU: equilibris de solubilitat",
-   "tipus": "exercicis"
+   "tipus": "exercicis",
+   "a": "Proves PAU · Generalitat de Catalunya"
   },
   {
    "f": "tema-05/examen-equilibri-quimic-2023-24.pdf",
@@ -166,6 +215,12 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
  ],
  "6": [
   {
+   "f": "tema-06/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (2 documents, 32 pàg.)",
+   "tipus": "repas",
+   "kb": 3840
+  },
+  {
    "f": "tema-06/presentacio-acid-base.pdf",
    "t": "Presentació: Reaccions de transferència de protons",
    "tipus": "presentacio"
@@ -173,7 +228,8 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   {
    "f": "tema-06/apunts-equilibris-acid-base-laboratori.pdf",
    "t": "Apunts: Equilibris àcid-base (tècniques de laboratori)",
-   "tipus": "teoria"
+   "tipus": "teoria",
+   "a": "Nelo Traver"
   },
   {
    "f": "tema-06/practica-aspirina.pdf",
@@ -198,6 +254,12 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
  ],
  "7": [
   {
+   "f": "tema-07/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (2 documents, 27 pàg.)",
+   "tipus": "repas",
+   "kb": 1448
+  },
+  {
    "f": "tema-07/presentacio-redox.pdf",
    "t": "Presentació: Reaccions d'oxidació-reducció",
    "tipus": "presentacio"
@@ -219,6 +281,12 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   }
  ],
  "8": [
+  {
+   "f": "tema-08/dossier-repas.pdf",
+   "t": "Dossier de repàs del tema (1 documents, 11 pàg.)",
+   "tipus": "repas",
+   "kb": 1244
+  },
   {
    "f": "tema-08/presentacio-organica-polimeritzacio.pdf",
    "t": "Presentació: Reaccions orgàniques i polimerització",

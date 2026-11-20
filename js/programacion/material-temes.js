@@ -4,7 +4,10 @@
 
    El material està en docs/material/<clau catàleg>/ i cada curs té el seu índex
    en js/datos/material/<clau>.js, que fa:
-     window.MATERIAL_TEMES["<clau>"]={"1":[{f,t,tipus,kb?}],…,"globals":[…]}
+     window.MATERIAL_TEMES["<clau>"]={"1":[{f,t,tipus,kb?,a?}],…,"globals":[…]}
+   «a» és l'autoria quan el document no és del departament (es mostra al
+   costat del títol). Els dossiers de repàs (tipus "repas") i el camp «a» els
+   genera tools/material/dossiers_repas.py.
    La clau "N" és el número del camp «Tema N.- …» de cada SdA.
    Els índexs es carreguen només quan cal (no van en la memòria cau sense
    connexió perquè els PDF pesen massa).
@@ -18,6 +21,7 @@ const MATERIAL_CURSOS={
   FIS_2BAT:"Física 2n Batxillerat"
 };
 const MATERIAL_TIPUS={
+  repas:{ico:"🔁",nom:"Dossier de repàs (exercicis + models d'examen en un PDF)"},
   teoria:{ico:"📖",nom:"Teoria"},
   presentacio:{ico:"🖥️",nom:"Presentacions"},
   exercicis:{ico:"✏️",nom:"Exercicis"},
@@ -48,12 +52,33 @@ function materialMida(kb){
   if(!kb) return "";
   return kb>=1024? ` · ${(kb/1024).toFixed(1).replace(".",",")} MB` : ` · ${Math.round(kb)} kB`;
 }
+function materialAutorHTML(it){
+  return it&&it.a? ` <span class="material-autor" style="font-size:11px;opacity:.75;font-style:italic">· ✍️ ${esc(it.a)}</span>` : "";
+}
+/* Crèdits: qui ha fet el material que no és del departament, agrupat per autor/a. */
+function materialCreditsHTML(){
+  const per={};
+  Object.keys(MATERIAL_CURSOS).forEach(clau=>{
+    const mat=window.MATERIAL_TEMES&&window.MATERIAL_TEMES[clau]; if(!mat) return;
+    Object.keys(mat).forEach(k=>(mat[k]||[]).forEach(it=>{
+      if(!it.a || it.tipus==="repas") return;
+      it.a.split(/,\s*/).forEach(a=>{ const x=(per[a]=per[a]||{n:0,cursos:new Set()}); x.n++; x.cursos.add(MATERIAL_CURSOS[clau]); });
+    }));
+  });
+  const noms=Object.keys(per).sort((a,b)=>per[b].n-per[a].n);
+  if(!noms.length) return "";
+  return `<div style="margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px">
+    <div style="font-weight:700;font-size:13px;margin-bottom:4px">✍️ Crèdits del material d'altres autors</div>
+    <p class="sub" style="margin:0 0 6px">Gràcies a qui ha compartit el seu material. El seu nom apareix al costat de cada document i en la portada dels dossiers de repàs.</p>
+    <ul style="margin:0;padding-left:18px;font-size:13px">${noms.map(a=>`<li><strong>${esc(a)}</strong> · ${per[a].n} document${per[a].n===1?"":"s"} (${esc([...per[a].cursos].join(", "))})</li>`).join("")}</ul>
+  </div>`;
+}
 function materialLlistaHTML(clau,items){
   const grups={};
   (items||[]).forEach(it=>{ const t=MATERIAL_TIPUS[it.tipus]?it.tipus:"teoria"; (grups[t]=grups[t]||[]).push(it); });
   return Object.keys(MATERIAL_TIPUS).filter(t=>grups[t]).map(t=>`<div style="margin-top:6px">
       <div style="font-size:12px;font-weight:700;color:var(--mut);margin-bottom:3px">${MATERIAL_TIPUS[t].ico} ${MATERIAL_TIPUS[t].nom}</div>
-      <div class="flex" style="flex-wrap:wrap;gap:6px">${grups[t].map(it=>`<a class="chip" style="text-decoration:none" href="docs/material/${esc(clau)}/${esc(it.f)}" target="_blank" rel="noopener" title="${esc(it.t)}${materialMida(it.kb)}">${esc(it.t)}</a>`).join("")}</div>
+      <div class="flex" style="flex-wrap:wrap;gap:6px">${grups[t].map(it=>`<a class="chip" style="text-decoration:none" href="docs/material/${esc(clau)}/${esc(it.f)}" target="_blank" rel="noopener" title="${esc(it.t)}${it.a?" · Autoria: "+esc(it.a):""}${materialMida(it.kb)}">${esc(it.t)}${materialAutorHTML(it)}</a>`).join("")}</div>
     </div>`).join("");
 }
 /* Bloc plegable «📎 Material del tema» dins de cada SdA de la programació. */
@@ -86,5 +111,5 @@ function materialDocumentsHTML(){
       ${(mat.globals||[]).length?`<details style="margin:6px 0 0 14px"><summary style="cursor:pointer;font-size:13px">Recuperacions i finals (${mat.globals.length})</summary>${materialLlistaHTML(clau,mat.globals)}</details>`:""}
     </details>`;
   }).join("");
-  return `<p class="sub" style="margin:0 0 4px">Material de classe per curs i tema: teoria, presentacions, exercicis, solucions i exàmens d'altres anys. També el trobaràs dins de cada tema de la programació.</p>${blocs||`<p class="sub" style="margin:0">Encara no hi ha material pujat.</p>`}`;
+  return `<p class="sub" style="margin:0 0 4px">Material de classe per curs i tema: dossiers de repàs, teoria, presentacions, exercicis, solucions i exàmens d'altres anys. També el trobaràs dins de cada tema de la programació.</p>${blocs||`<p class="sub" style="margin:0">Encara no hi ha material pujat.</p>`}${materialCreditsHTML()}`;
 }

@@ -142,6 +142,7 @@ function renderHome(){
     <div class="flex" style="gap:8px;margin-top:10px;flex-wrap:wrap"><button class="ghost small" style="color:#fff;border:1px solid rgba(255,255,255,.35)" onclick="abrirDiagnostico()">🩺 Revisar les meues dades</button><button class="ghost small" style="color:#fff;border:1px solid rgba(255,255,255,.35)" onclick="abrirCopias()">🛟 Còpies de seguretat</button><button class="ghost small" style="color:#fff;border:1px solid rgba(255,255,255,.35)" onclick="abrirNuevoCurso()" title="Arxiva el curs que acaba i prepara el següent conservant grups, programacions i horari">🎓 Començar curs nou</button></div>
     </details>
   </div>
+  ${typeof copiaRecordatoriHTML==="function"?copiaRecordatoriHTML():""}
   ${hoyTarjetaHTML()}
   ${homeGrupsActiusHTML()}
   ${queMeFaltaHTML()}
