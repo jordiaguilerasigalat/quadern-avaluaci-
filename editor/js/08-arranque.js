@@ -12,7 +12,7 @@ function loadExam(exam) {
 }
 
 /* ---------- Tema de la interfaz (la hoja siempre es blanca) ---------- */
-const THEMES = [['auto', 'Automático'], ['light', 'Claro'], ['dark', 'Oscuro']];
+const THEMES = [['auto', 'Automàtic'], ['light', 'Clar'], ['dark', 'Fosc']];
 function applyTheme(t) {
   const r = document.documentElement;
   if (t === 'light' || t === 'dark') r.dataset.theme = t; else delete r.dataset.theme;
@@ -31,7 +31,7 @@ function init() {
   $('#examName').addEventListener('input', e => { S.exam.name = e.target.value; change({ key: 'name' }); });
   $('#btnNew').onclick = newExamDialog; $('#btnOpen').onclick = openDialogList; $('#btnSave').onclick = saveFile; $('#btnPdf').onclick = exportPdf;
   $('#btnDocx').onclick = exportDocx;
-  $('#btnAudit').onclick = () => runQualityGate('revisión');
+  $('#btnAudit').onclick = () => runQualityGate('revisió');
   $('#btnVersions').onclick = openVersionsDialog; $('#btnBank').onclick = openReusableLibrary;
   $('#btnUndo').onclick = () => histGo(-1); $('#btnRedo').onclick = () => histGo(1);
   $('#btnAdd').onclick = e => { e.stopPropagation(); openAddMenu(e.currentTarget, S.sel); };

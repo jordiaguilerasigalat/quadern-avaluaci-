@@ -51,7 +51,7 @@ window.exQuitarModelo=async()=>{
   const g=grupoActual(), act=g&&g.actividades.find(a=>a.id===state.ui.corExamId); if(!act) return;
   const l=exModeloViendo(act); if(!l||!mbModelo(act,l)) return;
   const n=Object.values((mbModelos(act)||{}).asignados||{}).filter(x=>x===l).length, hayC=l==="B"&&mbModelo(act,"C");
-  if(!await confirmar(`¿Quitar el modelo ${l}?${n?` ${n} alumno${n===1?"":"s"} que lo ${n===1?"hace pasa":"hacen pasan"} al modelo A.`:""}${hayC?" El modelo C pasará a llamarse B.":""}\n\nLa rúbrica y lo ya corregido no cambian.`,{ok:"Quitar modelo "+l})) return;
+  if(!await confirmar(`Vols llevar el model ${l}?${n?` ${n} alumne${n===1?"":"s"} que el ${n===1?"fa passa":"fan passen"} al model A.`:""}${hayC?" El model C passarà a dir-se B.":""}\n\nLa rúbrica i el que ja està corregit no canvien.`,{ok:"Llevar el model "+l})) return;
   await mbQuitar(act,l);
   state.ui.corModelo=""; save(); render();
   mostrarToast(`Modelo ${l} quitado`,"info");
@@ -76,11 +76,11 @@ window.exMezclar=async()=>{
 };
 function exSelectorVariante(act){
   const vs=cxVariantes(act), vid=state.ui.corVarId, l=exModeloViendo(act), ms=mbLista(act), sig=mbSiguienteLetra(act);
-  return `<button class="tab ${!cxVarEditando(act)&&!l?"on":""}" onclick="exSel('')">Examen general${ms.length?" · modelo A":""}</button>`
+  return `<button class="tab ${!cxVarEditando(act)&&!l?"on":""}" onclick="exSel('')">Examen general${ms.length?" · model A":""}</button>`
     +ms.map(m=>`<button class="tab ${!cxVarEditando(act)&&l===m.letra?"on":""}" title="Mismo examen con las preguntas en otro orden; comparte la rúbrica, que al corregir sale en el orden de cada modelo" onclick="exVerModelo('${m.letra}')">Modelo ${m.letra}</button>`).join("")
     +(sig?`<button class="ghost" style="border:1px dashed var(--line)" title="Mismo examen con las preguntas en otro orden, para repartir el día del examen y evitar la copia (hasta tres modelos: A, B y C)" onclick="exNuevoModelo()">+ Modelo ${sig}</button>`:"")
-    +vs.map(v=>`<button class="tab ${vid===v.id?"on":""}" title="${v.tipo==="ausencia"?"Examen alternativo para quien no vino el día del examen":"Examen adaptado (NESE)"}" onclick="cxElegirVariante('${v.id}')">${v.tipo==="ausencia"?"📅 ":""}${esc(v.nombre||"Examen alternativo")}${v.fecha?" · "+esc(cxFechaCorta(v.fecha)):""}</button>`).join("")
-    +`<button class="ghost" style="border:1px dashed var(--line)" title="Examen con otras preguntas para uno o varios alumnos/as: quien no vino el día del examen o el alumnado NESE. Se corrige con su propia rúbrica y su nota cuenta en este mismo examen." onclick="exNuevoAdaptado()">+ Examen alternatiu</button>`;
+    +vs.map(v=>`<button class="tab ${vid===v.id?"on":""}" title="${v.tipo==="ausencia"?"Examen alternatiu per a qui no va vindre el dia de l'examen":"Examen adaptat (NESE)"}" onclick="cxElegirVariante('${v.id}')">${v.tipo==="ausencia"?"📅 ":""}${esc(v.nombre||"Examen alternatiu")}${v.fecha?" · "+esc(cxFechaCorta(v.fecha)):""}</button>`).join("")
+    +`<button class="ghost" style="border:1px dashed var(--line)" title="Examen amb altres preguntes per a un o diversos alumnes: qui no va vindre el dia de l'examen o l'alumnat NESE. Es corregeix amb la seua pròpia rúbrica i la seua nota compta en aquest mateix examen." onclick="exNuevoAdaptado()">+ Examen alternatiu</button>`;
 }
 /* Aviso de diseños sin exportar (solo cuenta; no toca el estado de la app) */
 const EX_PEND="cuaderno_ex_sin_copia";
@@ -90,7 +90,7 @@ function exLimpiarPendientes(){ try{ localStorage.removeItem(EX_PEND); }catch(e)
 function exAvisoCopia(){
   const n=exPendientes().length; if(!n) return "";
   if(Date.now()-(state.lastBackupAt||0)<3*864e5) return "";
-  return `<span style="font-size:12.5px;color:var(--danger,#b91c1c)">⚠️ ${n} diseño${n===1?"":"s"} sin exportar · <a href="#" onclick="exportarTodo();return false">Exportar todo</a></span>`;
+  return `<span style="font-size:12.5px;color:var(--danger,#b91c1c)">⚠️ ${n} disseny${n===1?"":"s"} sense exportar · <a href="#" onclick="exportarTodo();return false">Exportar-ho tot</a></span>`;
 }
 function exModal(html){
   const d=document.createElement("div"); d.className="modal-overlay"; d.style.zIndex="1500";
@@ -110,16 +110,16 @@ window.exCobertura=()=>{
   hojas.forEach(h=>{ const c=h.crit||[]; c.forEach(id=>pts.set(id,(pts.get(id)||0)+h.max/c.length)); });
   const lista=exCriteriosDe(grupo,act), prev=cxCriteriosPrevistos(grupo,act), conPrev=!!(prev&&prev.length);
   const filas=lista.filter(c=>conPrev||pts.has(c.id)).map(c=>{ const p=pts.get(c.id)||0;
-    return `<tr${p?"":' style="color:var(--danger,#b91c1c)"'}><td style="padding:3px 8px 3px 0;white-space:nowrap">${esc(c.id)}</td><td style="padding:3px 8px;font-size:12px">${esc(c.texto)}</td><td style="padding:3px 0;text-align:right;white-space:nowrap">${p?cxFmtPts(p)+" pts · "+Math.round(p/total*100)+" %":"sin evaluar"}</td></tr>`; }).join("");
+    return `<tr${p?"":' style="color:var(--danger,#b91c1c)"'}><td style="padding:3px 8px 3px 0;white-space:nowrap">${esc(c.id)}</td><td style="padding:3px 8px;font-size:12px">${esc(c.texto)}</td><td style="padding:3px 0;text-align:right;white-space:nowrap">${p?cxFmtPts(p)+" pts · "+Math.round(p/total*100)+" %":"sense avaluar"}</td></tr>`; }).join("");
   const sinCrit=hojas.filter(h=>!(h.crit||[]).length), av=[];
   if(Math.abs(total-10)>0.01) av.push(`El examen suma ${cxFmtPts(total)} puntos (no 10). Se escalará a 10 si la rúbrica está en «convertir a 10».`);
   (est.descuadres||[]).forEach(d=>av.push(`«${esc(String(d.label).slice(0,50))}» vale ${cxFmtPts(d.max)} pts, pero sus partes suman ${cxFmtPts(d.suma)}. La rúbrica copia las partes (${cxFmtPts(d.suma)} pts): corrige los puntos en el Diseño y vuelve a importar.`));
-  if((est.repartidos||[]).length) av.push(`${est.repartidos.length} pregunta${est.repartidos.length===1?"":"s"} con subpreguntas sin puntos propios (${est.repartidos.slice(0,4).map(s=>esc(String(s).slice(0,40))).join("; ")}${est.repartidos.length>4?"…":""}): la rúbrica reparte sus puntos a partes iguales. Pon puntos a cada subpregunta en el Diseño si quieres otro reparto.`);
+  if((est.repartidos||[]).length) av.push(`${est.repartidos.length} pregunt${est.repartidos.length===1?"a":"es"} amb subpreguntes sense punts propis (${est.repartidos.slice(0,4).map(s=>esc(String(s).slice(0,40))).join("; ")}${est.repartidos.length>4?"…":""}): la rúbrica en reparteix els punts a parts iguals. Posa punts a cada subpregunta en el Disseny si vols un altre repartiment.`);
   if(sinCrit.length) av.push(`${sinCrit.length} pregunta${sinCrit.length===1?"":"s"} sin criterio: ${sinCrit.slice(0,6).map(h=>esc(h.label.slice(0,40))).join("; ")}${sinCrit.length>6?"…":""}`);
-  if(conPrev){ const f=lista.filter(c=>!pts.has(c.id)).length; if(f) av.push(`${f} criterio${f===1?"":"s"} previsto${f===1?"":"s"} para este examen no se evalúa${f===1?"":"n"} en ninguna pregunta.`); }
-  exModal(`<h2 style="font-size:16.5px;margin-bottom:4px">📊 Cobertura de criterios</h2><p class="sub" style="margin:0 0 10px">${hojas.length} ${hojas.length===1?"ítem puntuable":"ítems puntuables"} · ${cxFmtPts(total)} puntos${conPrev?" · criterios previstos del examen":" · criterios marcados"}</p>
-    ${av.length?`<div class="alert-box" style="margin-bottom:10px">${av.map(a=>"• "+a).join("<br>")}</div>`:`<p style="color:var(--ok,#15803d);margin:0 0 10px">✓ Sin avisos: todas las preguntas tienen criterio y el total es correcto.</p>`}
-    ${filas?`<table style="width:100%;border-collapse:collapse;font-size:13px">${filas}</table>`:`<p class="sub">Ninguna pregunta tiene criterios marcados todavía.</p>`}`);
+  if(conPrev){ const f=lista.filter(c=>!pts.has(c.id)).length; if(f) av.push(`${f} criteri${f===1?"":"s"} previst${f===1?"":"s"} per a aquest examen no s'avalua${f===1?"":"en"} en cap pregunta.`); }
+  exModal(`<h2 style="font-size:16.5px;margin-bottom:4px">📊 Cobertura de criteris</h2><p class="sub" style="margin:0 0 10px">${hojas.length} ${hojas.length===1?"ítem puntuable":"ítems puntuables"} · ${cxFmtPts(total)} punts${conPrev?" · criteris previstos de l'examen":" · criteris marcats"}</p>
+    ${av.length?`<div class="alert-box" style="margin-bottom:10px">${av.map(a=>"• "+a).join("<br>")}</div>`:`<p style="color:var(--ok,#15803d);margin:0 0 10px">✓ Sense avisos: totes les preguntes tenen criteri i el total és correcte.</p>`}
+    ${filas?`<table style="width:100%;border-collapse:collapse;font-size:13px">${filas}</table>`:`<p class="sub">Cap pregunta té encara criteris marcats.</p>`}`);
 };
 /* Análisis del examen ya corregido: acierto medio por pregunta y por criterio */
 window.exAnalisis=()=>{
@@ -140,11 +140,11 @@ window.exAnalisis=()=>{
   const barra=p=>`<div style="background:var(--line);height:6px;border-radius:3px;min-width:70px"><div style="width:${Math.max(2,p)}%;height:6px;border-radius:3px;background:${p<50?"#b91c1c":p<70?"#d97706":"#15803d"}"></div></div>`;
   const fila=(t,r)=>{ const p=Math.round(r.sum/r.max*100); return `<tr><td style="padding:4px 8px 4px 0;font-size:12.5px">${t}</td><td style="padding:4px 8px;width:90px">${barra(p)}</td><td style="padding:4px 0;text-align:right;white-space:nowrap;font-size:12.5px">${p} %</td></tr>`; };
   const arr=[...items.values()], peores=arr.filter(r=>r.sum/r.max<0.5).sort((a,b)=>a.sum/a.max-b.sum/b.max).slice(0,3);
-  exModal(`<h2 style="font-size:16.5px;margin-bottom:4px">📈 Análisis de «${esc(act.nombre)}»</h2>
+  exModal(`<h2 style="font-size:16.5px;margin-bottom:4px">📈 Anàlisi de «${esc(act.nombre)}»</h2>
     <p class="sub" style="margin:0 0 10px">${n} alumno${n===1?"":"s"} corregido${n===1?"":"s"}${nN?` · nota media ${cxFmtPts(sumN/nN)}`:""} · porcentaje medio de puntos logrados</p>
-    ${peores.length?`<div class="alert-box" style="margin-bottom:10px">Preguntas con menos del 50 % de acierto: ${peores.map(r=>esc(String(r.label).slice(0,50))).join("; ")}.</div>`:""}
+    ${peores.length?`<div class="alert-box" style="margin-bottom:10px">Preguntes amb menys del 50 % d'encert: ${peores.map(r=>esc(String(r.label).slice(0,50))).join("; ")}.</div>`:""}
     <h3 style="font-size:13.5px;margin:6px 0">Por pregunta</h3><table style="width:100%;border-collapse:collapse">${arr.map(r=>fila(esc(String(r.label||"(sin enunciado)").slice(0,120)),r)).join("")}</table>
-    ${crits.size?`<h3 style="font-size:13.5px;margin:12px 0 6px">Por criterio de evaluación</h3><table style="width:100%;border-collapse:collapse">${[...crits.entries()].map(([id,r])=>r.max?fila(esc(id),r):"").join("")}</table>`:""}`);
+    ${crits.size?`<h3 style="font-size:13.5px;margin:12px 0 6px">Per criteri d'avaluació</h3><table style="width:100%;border-collapse:collapse">${[...crits.entries()].map(([id,r])=>r.max?fila(esc(id),r):"").join("")}</table>`:""}`);
 };
 /* Enunciado del diseño junto a cada ítem al corregir (se rellena de forma asíncrona) */
 function exTextoNodo(n){
@@ -194,14 +194,14 @@ function exRenderPorPregunta(grupo,act){
       return `<button type="button" class="cxn-mini-btn${on?" on":""}" style="--cxn:${col};--cxn-tinta:${cxnTinta(col)}" aria-pressed="${on}" onclick="cxnElegir('${al.id}','${act.id}','${it.id}','${l.id}')">${esc(l.nombre||"")}</button>`; }).join("")}</span> ` : "";
     const celda= marcaDe(grupo,al.id,act.id)==="EX"? '<span class="badge">Exento</span>'
       : it? `${botones}${cxSelectPuntuacionHTML(it.max,v,"ex-preg-in",`onchange="exPregScore('${al.id}','${act.id}','${it.id}',this)" onkeydown="exEnter(event,this)"`,marcaDe(grupo,al.id,act.id)==="NP")} <span style="font-size:12px;color:var(--mut)">/ ${cxFmtPts(it.max)}</span>`
-      : `<span style="color:var(--mut);font-size:12.5px">— su rúbrica adaptada no incluye esta ${cxEsNiveles(act.rubrica)?"categoría":"pregunta"}</span>`;
+      : `<span style="color:var(--mut);font-size:12.5px">— la seua rúbrica adaptada no inclou aquesta ${cxEsNiveles(act.rubrica)?"categoria":"pregunta"}</span>`;
     return `<tr><td style="padding:5px 8px 5px 0">${esc(al.nombre)}${neseBadgeHTML(al)}</td><td>${celda}</td></tr>`;
   }).join("");
   c.innerHTML=`<div class="card"><div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px"><h2 style="font-size:15px">${esc(act.nombre)} · corregir por ${cxEsNiveles(act.rubrica)?"categoría":"pregunta"}</h2>
     <button class="ghost" style="border:1px solid var(--line)" onclick="exTogglePreg()">← Corregir por alumno/a</button></div>
-    <label style="font-size:12.5px;color:var(--mut);display:block;margin-top:8px">${cxEsNiveles(act.rubrica)?"Categoría":"Pregunta"}<select class="in" style="width:100%;margin-top:4px" onchange="exElegirPreg(this.value)">${gen.map(it=>`<option value="${esc(keyOf(it))}" ${keyOf(it)===k?"selected":""}>${esc(exEtiquetaItem(act.rubrica,it).slice(0,110))} · ${cxFmtPts(it.max)} pts</option>`).join("")}</select></label>
+    <label style="font-size:12.5px;color:var(--mut);display:block;margin-top:8px">${cxEsNiveles(act.rubrica)?"Categoria":"Pregunta"}<select class="in" style="width:100%;margin-top:4px" onchange="exElegirPreg(this.value)">${gen.map(it=>`<option value="${esc(keyOf(it))}" ${keyOf(it)===k?"selected":""}>${esc(exEtiquetaItem(act.rubrica,it).slice(0,110))} · ${cxFmtPts(it.max)} pts</option>`).join("")}</select></label>
     <div data-fuente="${esc(sel.fuenteId||"")}" style="margin-top:6px"></div>
-    <p class="sub" style="margin:8px 0 0;font-size:12px">${cxEsNiveles(act.rubrica)?"Pulsa el nivel de cada alumno/a o afina los puntos en el desplegable":"Elige la puntuación en el desplegable"} (Intro pasa al siguiente alumno/a). «—» = sin puntuar.</p></div>
+    <p class="sub" style="margin:8px 0 0;font-size:12px">${cxEsNiveles(act.rubrica)?"Prem el nivell de cada alumne/a o afina els punts en el desplegable":"Tria la puntuació en el desplegable"} (Intro passa al següent alumne/a). «—» = sense puntuar.</p></div>
     <div class="card"><table style="width:100%"><tbody>${filas}</tbody></table></div>`;
 }
 /* Fase 3 · Paquete reutilizable: examen + rúbrica + variantes NESE + versión B (sin alumnado ni notas) */
@@ -262,7 +262,7 @@ window.exImportarPaquete=()=>{
     }catch(e){ mostrarAviso("El examen se ha creado, pero no se han podido guardar los diseños del paquete."); }
     state.ui.corExamId=act.id; state.ui.corTab=d.general?"diseno":"editor"; state.ui.corVarId=""; state.ui.corModelo="";
     save(); render();
-    mostrarToast("✓ Paquete importado"+(sinVinculos?" · sin vínculos a criterios":"")+(vs.length?` · ${vs.length} examen${vs.length===1?"":"es"} alternativo${vs.length===1?"":"s"} (asigna de nuevo su alumnado)`:""));
+    mostrarToast("✓ Paquet importat"+(sinVinculos?" · sense vincles a criteris":"")+(vs.length?` · ${vs.length} examen${vs.length===1?"":"s"} alternatiu${vs.length===1?"":"s"} (torna a assignar-ne l'alumnat)`:""));
   };
   inp.click();
 };
@@ -292,7 +292,7 @@ window.exCopiasDiseno=async()=>{
   const cp=((await exTx("readonly",s=>s.getAll(),"copias").catch(()=>[]))||[]).sort((a,b)=>b.ts-a.ts);
   exModal(`<h2 style="font-size:16.5px;margin-bottom:4px">🛟 Copias de seguridad de los diseños</h2>
     <p class="sub" style="margin:0 0 10px">Se guarda una copia automática al día (las 3 últimas) en este navegador. No sustituye a «Exportar todo».</p>
-    ${cp.length?`<table style="width:100%;border-collapse:collapse;font-size:13px">${cp.map(c=>`<tr><td style="padding:4px 0">${new Date(c.ts).toLocaleString("ca-ES")}</td><td>${c.disenos.length} diseño${c.disenos.length===1?"":"s"}</td><td style="text-align:right"><button class="ghost small" style="border:1px solid var(--line)" onclick="exRestaurarCopia(${c.ts})">Restaurar</button></td></tr>`).join("")}</table>`:`<p class="sub">Todavía no hay copias.</p>`}
+    ${cp.length?`<table style="width:100%;border-collapse:collapse;font-size:13px">${cp.map(c=>`<tr><td style="padding:4px 0">${new Date(c.ts).toLocaleString("ca-ES")}</td><td>${c.disenos.length} disseny${c.disenos.length===1?"":"s"}</td><td style="text-align:right"><button class="ghost small" style="border:1px solid var(--line)" onclick="exRestaurarCopia(${c.ts})">Restaurar</button></td></tr>`).join("")}</table>`:`<p class="sub">Encara no hi ha còpies.</p>`}
     <div style="margin-top:12px"><button class="ghost small" style="border:1px solid var(--line)" onclick="exLimpiarHuerfanos()">🧹 Buscar diseños de exámenes que ya no existen</button></div>`);
 };
 window.exRestaurarCopia=async ts=>{
@@ -306,10 +306,10 @@ window.exLimpiarHuerfanos=async()=>{
   const ids=new Set(); (state.grupos||[]).forEach(g=>(g.actividades||[]).forEach(a=>ids.add(a.id)));
   const huer=(await exLeerTodos()).filter(r=>!String(r.key).startsWith("prog:")&&!ids.has(String(r.key).split(":")[0]));
   if(!huer.length){ mostrarAviso("No hay diseños sin examen: todo está en uso."); return; }
-  if(!await confirmar(`Hay ${huer.length} diseño${huer.length===1?"":"s"} de exámenes que ya no existen en ningún grupo. Antes de borrar se guarda una copia, que podrás restaurar.\n\n¿Borrarlos?`,{ok:"Borrar",peligro:true})) return;
+  if(!await confirmar(`Hi ha ${huer.length} disseny${huer.length===1?"":"s"} d'exàmens que ja no existeixen en cap grup. Abans d'esborrar-los es guarda una còpia, que podràs restaurar.\n\nVols esborrar-los?`,{ok:"Esborrar",peligro:true})) return;
   await exCopiaDiaria(true);
   for(const r of huer) await exBorrar(r.key);
-  mostrarToast("✓ "+huer.length+" diseño"+(huer.length===1?"":"s")+" eliminado"+(huer.length===1?"":"s"));
+  mostrarToast("✓ "+huer.length+" disseny"+(huer.length===1?"":"s")+" eliminat"+(huer.length===1?"":"s"));
 };
 window.exAyuda=()=>exModal(`<h2 style="font-size:16.5px;margin-bottom:8px">❔ Cómo usar el diseño de exámenes</h2>
   <ol style="margin:0 0 10px 18px;padding:0;font-size:13.5px;line-height:1.55">
@@ -369,14 +369,14 @@ function renderCorDiseno(grupo){
   c.innerHTML=cxSubtabs(act,"diseno")+cxAvisoNeseHTML(grupo,act)+`<div class="card" style="padding:10px 14px"><div class="flex" style="gap:8px;flex-wrap:wrap;align-items:center">
     ${exSelectorVariante(act)}<button class="btn" onclick="exImportar()">Importar a la rúbrica →</button>
     <button class="ghost" style="border:1px solid var(--line)" title="Guarda este diseño como plantilla de la actividad de la Programación para reutilizarlo en otros grupos" onclick="exComoPlantilla()">💾 Plantilla de la Programación</button>
-    ${exModeloViendo(act)?`<button class="ghost" style="border:1px solid var(--line)" title="Vuelve a barajar el orden de las preguntas" onclick="exMezclar()">🔀 Mezclar de nuevo</button><button class="ghost danger" style="border:1px solid var(--line)" onclick="exQuitarModelo()">Quitar modelo ${exModeloViendo(act)}</button>`:""}
-    ${act.rubrica&&mbSinEnlazar(act)&&!cxVarEditando(act)?`<button class="ghost" style="border:1px solid var(--line)" title="Empareja cada ítem de la rúbrica con su pregunta del examen, sin cambiar nada de lo corregido. Hace falta para que la rúbrica salga en el orden de cada modelo." onclick="mbEnlazarRubrica()">🔗 Enlazar la rúbrica con el diseño (${mbSinEnlazar(act)} sin enlazar)</button>`:""}
+    ${exModeloViendo(act)?`<button class="ghost" style="border:1px solid var(--line)" title="Torna a barrejar l'ordre de les preguntes" onclick="exMezclar()">🔀 Barrejar de nou</button><button class="ghost danger" style="border:1px solid var(--line)" onclick="exQuitarModelo()">Llevar el model ${exModeloViendo(act)}</button>`:""}
+    ${act.rubrica&&mbSinEnlazar(act)&&!cxVarEditando(act)?`<button class="ghost" style="border:1px solid var(--line)" title="Aparella cada ítem de la rúbrica amb la seua pregunta de l'examen, sense canviar res del que ja està corregit. Cal perquè la rúbrica isca en l'ordre de cada model." onclick="mbEnlazarRubrica()">🔗 Enllaçar la rúbrica amb el disseny (${mbSinEnlazar(act)} sense enllaçar)</button>`:""}
     <button class="ghost" style="border:1px solid var(--line)" title="Qué criterios evalúa el examen y con qué peso" onclick="exCobertura()">📊 Cobertura</button>
     <button class="ghost" style="border:1px solid var(--line)" title="Ocupa toda la pantalla con el editor (útil en el iPad)" onclick="exPantallaCompleta(true)">⛶ Pantalla completa</button>
     <button class="ghost" style="border:1px solid var(--line)" title="Descarga examen, rúbrica, exámenes alternativos y modelos para reutilizarlos en otro grupo o curso (sin alumnado ni notas)" onclick="exExportarPaquete()">📦 Exportar paquete</button>
     <span id="exEstado" style="font-size:12.5px;color:var(--mut)">Cargando editor…</span>${exAvisoCopia()}</div>
-    ${exModeloViendo(act)?`<p class="sub" style="margin:8px 0 0">El <strong>modelo ${exModeloViendo(act)}</strong> se genera a partir del examen general: aquí solo cuenta el <strong>orden</strong> de las preguntas (arrástralas o «🔀 Mezclar de nuevo»). El texto, los puntos y el formato se cambian en «Examen general» y el modelo los sigue solo. Reparte quién hace cada modelo en 🖊️ Corregir.</p>`:""}
-    ${cxVarEditando(act)?`<p class="sub" style="margin:8px 0 0">${cxVarEditando(act).tipo==="ausencia"?"📅 <strong>Examen alternativo (otro día)</strong>":"🧩 <strong>Examen adaptado (NESE)</strong>"}: sus preguntas son independientes del general y se corrige con su propia rúbrica (pestaña 📋 Rúbrica, donde también marcas qué alumnado lo hace). Al terminar, «Importar a la rúbrica →».</p>`:""}</div>
+    ${exModeloViendo(act)?`<p class="sub" style="margin:8px 0 0">El <strong>model ${exModeloViendo(act)}</strong> es genera a partir de l'examen general: ací només compta l'<strong>ordre</strong> de les preguntes (arrossega-les o «🔀 Barrejar de nou»). El text, els punts i el format es canvien en «Examen general» i el model els segueix sol. Reparteix qui fa cada model en 🖊️ Corregir.</p>`:""}
+    ${cxVarEditando(act)?`<p class="sub" style="margin:8px 0 0">${cxVarEditando(act).tipo==="ausencia"?"📅 <strong>Examen alternatiu (un altre dia)</strong>":"🧩 <strong>Examen adaptat (NESE)</strong>"}: les seues preguntes són independents del general i es corregeix amb la seua pròpia rúbrica (pestanya 📋 Rúbrica, on també marques quin alumnat el fa). En acabar, «Importar a la rúbrica →».</p>`:""}</div>
     <div id="exWrap" class="ex-wrap${_exFull?" ex-full":""}"><iframe id="exFrame" title="Editor de exámenes" style="width:100%;height:calc(100vh - 250px);height:calc(100dvh - 250px);min-height:560px;border:1px solid var(--line);border-radius:10px;background:#fff"></iframe><button class="btn ex-salir" onclick="exPantallaCompleta(false)">✕ Salir de pantalla completa</button></div>`;
   if(location.protocol==="file:"){
     const w=document.getElementById("exWrap");
@@ -558,23 +558,23 @@ window.exImportar=async()=>{
   const dest=cxVarEditando(act)||act; const yaImp=cxItemsFlat(dest.rubrica).some(i=>i.fuenteId);
   if(!yaImp){
     const n=cxItemsFlat(dest.rubrica).length;
-    if(!await confirmar(`Se sustituirá la rúbrica actual (${n} ítem${n===1?"":"s"}) por la estructura del examen: apartados, preguntas y subpreguntas, con los puntos de cada una. Los criterios marcados en cada pregunta del Diseño pasan a la rúbrica; el resto podrás vincularlos en la pestaña Rúbrica.\n\n¿Continuar?`,{ok:"Importar",peligro:false})) return;
+    if(!await confirmar(`Se substituirà la rúbrica actual (${n} ítem${n===1?"":"s"}) per l'estructura de l'examen: apartats, preguntes i subpreguntes, amb els punts de cadascuna. Els criteris marcats en cada pregunta del Disseny passen a la rúbrica; la resta els podràs vincular en la pestanya Rúbrica.\n\nVols continuar?`,{ok:"Importar",peligro:false})) return;
   } else {
     const pv=exPrevisionReimport(grupo,act,est,dest);
     const L=a=>a.slice(0,5).join("; ")+(a.length>5?"…":""), avisoNotas=pv.alumnos&&(pv.cambian.length||pv.quitan.length), desglose=pv.desglosan.length>0;
     if(avisoNotas||desglose){
-      const msg=(pv.alumnos?`Ya hay ${pv.alumnos} alumno${pv.alumnos===1?"":"s"} corregido${pv.alumnos===1?"":"s"} con esta rúbrica y el examen ha cambiado:`:"La rúbrica se va a actualizar con la estructura actual del examen:")
-        +(desglose?`\n• Ahora se dividen en subpreguntas, que se puntúan una a una (se pierden sus descriptores${pv.desglosan.some(d=>d.conNota)?" y las notas que tuvieran como pregunta entera":""}): ${L(pv.desglosan.map(d=>d.et))}`:"")
+      const msg=(pv.alumnos?`Ja hi ha ${pv.alumnos} alumne${pv.alumnos===1?"":"s"} corregit${pv.alumnos===1?"":"s"} amb aquesta rúbrica i l'examen ha canviat:`:"La rúbrica s'actualitzarà amb l'estructura actual de l'examen:")
+        +(desglose?`\n• Ara es divideixen en subpreguntes, que es puntuen una a una (se'n perden els descriptors${pv.desglosan.some(d=>d.conNota)?" i les notes que tingueren com a pregunta sencera":""}): ${L(pv.desglosan.map(d=>d.et))}`:"")
         +(pv.cambian.length?`\n• Cambian de puntuación: ${L(pv.cambian)}`:"")
         +(pv.quitan.length?`\n• Ya no están en el examen (se quitan de la rúbrica y de la nota): ${L(pv.quitan)}`:"")
-        +(pv.exceden?`\n• ${pv.exceden} puntuaci${pv.exceden===1?"ón supera":"ones superan"} el nuevo máximo y se ajustará${pv.exceden===1?"":"n"} a él.`:"")
+        +(pv.exceden?`\n• ${pv.exceden} puntuaci${pv.exceden===1?"ó supera":"ons superen"} el nou màxim i s'hi ajustar${pv.exceden===1?"à":"an"}.`:"")
         +(pv.alumnos?`\n\nLas notas se recalcularán. ¿Continuar?`:`\n\n¿Continuar?`);
-      if(!await confirmar(msg,{titulo:pv.alumnos?"⚠️ Reimportar con notas puestas":"Reimportar a la rúbrica",ok:"Reimportar",peligro:!!pv.alumnos})) return;
+      if(!await confirmar(msg,{titulo:pv.alumnos?"⚠️ Reimportar amb notes posades":"Reimportar a la rúbrica",ok:"Reimportar",peligro:!!pv.alumnos})) return;
     }
   }
   const r=await cxImportarEstructura(grupo,act,est,dest);
   if(!r){ mostrarAviso("Ninguna pregunta tiene puntuación asignada, así que no hay nada que importar. Asigna puntos a las preguntas en el editor."); return; }
   save();
   state.ui.corTab="editor"; save(); render();
-  mostrarToast(`✓ Estructura importada: ${r.resumen||r.items+" ítems"} · total ${cxFmtPts(r.total)} pts`+(r.huerfanos?` · ${r.huerfanos} ya no existen en el examen`:"")+(r.recortes?` · ${r.recortes} puntuaci${r.recortes===1?"ón ajustada":"ones ajustadas"} al nuevo máximo`:"")+((est.descuadres||[]).length?` · ⚠️ ${est.descuadres.length} pregunta${est.descuadres.length===1?"":"s"} con partes que no suman lo que vale la pregunta (mira 📊 Cobertura)`:"")+((est.repartidos||[]).length?` · ℹ️ ${est.repartidos.length} pregunta${est.repartidos.length===1?"":"s"} con subpreguntas sin puntos: se han repartido a partes iguales (ajústalas en el Diseño o en la rúbrica)`:"")+(Math.abs(r.total-10)>0.01?" · ⚠️ no suma 10":""),"info");
+  mostrarToast(`✓ Estructura importada: ${r.resumen||r.items+" ítems"} · total ${cxFmtPts(r.total)} pts`+(r.huerfanos?` · ${r.huerfanos} ja no existeixen en l'examen`:"")+(r.recortes?` · ${r.recortes} puntuaci${r.recortes===1?"ó ajustada":"ons ajustades"} al nou màxim`:"")+((est.descuadres||[]).length?` · ⚠️ ${est.descuadres.length} pregunt${est.descuadres.length===1?"a":"es"} amb parts que no sumen el que val la pregunta (mira 📊 Cobertura)`:"")+((est.repartidos||[]).length?` · ℹ️ ${est.repartidos.length} pregunt${est.repartidos.length===1?"a":"es"} amb subpreguntes sense punts: s'han repartit a parts iguals (ajusta-les en el Disseny o en la rúbrica)`:"")+(Math.abs(r.total-10)>0.01?" · ⚠️ no suma 10":""),"info");
 };

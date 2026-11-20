@@ -37,7 +37,7 @@ function progDetalleHTML(root){
         <input class="in" style="width:100%;margin-top:4px" placeholder="Ej. 2026-2027" value="${esc(p.cursoEscolar||"")}" onchange="progSetCampo('cursoEscolar',this.value)">
       </label>
       <label style="font-size:12.5px;color:var(--mut);font-weight:500;flex:2;min-width:200px">Profesor/a que la elabora
-        <input class="in" style="width:100%;margin-top:4px" placeholder="Nombre y apellidos" value="${esc(p.profesorNombre||"")}" onchange="progSetCampo('profesorNombre',this.value)">
+        <input class="in" style="width:100%;margin-top:4px" placeholder="Nom i cognoms" value="${esc(p.profesorNombre||"")}" onchange="progSetCampo('profesorNombre',this.value)">
       </label>
     </div>
   </div>

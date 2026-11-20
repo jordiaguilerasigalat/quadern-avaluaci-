@@ -877,7 +877,7 @@ function exportStatsPDF(fuente) {
   </style>
   </head><body>
   <h1>📊 Estadísticas de Evaluación — ${esc(cfg.tituloEval)}</h1>
-  <div class="subtitle">${esc(iesName)} &nbsp;·&nbsp; ${dateStr} &nbsp;·&nbsp; ${totalAlumnos} alumnes en ${statsGrupos.length} grupo${statsGrupos.length!==1?'s':''}</div>
+  <div class="subtitle">${esc(iesName)} &nbsp;·&nbsp; ${dateStr} &nbsp;·&nbsp; ${totalAlumnos} alumnes en ${statsGrupos.length} grup${statsGrupos.length!==1?'s':''}</div>
 
   ${statsGrupos.map(grupoCard).join('')}
 
@@ -1169,7 +1169,7 @@ function printSeguimientoAlumno(nivel, grupo, idx) {
         </div>
         <div class="alumno-info-item">
           <div class="alumno-info-label">F. Nacimiento</div>
-          <div class="alumno-info-value">${alumno.fecha ? new Date(alumno.fecha).toLocaleDateString('es-ES') : '—'}${edad!==''?` (${edad} años)`:''}</div>
+          <div class="alumno-info-value">${alumno.fecha ? new Date(alumno.fecha).toLocaleDateString('es-ES') : '—'}${edad!==''?` (${edad} anys)`:''}</div>
         </div>
         <div class="alumno-info-item">
           <div class="alumno-info-label">Repetidor</div>

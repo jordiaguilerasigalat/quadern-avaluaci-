@@ -14,7 +14,7 @@
   /* --- v2: fuentes. Lora e Inter van incrustadas (sin conexión). El resto
      solo se descarga si el examen la usa y hay conexión; nunca bloquea la carga. --- */
   var WEBF={"garamond":"https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap","merriweather":"https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400;1,700&display=swap","baskerville":"https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap","sourceserif":"https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,700;1,400;1,700&display=swap","opensans":"https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap","roboto":"https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap","lato":"https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap","montserrat":"https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap","atkinson":"https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap","lexend":"https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap","courierprime":"https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap","patrick":"https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap"}, webPuestas={};
-  FONTS.forEach(function(f){ if(f.g==='web'&&f.id!=='lora'&&f.id!=='inter'&&f.label.indexOf('conexión')<0) f.label+=' · requiere conexión'; });
+  FONTS.forEach(function(f){ if(f.g==='web'&&f.id!=='lora'&&f.id!=='inter'&&f.label.indexOf('connexió')<0) f.label+=' · requereix connexió'; });
   function fuentesUsadas(ex){ var out={}, m, re=/"font":"([a-z0-9]+)"/g, j=JSON.stringify(ex||{}); while((m=re.exec(j))) if(WEBF[m[1]]) out[m[1]]=WEBF[m[1]]; return out; }
   function asegurarFuentesWeb(ex){
     if(navigator.onLine===false) return;
@@ -48,7 +48,7 @@
   exportPdfDirect=async function(){
     var P=null; try{ P=window.parent&&window.parent!==window&&window.parent.exImprimirDesdeEditor?window.parent:null; }catch(e){ P=null; }
     if(!P) return epd0.apply(this,arguments);
-    if(!S.exam.body.length) return toast('Añade contenido al examen antes de exportar');
+    if(!S.exam.body.length) return toast('Afig contingut a l\'examen abans d\'exportar');
     clearTimeout(renderTimer); await renderPreview();
     var css=(await cssDelEditor()).replace(/:root\b/g,'.doc-root');
     var doc='<!doctype html><html><head><meta charset="utf-8"><style>'+css+'\n.doc-root{display:block!important;height:auto!important;min-height:0!important;overflow:visible!important;background:transparent!important;box-shadow:none!important;padding:0!important}#pages{transform:none!important;display:block!important}.sheet{margin:0 auto 14px!important}@media print{.sheet{margin:0!important}}</style></head><body><div id="pagesOuter" style="width:auto;height:auto"><div id="pages">'+$('#pages').innerHTML+'</div></div></body></html>';
@@ -60,7 +60,7 @@
     var L=window.__eeCriterios; if(!L||!L.length||S.tab!=='block'||!S.sel) return;
     var f=findNode(S.exam.body,S.sel); if(!f||(f.node.type!=='question'&&f.node.type!=='subquestion')) return;
     var n=f.node, cur=n.crit||[];
-    var box=h('div',{class:'sec'},h('h3',{},'Criterios de evaluación'),h('small',{class:'hint'},'Se vincularán a esta pregunta (y a sus subpreguntas) al importar a la rúbrica.'));
+    var box=h('div',{class:'sec'},h('h3',{},'Criteris d\'avaluació'),h('small',{class:'hint'},'Es vincularan a aquesta pregunta (i a les seues subpreguntes) en importar a la rúbrica.'));
     L.forEach(function(c){
       var cb=h('input',{type:'checkbox'}); cb.checked=cur.indexOf(c.id)>=0;
       cb.onchange=function(){ var a=(n.crit||[]).filter(function(x){return x!==c.id;}); if(cb.checked) a.push(c.id); n.crit=a; change({}); };
