@@ -85,12 +85,14 @@ function renderAjustes(grupo){
 
   <div class="card">
     <h2>Mode de qualificació</h2>
-    <p class="sub">Tria com es calcula la nota numèrica d'este grup. <strong>Per instruments</strong>: mitjana ponderada dels blocs (proves, quadern, laboratori…). <strong>Per competències</strong>: cada criteri és la mitjana de les seues evidències, cada CE la mitjana dels seus criteris i la nota, la mitjana ponderada de les CE (cada avaluació amb tot el que s'ha treballat fins a eixe moment; la final, amb tot el curs). Les dues coses es registren sempre: només canvia quina dona la nota.</p>
+    <p class="sub">Tria com es qualifica este grup. <strong>Per instruments</strong>: la nota és la mitjana ponderada dels blocs (proves, quadern, laboratori…). <strong>Per competències</strong>: cada criteri és la mitjana de les seues evidències, cada CE la mitjana dels seus criteris i la nota, la mitjana ponderada de les CE (cada avaluació amb tot el que s'ha treballat fins a eixe moment; la final, amb tot el curs). <strong>Les dues</strong>: dues qualificacions per separat, una nota <em>quantitativa</em> per instruments (la numèrica, la de l'acta) i una qualificació <em>qualitativa</em> per competències (Insuficient, Suficient, Bé, Notable o Excel·lent).</p>
     <div class="flex" role="radiogroup" aria-label="Mode de qualificació">
-      <label style="display:flex;gap:6px;align-items:center"><input type="radio" name="modoNota" value="bloques" ${modoNotaGrupo(grupo)==="bloques"?"checked":""} onchange="setModoNota(this.value)"> Per instruments (blocs)</label>
+      <label style="display:flex;gap:6px;align-items:center"><input type="radio" name="modoNota" value="bloques" ${modoNotaGrupo(grupo)==="bloques"&&!teQualitativaCE(grupo)?"checked":""} onchange="setModoNota(this.value)"> Per instruments (blocs)</label>
       <label style="display:flex;gap:6px;align-items:center"><input type="radio" name="modoNota" value="ce" ${modoNotaGrupo(grupo)==="ce"?"checked":""} onchange="setModoNota(this.value)"> Per competències específiques</label>
+      <label style="display:flex;gap:6px;align-items:center"><input type="radio" name="modoNota" value="ambdues" ${teQualitativaCE(grupo)?"checked":""} onchange="setModoNota(this.value)"> Les dues: quantitativa per instruments + qualitativa per competències</label>
     </div>
-    <div style="${modoNotaGrupo(grupo)==="ce"?"":"display:none"};margin-top:12px">
+    <div style="${modoNotaGrupo(grupo)==="ce"||teQualitativaCE(grupo)?"":"display:none"};margin-top:12px">
+      ${teQualitativaCE(grupo)?`<p class="sub" style="margin-bottom:6px">La qualitativa ix de les qualificacions de cada <strong>criteri</strong> (també en els exàmens: la nota numèrica de l'examen va a la quantitativa i la de cada criteri, a la qualitativa).</p>`:""}
       <p class="sub" style="margin-bottom:6px">Pes de cada competència específica (%). En blanc = repartiment igual. Si una CE no té cap criteri avaluat, el seu pes es reparteix entre la resta.</p>
       <p id="sumaPesosCEAviso" style="font-size:13px;margin:0 0 8px">${sumaPesosCEHTML(grupo)}</p>
       <div class="flex">
@@ -289,7 +291,7 @@ window.blocEliminar=async (i)=>{
   if(typeof segSincronitzarBlocs==="function") segSincronitzarBlocs(g);
   save(); render();
 };
-window.setModoNota=v=>{ const g=grupoActual(); g.modoNota=(v==="ce"?"ce":"bloques"); save(); render(); };
+window.setModoNota=v=>{ const g=grupoActual(); g.modoNota=(v==="ce"||v==="ambdues"?v:"bloques"); save(); render(); };
 window.setPesoCE=(ceId,v)=>{ const g=grupoActual(); if(!g.pesosCE) g.pesosCE={};
   const t=String(v).trim(); if(t==="") delete g.pesosCE[ceId]; else g.pesosCE[ceId]=Math.max(0,Number(t.replace(",","."))||0);
   save(); const el=document.getElementById("sumaPesosCEAviso"); if(el) el.innerHTML=sumaPesosCEHTML(g); };

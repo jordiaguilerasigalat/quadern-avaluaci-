@@ -123,11 +123,11 @@ function renderResultados(grupo){
     </div>
     <p class="sub" style="margin:6px 0 10px">Toca un alumno/a para ver y editar su informe completo debajo.</p>
     <div style="overflow-x:auto"><table>
-      <thead><tr><th>Alumno/a</th><th>${TRIMESTRES[trim]}</th><th>Nota final</th><th title="Calificación y nota de acta (entera) de la nota final">Calificación · acta</th><th></th><th></th><th></th></tr></thead>
+      <thead><tr><th>Alumno/a</th><th>${TRIMESTRES[trim]}</th><th>Nota final</th><th title="Calificación y nota de acta (entera) de la nota final">Calificación · acta</th>${teQualitativaCE(grupo)?`<th title="Qualificació qualitativa per competències (mitjana ponderada de les CE)">Qualitativa · ${TRIMESTRES[trim]}</th><th title="Qualificació qualitativa per competències de tot el curs">Qualitativa final</th>`:""}<th></th><th></th><th></th></tr></thead>
       <tbody>${grupo.alumnos.map(a=>{const t=notaTrimestre(grupo,a.id,trim),f=notaFinal(grupo,a.id);
         return `<tr style="cursor:pointer;${a.id===(al&&al.id)?'background:var(--surface-2)':''}" onclick="irAAlumnoResultados('${a.id}')">
           <td><strong>${esc(a.nombre)}</strong>${neseBadgeHTML(a)}</td><td>${fmt(t)}${extraEvalBadgeHTML(grupo,a.id,trim)}${avisoBloquesHTML(grupo,a.id,trim)}</td><td>${fmt(f)}${extraEvalBadgeHTML(grupo,a.id,"final")}</td>
-          <td>${pillCuant(f)}</td>
+          <td>${pillCuant(f)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,a.id,trim)}</td><td>${pillQual(grupo,a.id,"final")}</td>`:""}
           <td><button class="ghost small" style="border:1px solid var(--line)" title="Ver la evolución de ${esc(a.nombre)} en esta evaluación" onclick="event.stopPropagation();verEvolucionAlumno('${a.id}')">👁️</button>${grupoTieneEntrega(grupo,a.id,trim)?`<span title="Informe entregado el ${fmt2(grupoTieneEntrega(grupo,a.id,trim).fecha)}" style="margin-left:4px;color:#1e5631;font-weight:700;font-size:13px">✓</span>`:""}</td>
           <td><button class="ghost" onclick="event.stopPropagation();exportarInformeAlumno('${a.id}')">Informe</button></td>
           <td><button class="ghost" onclick="event.stopPropagation();exportarInformeFinalAlumno('${a.id}')">Informe final</button></td></tr>`;}).join("")}</tbody>
@@ -237,6 +237,15 @@ function renderResultados(grupo){
       <div><div style="font-size:12.5px;color:var(--mut);margin-bottom:4px">Puntos extra en la nota final${(x=>x&&nf!=null?` · ${textoNotaConExtra(notaFinalSinExtra(grupo,al.id),x,nf)}`:"")(ptsExtraEval(grupo,al.id,"final"))}</div>${extraCamposHTML("eval",al.id,"final",extraEval(grupo,al.id,"final"))}</div>
     </div>
   </div>
+
+  ${teQualitativaCE(grupo)?`<div class="card">
+    <h2 style="font-size:15px">Qualificació qualitativa (per competències)</h2>
+    <p class="sub">Mitjana ponderada de les competències específiques amb la qualificació de cada criteri (pesos en Ajustos → Mode de qualificació). Va per separat de la nota quantitativa i els punts extra no la toquen.</p>
+    <div class="flex" style="gap:24px;align-items:flex-end">
+      <div><div style="font-size:12.5px;color:var(--mut)">${TRIMESTRES[trim]}</div><div style="margin-top:4px">${pillQual(grupo,al.id,trim)}</div></div>
+      <div><div style="font-size:12.5px;color:var(--mut)">Final (tot el curs)</div><div style="margin-top:4px">${pillQual(grupo,al.id,"final")}</div></div>
+    </div>
+  </div>`:""}
 
   <div class="card">
     <h2 style="font-size:15px">Desglose de actividades</h2>

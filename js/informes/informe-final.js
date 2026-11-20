@@ -16,7 +16,7 @@ function informeFinalAlumnoBodyHTML(grupo,al,opts){
   const ccF=Object.keys(COMP_CLAVE).filter(cc=>idx.cat.ces.some(ce=>ce.cc.includes(cc))).map(cc=>({cc,p:scoreCCAnual(grupo,al.id,cc)})).filter(x=>x.p!=null);
   const ceF=idx.cat.ces.map(ce=>({ce,p:scoreCEAnual(grupo,al.id,ce.id)})).filter(x=>x.p!=null);
   const filas3=TRIMESTRES.map((t,i)=>{const v=notaTrimestre(grupo,al.id,i); const com=(al.comentariosEval&&al.comentariosEval[i])||"";
-    return `<tr><td>${t}</td><td>${notaEvalInformeHTML(grupo,al.id,i)}</td><td>${pillCuant(v)}</td><td>${com?esc(com):"—"}</td></tr>`;}).join("");
+    return `<tr><td>${t}</td><td>${notaEvalInformeHTML(grupo,al.id,i)}</td><td>${pillCuant(v)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,al.id,i)}</td>`:""}<td>${com?esc(com):"—"}</td></tr>`;}).join("");
 
   let htmlActsPDF = `<h2>Desglose de actividades (curso completo)</h2>`;
   const trimsConActs=[0,1,2].filter(t=>grupo.actividades.some(a=>a.trimestre===t));
@@ -63,7 +63,7 @@ function informeFinalAlumnoBodyHTML(grupo,al,opts){
     <div class="meta">${esc(cat.materia)} · ${esc(cat.curso)} · Grup ${esc(grupo.nombre)} · Curso completo · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     <h2>Alumno/a: ${esc(al.nombre)}</h2>
     ${htmlAlertaAsimetria}
-    <table><thead><tr><th>Periodo</th><th>Nota</th><th>Calificación</th><th>Comentario a la calificación</th></tr></thead><tbody>${filas3}<tr><td><strong>Nota final</strong></td><td><strong>${notaEvalInformeHTML(grupo,al.id,"final")}</strong></td><td>${pillCuant(nf)}</td><td></td></tr></tbody></table>
+    <table><thead><tr><th>Periodo</th><th>Nota</th><th>Calificación</th>${teQualitativaCE(grupo)?"<th>Qualitativa (competències)</th>":""}<th>Comentario a la calificación</th></tr></thead><tbody>${filas3}<tr><td><strong>Nota final</strong></td><td><strong>${notaEvalInformeHTML(grupo,al.id,"final")}</strong></td><td>${pillCuant(nf)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,al.id,"final")}</td>`:""}<td></td></tr></tbody></table>
     <p style="font-size:12px;color:#666;margin-top:-2px">La nota final és la mitjana ponderada de les avaluacions amb dades disponibles.</p>
     ${htmlAsistenciaFinal}
     ${htmlActsPDF}
@@ -112,10 +112,10 @@ window.exportarInformeGrupo=(modo)=>{
 
   if(esFinal){
     tituloPeriodo="Evaluación final · curso completo";
-    cabNotas=`<th>Alumno/a</th><th>1ª ev.</th><th>2ª ev.</th><th>3ª ev.</th><th>Nota final</th><th>Calificación</th>`;
+    cabNotas=`<th>Alumno/a</th><th>1ª ev.</th><th>2ª ev.</th><th>3ª ev.</th><th>Nota final</th><th>Calificación</th>${teQualitativaCE(grupo)?"<th>Qualitativa (competències)</th>":""}`;
     filasAl=grupo.alumnos.map(a=>{
       const t0=notaTrimestre(grupo,a.id,0),t1=notaTrimestre(grupo,a.id,1),t2=notaTrimestre(grupo,a.id,2),f=notaFinal(grupo,a.id);
-      return `<tr><td>${esc(a.nombre)}</td><td>${fmt(t0)}</td><td>${fmt(t1)}</td><td>${fmt(t2)}</td><td><strong>${fmt(f)}</strong></td><td>${pillCuant(f)}</td></tr>`;}).join("");
+      return `<tr><td>${esc(a.nombre)}</td><td>${fmt(t0)}</td><td>${fmt(t1)}</td><td>${fmt(t2)}</td><td><strong>${fmt(f)}</strong></td><td>${pillCuant(f)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,a.id,"final")}</td>`:""}</tr>`;}).join("");
     resumenHTML=resumenInformeFinalHTML(grupo);
     // Competencias del curso completo (media anual ponderada)
     ceFilas=idx.cat.ces.map(ce=>{
@@ -128,10 +128,10 @@ window.exportarInformeGrupo=(modo)=>{
     }).join("");
   }else{
     tituloPeriodo=TRIMESTRES[trim];
-    cabNotas=`<th>Alumne/a</th><th>Nota · ${TRIMESTRES[trim]}</th><th>Qualificació</th>`;
+    cabNotas=`<th>Alumne/a</th><th>Nota · ${TRIMESTRES[trim]}</th><th>Qualificació</th>${teQualitativaCE(grupo)?"<th>Qualitativa (competències)</th>":""}`;
     filasAl=grupo.alumnos.map(a=>{
       const t=notaTrimestre(grupo,a.id,trim);
-      return `<tr><td>${esc(a.nombre)}</td><td><strong>${fmt(t)}</strong></td><td>${pillCuant(t)}</td></tr>`;}).join("");
+      return `<tr><td>${esc(a.nombre)}</td><td><strong>${fmt(t)}</strong></td><td>${pillCuant(t)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,a.id,trim)}</td>`:""}</tr>`;}).join("");
     resumenHTML=resumenInformeTrimHTML(grupo,trim);
     // Competencias calculadas SOBRE esa evaluación concreta (conTrim garantiza el
     // trimestre correcto aunque el selector Periodo esté en otro distinto)

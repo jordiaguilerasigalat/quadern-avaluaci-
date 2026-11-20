@@ -14,6 +14,8 @@ window.exportarCSVGrupo = () => {
    
    const q = s => '"'+String(s??"").replace(/"/g,'""')+'"';
    let csv = `Alumne;Nota ${TRIMESTRES[trim]} (mitjana);Nota ${TRIMESTRES[trim]} (acta);Qualificacio ${TRIMESTRES[trim]};Nota final (mitjana);Nota final (acta);Qualificacio final`;
+   const qual = teQualitativaCE(grupo);
+   if(qual) csv += `;Qualitativa competencies ${TRIMESTRES[trim]};Qualitativa competencies final`;
    ccKeys.forEach(k => csv += `;${k}`);
    csv += "\n";
 
@@ -23,6 +25,7 @@ window.exportarCSVGrupo = () => {
       const etqT = etiquetaNota(t, grupo);
       const etqF = etiquetaNota(f, grupo);
       csv += `${q(a.nombre)};${t==null?'':t.toFixed(2).replace('.',',')};${t==null?'':notaActa(t,grupo)};${etqT?etqT.etq:''};${f==null?'':f.toFixed(2).replace('.',',')};${f==null?'':notaActa(f,grupo)};${etqF?etqF.etq:''}`;
+      if(qual){ const qT=etiquetaQualitativaCE(grupo,a.id,trim), qF=etiquetaQualitativaCE(grupo,a.id,"final"); csv += `;${qT?qT.etq:''};${qF?qF.etq:''}`; }
       ccKeys.forEach(k => {
          const val = scoreCC(grupo, a.id, k);
          const nv = nivel(grupo, val);

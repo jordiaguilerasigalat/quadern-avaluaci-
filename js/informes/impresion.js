@@ -140,7 +140,7 @@ function informeAlumnoBodyHTML(grupo,al,opts){
   const ccT=Object.keys(COMP_CLAVE).filter(cc=>idx.cat.ces.some(ce=>ce.cc.includes(cc))).map(cc=>({cc,p:scoreCC(grupo,al.id,cc)})).filter(x=>x.p!=null);
   const ceT=idx.cat.ces.map(ce=>({ce,p:scoreCE(grupo,al.id,ce.id)})).filter(x=>x.p!=null);
   const filas3=TRIMESTRES.map((t,i)=>{const v=notaTrimestre(grupo,al.id,i); const com=(al.comentariosEval&&al.comentariosEval[i])||"";
-    return `<tr><td>${t}</td><td>${notaEvalInformeHTML(grupo,al.id,i)}</td><td>${pillCuant(v)}</td><td>${com?esc(com):"—"}</td></tr>`;}).join("");
+    return `<tr><td>${t}</td><td>${notaEvalInformeHTML(grupo,al.id,i)}</td><td>${pillCuant(v)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,al.id,i)}</td>`:""}<td>${com?esc(com):"—"}</td></tr>`;}).join("");
 
   const actsT = actsTrim(grupo);
   let htmlActsPDF = `<h2>Desglose de actividades (${TRIMESTRES[trim]})</h2>`;
@@ -197,7 +197,7 @@ function informeAlumnoBodyHTML(grupo,al,opts){
     <div class="meta">${esc(cat.materia)} · ${esc(cat.curso)} · Grup ${esc(grupo.nombre)} · ${TRIMESTRES[trim]} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     <h2>Alumne/a: ${esc(al.nombre)}</h2>
     ${htmlAlertaAsimetria}
-    <table><thead><tr><th>Període</th><th>Nota</th><th>Qualificació</th><th>Comentari a la qualificació</th></tr></thead><tbody>${filas3}<tr><td><strong>Nota final</strong></td><td><strong>${notaEvalInformeHTML(grupo,al.id,"final")}</strong></td><td>${pillCuant(nf)}</td><td></td></tr></tbody></table>
+    <table><thead><tr><th>Període</th><th>Nota</th><th>Qualificació</th>${teQualitativaCE(grupo)?"<th>Qualitativa (competències)</th>":""}<th>Comentari a la qualificació</th></tr></thead><tbody>${filas3}<tr><td><strong>Nota final</strong></td><td><strong>${notaEvalInformeHTML(grupo,al.id,"final")}</strong></td><td>${pillCuant(nf)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,al.id,"final")}</td>`:""}<td></td></tr></tbody></table>
     ${htmlAsistencia}
     ${htmlConvivencia}
     ${htmlActsPDF}

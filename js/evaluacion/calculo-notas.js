@@ -279,6 +279,28 @@ function _notaTrimestreSinCache(grupo,alId,trim,fins){
        proporcionalment entre la resta.
    ================================================================= */
 function modoNotaGrupo(grupo){ return grupo && grupo.modoNota==="ce" ? "ce" : "bloques"; }
+/* Doble qualificació (grupo.modoNota = "ambdues"): la nota numèrica
+   (quantitativa) ix dels instruments, com en mode "bloques", i a banda es
+   dona una qualificació QUALITATIVA per competències: la mitjana ponderada
+   de les CE (grupo.pesosCE) amb les qualificacions de cada criteri, passada
+   a Insuficient / Suficient / Bé / Notable / Excel·lent. Com en mode "ce",
+   cada avaluació usa tot el que s'ha treballat fins a eixa avaluació i la
+   final, tot el curs. Els punts extra no la toquen. */
+function teQualitativaCE(grupo){ return !!grupo && grupo.modoNota==="ambdues"; }
+function notaQualitativaCE(grupo,alId,periodo){
+  if(!teQualitativaCE(grupo)) return null;
+  return notaPorCE(grupo,alId, String(periodo)==="final"? [0,1,2] : trimsFinsA(Number(periodo)));
+}
+function etiquetaQualitativaCE(grupo,alId,periodo){
+  const v=notaQualitativaCE(grupo,alId,periodo);
+  return v==null? null : etiquetaNota(v,grupo);
+}
+/* Píndola amb la qualificació qualitativa (sense número: el número va en el títol). */
+function pillQual(grupo,alId,periodo){
+  const v=notaQualitativaCE(grupo,alId,periodo), e=v==null? null : etiquetaNota(v,grupo);
+  if(!e) return '<span style="color:var(--mut,#888);font-size:13px">—</span>';
+  return `<span class="pill" title="Qualificació per competències (mitjana ponderada de les CE: ${fmt(v)})" style="background:${e.bg};color:${e.fg}">${e.etq}</span>`;
+}
 function pesoCEGrupo(grupo,ceId){
   const v=grupo.pesosCE && grupo.pesosCE[ceId];
   if(v!=null && v!=="" && isFinite(Number(v))) return Math.max(0,Number(v));
