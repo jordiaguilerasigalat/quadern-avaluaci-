@@ -1280,7 +1280,22 @@ export const PRUEBAS = [
       tempSetSessions(segon.id, '3'); out.manual = segon.sesionesPrevistas === '3' && segon.sessionsManual; out.suma0c = suma(0);
       tempSetReserva('2'); out.suma0d = suma(0);
       out.dates = tempDatesTemes(g, prog)[segon.id];
-      tempEditarCancel(); out.cancel = temesDeGrup(g).find(s => s.id === primer.id).trimestre === 0 && !temesDeGrup(g).some(s => s.sessionsManual);
+      tempEditarCancel(); tempEditarObrir();
+      const tercer = temesDeGrup(g).find(s => s.trimestre === 2);
+      g.actividades = [{ id: 'a1', nombre: 'Prova', tipo: TIPOS[0], trimestre: 2, bloqueId: g.bloques[0].id, criterios: [], temaId: tercer.id }];
+      g.diario = { '2027-04-05': { nota: 'classe', incidencias: '', unidadId: tercer.id } };
+      const nTemes = prog.sdas.length; window.__dialogosAuto = { confirmar: true };
+      await tempEliminar(tercer.id);
+      out.eliminat = prog.sdas.length === nTemes - 1 && g.actividades[0].temaId === '' && g.diario['2027-04-05'].unidadId === '' && suma(2) === tempSessionsAval(g, 2).length;
+      document.getElementById('tempNouNom_2').value = 'Tema 9.- Energia'; tempAfegir(2);
+      const nou = prog.sdas.find(s => s.tema === 'Tema 9.- Energia');
+      out.afegit = !!nou && nou.trimestre === 2 && Number(nou.sesionesPrevistas) > 0 && suma(2) === tempSessionsAval(g, 2).length;
+      document.getElementById('tempNouNom_1').value = 'Tema 10.- Ones'; document.getElementById('tempNouSes_1').value = '4'; tempAfegir(1);
+      const nou2 = prog.sdas.find(s => s.tema === 'Tema 10.- Ones');
+      out.afegitMa = nou2 && nou2.sesionesPrevistas === '4' && nou2.sessionsManual;
+      tempEditarCancel();
+      out.desfet = prog.sdas.length === nTemes && g.actividades[0].temaId === tercer.id && g.diario['2027-04-05'].unidadId === tercer.id && !prog.sdas.some(s => /Tema (9|10)\.-/.test(s.tema));
+      tempEditarObrir(); tempEditarCancel(); out.cancel = temesDeGrup(g).find(s => s.id === primer.id).trimestre === 0 && !temesDeGrup(g).some(s => s.sessionsManual);
       out.tornat = !/Editar temes i sessions ·/.test(document.getElementById('tabContent').textContent);
       return out;
     });
@@ -1290,6 +1305,9 @@ export const PRUEBAS = [
     t.ok(r.mogut && r.manual && r.suma0c === r.disp0 && r.suma0d === r.disp0 - 2, "l'ajust a mà es respecta i la reserva es descompta", JSON.stringify(r));
     t.ok(r.dates && r.dates.ini && r.dates.fi >= r.dates.ini, 'cada tema té dates previstes', JSON.stringify(r.dates));
     t.ok(r.cancel && r.tornat, 'Cancel·lar ho deixa com estava');
+    t.ok(r.eliminat, 'eliminar un tema deixa les seues activitats i sessions del Diari sense tema i recalcula', JSON.stringify(r));
+    t.ok(r.afegit && r.afegitMa, 'afegir un tema nou (automàtic o amb sessions a mà) i el recàlcul quadra', JSON.stringify(r));
+    t.ok(r.desfet, 'Cancel·lar desfà també els temes afegits i eliminats');
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
 ];
