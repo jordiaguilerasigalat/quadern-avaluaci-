@@ -1597,4 +1597,44 @@ export const PRUEBAS = [
     t.ok(r2.auto3 != null && /d'una altra activitat/.test(r2.avis), 'en enganxar els codis s\'afigen i els d\'una altra activitat es rebutgen', JSON.stringify(r2));
     t.ok(!p.errores.length && !errM.length, 'sin errores de JavaScript', p.errores.concat(errM).slice(0, 3).join('; '));
   } },
+  { nombre: 'quadern-nese', descripcion: 'Pla NESE: seguiment del quadern de reforç (tasques fetes, nivell, criteris), progrés per CE, I/P/A i notes del grup', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    await cuadernoConGrupo(p, t.url, { nombres: ['Alfa, Ana', 'Beta, Bruno', 'Gamma, Gema'] });
+    await p.evaluate(() => { const g = state.grupos[0]; g.alumnos[1].nese = true; state.ui.appMode = 'nese'; state.ui.neTab = 'lista'; save(); render();
+      neAbrirModalCrear(g.id, g.alumnos[1].id); });
+    await esperar(300);
+    await p.click('#neCicloOpciones .chip[data-ciclo="5"]'); await p.evaluate(() => neCrearPlan()); await esperar(300);
+    t.ok(await p.isVisible('#qnQuadern') && await p.inputValue('#qnDossierSel') === '2eso', 'el pla mostra el quadern i suggerix el dossier del curs del grup');
+    await p.evaluate(() => qnCarregar()); await esperar(300);
+    let r = await p.evaluate(() => { const pl = state.planesNESE[0]; return { n: pl.quadern.tasques.length, t1: pl.quadern.tasques.filter(x => x.tema === 1).map(x => x.criteris.join('+')).join(' ') }; });
+    t.ok(r.n === 46 && r.t1 === '7.2 7.1 6.1 7.2 2.2 9.3+7.1', 'es carreguen les 46 tasques del dossier de 2n amb els seus criteris', JSON.stringify(r));
+    await p.evaluate(() => { const ts = state.planesNESE[0].quadern.tasques; qnSetFeta(ts[0].id, true); qnSet(ts[0].id, 'assol', 'AE'); qnSet(ts[5].id, 'assol', 'NA'); qnSet(ts[5].id, 'ajuda', true); qnSet(ts[5].id, 'nota', 'Li costa mesurar el volum'); });
+    await esperar(300);
+    r = await p.evaluate(() => { const pl = state.planesNESE[0], ts = pl.quadern.tasques, pr = qnProgres(pl, null); const ce7 = pr.ces.find(e => e.id === 'CE7'), c71 = pr.crit['7.1'];
+      return { feta0: ts[0].feta && !!ts[0].data, feta5: ts[5].feta, ce7: ce7 && [ce7.fetes, ce7.total].join('/'), c71: c71 && [c71.fetes, c71.total, c71.mitjana, c71.ajuda].join('/'), text: document.getElementById('qnProgres').innerText, resum: qnResumCurt(pl) }; });
+    t.ok(r.feta0 && r.feta5, 'marcar o valorar una tasca la deixa feta i amb data', JSON.stringify(r));
+    t.ok(r.ce7 === '2/11' && r.c71 === '1/4/1/1' && /CE7/.test(r.text) && /CE9/.test(r.text), 'el progrés per CE i criteri compta les tasques fetes i el nivell', JSON.stringify(r));
+    t.ok(/2\/46 tasques/.test(r.resum), 'resum curt per a la llista i la fitxa', r.resum);
+    // Tasca pròpia
+    await p.evaluate(() => qnObrirNova(true)); await esperar(200);
+    await p.fill('#qnNTitol', 'Fitxa extra de densitat'); await p.selectOption('#qnNTema', '1'); await p.evaluate(() => qnNovaTemaCanviat());
+    await p.check('#qnNCrits input[value="9.3"]'); await p.fill('#qnNAltres', '2.4'); await p.evaluate(() => qnAfegirTasca()); await esperar(200);
+    r = await p.evaluate(() => { const ts = state.planesNESE[0].quadern.tasques, x = ts[ts.length - 1]; return [x.titol, x.tema, x.criteris.join('+'), x.propia].join('|'); });
+    t.ok(r === 'Fitxa extra de densitat|1|9.3+2.4|true', 'es pot afegir una tasca pròpia amb criteris', r);
+    // I/P/A i notes del grup
+    await p.evaluate(() => qnProposarIPA(0)); await esperar(200);
+    r = await p.evaluate(() => state.planesNESE[0].filas.filter(f => f.ce === 'CE7' || f.ce === 'CE9').map(f => f.ce + ':' + f.v1).join(' '));
+    t.ok(/CE7:P/.test(r) && /CE9:I/.test(r), 'proposa I/P/A de la 1a avaluació per competència', r);
+    await p.evaluate(async () => { window.__dialogosAuto = { confirmar: true }; await qnPassarAlGrup(0); }); await esperar(400);
+    r = await p.evaluate(() => { const g = state.grupos[0], pl = state.planesNESE[0], a = g.actividades.find(x => x.quadernNese === pl.id); if (!a) return null;
+      return { nom: a.nombre, crits: a.criterios.map(c => c.critId).sort().join('+'), nota: notaActividad(g, g.alumnos[1].id, a), ex: marcaDe(g, g.alumnos[0].id, a.id), n: g.actividades.length }; });
+    t.ok(r && r.crits === '7.1+7.2+9.3' && Math.abs(r.nota - (10 + 2.5 + 2.5) / 3) < 0.01 && r.ex === 'EX' && r.n === 1, 'passa al grup una activitat per tema només per a l\'alumne/a NESE', JSON.stringify(r));
+    await p.evaluate(async () => { await qnPassarAlGrup(0); }); await esperar(300);
+    t.ok(await p.evaluate(() => state.grupos[0].actividades.length) === 1, 'tornar a passar-ho actualitza la mateixa activitat');
+    r = await p.evaluate(() => qnInformeHTML(state.planesNESE[0], 'final'));
+    t.ok(/Quadern de reforç/.test(r) && /Li costa mesurar/.test(r), 'l\'informe del pla inclou el quadern');
+    r = await p.evaluate(() => { const g = state.grupos[0]; return fitxaResumHTML(g, g.alumnos[1]); });
+    t.ok(/📒 2\/47 tasques/.test(r), 'la fitxa de l\'alumne/a mostra per on va el quadern', r.match(/NESE[^<]*/)?.[0]);
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
 ];
