@@ -42,7 +42,7 @@ function ncGrupoVacio(g,opc){
   if(opc.alumnado){
     // Solo los datos de la persona: ni notas, ni observaciones, ni planes, ni pendientes.
     n.alumnos=(g.alumnos||[]).map(a=>normalizarAlumno({id:a.id,apellidos:a.apellidos,nombreP:a.nombreP,nombre:a.nombre,
-      fechaNacimiento:a.fechaNacimiento||"",familia:JSON.parse(JSON.stringify(a.familia||[])),nese:!!a.nese,neseNivel:a.neseNivel||"",neseNivelOtro:!!a.neseNivelOtro}));
+      fechaNacimiento:a.fechaNacimiento||"",familia:JSON.parse(JSON.stringify(a.familia||[])),nese:!!a.nese,neseNivel:a.neseNivel||"",neseNivelOtro:!!a.neseNivelOtro,...(a.foto?{foto:a.foto}:{})}));
     ordenarAlumnos(n);
     n.plano.posiciones=JSON.parse(JSON.stringify((g.plano&&g.plano.posiciones)||{}));
   }

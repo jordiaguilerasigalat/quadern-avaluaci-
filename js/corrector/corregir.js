@@ -22,7 +22,7 @@ function renderCorCorregir(grupo){
     const hecho=vc!=null;
     return `<tr>
       ${mbCeldaHTML(act,al)}
-      <td>${esc(al.nombre)}${neseBadgeHTML(al)}${marcaBadgeHTML(grupo,al.id,act.id)}${cxVarianteDeAlumno(act,al.id)?(v=>` <span class="badge" title="${v.tipo==="ausencia"?"Fa un examen alternatiu (un altre dia)":"Fa un examen adaptat"} i es corregix amb la seua pròpia rúbrica">${v.tipo==="ausencia"?"📅 ":""}${esc(v.nombre||"Adaptada")}${v.fecha?" · "+esc(cxFechaCorta(v.fecha)):""}</span>`)(cxVarianteDeAlumno(act,al.id)):""}</td>
+      <td>${avatarAlumneHTML(al)}${esc(al.nombre)}${neseBadgeHTML(al)}${marcaBadgeHTML(grupo,al.id,act.id)}${cxVarianteDeAlumno(act,al.id)?(v=>` <span class="badge" title="${v.tipo==="ausencia"?"Fa un examen alternatiu (un altre dia)":"Fa un examen adaptat"} i es corregix amb la seua pròpia rúbrica">${v.tipo==="ausencia"?"📅 ":""}${esc(v.nombre||"Adaptada")}${v.fecha?" · "+esc(cxFechaCorta(v.fecha)):""}</span>`)(cxVarianteDeAlumno(act,al.id)):""}</td>
       <td style="font-weight:600">${hecho?fmt(vc):"—"}${extraBadgeHTML(grupo,al.id,act)}</td>
       <td>${hecho?pillCuant(vc):'<span class="badge">Sense corregir</span>'}</td>
       <td><button class="btn small" onclick="cxIrAlumno('${al.id}')">${hecho?"Revisar":"Corregir"}</button>${hecho?` <button class="ghost small" style="border:1px solid var(--line)" title="Imprimir la rúbrica d'este alumne/a" onclick="cxImprimirRubrica('${al.id}','${act.id}')">🖨️</button> <button class="ghost small" style="border:1px solid var(--line)" title="Imprimir la rúbrica resumida d'este alumne/a: només puntuacions i anotacions, per a gastar menys paper" onclick="cxImprimirRubrica('${al.id}','${act.id}',true)">📄 Resumida</button>`:""}</td>
@@ -180,7 +180,7 @@ function renderCxGradingAlumno(grupo,act,al){
   c.innerHTML=`
   <div class="card">
     <div class="flex" style="justify-content:space-between;flex-wrap:wrap">
-      <div><h2>${esc(al.nombre)}${neseBadgeHTML(al)}${marcaBadgeHTML(grupo,al.id,act.id)}</h2><p class="sub" style="margin:0">${esc(act.nombre)} · ${marcaBotonesHTML(grupo,al.id,act.id)}</p></div>
+      <div><h2 style="display:flex;align-items:center;flex-wrap:wrap">${avatarAlumneHTML(al,{mida:40})}${esc(al.nombre)}${neseBadgeHTML(al)}${marcaBadgeHTML(grupo,al.id,act.id)}</h2><p class="sub" style="margin:0">${esc(act.nombre)} · ${marcaBotonesHTML(grupo,al.id,act.id)}</p></div>
       <div class="flex">
         ${vc!=null?`<button class="ghost" style="border:1px solid var(--line)" onclick="cxImprimirRubrica('${al.id}','${act.id}')">🖨️ Imprimir rúbrica</button>
         <button class="ghost" style="border:1px solid var(--line)" title="Només puntuacions i anotacions, sense el detall del que calia contestar: gasta menys paper" onclick="cxImprimirRubrica('${al.id}','${act.id}',true)">📄 Rúbrica resumida</button>`:""}
