@@ -139,7 +139,7 @@ function renderRfListaHTML(root){
         <div style="min-width:0">
           <span class="pill" style="${pillTinte(info.color)};margin-bottom:6px">${info.label}</span>
           <div style="font-size:15px;font-weight:700">${esc(p.titulo||"Sense títol")}</div>
-          <div style="font-size:12.5px;color:var(--mut);margin-top:2px">${esc(rfNombre(p))}${alV?neseBadgeHTML(alV.al)+" · "+esc(alV.g.nombre):" · pendiente de asignar"}</div>
+          <div style="font-size:12.5px;color:var(--mut);margin-top:2px">${esc(rfNombre(p))}${alV?neseBadgeHTML(alV.al)+" · "+esc(alV.g.nombre):" · pendent d'assignar"}</div>
           <div style="font-size:12.5px;color:var(--mut);margin-top:6px">${p.fechaInicio?"Des del "+fmt2(p.fechaInicio):""}${ultimo?" · últim seguiment "+fmt2(ultimo.fecha):""}</div>
         </div>
         <span class="badge">${(p.seguimiento||[]).length} entrada${(p.seguimiento||[]).length===1?"":"s"}</span>
@@ -315,7 +315,7 @@ function renderRfDetalleHTML(root){
       <h2 style="font-size:15px">${TRIMESTRES[idx]}</h2>
       <div class="section-eyebrow" style="margin-top:8px">Competències específiques, criteris d'avaluació i competències clau no assolides</div>
       ${catalogoCursoKey?`<button class="ghost" style="border:1px solid var(--line);margin-bottom:8px" onclick="rfAbrirModalElegirCE(${idx})">🔍 Triar de les competències carregades</button>`
-        :`<p class="sub" style="margin:0 0 8px">Selecciona arriba el curso y la materia a reforzar para poder elegirlas de una lista en vez de escribirlas a mano.</p>`}
+        :`<p class="sub" style="margin:0 0 8px">Selecciona dalt el curs i la matèria que cal reforçar per a poder triar-los d'una llista en compte d'escriure'ls a mà.</p>`}
       ${rfrpTablaCEHTML("rf",idx,trim.gruposCE)}
       <div class="section-eyebrow" style="margin-top:16px">Actividades de evaluación</div>
       <div>${actividadesHtml}</div>
@@ -378,7 +378,7 @@ function renderRfDetalleHTML(root){
       </label>
       <label style="font-size:12.5px;color:var(--mut);font-weight:500">Curso y materia a reforzar
         <select class="in" style="width:100%;margin-top:4px;font-size:15px;font-weight:600" id="rfDCurso" onchange="rfSetCursoRefuerzaCatalogo(this.value)">
-          <option value="" ${!catalogoCursoKey?"selected":""}>${(!catalogoCursoKey && p.cursoRefuerza)?"— "+esc(p.cursoRefuerza)+" (elige de la lista) —":"— Selecciona curso y materia —"}</option>
+          <option value="" ${!catalogoCursoKey?"selected":""}>${(!catalogoCursoKey && p.cursoRefuerza)?"— "+esc(p.cursoRefuerza)+" (tria'l de la llista) —":"— Selecciona el curs i la matèria —"}</option>
           ${catalogoSelectOptionsHTML(catalogoCursoKey||"",materiaDelGrupo(p.grupoId))}
         </select>
       </label>

@@ -66,12 +66,12 @@ function cxVinculoProgHTML(grupo,act){
 window.cxVincularAProgramacion=async actId=>{
   const grupo=grupoActual(), act=grupo&&grupo.actividades.find(a=>a.id===actId); if(!act) return;
   const prog=progDeGrupo(grupo);
-  if(!prog){ mostrarAviso("Este grupo no tiene ninguna Programación de Aula vinculada.\n\nVincúlala en Ajustes del grupo (tarjeta «Programación de Aula vinculada») y vuelve a pulsar aquí."); return; }
+  if(!prog){ mostrarAviso("Aquest grup no té cap Programació d'aula vinculada.\n\nVincula-la en Ajustos del grup (targeta «Programació d'aula vinculada») i torna a prémer ací."); return; }
   // Solo exámenes con nombre y que no estén ya asociados a otro examen del grupo.
   const ocupadas=new Set(grupo.actividades.filter(a=>a.id!==act.id && !a.recupera && a.progActId).map(a=>a.progActId));
   const libres=(prog.actividades||[]).filter(pa=>pa.esExamen && (pa.nombre||"").trim() && !ocupadas.has(pa.id));
-  if(!libres.length){ mostrarAviso(`La Programación «${prog.nombre}» no tiene ninguna actividad de tipo examen libre para vincular.\n\nCrea el examen en la Programación de Aula (marcado como examen) y vuelve a pulsar aquí.`); return; }
-  const id=await elegirOpcion("🔗 Vincular a la Programación",`¿A qué actividad de «${prog.nombre}» corresponde «${act.nombre}»?\n\nEl examen no se duplica: conserva su rúbrica y sus notas.`,
+  if(!libres.length){ mostrarAviso(`La Programació «${prog.nombre}» no té cap activitat de tipus examen lliure per a vincular.\n\nCrea l'examen en la Programació d'aula (marcat com a examen) i torna a prémer ací.`); return; }
+  const id=await elegirOpcion("🔗 Vincular a la Programación",`A quina activitat de «${prog.nombre}» correspon «${act.nombre}»?\n\nL'examen no es duplica: conserva la seua rúbrica i les seues notes.`,
     libres.map(pa=>({value:pa.id,label:pa.nombre})));
   if(!id) return;
   const pa=libres.find(x=>x.id===id); if(!pa) return;
@@ -160,7 +160,7 @@ window.cxTraerDeProgramacion=async progActId=>{
   const grupo=grupoActual(); const prog=progDeGrupo(grupo); if(!grupo||!prog) return;
   const pa=prog.actividades.find(x=>x.id===progActId); if(!pa) return;
   if(!(pa.criterios||[]).length && !(pa.rubrica||[]).length){
-    if(!await confirmar(`«${pa.nombre}» todavía no tiene criterios marcados en la Programación, así que la rúbrica empezará en blanco y no contará para las competencias hasta que vincules sus ítems a criterios.\n\n¿Continuar?`)) return;
+    if(!await confirmar(`«${pa.nombre}» encara no té criteris marcats en la Programació, així que la rúbrica començarà en blanc i no comptarà per a les competències fins que vincules els seus ítems a criteris.\n\nVols continuar?`)) return;
   }
   const act=progCrearActividadEnGrupo(grupo,pa,state.ui.trim);
   cxAbrirEditor(grupo,act);

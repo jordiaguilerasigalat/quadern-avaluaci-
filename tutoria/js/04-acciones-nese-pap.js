@@ -364,7 +364,7 @@ function _papDocBodyHTML(nivel, grupo, idx) {
 
   return `
   <h1>Plan de Actuación Personalizado (PAP)</h1>
-  <div class="subtitle">${esc(a.nombre)} · ${esc(nivel)} ${esc(grupo)} · Documento 7 · Generado el ${new Date().toLocaleDateString('es-ES')}</div>
+  <div class="subtitle">${esc(a.nombre)} · ${esc(nivel)} ${esc(grupo)} · Documento 7 · Generado el ${new Date().toLocaleDateString('ca-ES')}</div>
 
   <h2>A · Datos de identificación</h2>
   <table class="idtable">
@@ -832,7 +832,7 @@ function _acDocBodyHTML(nivel, grupo, idx) {
 
   return `
   <h1>Programa de Enriquecimiento Curricular</h1>
-  <div class="subtitle">${esc(a.nombre)} · ${esc(nivel)} ${esc(grupo)} · Altas Capacidades · Generado el ${new Date().toLocaleDateString('es-ES')}</div>
+  <div class="subtitle">${esc(a.nombre)} · ${esc(nivel)} ${esc(grupo)} · Altas Capacidades · Generado el ${new Date().toLocaleDateString('ca-ES')}</div>
 
   <h2>A · Datos de identificación</h2>
   <table class="idtable">

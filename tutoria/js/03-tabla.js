@@ -1339,7 +1339,7 @@ function updateTable(nivel, grupo) {
         <div class="decision-progress-bar">
           <div class="decision-progress-fill" style="width:${pctDecision}%;background:${pctDecision===100?'var(--green)':pctDecision>60?'var(--yellow)':'var(--red)'}"></div>
         </div>
-        <span style="font-size:10px;color:var(--text3)">${new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</span>
+        <span style="font-size:10px;color:var(--text3)">${new Date().toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'})}</span>
       </span>
     </div>`;
 

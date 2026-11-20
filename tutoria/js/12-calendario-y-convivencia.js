@@ -102,7 +102,7 @@ function renderCalendario() {
     let html = '';
     let lastDate = '';
     todosItems.forEach(s => {
-      const dateLabel = s.date ? new Date(s.date + 'T12:00:00').toLocaleDateString('es-ES', {weekday:'long',day:'numeric',month:'long'}) : '—';
+      const dateLabel = s.date ? new Date(s.date + 'T12:00:00').toLocaleDateString('ca-ES', {weekday:'long',day:'numeric',month:'long'}) : '—';
       const isPast    = s.date < today;
       const isToday   = s.date === today;
       if (s.date !== lastDate) {
@@ -123,7 +123,7 @@ function renderCalendario() {
           <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
             ${isPast ? `<span style="font-size:10px;color:var(--text3);background:var(--surface2);border-radius:4px;padding:2px 6px">Pasada</span>` : 
               isToday ? `<span style="font-size:10px;color:var(--green);background:rgba(45,212,160,0.12);border-radius:4px;padding:2px 6px;font-weight:700">Hoy</span>` : ''}
-            <span style="font-size:10px;color:var(--text3)">${s.date?new Date(s.date+'T12:00:00').toLocaleDateString('es-ES'):'—'}</span>
+            <span style="font-size:10px;color:var(--text3)">${s.date?new Date(s.date+'T12:00:00').toLocaleDateString('ca-ES'):'—'}</span>
             ${s.esEvento
               ? `<button class="btn btn-ghost btn-sm" style="font-size:10px;padding:2px 8px" onclick="_calEliminarEvento('${s.evId}')">Eliminar</button>`
               : `<button class="btn btn-ghost btn-sm" style="font-size:10px;padding:2px 8px" onclick="selectNivel('${jsAttr(s.nivel)}');renderAll();">Ver grupo</button>`}
@@ -207,7 +207,7 @@ function renderCalendario() {
           <div style="font-size:24px">${daysUntil<=3?'🚨':daysUntil<=7?'⚠️':'📌'}</div>
           <div>
             <div style="font-size:13px;font-weight:700;color:var(--text)">Próxima sesión: <span style="color:${urgColor}">${_tEsc(next.nivel)} — ${next.label}</span></div>
-            <div style="font-size:12px;color:var(--text2);margin-top:2px">${new Date(next.date+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'})} · ${daysUntil===0?'Hoy':daysUntil===1?'Mañana':`En ${daysUntil} días`}</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px">${new Date(next.date+'T12:00:00').toLocaleDateString('ca-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'})} · ${daysUntil===0?'Hoy':daysUntil===1?'Mañana':`En ${daysUntil} días`}</div>
           </div>
         </div>`;
       })()}
@@ -237,7 +237,7 @@ function renderCalendario() {
     window._calDiaAbierto = iso;
     const dayEvals = sessions.filter(s => s.date === iso);
     const dayEvs = calEventos.filter(e => e.fecha === iso);
-    const dateLabel = new Date(iso+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    const dateLabel = new Date(iso+'T12:00:00').toLocaleDateString('ca-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     detail.style.display = 'block';
     detail.innerHTML = `
       <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">📅 ${dateLabel.charAt(0).toUpperCase()+dateLabel.slice(1)}</div>
@@ -468,7 +468,7 @@ function exportConvivenciaInforme(evalKey) {
 
   if (!gruposInfo.length) { showToast('⚠ No hay alumnos registrados'); return; }
 
-  const dateStr = new Date().toLocaleDateString('es-ES',{year:'numeric',month:'long',day:'numeric'});
+  const dateStr = new Date().toLocaleDateString('ca-ES',{year:'numeric',month:'long',day:'numeric'});
   const iesName = document.getElementById('headerIesName')?.value || 'Centro Educativo';
   const esc = s => _tEsc(s||'');
 

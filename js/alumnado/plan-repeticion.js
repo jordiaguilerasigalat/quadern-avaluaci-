@@ -68,7 +68,7 @@ function renderRpListaHTML(root){
         <div style="min-width:0">
           <span class="pill" style="${pillTinte(info.color)};margin-bottom:6px">${info.label}</span>
           <div style="font-size:15px;font-weight:700">${esc(rpNombre(p))}</div>
-          <div style="font-size:12.5px;color:var(--mut);margin-top:2px">${alV?esc(alV.g.nombre):p.extern?"📌 No el tens este curs"+(p.grupActual?" · ara a "+esc(p.grupActual):""):"pendiente de asignar"}${p.cursoRepite?" · "+esc(p.cursoRepite):""}</div>
+          <div style="font-size:12.5px;color:var(--mut);margin-top:2px">${alV?esc(alV.g.nombre):p.extern?"📌 No el tens este curs"+(p.grupActual?" · ara a "+esc(p.grupActual):""):"pendent d'assignar"}${p.cursoRepite?" · "+esc(p.cursoRepite):""}</div>
           <div style="font-size:12.5px;color:var(--mut);margin-top:6px">${p.fechaInicio?"Des del "+fmt2(p.fechaInicio):""}</div>
         </div>
         <span class="badge">${objetivosTotal} objectiu${objetivosTotal===1?"":"s"}</span>
@@ -239,7 +239,7 @@ function renderRpDetalleHTML(root){
       <h2 style="font-size:15px">${TRIMESTRES[idx]}</h2>
       <div class="section-eyebrow" style="margin-top:8px">Competencias específicas, criterios de evaluación y competencias clave no conseguidas</div>
       ${catalogoCursoKey?`<button class="ghost" style="border:1px solid var(--line);margin-bottom:8px" onclick="rpAbrirModalElegirCE(${idx})">🔍 Triar de les competències carregades</button>`
-        :`<p class="sub" style="margin:0 0 8px">Selecciona arriba el curso y la materia que repite para poder elegirlas de una lista en vez de escribirlas a mano.</p>`}
+        :`<p class="sub" style="margin:0 0 8px">Selecciona dalt el curs i la matèria que repetix per a poder triar-los d'una llista en compte d'escriure'ls a mà.</p>`}
       ${rfrpTablaCEHTML("rp",idx,trim.gruposCE)}
       <div class="section-eyebrow" style="margin-top:16px">Actividades de evaluación</div>
       <div>${actividadesHtml}</div>
@@ -290,7 +290,7 @@ function renderRpDetalleHTML(root){
       <div style="font-size:14px"><strong>${esc(rpNombre(p))}</strong>${!alV&&p.extern&&p.grupActual?` <span class="sub">· ara a ${esc(p.grupActual)}</span>`:""}${alV?neseBadgeHTML(alV.al)+planBadgeHTML(alV.al)+repetidorBadgeHTML(alV.al)+` <span class="sub">· ${esc(alV.g.nombre)}</span>`:""}</div>
       <label style="font-size:12.5px;color:var(--mut);font-weight:500">Curso y materia que repite
         <select class="in" style="width:100%;margin-top:4px;font-size:15px;font-weight:600" id="rpDCurso" onchange="rpSetCursoRepiteCatalogo(this.value)">
-          <option value="" ${!catalogoCursoKey?"selected":""}>${(!catalogoCursoKey && p.cursoRepite)?"— "+esc(p.cursoRepite)+" (elige de la lista) —":"— Selecciona curso y materia —"}</option>
+          <option value="" ${!catalogoCursoKey?"selected":""}>${(!catalogoCursoKey && p.cursoRepite)?"— "+esc(p.cursoRepite)+" (tria'l de la llista) —":"— Selecciona el curs i la matèria —"}</option>
           ${catalogoSelectOptionsHTML(catalogoCursoKey||"",materiaDelGrupo(p.grupoId))}
         </select>
       </label>
@@ -502,7 +502,7 @@ window.rpEliminarPlan=async id=>{
 };
 function rpMedidasResumenHTML(medidas,lista){
   if(!medidas) return "—";
-  const activos=lista.filter(m=>medidas[m.id]).map(m=>m.id==="otros"&&medidas.otrosTexto?`Otros: ${esc(medidas.otrosTexto)}`:esc(m.label));
+  const activos=lista.filter(m=>medidas[m.id]).map(m=>m.id==="otros"&&medidas.otrosTexto?`Altres: ${esc(medidas.otrosTexto)}`:esc(m.label));
   return activos.length?activos.join(", "):"—";
 }
 window.rpImprimirInforme=id=>{

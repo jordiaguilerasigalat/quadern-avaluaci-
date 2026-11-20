@@ -245,7 +245,7 @@ function renderDashboard() {
   mc.innerHTML = '';
 
   const iesName = document.getElementById('headerIesName')?.value || 'Centro Educativo';
-  const dateStr = new Date().toLocaleDateString('es-ES', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  const dateStr = new Date().toLocaleDateString('ca-ES', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
 
   // ── Aggregate all data ──
   const todosAl = [];

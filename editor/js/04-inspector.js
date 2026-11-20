@@ -41,7 +41,7 @@ function fontPicker(get, set, inherit, compact) {
   const gs = h('optgroup', { label: 'Del sistema' }), gw = h('optgroup', { label: 'Web (requereixen connexió la primera vegada)' });
   FONTS.forEach(f => (f.g === 'sys' ? gs : gw).append(h('option', { value: f.id, style: { fontFamily: f.css } }, f.label)));
   s.append(gs, gw);
-  if (!compact) s.append(h('option', { value: '__c' }, 'Otra (escribir el nombre)…'));
+  if (!compact) s.append(h('option', { value: '__c' }, 'Una altra (escriu-ne el nom)…'));
   const cur = get() || '';
   const isCustom = cur.startsWith('custom:');
   s.value = isCustom ? '__c' : cur;
@@ -68,7 +68,7 @@ function presetSelect(presets, get, set) {
 
 /* Editor de texto con formato */
 function richField(label, get, set, hint) {
-  const ed = h('div', { class: 'redit', contenteditable: 'true', spellcheck: 'true', lang: 'es', role: 'textbox', 'aria-multiline': 'true', 'aria-label': label });
+  const ed = h('div', { class: 'redit', contenteditable: 'true', spellcheck: 'true', lang: 'ca', role: 'textbox', 'aria-multiline': 'true', 'aria-label': label });
   ed.innerHTML = richToEditor(get());
   const push = () => set(domToParas(ed).join('\n'));
   ed.addEventListener('input', push);
@@ -80,10 +80,10 @@ function richField(label, get, set, hint) {
   const b = (html, title, fn) => h('button', { type: 'button', title, 'aria-label': title, html, onmousedown: e => e.preventDefault(), onclick: () => { ed.focus(); fn(); push(); } });
   const ex = c => () => document.execCommand(c);
   const bar = h('div', { class: 'rtb' },
-    b('<b>N</b>', 'Negrita (Ctrl+B)', ex('bold')), b('<i>K</i>', 'Cursiva (Ctrl+I)', ex('italic')), b('<u>S</u>', 'Subrayado (Ctrl+U)', ex('underline')),
+    b('<b>N</b>', 'Negreta (Ctrl+B)', ex('bold')), b('<i>C</i>', 'Cursiva (Ctrl+I)', ex('italic')), b('<u>S</u>', 'Subratllat (Ctrl+U)', ex('underline')),
     b('x<sub>2</sub>', 'Subíndex', ex('subscript')), b('x<sup>2</sup>', 'Superíndex', ex('superscript')),
     b('____', 'Inserir espai per a emplenar', () => document.execCommand('insertText', false, '__________')),
-    b('Tx', 'Quitar formato', ex('removeFormat')));
+    b('Tx', 'Llevar el format', ex('removeFormat')));
   return h('div', { class: 'fld' }, h('span', { class: 'lbl' }, label), h('div', { class: 'rich' }, bar, ed), hint ? h('small', { class: 'hint' }, hint) : null);
 }
 
@@ -155,7 +155,7 @@ function blockPane() {
       richField('Text', () => n.text, v => { n.text = v; change({ key: 'f:' + n.id + 'text', tree: true }); }),
       fld('Alçària mínima (mm)', inNum(() => n.minH, up('minH', false), { min: 0, ph: '0' }), 'Útil per a deixar un requadre buit on l\'alumne escriga.'))); break;
     case 'lines': content.push(group('Línies',
-      h('div', { class: 'r3' }, fld('Quantitat', inNum(() => n.count, up('count'), { min: 1, max: 80, step: 1 })), fld('Separación (mm)', inNum(() => n.spacing, up('spacing', false), { min: 4, max: 30 })),
+      h('div', { class: 'r3' }, fld('Quantitat', inNum(() => n.count, up('count'), { min: 1, max: 80, step: 1 })), fld('Separació (mm)', inNum(() => n.spacing, up('spacing', false), { min: 4, max: 30 })),
         fld('Traç', sel([['solid', 'Continu'], ['dotted', 'Punts'], ['dashed', 'Guions']], () => n.lineStyle || 'solid', up('lineStyle', false)))))); break;
     case 'spacer': content.push(group('Espai', fld('Alçària (mm)', inNum(() => n.height, up('height'), { min: 1, max: 250 })))); break;
     case 'image': content.push(imagePane(n)); break;
@@ -324,7 +324,7 @@ function pagePane() {
   out.push(group('Numeració',
     fld('Apartados (nivel 1)', presetSelect(secP, () => N.sec[0], v => { N.sec[0] = v; change({ key: 'ns0', tree: true }); })),
     fld('Subapartados (nivel 2)', presetSelect(secP, () => N.sec[1], v => { N.sec[1] = v; change({ key: 'ns1', tree: true }); })),
-    fld('Preguntas', presetSelect(qP, () => N.q, v => { N.q = v; change({ key: 'nq', tree: true }); })),
+    fld('Preguntes', presetSelect(qP, () => N.q, v => { N.q = v; change({ key: 'nq', tree: true }); })),
     chk('Reiniciar la numeració de preguntes en cada apartat', () => N.restart, v => { N.restart = v; change({ tree: true, now: true }); }),
     fld('Subpreguntas (nivel 1)', presetSelect(subP, () => N.sub[0], v => { N.sub[0] = v; change({ key: 'nu0', tree: true }); })),
     fld('Subpreguntas (nivel 2)', presetSelect(subP, () => N.sub[1], v => { N.sub[1] = v; change({ key: 'nu1', tree: true }); }))));

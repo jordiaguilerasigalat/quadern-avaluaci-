@@ -46,7 +46,7 @@ function openMultiCode(e, nivel, grupo, idx) {
   panel.style.top  = Math.max(10, Math.round(window.innerHeight / 2 - 220)) + 'px';
   panel.style.left = Math.max(10, Math.round(window.innerWidth  / 2 - 150)) + 'px';
 
-  const alumName = alumno.nombre || `Alumno ${idx + 1}`;
+  const alumName = alumno.nombre || `Alumne ${idx + 1}`;
 
   function renderPanel() {
     panel.innerHTML = `
@@ -579,7 +579,7 @@ function renderMaterias() {
     saveMateriaCustom();
     document.getElementById('matEditorArea').innerHTML = buildEditor(nivel);
     window._initMatDrag(nivel);
-    showToast(`✅ "${val}" añadida a ${nivel}`);
+    showToast(`✅ «${val}» afegida a ${nivel}`);
     const tab = document.getElementById(`matLevelTab-${nivel.replace(/[^a-zA-Z0-9]/g,'_')}`);
     if (tab) tab.innerHTML = `${nivel} <span style="color:var(--yellow);font-size:10px">⚙</span>`;
   };

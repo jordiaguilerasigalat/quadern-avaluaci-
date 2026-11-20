@@ -5,7 +5,7 @@
      grupo.extras[alId][actId]       = {pts, motivo}
      grupo.extrasEval[alId][periodo] = {pts, motivo}   (periodo "0", "1", "2" o "final")
    ============================================================================ */
-function etiquetaPeriodoExtra(p){ return String(p)==="final"?"Nota final de curso":TRIMESTRES[Number(p)]; }
+function etiquetaPeriodoExtra(p){ return String(p)==="final"?"Nota final de curs":TRIMESTRES[Number(p)]; }
 /* Puntos con coma y sin ceros de más: 0,5 · 1 · 0,25 */
 function fmtPts(p){ return String(Math.round(Number(p)*100)/100).replace(".",","); }
 /* «6,5 + 1 = 7,5» (o «9,5 + 1 = 10» si llega al tope). */
@@ -23,7 +23,7 @@ function extraBadgeHTML(grupo,alId,act){
 }
 function extraEvalBadgeHTML(grupo,alId,periodo){
   const e=extraEval(grupo,alId,periodo), pts=_ptsExtra(e); if(!pts) return "";
-  return ` <span class="pill extra-pill" title="${esc(`Puntos extra en ${etiquetaPeriodoExtra(periodo)}: +${fmtPts(pts)}${e.motivo?" · "+e.motivo:""}`)}">+${fmtPts(pts)}</span>`;
+  return ` <span class="pill extra-pill" title="${esc(`Punts extra en ${etiquetaPeriodoExtra(periodo)}: +${fmtPts(pts)}${e.motivo?" · "+e.motivo:""}`)}">+${fmtPts(pts)}</span>`;
 }
 
 /* Guarda (o borra, si los puntos quedan vacíos o en 0) un extra. Devuelve false si los puntos no valen. */

@@ -56,7 +56,7 @@ async function abrirImportarDelCuaderno(nivel, grupo) {
   const estado = await _leerEstadoCuaderno();
   const grupos = ((estado && estado.grupos) || []).filter(g => (g.alumnos || []).length);
   if (!grupos.length) {
-    mostrarAviso('No hay alumnado en el Cuaderno del profesor de este navegador.\n\nAñade antes la lista de tu grupo en el Cuaderno (desde el mismo dispositivo y la misma dirección web) y vuelve a intentarlo.', 'Importar del Cuaderno');
+    mostrarAviso('No hi ha alumnat en el Quadern del professorat d\'aquest navegador.\n\nAfig abans la llista del teu grup en el Quadern (des del mateix dispositiu i la mateixa adreça web) i torna-ho a intentar.', 'Importar del Quadern');
     return;
   }
   const yaEstan = new Set((data[nivel][grupo] || []).map(a => _nombreClave(a.nombre)));

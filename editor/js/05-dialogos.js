@@ -20,7 +20,7 @@ function newExamDialog() {
     h('p', { style: { margin: '0 0 10px', color: 'var(--ink-2)' } }, 'L\'examen actual queda guardat en aquest navegador; el trobaràs en «Obrir».'),
     h('div', { class: 'cards' },
       card('En blanc', 'Títol i dades de l\'alumne. Tu afiges els apartats.', () => loadExam(blankExam())),
-      card('Còpia de l\'actual', 'Duplica aquest examen per a fer-ne una altra versió.', () => { const c = clone(S.exam); c.id = uid(); c.name += ' (copia)'; loadExam(sanitizeExam(c)); }))),
+      card('Còpia de l\'actual', 'Duplica aquest examen per a fer-ne una altra versió.', () => { const c = clone(S.exam); c.id = uid(); c.name += ' (còpia)'; loadExam(sanitizeExam(c)); }))),
     [{ label: 'Cancel·lar' }]);
 }
 function openDialogList() {
@@ -31,7 +31,7 @@ function openDialogList() {
     let armed = false;
     const del = h('button', { class: 'btn sm danger' }, 'Eliminar');
     del.onclick = () => { if (!armed) { armed = true; del.textContent = 'Segur?'; return; } deleteExamLocal(it.id); if (it.id === S.exam.id) { /* el actual se vuelve a guardar al editar */ } openDialogList(); };
-    list.append(h('div', { class: 'item' }, h('div', { class: 'n' }, h('b', {}, it.name || 'Sense títol'), h('small', {}, new Date(it.updated).toLocaleString('es-ES'))),
+    list.append(h('div', { class: 'item' }, h('div', { class: 'n' }, h('b', {}, it.name || 'Sense títol'), h('small', {}, new Date(it.updated).toLocaleString('ca-ES'))),
       h('button', { class: 'btn sm primary', onclick: () => { const ex = loadExamLocal(it.id); closeDialog(); if (ex) loadExam(ex); else toast('No s\'ha pogut obrir aquest examen'); } }, 'Obrir'), del));
   });
   openDialog('Obrir examen', h('div', {}, list), [

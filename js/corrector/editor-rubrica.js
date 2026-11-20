@@ -89,7 +89,7 @@ function renderCorEditor(grupo){
       <span class="pill" style="background:${totalOk?'#dcece0':'#f3dcdc'};color:${totalOk?'#1e5631':'#912525'}">Suma de punts${variante?" (rúbrica adaptada)":""}: ${maxTotal.toFixed(2)} / 10</span>
 
       ${!totalOk?`<label style="font-size:12.5px;color:var(--ink);display:inline-flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" ${escalar?"checked":""} onchange="cxSetEscalarA10(this.checked)"> Convertir la puntuació a nota sobre 10 ${maxTotal>0?`(p. ex. ${cxFmtPts(maxTotal/2)} punts → 5)`:""}</label>
-        ${escalar?"":'<span style="font-size:12.5px;color:var(--danger,#b91c1c)">Sin convertir, la nota será la suma de puntos (máximo 10).</span>'}`:''}
+        ${escalar?"":'<span style="font-size:12.5px;color:var(--danger,#b91c1c)">Sense convertir, la nota serà la suma de punts (màxim 10).</span>'}`:''}
       <span style="flex:1"></span>
       <button class="ghost small" style="border:1px solid var(--line)" onclick="cxPlegarTodo(true)">▸ Plegar todo</button>
       <button class="ghost small" style="border:1px solid var(--line)" onclick="cxPlegarTodo(false)">▾ Desplegar todo</button>

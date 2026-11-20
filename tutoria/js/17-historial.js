@@ -17,7 +17,7 @@ function openHistorial(nivel, grupo, idx) {
 
   document.getElementById('histTitle').textContent = alumno.nombre || 'Sin nombre';
   document.getElementById('histSubtitle').textContent =
-    `${nivel} — Grupo ${grupo}${alumno.fecha ? ' · Nacido/a ' + alumno.fecha : ''}`;
+    `${nivel} — Grup ${grupo}${alumno.fecha ? ' · Nascut/da el ' + alumno.fecha : ''}`;
 
   renderHistBody(alumno);
   document.getElementById('histOverlay').classList.add('open');

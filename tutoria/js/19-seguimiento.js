@@ -37,7 +37,7 @@ function renderSegFamiliaBody() {
   const alumno = data[nivel]?.[grupo]?.[idx];
   if (!alumno) return;
   const sub = document.getElementById('segFamSubtitle');
-  if (sub) sub.textContent = `${alumno.nombre} — ${nivel} · Grupo ${grupo}`;   // textContent: no hay que escapar
+  if (sub) sub.textContent = `${alumno.nombre} — ${nivel} · Grup ${grupo}`;   // textContent: no hay que escapar
 
   const filasMaterias = draft.materias.map((m, i) => `
     <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px">
@@ -255,7 +255,7 @@ function renderSegFamiliaListado() {
           ${NIVELES.map(n => `<option value="${_segEsc(n)}" ${n===nivel?'selected':''}>${_segEsc(n)}</option>`).join('')}
         </select>
         <select id="segListGrupo" aria-label="Grupo" style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;color:var(--text);font-family:inherit;font-size:13px" onchange="_segListSetGrupo(this.value)">
-          ${gruposDisponibles.map(g => `<option value="${_segEsc(g)}" ${g===grupo?'selected':''}>Grupo ${_segEsc(g)}</option>`).join('')}
+          ${gruposDisponibles.map(g => `<option value="${_segEsc(g)}" ${g===grupo?'selected':''}>Grup ${_segEsc(g)}</option>`).join('')}
         </select>
         <span style="flex:1"></span>
         <button class="btn btn-ghost btn-sm" ${nSel?'':'disabled style="opacity:.4"'} onclick="printSegFamiliaVarios([..._segListState.seleccionados])">🖨 Imprimir seleccionados (${nSel})</button>

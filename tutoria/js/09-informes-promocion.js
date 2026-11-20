@@ -7,7 +7,7 @@
 
 function printPropuestasFinales() {
   const iesName = document.getElementById('headerIesName')?.value || 'Centro Educativo';
-  const dateStr = new Date().toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const dateStr = new Date().toLocaleDateString('ca-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   const esc = _tEsc;
 
   // Decision style mapping (tipo -> {label,color})
@@ -81,7 +81,7 @@ function printPropuestasFinales() {
         ${chip('Titulan',nTitula,'#7c3aed')}
         ${chip('Repiten / No promocionan',nRepite,'#c0392b')}
         ${chip('Abandono',nAband,'#6b7280')}
-        ${nSin>0 ? `<span style="display:inline-block;padding:2px 9px;border-radius:20px;font-size:9.5pt;font-weight:700;color:#d98c00;background:#d98c001a;border:1px solid #d98c0055;margin:0 4px 4px 0;">Sin decidir: ${nSin}</span>` : ''}
+        ${nSin>0 ? `<span style="display:inline-block;padding:2px 9px;border-radius:20px;font-size:9.5pt;font-weight:700;color:#d98c00;background:#d98c001a;border:1px solid #d98c0055;margin:0 4px 4px 0;">Sense decidir: ${nSin}</span>` : ''}
       </div>
       <table>
         <thead><tr>
@@ -154,7 +154,7 @@ function printPropuestasFinales() {
   ${sections || '<div class="empty">No hay alumnado registrado todavía.</div>'}
   <div class="footer">
     <span>Gestor de Tutoría — ${esc(iesName)}</span>
-    <span>Generado el ${new Date().toLocaleDateString('es-ES')}</span>
+    <span>Generado el ${new Date().toLocaleDateString('ca-ES')}</span>
   </div>
   <script>window.onload = function(){ window.print(); }<\/script>
 </body>
@@ -231,7 +231,7 @@ function _promocionaReportStyles() {
 // Construye el bloque .report-page de un grupo (cabecera + estadísticas + tabla). '' si no hay alumnado.
 function _buildPromocionaGroupSection(nivel, grupo) {
   const iesName = document.getElementById('headerIesName')?.value || 'Centro Educativo';
-  const dateStr = new Date().toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const dateStr = new Date().toLocaleDateString('ca-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   const esc = _tEsc;
   const bach = isBach(nivel);
 
@@ -298,7 +298,7 @@ function _buildPromocionaGroupSection(nivel, grupo) {
       ${nTitula?`<span><i style="background:#7c3aed"></i>Titulan ${nTitula}</span>`:''}
       ${nRepite?`<span><i style="background:#c0392b"></i>Repiten / No prom. ${nRepite}</span>`:''}
       ${nAband?`<span><i style="background:#6b7280"></i>Abandono ${nAband}</span>`:''}
-      ${nSin?`<span><i style="background:#d98c00"></i>Sin decidir ${nSin}</span>`:''}
+      ${nSin?`<span><i style="background:#d98c00"></i>Sense decidir ${nSin}</span>`:''}
     </div>` : '';
 
   const rows = alumnos.map((a,i)=>{
@@ -368,7 +368,7 @@ function _buildPromocionaGroupSection(nivel, grupo) {
 
   <div class="footer">
     <span>Gestor de Tutoría — ${esc(iesName)}</span>
-    <span>Generado el ${new Date().toLocaleDateString('es-ES')} · ${total} alumne${total!==1?'s':''}</span>
+    <span>Generado el ${new Date().toLocaleDateString('ca-ES')} · ${total} alumne${total!==1?'s':''}</span>
   </div>
   </section>`;
 }
@@ -442,7 +442,7 @@ function printDestinoList(propField, destino, icon, label, color) {
   ));
 
   const iesName = document.getElementById('headerIesName')?.value || 'Centro Educativo';
-  const dateStr = new Date().toLocaleDateString('es-ES',{year:'numeric',month:'long',day:'numeric'});
+  const dateStr = new Date().toLocaleDateString('ca-ES',{year:'numeric',month:'long',day:'numeric'});
 
   const rows = list.map((a,i)=>`
     <tr>
@@ -512,7 +512,7 @@ function printPendientesNivel(nivel) {
   const grupos  = GRUPOS_POR_NIVEL[nivel] || [];
   const bach    = isBach(nivel);
   const iesName = document.getElementById('headerIesName')?.value || 'Centro Educativo';
-  const dateStr = new Date().toLocaleDateString('es-ES', {year:'numeric', month:'long', day:'numeric'});
+  const dateStr = new Date().toLocaleDateString('ca-ES', {year:'numeric', month:'long', day:'numeric'});
 
   // Gather students with pendientes for this nivel
   const alumnos = grupos.flatMap(g =>
@@ -635,7 +635,7 @@ function printPendientesNivel(nivel) {
 
 function printPendientesReport() {
   const iesName = document.getElementById('headerIesName')?.value || 'Centro Educativo';
-  const dateStr = new Date().toLocaleDateString('es-ES', {year:'numeric', month:'long', day:'numeric'});
+  const dateStr = new Date().toLocaleDateString('ca-ES', {year:'numeric', month:'long', day:'numeric'});
 
   let bodyHtml = '';
   let totalAlumnosConPend = 0;
@@ -896,7 +896,7 @@ function buildRecuperadasDisplay(a, nivel, grupo, idx) {
     </div>`;
   }
   if (!recValid.length && !norecValid.length) {
-    return `<div class="pendientes-display rec-mode" onclick="openRecuperadasPanel(event,'${jsAttr(nivel)}','${jsAttr(grupo)}',${idx})" title="Marcar les matèries recuperades / no recuperades (${pend.length} pendiente${pend.length>1?'s':''})">
+    return `<div class="pendientes-display rec-mode" onclick="openRecuperadasPanel(event,'${jsAttr(nivel)}','${jsAttr(grupo)}',${idx})" title="Marcar les matèries recuperades / no recuperades (${pend.length} pendent${pend.length>1?'s':''})">
       <span class="pendientes-placeholder">— marcar</span>
     </div>`;
   }

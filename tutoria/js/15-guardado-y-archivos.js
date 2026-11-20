@@ -441,7 +441,7 @@ async function openBackupsModal() {
   try { backups = await idbGetAll('backups'); } catch (_) {}
   backups.sort((a, b) => (b.id || 0) - (a.id || 0));
   const rows = backups.length ? backups.map(b => {
-    const label = new Date(b.savedAt).toLocaleString('es-ES');
+    const label = new Date(b.savedAt).toLocaleString('ca-ES');
     return `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px">
         <div><div style="font-weight:600;color:var(--text)">${_tEsc(b.iesName || 'Centro')}</div>
         <div style="color:var(--text2);font-size:12px">${label}</div></div>
@@ -568,7 +568,7 @@ function getRecents() {
 
 function addRecent(name, handle) {
   let recents = getRecents().filter(r => r.name !== name);
-  recents.unshift({ name, date: new Date().toLocaleString('es-ES'), hasHandle: !!handle });
+  recents.unshift({ name, date: new Date().toLocaleString('ca-ES'), hasHandle: !!handle });
   if (recents.length > 6) recents = recents.slice(0, 6);
   localStorage.setItem('evalies_recents', JSON.stringify(recents));
   // Guardar el handle real para poder reabrir el archivo con un clic
@@ -903,7 +903,7 @@ async function fsSave({ silent = false } = {}) {
     const dot = document.getElementById('autosaveDot');
     const lbl = document.getElementById('autosaveLabel');
     if (dot) dot.className = 'autosave-dot';
-    if (lbl) lbl.textContent = 'Guardado ' + new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+    if (lbl) lbl.textContent = 'Guardado ' + new Date().toLocaleTimeString('ca-ES',{hour:'2-digit',minute:'2-digit'});
     addRecent(_fileHandle.name, _fileHandle);
   } catch(e) {
     if (e.name === 'AbortError') return;

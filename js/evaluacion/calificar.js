@@ -156,7 +156,7 @@ function calAplicarColumna(actId,col,lineas,desdeAlId){
   const sobrantes=Math.max(0,lineas.length-(grupo.alumnos.length-i0));
   save(); render();
   mostrarToast(`✓ ${n} not${n===1?"a":"es"} apegad${n===1?"a":"es"}`);
-  if(errores.length||sobrantes) mostrarAviso((errores.length?`No se han entendido ${errores.length} valor(es) (deben ser números de 0 a 10, NP o Exento):\n• ${errores.slice(0,12).join("\n• ")}`:"")+(sobrantes?`\n\nSobraban ${sobrantes} línea(s): hay más valores que alumnos.`:""));
+  if(errores.length||sobrantes) mostrarAviso((errores.length?`No s'ha${errores.length===1?"":"n"} entés ${errores.length} valor${errores.length===1?"":"s"} (han de ser números de 0 a 10, NP o Exempt):\n• ${errores.slice(0,12).join("\n• ")}`:"")+(sobrantes?`\n\nSobrava${sobrantes===1?"":"en"} ${sobrantes} línia${sobrantes===1?"":"es"}: hi ha més valors que alumnes.`:""));
 }
 window.calPegarColumna=(actId,col)=>{
   const grupo=grupoActual(); if(!grupo) return;
