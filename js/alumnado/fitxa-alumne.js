@@ -17,6 +17,7 @@ function fitxaResumHTML(g,a){
   let nf=null; try{ nf=notaFinal(g,a.id); }catch(e){}
   const col=v=>v!=null&&v<5?"color:var(--danger,#b91c1c)":"";
   const notes=`<div class="flex" style="gap:12px;flex-wrap:wrap;font-size:13px">${[0,1,2].map(t=>`<span>${esc(TRIMESTRES[t])}: <strong style="${col(nt[t])}">${fmt(nt[t])}</strong></span>`).join("")}<span>Final: <strong style="${col(nf)}">${fmt(nf)}</strong></span></div>`;
+  const qual=(typeof teQualitativaCE==="function" && teQualitativaCE(g))? `<div class="flex" style="gap:8px;flex-wrap:wrap;align-items:center;font-size:12.5px;margin-top:6px"><span style="color:var(--mut)">Qualitativa (competències):</span>${[0,1,2].map(t=>`<span>${esc(TRIMESTRES[t])} ${pillQual(g,a.id,t)}</span>`).join("")}<span>Final ${pillQual(g,a.id,"final")}</span></div>` : "";
   /* Notes per tema */
   let temes="";
   if(typeof temesDeGrup==="function"){
@@ -42,7 +43,7 @@ function fitxaResumHTML(g,a){
   ].filter(Boolean).join("");
   const anar=(tab,txt)=>`<button class="ghost small" style="border:1px solid var(--line)" onclick="cerrarFichaAlumno();state.ui.tab='${tab}';save();render()">${txt}</button>`;
   return `<div style="display:grid;gap:8px;margin-top:10px">
-    ${bloc("📊 Notes",notes+temes)}
+    ${bloc("📊 Notes",notes+qual+temes)}
     <div style="display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
       ${bloc("✅ Assistència",faltes)}${bloc("⚖️ Convivència",convHTML)}${bloc("👪 Família",famHTML)}
     </div>

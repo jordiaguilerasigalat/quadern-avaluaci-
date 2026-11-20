@@ -208,6 +208,18 @@ function ejecutarPruebas() {
   comprobar('Per CE: el pes d’una CE sense criteris avaluats es reparteix', notaFinal(g, 'a1'), 5);
   g.notas.a1.t2 = { '2.1': 9 }; delete g.notas.a1.ex2; g.modoNota = 'bloques'; reiniciar();
   comprobar('Tornant a instruments: la nota torna a eixir dels blocs', notaTrimestre(g, 'a1', 0), 6.6);
+
+  // --- Les dues: quantitativa per instruments + qualitativa per competències
+  comprobar('Per instruments no hi ha qualitativa', notaQualitativaCE(g, 'a1', 0), null);
+  g.modoNota = 'ambdues'; g.pesosCE = { CE1: 75, CE2: 25 }; reiniciar();
+  comprobar('Les dues: la nota numèrica ix dels blocs', notaTrimestre(g, 'a1', 0), 6.6);
+  comprobar('Les dues: la final numèrica, també dels blocs', notaFinal(g, 'a1'), notaFinal({ ...g, modoNota: 'bloques' }, 'a1'));
+  comprobar('Les dues: qualitativa de la 1.ª = mitjana ponderada de les CE', notaQualitativaCE(g, 'a1', 0), (17 / 3) * 0.75 + 9 * 0.25);
+  comprobar('Les dues: etiqueta qualitativa (6,5 → 7 → Notable, com l’acta)', etiquetaQualitativaCE(g, 'a1', 0).etq, 'Notable');
+  comprobar('Les dues: qualitativa final amb tot el curs', notaQualitativaCE(g, 'a1', 'final'), (17 / 3) * 0.75 + 9 * 0.25);
+  comprobar('Les dues: sense criteris avaluats no hi ha qualitativa', notaQualitativaCE(g, 'a2', 0), null);
+  comprobar('Les dues: modoNotaGrupo continua sent «bloques»', modoNotaGrupo(g), 'bloques');
+  g.modoNota = 'bloques'; reiniciar();
 }
 
 (async () => {

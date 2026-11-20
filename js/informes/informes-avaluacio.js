@@ -26,6 +26,13 @@ function _iaMitjana(a){ return a.length? a.reduce((x,y)=>x+y,0)/a.length : null;
 function _iaMediana(a){ if(!a.length) return null; const s=a.slice().sort((x,y)=>x-y), m=Math.floor(s.length/2); return s.length%2? s[m] : (s[m-1]+s[m])/2; }
 function _iaNota(g,alId,trim){ try{ return trim==="final"? notaFinal(g,alId) : notaTrimestre(g,alId,trim); }catch(e){ return null; } }
 function _iaActaTxt(g,v){ if(v==null) return "—"; const e=etiquetaNota(v,g); return `${notaActa(v,g)}${e?"\u00a0·\u00a0"+e.etq:""}`; }
+function _iaQual(g){ return typeof teQualitativaCE==="function" && teQualitativaCE(g); }
+function _iaPillQual(g,alId,periode){
+  let v=null; try{ v=notaQualitativaCE(g,alId,periode); }catch(e){}
+  const e=v==null? null : etiquetaNota(v,g);
+  return e? `<span class="pill" style="background:${e.bg};color:${e.fg}">${e.etq}</span>` : `<span style="color:#888">Sense dades</span>`;
+}
+function _iaQualTxt(g,alId,periode){ let v=null; try{ v=notaQualitativaCE(g,alId,periode); }catch(e){} const e=v==null? null : etiquetaNota(v,g); return e? e.etq : "—"; }
 function _iaPill(g,v){
   const e=v==null? null : etiquetaNota(v,g);
   return e? `<span class="pill" style="background:${e.bg};color:${e.fg}">${notaActa(v,g)} · ${e.etq}</span>` : `<span style="color:#888">Sense nota</span>`;
@@ -89,7 +96,9 @@ function informeFamiliaBodyHTML(g,al,trim){
   const v=_iaNota(g,al.id,trim);
   const trims=[0,1,2].filter(t=>t<=trim);
   const notes=`<table><thead><tr>${trims.map(t=>`<th>${esc(TRIMESTRES[t])}</th>`).join("")}${trim===2?"<th>Final</th>":""}</tr></thead>
-    <tbody><tr>${trims.map(t=>`<td>${_iaPill(g,_iaNota(g,al.id,t))}</td>`).join("")}${trim===2?`<td>${_iaPill(g,_iaNota(g,al.id,"final"))}</td>`:""}</tr></tbody></table>`;
+    <tbody><tr>${trims.map(t=>`<td>${_iaPill(g,_iaNota(g,al.id,t))}</td>`).join("")}${trim===2?`<td>${_iaPill(g,_iaNota(g,al.id,"final"))}</td>`:""}</tr>
+    ${_iaQual(g)?`<tr>${trims.map(t=>`<td><span class="xicotet">Competències:</span> ${_iaPillQual(g,al.id,t)}</td>`).join("")}${trim===2?`<td><span class="xicotet">Competències:</span> ${_iaPillQual(g,al.id,"final")}</td>`:""}</tr>`:""}</tbody></table>
+    ${_iaQual(g)?`<p class="xicotet" style="margin:3px 0 0">Dalt, la nota numèrica (per instruments d'avaluació); baix, la qualificació qualitativa per competències específiques.</p>`:""}`;
   /* Temes */
   const temes=_iaTemesPeriode(g,trim);
   const filesTemes=temes.map(s=>{
@@ -148,6 +157,7 @@ function actaSessioBodyHTML(g,trim){
   const ap=amb.filter(x=>esAprobado(x.v,g)), su=amb.filter(x=>!esAprobado(x.v,g));
   const pct=n=>amb.length? Math.round(n/amb.length*100)+" %" : "—";
   const dist=NIVCUANT.map(n=>({etq:n.etq,bg:n.bg,fg:n.fg,n:amb.filter(x=>{ const e=etiquetaNota(x.v,g); return e&&e.etq===n.etq; }).length}));
+  const distQ=_iaQual(g)? NIVCUANT.map(n=>({etq:n.etq,bg:n.bg,fg:n.fg,n:g.alumnos.filter(al=>_iaQualTxt(g,al.id,trim)===n.etq).length})) : null;
   const kpi=(b,s)=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`;
   /* Temes */
   const temes=_iaTemesPeriode(g,trim);
@@ -175,14 +185,15 @@ function actaSessioBodyHTML(g,trim){
     <h2>Resultats del grup</h2>
     <div class="kpis">${kpi(g.alumnos.length,"alumnes")}${kpi(amb.length,"amb nota")}${kpi(`${ap.length} <small style="font-size:12px;font-weight:400">(${pct(ap.length)})</small>`,"aprovats")}${kpi(`${su.length} <small style="font-size:12px;font-weight:400">(${pct(su.length)})</small>`,"suspesos")}${kpi(fmt(_iaMitjana(vals)),"mitjana")}${kpi(fmt(_iaMediana(vals)),"mediana")}${kpi(vals.length?fmt(Math.max(...vals))+" / "+fmt(Math.min(...vals)):"—","màx. / mín.")}</div>
     <table><thead><tr>${dist.map(d=>`<th style="text-align:center">${esc(d.etq)}</th>`).join("")}</tr></thead><tbody><tr>${dist.map(d=>`<td style="text-align:center"><span class="pill" style="background:${d.bg};color:${d.fg}">${d.n}</span></td>`).join("")}</tr></tbody></table>
+    ${distQ?`<p class="xicotet" style="margin:6px 0 2px">Qualificació qualitativa per competències (${distQ.reduce((x,d)=>x+d.n,0)} amb dades):</p><table><thead><tr>${distQ.map(d=>`<th style="text-align:center">${esc(d.etq)}</th>`).join("")}</tr></thead><tbody><tr>${distQ.map(d=>`<td style="text-align:center"><span class="pill" style="background:${d.bg};color:${d.fg}">${d.n}</span></td>`).join("")}</tr></tbody></table>`:""}
     ${temes.length?`<h2>Resultats per tema</h2><table><thead><tr><th>Tema</th><th style="width:62px;text-align:center">Mitjana</th><th style="width:70px;text-align:center">Aprovats</th><th>Suspesos</th></tr></thead><tbody>${filesTemes}</tbody></table>`:""}
     <h2>Alumnat suspés (${su.length})</h2>
-    ${su.length?`<table><thead><tr><th>Alumne/a</th><th style="width:80px">Nota</th><th>Temes per recuperar</th><th style="width:44px">NP</th><th>Mesures</th></tr></thead><tbody>
-      ${su.sort((a,b)=>a.v-b.v).map(x=>`<tr><td>${esc(x.al.nombre)}</td><td>${esc(_iaActaTxt(g,x.v))}</td><td style="font-size:11.5px">${esc(temesSus(x.al).join(", ")||"—")}</td><td>${nps(x.al)||""}</td><td style="font-size:11.5px">${esc(_iaMesures(x.al).join(" · "))}</td></tr>`).join("")}
+    ${su.length?`<table><thead><tr><th>Alumne/a</th><th style="width:80px">Nota</th>${distQ?'<th style="width:80px">Qualitativa</th>':""}<th>Temes per recuperar</th><th style="width:44px">NP</th><th>Mesures</th></tr></thead><tbody>
+      ${su.sort((a,b)=>a.v-b.v).map(x=>`<tr><td>${esc(x.al.nombre)}</td><td>${esc(_iaActaTxt(g,x.v))}</td>${distQ?`<td>${esc(_iaQualTxt(g,x.al.id,trim))}</td>`:""}<td style="font-size:11.5px">${esc(temesSus(x.al).join(", ")||"—")}</td><td>${nps(x.al)||""}</td><td style="font-size:11.5px">${esc(_iaMesures(x.al).join(" · "))}</td></tr>`).join("")}
     </tbody></table>`:`<p style="font-size:12.5px;margin:0">Cap alumne/a suspés.</p>`}
     <h2>Alumnat amb mesures d'atenció a la diversitat (${mesures.length})</h2>
-    ${mesures.length?`<table><thead><tr><th>Alumne/a</th><th>Mesures</th><th style="width:80px">Nota</th><th style="width:34%">Valoració / proposta</th></tr></thead><tbody>
-      ${mesures.map(x=>`<tr><td>${esc(x.al.nombre)}</td><td style="font-size:11.5px">${esc(x.m.join(" · "))}</td><td>${esc(_iaActaTxt(g,x.v))}</td><td></td></tr>`).join("")}
+    ${mesures.length?`<table><thead><tr><th>Alumne/a</th><th>Mesures</th><th style="width:80px">Nota</th>${distQ?'<th style="width:80px">Qualitativa</th>':""}<th style="width:34%">Valoració / proposta</th></tr></thead><tbody>
+      ${mesures.map(x=>`<tr><td>${esc(x.al.nombre)}</td><td style="font-size:11.5px">${esc(x.m.join(" · "))}</td><td>${esc(_iaActaTxt(g,x.v))}</td>${distQ?`<td>${esc(_iaQualTxt(g,x.al.id,trim))}</td>`:""}<td></td></tr>`).join("")}
     </tbody></table>`:`<p style="font-size:12.5px;margin:0">Cap alumne/a amb mesures registrades en el Quadern.</p>`}
     <h2>Assistència i convivència a revisar (${esc(per.txt)})</h2>
     ${alertes.length?`<table><thead><tr><th>Alumne/a</th><th style="text-align:center">Faltes sense just.</th><th style="text-align:center">Retards</th><th style="text-align:center">Anot. actitud</th><th style="text-align:center">Amonestacions</th></tr></thead><tbody>
