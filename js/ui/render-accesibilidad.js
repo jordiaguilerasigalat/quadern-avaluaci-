@@ -123,7 +123,7 @@ function render(){
              state.ui.reTab,state.ui.reId,state.ui.reModalNueva,
              state.ui.rfTab,state.ui.rfId,state.ui.rfModalNueva,
              state.ui.rpTab,state.ui.rpId,state.ui.rpModalNueva,
-             state.ui.neTab,state.ui.neId,state.ui.neModalCrear?1:0,state.ui.prepNuevoModal?1:0].join("|");
+             state.ui.neTab,state.ui.neId,state.ui.neModalCrear?1:0,state.ui.prepNuevoModal?1:0,state.ui.pdCurs].join("|");
   const mismaVista = sig===_lastViewSig;
   _lastViewSig=sig;
   const pos = mismaVista? capturarPosicio() : null;
@@ -154,6 +154,10 @@ function render(){
       if(header) header.style.display="";
       tabs.style.display="none"; bar.style.display="";
       renderTopBar(); renderRepeticionApp();
+    }else if(state.ui.appMode==="pendents"){
+      if(header) header.style.display="";
+      tabs.style.display=""; bar.style.display="";
+      renderTopBar(); renderPendentsApp();
     }else if(state.ui.appMode==="nese"){
       if(header) header.style.display="";
       tabs.style.display="none"; bar.style.display="";

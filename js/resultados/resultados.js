@@ -225,7 +225,7 @@ function renderResultados(grupo){
 
   <div class="card">
     <h2 style="font-size:15px">Calificación cuantitativa</h2>
-    <p class="sub">Ponderación: ${grupo.bloques.map(b=>`${esc(b.label)} ${b.peso} %`).join(" · ")}.</p>
+    <p class="sub">Ponderación: ${grupo.bloques.map(b=>`${esc(b.label)} ${b.inactiu?"desactivat":b.peso+" %"}`).join(" · ")}.</p>
     <div class="flex" style="gap:24px;align-items:flex-end">
       <div><div style="font-size:12.5px;color:var(--mut)">Nota de ${TRIMESTRES[trim]}${extraEvalBadgeHTML(grupo,al.id,trim)}</div>
         <div class="flex" style="gap:8px;align-items:baseline"><span class="big" style="color:var(--accent-texto)">${fmt(nt)}</span> ${pillCuant(nt)}</div></div>

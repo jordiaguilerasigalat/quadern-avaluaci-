@@ -46,6 +46,13 @@ if(!state.examenDualMigrado){
   });
   state.examenDualMigrado=true;
 }
+/* Una sola vegada: els treballs i exposicions de Seguiment queien per defecte en
+   el bloc «Altres activitats avaluables (proactivitat)», el mateix que l'Actitud.
+   Els grups on no s'ha triat el bloc a mà els tornen a buscar amb la regla nova. */
+if(!state.segTreballsMigrat && typeof segAplicarBlocs==="function" && typeof segTriats==="function"){
+  (state.grupos||[]).forEach(g=>{ if(Array.isArray(g.bloques)&&g.bloques.length&&Array.isArray(g.actividades)&&!segTriats(g,"treballs").length) segAplicarBlocs(g,"treballs"); });
+  state.segTreballsMigrat=true;
+}
 if(!state.ui) state.ui=defAppState().ui;
 if(!state.catalogosPersonalizados || typeof state.catalogosPersonalizados!=="object") state.catalogosPersonalizados={};
 if(!state.catalogosOcultos || typeof state.catalogosOcultos!=="object") state.catalogosOcultos={};
