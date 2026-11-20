@@ -148,7 +148,7 @@ function renderAjustes(grupo){
 window.renombrarGrupo=()=>{ const grupo=grupoActual(); const v=document.getElementById("gpNombre").value.trim(); if(v){ grupo.nombre=v; save(); renderShell(); } };
 window.duplicarGrupo=async ()=>{
   const grupo=grupoActual();
-  const nombre=await pedirTexto("Nombre para el grupo nuevo:", grupo.nombre+" (copia)");
+  const nombre=await pedirTexto("Nom per al grup nou:", grupo.nombre+" (còpia)");
   if(!nombre||!nombre.trim()) return;
   const nuevo=defGrupo(nombre.trim(),grupo.catalogoKey);
   nuevo.pesos=JSON.parse(JSON.stringify(grupo.pesos));
@@ -166,7 +166,7 @@ window.duplicarGrupo=async ()=>{
   state.grupos.push(nuevo);
   state.ui.grupoId=nuevo.id; state.ui.tab="alumnos";
   save(); render();
-  mostrarAviso(`Grupo "${nuevo.nombre}" creado con la misma configuración y ${nuevo.actividades.length} actividad${nuevo.actividades.length===1?"":"es"}. Añade ahora su propio alumnado.`);
+  mostrarAviso(`Grup «${nuevo.nombre}» creat amb la mateixa configuració i ${nuevo.actividades.length} activitat${nuevo.actividades.length===1?"":"s"}. Afig ara el seu alumnat.`);
 };
 window.exportarGrupo=()=>{
   const grupo=grupoActual();

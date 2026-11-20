@@ -88,7 +88,7 @@ function generarPortadaHTML(titulo,subtitulos,indiceItems){
   return `<div style="min-height:85vh;display:flex;flex-direction:column;justify-content:center;page-break-after:always">
     <div style="background:linear-gradient(135deg,#152a44,#25456b);color:#fff;padding:26px 30px;border-radius:12px;text-align:center">
       <div style="font-size:1.15rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em">${esc(state.centroNombre)||"Quadern d'avaluació"}</div>
-      ${state.centroCodigo?`<div style="font-size:.8rem;color:rgba(255,255,255,.7);margin-top:2px">Cód. Centro: ${esc(state.centroCodigo)}</div>`:""}
+      ${state.centroCodigo?`<div style="font-size:.8rem;color:rgba(255,255,255,.7);margin-top:2px">Codi de centre: ${esc(state.centroCodigo)}</div>`:""}
       <div style="margin-top:22px;font-size:1.6rem;font-weight:700">${esc(titulo)}</div>
       ${subt}
     </div>
@@ -106,7 +106,7 @@ function abrirVentanaInforme(titulo,bodyHtml,opts){
   const centrado=!!opts.center;
   const maxWidth=opts.maxWidth||"820px";
   const margenBody = centrado ? "28px auto" : "28px";
-  mostrarImprimible(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>${esc(titulo)}</title>
+  mostrarImprimible(`<!DOCTYPE html><html lang="ca"><head><meta charset="utf-8"><title>${esc(titulo)}</title>
   <style>
     @page{ margin:1.5cm ${paisaje?"1.3cm":"2cm"}; ${paisaje?"size: A4 landscape;":""} }
     *{box-sizing:border-box}
@@ -156,7 +156,7 @@ function informeAlumnoBodyHTML(grupo,al,opts){
              const val = notaActividad(grupo, al.id, a);
              const _m = marcaDe(grupo, al.id, a.id);
              const _vr = a.recupera ? notaActividadBase(grupo, al.id, a) : null;
-             const valDisplay = _m==="NP" ? "NP (0)" : _m==="EX" ? "Exento" : a.recupera ? (_vr==null ? "—" : fmt(_vr)+" (recuperación)") : notaActividadInformeHTML(grupo, al.id, a);
+             const valDisplay = _m==="NP" ? "NP (0)" : _m==="EX" ? "Exempt" : a.recupera ? (_vr==null ? "—" : fmt(_vr)+" (recuperació)") : notaActividadInformeHTML(grupo, al.id, a);
              htmlActsPDF += `<tr><td>${esc(a.nombre)}</td><td>${esc(a.tipo)}</td><td><strong>${valDisplay}</strong></td></tr>`;
           });
           htmlActsPDF += '</tbody></table>';
@@ -193,20 +193,20 @@ function informeAlumnoBodyHTML(grupo,al,opts){
 
   return `
     <div${opts.pageBreak?' style="page-break-before:always;break-before:page"':''}>
-    <h1>Informe individual de evaluación</h1>
-    <div class="meta">${esc(cat.materia)} · ${esc(cat.curso)} · Grupo ${esc(grupo.nombre)} · ${TRIMESTRES[trim]} · Generado el ${new Date().toLocaleDateString("es-ES")}</div>
-    <h2>Alumno/a: ${esc(al.nombre)}</h2>
+    <h1>Informe individual d'avaluació</h1>
+    <div class="meta">${esc(cat.materia)} · ${esc(cat.curso)} · Grup ${esc(grupo.nombre)} · ${TRIMESTRES[trim]} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
+    <h2>Alumne/a: ${esc(al.nombre)}</h2>
     ${htmlAlertaAsimetria}
-    <table><thead><tr><th>Periodo</th><th>Nota</th><th>Calificación</th><th>Comentario a la calificación</th></tr></thead><tbody>${filas3}<tr><td><strong>Nota final</strong></td><td><strong>${notaEvalInformeHTML(grupo,al.id,"final")}</strong></td><td>${pillCuant(nf)}</td><td></td></tr></tbody></table>
+    <table><thead><tr><th>Període</th><th>Nota</th><th>Qualificació</th><th>Comentari a la qualificació</th></tr></thead><tbody>${filas3}<tr><td><strong>Nota final</strong></td><td><strong>${notaEvalInformeHTML(grupo,al.id,"final")}</strong></td><td>${pillCuant(nf)}</td><td></td></tr></tbody></table>
     ${htmlAsistencia}
     ${htmlConvivencia}
     ${htmlActsPDF}
     <h2>Competencias clave trabajadas</h2>
-    ${ccT.length?`<table><thead><tr><th>Competencia clave</th><th>Adquisición</th><th>Actividades y exámenes utilizados</th></tr></thead><tbody>
-      ${ccT.map(x=>`<tr><td>${x.cc} · ${COMP_CLAVE[x.cc]}</td><td>${pillPlain(grupo,x.p)}</td><td style="font-size:12px;color:#555">${esc(abrevActs(actividadesDeCC(grupo,al.id,x.cc),4))}</td></tr>`).join("")}</tbody></table>`:"<p>Sin datos en este periodo.</p>"}
+    ${ccT.length?`<table><thead><tr><th>Competència clau</th><th>Adquisició</th><th>Activitats i exàmens utilitzats</th></tr></thead><tbody>
+      ${ccT.map(x=>`<tr><td>${x.cc} · ${COMP_CLAVE[x.cc]}</td><td>${pillPlain(grupo,x.p)}</td><td style="font-size:12px;color:#555">${esc(abrevActs(actividadesDeCC(grupo,al.id,x.cc),4))}</td></tr>`).join("")}</tbody></table>`:"<p>No hi ha dades en este període.</p>"}
     <h2>Competencias específicas trabajadas</h2>
-    ${ceT.length?`<table><thead><tr><th>Competencia específica</th><th>Adquisición</th><th>Actividades y exámenes utilizados</th></tr></thead><tbody>
-      ${ceT.map(x=>`<tr><td>${x.ce.id} · ${esc(x.ce.titulo)}</td><td>${pillPlain(grupo,x.p)}</td><td style="font-size:12px;color:#555">${esc(abrevActs(actividadesDeCE(grupo,al.id,x.ce.id),4))}</td></tr>`).join("")}</tbody></table>`:"<p>Sin datos en este periodo.</p>"}
+    ${ceT.length?`<table><thead><tr><th>Competència específica</th><th>Adquisició</th><th>Activitats i exàmens utilitzats</th></tr></thead><tbody>
+      ${ceT.map(x=>`<tr><td>${x.ce.id} · ${esc(x.ce.titulo)}</td><td>${pillPlain(grupo,x.p)}</td><td style="font-size:12px;color:#555">${esc(abrevActs(actividadesDeCE(grupo,al.id,x.ce.id),4))}</td></tr>`).join("")}</tbody></table>`:"<p>No hi ha dades en este període.</p>"}
     </div>
   `;
 }
@@ -215,7 +215,7 @@ window.exportarInformeAlumno=alId=>{
   const al=grupo.alumnos.find(a=>a.id===alId);
   const cat=getCatalogo(grupo.catalogoKey);
   const portada=generarPortadaHTML(`Informe individual — ${al.nombre}`,
-    [`${esc(cat.materia)} · ${esc(cat.curso)} · Grupo ${esc(grupo.nombre)}`,
+    [`${esc(cat.materia)} · ${esc(cat.curso)} · Grup ${esc(grupo.nombre)}`,
      `<strong>${esc(TRIMESTRES[state.ui.trim])}</strong>`,
      `Curso escolar: <strong>${esc(cursoEscolarEfectivo(null))}</strong>`,
      profesorNombreEfectivo(null)?`Elaborado por: <strong>${esc(profesorNombreEfectivo(null))}</strong>`:""], []);

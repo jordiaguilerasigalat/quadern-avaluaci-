@@ -17,7 +17,7 @@
      queda «en pausa», un aviso en Inicio permite reactivarlo con un toque.
    - En iPad/Safari no existe esta función del navegador: se explica cómo
      hacerlo con «Exportar copia» y el menú Compartir.
-   - v3 · Cifrado opcional: «🔒 Cifrar las copias» pide una contraseña una
+   - v3 · Cifrado opcional: «🔒 Xifrar les còpies» pide una contraseña una
      vez; la clave derivada (no la contraseña) se guarda en este dispositivo
      y cada copia se escribe cifrada (AES-GCM, mismo formato que «Exportar
      copia cifrada»). En otro dispositivo se abre con la contraseña.
@@ -137,7 +137,7 @@ window.ccElegirCarpeta=async()=>{
     _ccHandle=h; await idbPut("kv",h,CC_CLAVE_IDB);
     _ccEstado=(await _ccPermiso(true))==="granted" ? "activa" : "sin-permiso";
     if(_ccEstado==="activa"){ const ok=await ccEscribir(); mostrarToast(ok?`✓ Copia automática activada en «${h.name}»`:"No se ha podido escribir en esa carpeta"); await ccBuscarMasReciente(); }
-  }catch(e){ if(!e || e.name!=="AbortError") mostrarAviso("No se ha podido usar esa carpeta: "+(e&&e.message||e)); }
+  }catch(e){ if(!e || e.name!=="AbortError") mostrarAviso("No s'ha pogut usar eixa carpeta: "+(e&&e.message||e)); }
   _ccRepintar();
 };
 window.ccReactivar=async()=>{
@@ -170,7 +170,7 @@ async function _ccPropiasSinCifrar(){
 }
 window.ccCifrar=async()=>{
   if(!cifradoDisponible()){ mostrarAviso("Este navegador no permite cifrar aquí."); return; }
-  const pass=await pedirContrasena({titulo:"🔒 Cifrar las copias de la carpeta",confirmar:true,boton:"Cifrar",
+  const pass=await pedirContrasena({titulo:"🔒 Xifrar les còpies de la carpeta",confirmar:true,boton:"Cifrar",
     texto:"Elige una contraseña. A partir de ahora las copias automáticas se guardan cifradas y, sin ella, son ilegibles. En este dispositivo no te la volverá a pedir; en otro, la necesitarás al cargar la copia. <strong>Apúntala en un lugar seguro: si la olvidas, esas copias no se podrán abrir.</strong>"});
   if(!pass) return;
   let ok=false;
@@ -178,7 +178,7 @@ window.ccCifrar=async()=>{
   mostrarToast(ok?"✓ Las copias de la carpeta se guardan ya cifradas":"Cifrado activado; se aplicará en la próxima copia");
   try{
     const viejas=_ccEstado==="activa" ? await _ccPropiasSinCifrar() : [];
-    if(viejas.length && await confirmar(`En la carpeta quedan ${viejas.length} copia${viejas.length===1?"":"s"} automática${viejas.length===1?"":"s"} de este dispositivo sin cifrar, de días anteriores. ¿Borrarlas? (La de hoy ya está cifrada.)`,{ok:"Borrar las sin cifrar",peligro:true})){
+    if(viejas.length && await confirmar(`En la carpeta queden ${viejas.length} còpi${viejas.length===1?"a":"es"} automàtic${viejas.length===1?"a":"ques"} d'este dispositiu sense xifrar, de dies anteriors. Vols esborrar-les? (La d'avui ja està xifrada.)`,{ok:"Esborrar les no xifrades",peligro:true})){
       for(const a of viejas){ try{ await _ccHandle.removeEntry(a.nombre); }catch(e){} }
       mostrarToast("✓ Copias sin cifrar borradas");
     }
@@ -229,15 +229,15 @@ function ccSeccionHTML(){
     <p class="sub" style="margin:4px 0 8px">Elige una carpeta y la app guardará sola una copia unos minutos después de cada cambio. Si es una carpeta de Drive, OneDrive o iCloud sincronizada en este ordenador, la copia llega a tus otros equipos y, al abrir allí la app, te ofrecerá cargarla.</p>
     <button class="btn small" onclick="ccElegirCarpeta()">📁 Elegir carpeta</button>${aviso}</div>`;
   const estado=_ccEstado==="activa"
-    ? `✓ Activa en «${esc(_ccHandle.name)}»${_ccUltima?` · última copia: ${esc(_fechaHora(_ccUltima))}`:""}${_ccError?` · <span style="color:var(--danger)">${esc(_ccError)}</span>`:""}`
+    ? `✓ Activa en «${esc(_ccHandle.name)}»${_ccUltima?` · última còpia: ${esc(_fechaHora(_ccUltima))}`:""}${_ccError?` · <span style="color:var(--danger)">${esc(_ccError)}</span>`:""}`
     : `⏸️ En pausa en «${esc(_ccHandle.name)}»: el navegador pide confirmar el permiso.`;
   return `<div class="card" style="margin:0 0 10px;padding:12px 14px">
     <strong style="font-size:13.5px">☁️ Copia automática en una carpeta</strong>
     <p class="sub" style="margin:4px 0 8px">${estado}</p>
     <div class="flex" style="gap:6px;flex-wrap:wrap">
-      ${_ccEstado==="activa"?`<button class="btn small" onclick="ccCopiarAhora()">Guardar copia ahora</button>`:`<button class="btn small" onclick="ccReactivar()">Reactivar</button>`}
-      ${_ccMasReciente?`<button class="btn small" onclick="ccCargarMasReciente()">🔄 Cargar la copia más reciente de otro dispositivo</button>`:""}
-      ${!cifradoDisponible()?"":_ccClave?`<button class="ghost small" style="border:1px solid var(--line)" onclick="ccQuitarCifrado()">🔓 Dejar de cifrar</button>`:`<button class="btn small" onclick="ccCifrar()">🔒 Cifrar las copias</button>`}
+      ${_ccEstado==="activa"?`<button class="btn small" onclick="ccCopiarAhora()">Guardar còpia ara</button>`:`<button class="btn small" onclick="ccReactivar()">Reactivar</button>`}
+      ${_ccMasReciente?`<button class="btn small" onclick="ccCargarMasReciente()">🔄 Carregar la còpia més recent d'un altre dispositiu</button>`:""}
+      ${!cifradoDisponible()?"":_ccClave?`<button class="ghost small" style="border:1px solid var(--line)" onclick="ccQuitarCifrado()">🔓 Deixar de xifrar</button>`:`<button class="btn small" onclick="ccCifrar()">🔒 Xifrar les còpies</button>`}
       <button class="ghost small" style="border:1px solid var(--line)" onclick="ccElegirCarpeta()">Cambiar carpeta</button>
       <button class="ghost small" style="border:1px solid var(--line)" onclick="ccQuitar()">Dejar de usarla</button>
     </div>${aviso}</div>`;

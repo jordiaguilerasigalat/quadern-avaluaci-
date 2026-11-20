@@ -10,7 +10,7 @@ function cxAvisarAlSalirDelEditor(){
   const grupo=grupoActual(); const act=grupo&&grupo.actividades.find(a=>a.id===state.ui.corExamId); if(!act||!act.rubrica) return;
   const av=cxAvisosCriterios(grupo,act); if(!av.length) return;
   const ids=[...new Set(av.flatMap(a=>a.faltan))];
-  setTimeout(()=>mostrarToast(`⚠️ «${act.nombre}»: ${ids.length===1?"el criterio "+ids[0]+" se ha":"los criterios "+ids.join(", ")+" se han"} quedado sin vincular en la rúbrica`,"info"),50);
+  setTimeout(()=>mostrarToast(`⚠️ «${act.nombre}»: ${ids.length===1?"el criteri "+ids[0]+" ha":"els criteris "+ids.join(", ")+" han"} quedat sense vincular en la rúbrica`,"info"),50);
 }
 window.cxIrLista=()=>{ cxAvisarAlSalirDelEditor(); state.ui.corTab="lista"; state.ui.corExamId=""; state.ui.corAlId=""; save(); render(); };
 window.cxIrCrear=()=>{ state.ui.corTab="crear"; save(); render(); };
@@ -47,8 +47,8 @@ function renderCorSinGrupo(){
   app.innerHTML=`<div class="hero">
     <div class="hero-eyebrow">Corrector de Exámenes</div>
     <h1 class="hero-title">Elige un grupo</h1>
-    <p class="hero-tag">${hay?"Selecciona un grupo arriba para gestionar sus exámenes.":"Todavía no tienes ningún grupo creado. Créalo desde Evaluación por Competencias: el Corrector usa el mismo alumnado, sin darlo de alta dos veces."}</p>
-    ${!hay?`<button class="btn" onclick="irModo('competencial')">Ir a Evaluación por Competencias</button>`:""}
+    <p class="hero-tag">${hay?"Selecciona un grup dalt per a gestionar-ne els exàmens.":"Encara no tens cap grup creat. Crea'l des de l'Avaluació per competències: el Corrector usa el mateix alumnat, sense donar-lo d'alta dues vegades."}</p>
+    ${!hay?`<button class="btn" onclick="irModo('competencial')">Anar a l'Avaluació per competències</button>`:""}
   </div>`;
 }
 
@@ -59,7 +59,7 @@ function cxVinculoProgHTML(grupo,act){
   if(act.recupera) return "";
   const ref=cxProgActDe(grupo,act);
   const estilo="font-size:12.5px;color:var(--mut);margin-top:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap";
-  if(ref) return `<div style="${estilo}">📘 Vinculado a la Programación «${esc(ref.prog.nombre)}» · ${esc(ref.progAct.nombre||"actividad sin nombre")}
+  if(ref) return `<div style="${estilo}">📘 Vinculat a la Programació «${esc(ref.prog.nombre)}» · ${esc(ref.progAct.nombre||"activitat sense nom")}
     <button class="ghost small" style="border:1px solid var(--line)" onclick="cxDesvincularDeProgramacion('${act.id}')">Desvincular</button></div>`;
   return `<div style="${estilo}"><button class="ghost small" style="border:1px solid var(--line)" title="Asocia este examen a una actividad de la Programación de Aula del grupo, sin crear otro examen" onclick="cxVincularAProgramacion('${act.id}')">🔗 Vincular a una actividad de la Programación…</button></div>`;
 }
@@ -100,8 +100,8 @@ function renderCorLista(grupo){
   c.innerHTML=`
   <div class="card">
     <div class="flex" style="justify-content:space-between">
-      <div><h2>Exámenes de ${TRIMESTRES[state.ui.trim]}</h2><p class="sub" style="margin:0">También aparecen en la pestaña "Actividades" de Evaluación por Competencias.</p></div>
-      <button class="btn" onclick="cxIrCrear()">+ Nuevo examen</button>
+      <div><h2>Exàmens de la ${TRIMESTRES[state.ui.trim]}</h2><p class="sub" style="margin:0">També apareixen en la pestanya «Activitats» de l'Avaluació per competències.</p></div>
+      <button class="btn" onclick="cxIrCrear()">+ Nou examen</button>
     </div>
   </div>
   ${exams.length? exams.map(act=>{
@@ -112,19 +112,19 @@ function renderCorLista(grupo){
       <div class="flex" style="justify-content:space-between;align-items:flex-start">
         <div style="flex:1 1 100%;min-width:0">
           <div class="flex" style="align-items:center;gap:6px;flex-wrap:nowrap">
-            <input class="in" value="${esc(act.nombre)}" aria-label="Nombre del examen (se puede cambiar)" title="Pulsa para cambiar el nombre del examen" style="font-size:15px;font-weight:600;flex:1;min-width:0;width:100%" onchange="cxRenombrarExamen('${act.id}',this.value)">
+            <input class="in" value="${esc(act.nombre)}" aria-label="Nom de l'examen (es pot canviar)" title="Polsa per a canviar el nom de l'examen" style="font-size:15px;font-weight:600;flex:1;min-width:0;width:100%" onchange="cxRenombrarExamen('${act.id}',this.value)">
             ${act.sda?`<span class="badge" style="vertical-align:middle">${esc(act.sda)}</span>`:''}
           </div>
-          <div style="font-size:12.5px;color:var(--mut);margin-top:2px">${b?esc(b.label):""} · ${notas.length}/${grupo.alumnos.length} corregido${notas.length===1?"":"s"}${media!=null?` · media ${fmt(media)}`:""}</div>
+          <div style="font-size:12.5px;color:var(--mut);margin-top:2px">${b?esc(b.label):""} · ${notas.length}/${grupo.alumnos.length} corregit${notas.length===1?"":"s"}${media!=null?` · mitjana ${fmt(media)}`:""}</div>
           ${cxAvisoCriteriosBadgeHTML(grupo,act)}
           ${cxVinculoProgHTML(grupo,act)}
         </div>
         <div class="flex">
           <button class="btn small" onclick="cxIrCorregir('${act.id}')">Corregir</button>
-          <button class="ghost" style="border:1px solid var(--line)" onclick="cxIrDiseno('${act.id}')">✏️ Diseño</button>
+          <button class="ghost" style="border:1px solid var(--line)" onclick="cxIrDiseno('${act.id}')">✏️ Disseny</button>
           <button class="ghost" style="border:1px solid var(--line)" onclick="cxIrEditor('${act.id}')">Rúbrica</button>
-          ${notas.length?`<button class="ghost" style="border:1px solid var(--line)" title="Imprimir juntas y ordenadas por alumno/a todas las rúbricas ya corregidas de este examen" onclick="cxImprimirRubricasTodos('${act.id}')">🖨️ Imprimir</button>
-          <button class="ghost" style="border:1px solid var(--line)" title="Rúbricas resumidas de todo el alumnado corregido: solo puntuaciones y anotaciones, para gastar menos papel" onclick="cxImprimirRubricasTodos('${act.id}',true)">📄 Resumidas</button>`:""}
+          ${notas.length?`<button class="ghost" style="border:1px solid var(--line)" title="Imprimir juntes i ordenades per alumne/a totes les rúbriques ja corregides d'este examen" onclick="cxImprimirRubricasTodos('${act.id}')">🖨️ Imprimir</button>
+          <button class="ghost" style="border:1px solid var(--line)" title="Rúbriques resumides de tot l'alumnat corregit: només puntuacions i anotacions, per a gastar menys paper" onclick="cxImprimirRubricasTodos('${act.id}',true)">📄 Resumides</button>`:""}
           <button class="ghost" style="border:1px solid var(--line)" onclick="cxExportarCSV('${act.id}')">CSV</button>
           <button class="ghost danger" onclick="delActividad('${act.id}')">Eliminar</button>
         </div>
@@ -150,8 +150,8 @@ function cxPendientesHTML(grupo){
         <button class="btn small" onclick="cxAnadirRubrica('${a.id}')">🖊️ Añadir rúbrica</button>
       </div>`).join("")}
       ${deProg.map(pa=>{ const t=trimDe(pa); return `<div class="row" style="justify-content:space-between;border:1px dashed var(--line);border-radius:8px;padding:8px 12px">
-        <span style="font-size:14px">${esc(pa.nombre)} <span style="font-size:12.5px;color:var(--mut)">· en la Programación${t!=null?" ("+TRIMESTRES[t]+")":""}, aún no traído a este grupo${(pa.rubrica||[]).length?" · con rúbrica guardada":""}</span></span>
-        <button class="btn small" title="Lo añade a Evaluación por Competencias en ${TRIMESTRES[state.ui.trim]}, ya con rúbrica" onclick="cxTraerDeProgramacion('${pa.id}')">+ Traer a ${TRIMESTRES[state.ui.trim].replace("ª evaluación","ª ev.")} con rúbrica</button>
+        <span style="font-size:14px">${esc(pa.nombre)} <span style="font-size:12.5px;color:var(--mut)">· en la Programació${t!=null?" ("+TRIMESTRES[t]+")":""}, encara no portat a este grup${(pa.rubrica||[]).length?" · amb rúbrica guardada":""}</span></span>
+        <button class="btn small" title="L'afig a l'Avaluació per competències en la ${TRIMESTRES[state.ui.trim]}, ja amb rúbrica" onclick="cxTraerDeProgramacion('${pa.id}')">+ Portar a la ${TRIMESTRES[state.ui.trim].replace(/ª evaluación|a avaluació/,"a av.")} amb rúbrica</button>
       </div>`; }).join("")}
     </div>
   </div>`;
@@ -174,30 +174,30 @@ function renderCorCrear(grupo){
   if(!f.bloqueId) f.bloqueId=grupo.bloques[0]?.id||"";
   const plantillas=state.plantillasRubrica||[];
   c.innerHTML=`<div class="card">
-    <div class="flex" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><h2>Nuevo examen</h2><button class="ghost" style="border:1px solid var(--line)" title="Crear el examen a partir de un paquete exportado (examen + rúbrica + variantes)" onclick="exImportarPaquete()">📥 Importar paquete</button></div>
-    <p class="sub">Se crea en ${TRIMESTRES[state.ui.trim]}. Después diseñas la rúbrica y vinculas cada ítem a los criterios que trabaja.</p>
+    <div class="flex" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><h2>Nou examen</h2><button class="ghost" style="border:1px solid var(--line)" title="Crear l'examen a partir d'un paquet exportat (examen + rúbrica + variants)" onclick="exImportarPaquete()">📥 Importar paquet</button></div>
+    <p class="sub">Es crea en la ${TRIMESTRES[state.ui.trim]}. Després dissenyes la rúbrica i vincules cada ítem als criteris que treballa.</p>
     <div class="grid" style="max-width:640px">
-      <input class="in" id="cxfNombre" placeholder="Nombre del examen o trabajo" aria-label="Nombre del examen o trabajo" value="${esc(f.nombre)}">
+      <input class="in" id="cxfNombre" placeholder="Nom de l'examen o treball" aria-label="Nom de l'examen o treball" value="${esc(f.nombre)}">
       <select class="in" id="cxfBloque">${grupo.bloques.map(b=>`<option value="${b.id}" ${b.id===f.bloqueId?"selected":""}>${esc(b.label)}</option>`).join("")}</select>
-      <input class="in" id="cxfSda" placeholder="Situación de Aprendizaje (opcional)" value="${esc(f.sda||'')}">
-      <label style="font-size:12.5px;color:var(--mut);font-weight:500">Fecha del examen (opcional)
+      <input class="in" id="cxfSda" placeholder="Situació d'aprenentatge (opcional)" value="${esc(f.sda||'')}">
+      <label style="font-size:12.5px;color:var(--mut);font-weight:500">Data de l'examen (opcional)
         <input class="in" style="width:100%;margin-top:4px" type="date" id="cxfFecha" value="${esc(f.fecha||'')}">
       </label>
-      <p class="sub" style="margin:-4px 0 0;font-size:11.5px">Si la indicas, se crea también en el calendario de Inicio.</p>
-      <label style="font-size:12.5px;color:var(--mut);font-weight:500">Empezar la rúbrica desde
+      <p class="sub" style="margin:-4px 0 0;font-size:11.5px">Si la indiques, també es crea en el calendari d'Inici.</p>
+      <label style="font-size:12.5px;color:var(--mut);font-weight:500">Començar la rúbrica des de
         <select class="in" style="width:100%;margin-top:4px" id="cxfPlantilla">
-          <option value="">Rúbrica nueva</option>
-          ${plantillas.map(p=>`<option value="${p.id}" ${f.plantillaId===p.id?"selected":""}>${esc(p.nombre)}${cxEsNiveles(p.rubrica)?" · por niveles":" · por puntos"}</option>`).join("")}
+          <option value="">Rúbrica nova</option>
+          ${plantillas.map(p=>`<option value="${p.id}" ${f.plantillaId===p.id?"selected":""}>${esc(p.nombre)}${cxEsNiveles(p.rubrica)?" · per nivells":" · per punts"}</option>`).join("")}
         </select>
       </label>
-      ${plantillas.length?`<p class="sub" style="margin:-4px 0 0;font-size:11.5px">Las plantillas sirven para cualquier grupo: se copian con sus puntos (o niveles) y descriptores; los criterios vinculados solo se copian si existen en el catálogo de este grupo.</p>`:""}
+      ${plantillas.length?`<p class="sub" style="margin:-4px 0 0;font-size:11.5px">Les plantilles servixen per a qualsevol grup: es copien amb els seus punts (o nivells) i descriptors; els criteris vinculats només es copien si existixen en el catàleg d'este grup.</p>`:""}
       ${!f.plantillaId?`<fieldset style="border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:0">
-        <legend style="font-size:12.5px;color:var(--mut);font-weight:500;padding:0 4px">Tipo de rúbrica</legend>
-        <label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px;cursor:pointer;padding:3px 0"><input type="radio" name="cxfTipo" value="puntos" ${f.tipoRub!=="niveles"?"checked":""} onchange="cxFormTipo(this.value)" style="margin-top:3px"><span><strong>Por puntos</strong> · apartados, preguntas e ítems con su puntuación (exámenes escritos)</span></label>
-        <label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px;cursor:pointer;padding:3px 0"><input type="radio" name="cxfTipo" value="niveles" ${f.tipoRub==="niveles"?"checked":""} onchange="cxFormTipo(this.value)" style="margin-top:3px"><span><strong>Por niveles de logro</strong> · tabla de categorías × niveles (Experto, Avanzado…): se corrige pinchando casillas (trabajos, exposiciones, proyectos)</span></label>
+        <legend style="font-size:12.5px;color:var(--mut);font-weight:500;padding:0 4px">Tipus de rúbrica</legend>
+        <label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px;cursor:pointer;padding:3px 0"><input type="radio" name="cxfTipo" value="puntos" ${f.tipoRub!=="niveles"?"checked":""} onchange="cxFormTipo(this.value)" style="margin-top:3px"><span><strong>Per punts</strong> · apartats, preguntes i ítems amb la seua puntuació (exàmens escrits)</span></label>
+        <label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px;cursor:pointer;padding:3px 0"><input type="radio" name="cxfTipo" value="niveles" ${f.tipoRub==="niveles"?"checked":""} onchange="cxFormTipo(this.value)" style="margin-top:3px"><span><strong>Per nivells d'assoliment</strong> · taula de categories × nivells (Expert, Avançat…): es corregix tocant caselles (treballs, exposicions, projectes)</span></label>
       </fieldset>`:""}
       <div>
-        <button class="ghost" style="border:1px solid var(--line)" onclick="state.ui.corFormCritAbierto=!state.ui.corFormCritAbierto;save();render()">${state.ui.corFormCritAbierto?"▾":"▸"} Criterios de evaluación que evalúa — ${(f.criterios||[]).length} marcado${(f.criterios||[]).length===1?"":"s"}</button>
+        <button class="ghost" style="border:1px solid var(--line)" onclick="state.ui.corFormCritAbierto=!state.ui.corFormCritAbierto;save();render()">${state.ui.corFormCritAbierto?"▾":"▸"} Criteris d'avaluació que avalua — ${(f.criterios||[]).length} marcat${(f.criterios||[]).length===1?"":"s"}</button>
         <p class="sub" style="margin:4px 0 0;font-size:11.5px">Opcional, pero recomendable: la rúbrica empezará con una pregunta por criterio, solo te ofrecerá estos para vincular y te avisará si alguno se queda sin evaluar. Pueden ser de varias Situaciones de Aprendizaje.</p>
         ${state.ui.corFormCritAbierto?cxSelectorCriteriosHTML(grupo.catalogoKey,f.criterios||[],"cxFormToggleCrit"):""}
       </div>
@@ -205,9 +205,9 @@ function renderCorCrear(grupo){
     </div>
   </div>
   ${plantillas.length?`<div class="card">
-    <h2 style="font-size:14.5px">Plantillas guardadas</h2>
+    <h2 style="font-size:14.5px">Plantilles guardades</h2>
     <div class="flex">
-      ${plantillas.map(p=>`<span class="chip">${esc(p.nombre)}${cxEsNiveles(p.rubrica)?' <span style="font-size:11.5px;color:var(--mut)">· niveles</span>':""} <button class="ghost danger small" style="padding:2px 6px;margin-left:4px" onclick="cxEliminarPlantilla('${p.id}')" title="Eliminar plantilla">✕</button></span>`).join("")}
+      ${plantillas.map(p=>`<span class="chip">${esc(p.nombre)}${cxEsNiveles(p.rubrica)?' <span style="font-size:11.5px;color:var(--mut)">· nivells</span>':""} <button class="ghost danger small" style="padding:2px 6px;margin-left:4px" onclick="cxEliminarPlantilla('${p.id}')" title="Eliminar la plantilla">✕</button></span>`).join("")}
     </div>
   </div>`:""}`;
   document.getElementById("cxfNombre").addEventListener("input",e=>{ state.ui.corForm.nombre=e.target.value; save();
@@ -225,7 +225,7 @@ window.cxEliminarPlantilla=async id=>{
 window.cxFormTipo=v=>{ state.ui.corForm.tipoRub=v==="niveles"?"niveles":"puntos"; save(); };
 window.cxGuardarComoPlantilla=async examId=>{
   const grupo=grupoActual(); const act=grupo.actividades.find(a=>a.id===examId); if(!act) return;
-  const nombre=await pedirTexto("Nombre para esta plantilla de rúbrica:", act.nombre);
+  const nombre=await pedirTexto("Nom per a esta plantilla de rúbrica:", act.nombre);
   if(!nombre || !nombre.trim()) return;
   if(!Array.isArray(state.plantillasRubrica)) state.plantillasRubrica=[];
   const rubrica=JSON.parse(JSON.stringify(act.rubrica));

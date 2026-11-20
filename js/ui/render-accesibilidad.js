@@ -39,7 +39,7 @@ function accesibilidadPasada(raiz){
   // v3: campos y desplegables sin nombre: el de su columna o el del texto que los acompaña.
   raiz.querySelectorAll('input:not([type="hidden"]):not([aria-label]),select:not([aria-label]),textarea:not([aria-label])').forEach(el=>{
     if(el.title || el.getAttribute("aria-labelledby") || (el.labels && el.labels.length)) return;
-    const n=_a11yNombreCampo(el); if(n) el.setAttribute("aria-label",n);
+    let n=_a11yNombreCampo(el); if(n){ n=n.replace(/[⇅▲▼]/g,"").trim(); if(window.traduirText) n=window.traduirText(n); el.setAttribute("aria-label",n); }
   });
 }
 function _a11yTexto(nodo){

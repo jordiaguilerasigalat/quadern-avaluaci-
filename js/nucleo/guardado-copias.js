@@ -194,8 +194,8 @@ function resumenEstado(st){
   const actividades=grupos.reduce((n,g)=>n+((g.actividades||[]).length),0);
   const otros=(st.programaciones||[]).length+(st.reuniones||[]).length+(st.planesRefuerzo||[]).length+(st.planesRepeticion||[]).length+(st.planesNESE||[]).length+(st.eventos||[]).length;
   const partes=[`${grupos.length} grup${grupos.length===1?"":"s"}`,`${alumnos} alumne${alumnos===1?"":"s"}`,`${actividades} activitat${actividades===1?"":"s"}`];
-  if((st.programaciones||[]).length) partes.push(`${st.programaciones.length} programació/ons`);
-  if((st.reuniones||[]).length) partes.push(`${st.reuniones.length} reunió/ons`);
+  if((st.programaciones||[]).length) partes.push(`${st.programaciones.length} programaci${st.programaciones.length===1?"ó":"ons"}`);
+  if((st.reuniones||[]).length) partes.push(`${st.reuniones.length} reuni${st.reuniones.length===1?"ó":"ons"}`);
   return {grupos:grupos.length,alumnos,actividades,total:grupos.length+alumnos+actividades+otros,texto:partes.join(" · ")};
 }
 function crearCopiaAuto(motivo,forzar){
@@ -226,7 +226,7 @@ function podarCopiasAuto(){
   }).catch(()=>{});
 }
 function _fmtBytes(n){ return n<1024?n+" B":n<1048576?(n/1024).toFixed(0)+" KB":(n/1048576).toFixed(1).replace(".",",")+" MB"; }
-function _fechaHora(ts){ return new Date(ts).toLocaleString("es-ES",{weekday:"short",day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}); }
+function _fechaHora(ts){ return new Date(ts).toLocaleString("ca-ES",{weekday:"short",day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}); }
 
 /* Carga un estado completo (de una copia importada o de una instantánea)
    aplicando TODAS las migraciones, como si se abriera la app de cero. */
@@ -246,7 +246,7 @@ function cargarEstadoCompleto(nuevo){
     state=previo;
     Object.keys(CAT_CACHE).forEach(k=>delete CAT_CACHE[k]);
     try{ render(); }catch(_){}
-    mostrarAviso("No se ha podido cargar: "+(e.message||e)+". Tus datos anteriores siguen intactos.");
+    mostrarAviso("No s'ha pogut carregar: "+(e.message||e)+". Les teues dades anteriors continuen intactes.");
     return false;
   }
 }
@@ -276,7 +276,7 @@ async function pintarCopias(){
   const filas=lista.length? lista.map(c=>`<div class="ag-evento" style="cursor:default;align-items:center">
       <div class="ag-evento-info"><div class="ag-evento-titulo">${esc(_fechaHora(c.fecha))} · ${esc(c.motivo||"")}</div><div class="ag-evento-grupo">${esc(c.resumen||"")} · ${_fmtBytes(c.bytes||0)}</div></div>
       <div class="flex" style="flex-shrink:0;gap:6px"><button class="ghost small" style="border:1px solid var(--line)" onclick="descargarCopiaAuto('${c.id}')">⬇ Descargar</button><button class="btn small" onclick="restaurarCopiaAuto('${c.id}')">Restaurar</button></div>
-    </div>`).join("") : `<p class="sub">${errorIDB?"No se pueden guardar copias internas en este navegador ("+esc(errorIDB)+"). Exporta copias a un archivo con regularidad.":"Todavía no hay copias automáticas. Se crean solas mientras trabajas (como mucho una cada 3 horas) y siempre antes de importar o restaurar."}</p>`;
+    </div>`).join("") : `<p class="sub">${errorIDB?"No es poden guardar còpies internes en este navegador ("+esc(errorIDB)+"). Exporta còpies a un fitxer amb regularitat.":"Encara no hi ha còpies automàtiques. Es creen soles mentre treballes (com a molt una cada 3 hores) i sempre abans d'importar o restaurar."}</p>`;
   cuerpo.innerHTML=`
     <p class="sub" style="margin-top:6px">Además de la copia que exportas tú, la app guarda <strong>copias automáticas</strong> dentro del propio dispositivo: las 12 más recientes y una por día durante 30 días. Si algo sale mal (un borrado, una importación equivocada…), restaura desde aquí.</p>
     ${avisoPersist}

@@ -72,11 +72,11 @@ function renderNeListaHTML(root){
         </div>`;
       }
       const r=neResumenPlan(p);
-      const badgeTxt=p.tipo==="altas"?"🌟 Altas Capacidades":`Modelo ${p.ciclo} · ${NE_MODELO_LABELS[p.ciclo]||""}`;
+      const badgeTxt=p.tipo==="altas"?"🌟 Altes capacitats":`Model ${p.ciclo} · ${NE_MODELO_LABELS[p.ciclo]||""}`;
       return `<div class="row" style="justify-content:space-between;cursor:pointer" onclick="neAbrirDetalle('${p.id}')">
         <div><strong>${esc(al.nombre)}</strong> <span class="badge">${badgeTxt}</span></div>
         <div class="flex" style="gap:6px">
-          ${p.tipo==="altas"?`<span class="sub" style="margin:0">${p.medidasTomadas?"con medidas registradas":"plan en blanco"}</span>`:`
+          ${p.tipo==="altas"?`<span class="sub" style="margin:0">${p.medidasTomadas?"amb mesures registrades":"pla en blanc"}</span>`:`
           <span class="pill" style="background:#dbeafe;color:#1d4ed8">${r.i} I</span>
           <span class="pill" style="background:#fef3c7;color:#92400e">${r.pr} P</span>
           <span class="pill" style="background:#dcfce7;color:#166534">${r.a} A</span>`}
@@ -106,16 +106,16 @@ function neRenderModalCrearHTML(){
   return `<div class="modal-overlay" onclick="if(event.target===this) neCerrarModalCrear()">
     <div class="modal-box" style="max-width:480px">
       <div class="flex" style="justify-content:space-between;align-items:flex-start">
-        <h2 style="font-size:17px">Nuevo plan NESE — ${esc(al.nombre)}</h2>
+        <h2 style="font-size:17px">Nou pla NESE — ${esc(al.nombre)}</h2>
         <button class="modal-close" onclick="neCerrarModalCrear()">×</button>
       </div>
-      <p class="sub" style="margin-top:6px">Elige el modelo según el nivel de competencia curricular real del alumno/a (no su curso de matrícula).${al.neseNivel?` Su nivel de referencia actual es <strong>${esc(al.neseNivel)}</strong>.`:""}</p>
+      <p class="sub" style="margin-top:6px">Tria el model segons el nivell de competència curricular real de l'alumne/a (no el seu curs de matrícula).${al.neseNivel?` El seu nivell de referència actual és <strong>${esc(al.neseNivel)}</strong>.`:""}</p>
       <div class="grid" style="gap:8px;margin-top:8px" id="neCicloOpciones">
         ${["1","2","3","4","5"].map(c=>{
           const label="Modelo "+c+" · "+NE_MODELO_LABELS[c];
-          return `<button class="chip ${c===sugerido?"on":""}" style="text-align:left;padding:10px 14px;justify-content:flex-start" data-tipo="curricular" data-ciclo="${c}" onclick="document.querySelectorAll('#neCicloOpciones .chip').forEach(b=>b.classList.remove('on'));this.classList.add('on')">${label}${c===sugerido?" — sugerido":""}</button>`;
+          return `<button class="chip ${c===sugerido?"on":""}" style="text-align:left;padding:10px 14px;justify-content:flex-start" data-tipo="curricular" data-ciclo="${c}" onclick="document.querySelectorAll('#neCicloOpciones .chip').forEach(b=>b.classList.remove('on'));this.classList.add('on')">${label}${c===sugerido?" — suggerit":""}</button>`;
         }).join("")}
-        <button class="chip ${sugerido==="altas"?"on":""}" style="text-align:left;padding:10px 14px;justify-content:flex-start" data-tipo="altas" onclick="document.querySelectorAll('#neCicloOpciones .chip').forEach(b=>b.classList.remove('on'));this.classList.add('on')">🌟 Altas Capacidades · Plan en blanco${sugerido==="altas"?" — sugerido":""}</button>
+        <button class="chip ${sugerido==="altas"?"on":""}" style="text-align:left;padding:10px 14px;justify-content:flex-start" data-tipo="altas" onclick="document.querySelectorAll('#neCicloOpciones .chip').forEach(b=>b.classList.remove('on'));this.classList.add('on')">🌟 Altes capacitats · Pla en blanc${sugerido==="altas"?" — suggerit":""}</button>
       </div>
       <p class="sub" style="margin-top:6px">Para Altas Capacidades no se parte de ningún modelo curricular: se crea un plan en blanco con un espacio libre para ir anotando las medidas y actuaciones que se apliquen.</p>
       <div class="grid" style="gap:10px;margin-top:14px">
@@ -241,7 +241,7 @@ function renderNeDetalleHTML(root){
       </div>
     </div>
     <div class="grid" style="gap:12px;margin-top:14px;max-width:640px">
-      <div style="font-size:15px;font-weight:700">${esc(neNombre(p))}${alV?neseBadgeHTML(alV.al)+` <span class="sub" style="font-weight:400">· ${esc(alV.g.nombre)}</span>`:""} <span class="badge">${p.tipo==="altas"?"🌟 Altas Capacidades":`Modelo ${p.ciclo} · ${NE_MODELO_LABELS[p.ciclo]||""}`}</span></div>
+      <div style="font-size:15px;font-weight:700">${esc(neNombre(p))}${alV?neseBadgeHTML(alV.al)+` <span class="sub" style="font-weight:400">· ${esc(alV.g.nombre)}</span>`:""} <span class="badge">${p.tipo==="altas"?"🌟 Altes capacitats":`Model ${p.ciclo} · ${NE_MODELO_LABELS[p.ciclo]||""}`}</span></div>
       <label style="font-size:12.5px;color:var(--mut);font-weight:500">Necesidad educativa específica
         <input class="in" style="width:100%;margin-top:4px" id="neDNecesidad" value="${esc(p.necesidadEspecifica||"")}">
       </label>
@@ -333,24 +333,24 @@ window.neImprimirInforme=(id,alcance)=>{
   }
   const body=`
     <h1>Plan de Seguimiento NESE</h1>
-    <div class="meta">${esc(neNombre(p))}${alV?" · "+esc(alV.g.nombre):""} · ${etiquetaEv} · Generado el ${new Date().toLocaleDateString("es-ES")}</div>
-    ${p.tipo==="altas"?"":'<p style="font-size:13px;color:#666">Escala de valoración: <strong>I</strong> = Iniciado · <strong>P</strong> = En proceso · <strong>A</strong> = Alcanzado</p>'}
+    <div class="meta">${esc(neNombre(p))}${alV?" · "+esc(alV.g.nombre):""} · ${etiquetaEv} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
+    ${p.tipo==="altas"?"":'<p style="font-size:13px;color:#666">Escala de valoració: <strong>I</strong> = Iniciat · <strong>P</strong> = En procés · <strong>A</strong> = Assolit</p>'}
     <table>
       <tr><th style="width:160px">Necesidad educativa específica</th><td>${esc(p.necesidadEspecifica||"—")}</td></tr>
       <tr><th>Medidas de acceso</th><td>${esc(p.medidasAcceso||"—")}</td></tr>
       <tr><th>Fecha de inicio</th><td>${fmt2(p.fechaInicio)}</td></tr>
-      <tr><th>Modelo utilizado</th><td>${p.tipo==="altas"?"Altas Capacidades — Plan en blanco":`Modelo ${p.ciclo} · ${NE_MODELO_LABELS[p.ciclo]||""}`}</td></tr>
+      <tr><th>Model utilitzat</th><td>${p.tipo==="altas"?"Altes capacitats — Pla en blanc":`Model ${p.ciclo} · ${NE_MODELO_LABELS[p.ciclo]||""}`}</td></tr>
     </table>
     ${ceTabla?`<h2>Competencias específicas</h2>${ceTabla}`:""}
     ${cuerpoBloques}
     ${valoracionesBody}
   `;
-  const portada=generarPortadaHTML(`Plan NESE — ${neNombre(p)}`,
+  const portada=generarPortadaHTML(`Pla NESE — ${neNombre(p)}`,
     [alV?`Alumno/a: <strong>${esc(alV.al.nombre)}</strong> · ${esc(alV.g.nombre)}`:`Alumno/a: <strong>${esc(p.alumnoNombre||neNombre(p))}</strong>`,
      `${etiquetaEv}`,
      `Curso escolar: <strong>${esc(cursoEscolarEfectivo(null))}</strong>`,
      profesorNombreEfectivo(null)?`Elaborado por: <strong>${esc(profesorNombreEfectivo(null))}</strong>`:""],
     [ceTabla?"Competencias específicas":"", ...bloquesAgrupados.map(b=>b.titulo), valoracionesBody?"Valoración del aprovechamiento del plan":""]);
-  abrirVentanaInforme(`Plan NESE — ${neNombre(p)} · ${etiquetaEv}`, body, {portada});
+  abrirVentanaInforme(`Pla NESE — ${neNombre(p)} · ${etiquetaEv}`, body, {portada});
 };
 

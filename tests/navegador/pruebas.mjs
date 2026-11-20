@@ -473,16 +473,16 @@ export const PRUEBAS = [
       state.ui.appMode = 'competencial'; state.ui.grupoId = g.id; save(); render(); }, ids);
     await p.click('#cronoFab'); await p.click('[data-clase-tab="sorteo"]'); await esperar(200);
     const salen = [];
-    for (let i = 0; i < 6; i++) { await p.click('button:has-text("Elegir a alguien"), button:has-text("Otra persona")'); await esperar(900); salen.push(await p.innerText('#claseElegido')); }
+    for (let i = 0; i < 6; i++) { await p.click('button:has-text("Triar algú"), button:has-text("Una altra persona")'); await esperar(900); salen.push(await p.innerText('#claseElegido')); }
     t.ok(new Set(salen).size === 6, 'en seis sorteos salen las seis personas presentes, sin repetir', salen.join(' · '));
     t.ok(!salen.includes('Siete G') && salen.includes('Seis F'), 'quien falta hoy no entra en el sorteo; quien llega tarde, sí', salen.join(' · '));
-    t.ok(/Quedan 0 de 6 · 1 ausente hoy/.test(await p.innerText('#claseOtra')), 'indica cuántos quedan y cuántos faltan', await p.innerText('#claseOtra'));
-    await p.click('button:has-text("Otra persona")'); await esperar(900);
-    t.ok(/Quedan 5 de 6/.test(await p.innerText('#claseOtra')), 'cuando han salido todos, empieza otra vuelta');
-    await p.click('[data-clase-tab="grupos"]'); await p.fill('#claseNum', '3'); await p.click('button:has-text("Hacer grupos")'); await esperar(200);
+    t.ok(/Queden 0 de 6 · 1 absent hui/.test(await p.innerText('#claseOtra')), 'indica cuántos quedan y cuántos faltan', await p.innerText('#claseOtra'));
+    await p.click('button:has-text("Una altra persona")'); await esperar(900);
+    t.ok(/Queden 5 de 6/.test(await p.innerText('#claseOtra')), 'cuando han salido todos, empieza otra vuelta');
+    await p.click('[data-clase-tab="grupos"]'); await p.fill('#claseNum', '3'); await p.click('button:has-text("Fer grups")'); await esperar(200);
     let eq = await p.evaluate(() => claseEquipos.equipos);
     t.ok(eq.length === 3 && eq.every(e => e.length === 2) && new Set(eq.flat()).size === 6, 'tres grupos de dos, con todos los presentes una sola vez', JSON.stringify(eq));
-    await p.selectOption('#claseOtra select[aria-label="Cómo repartir"]', 'tam'); await p.fill('#claseNum', '4'); await p.click('button:has-text("Repartir otra vez"), button:has-text("Hacer grupos")'); await esperar(200);
+    await p.selectOption('#claseOtra select[aria-label="Cómo repartir"]', 'tam'); await p.fill('#claseNum', '4'); await p.click('button:has-text("Repartir una altra vegada"), button:has-text("Fer grups")'); await esperar(200);
     eq = await p.evaluate(() => claseEquipos.equipos);
     t.ok(eq.length === 2 && eq.map(e => e.length).sort().join() === '3,3', '«de cuatro en cuatro» con seis personas da dos grupos igualados (3 y 3)', JSON.stringify(eq));
     const rep = await p.evaluate(() => { const al = Array.from({ length: 23 }, (_, i) => ({ id: 'x' + i })); return [claseRepartir(al, 'num', 5), claseRepartir(al, 'tam', 4), claseRepartir(al, 'num', 40), claseRepartir([], 'num', 3)].map(r => r.map(e => e.length).sort((a, b) => b - a).join('+')); });
@@ -525,7 +525,7 @@ export const PRUEBAS = [
         grupoVisible: !document.querySelector('.gpill.on').closest('.priv'), blur: getComputedStyle(document.querySelector('.priv')).filter }; });
     t.ok(notas.filas === 3 && notas.notasOcultas && /blur/.test(notas.blur), 'las notas de cada fila también se difuminan', JSON.stringify(notas));
     t.ok(notas.grupoVisible, 'el resto (grupo, actividades, botones) se sigue viendo');
-    await p.click('#cronoFab'); await p.click('[data-clase-tab="sorteo"]'); await p.click('button:has-text("Elegir a alguien")'); await esperar(900);
+    await p.click('#cronoFab'); await p.click('[data-clase-tab="sorteo"]'); await p.click('button:has-text("Triar algú")'); await esperar(900);
     t.ok(await p.evaluate(() => !document.getElementById('claseElegido').closest('.priv') && /Wenceslao|Brígida|Úrsula/.test(document.getElementById('claseElegido').textContent)), 'el sorteo sí muestra el nombre (está pensado para proyectarlo)');
     await p.reload(); await esperar(1500);
     await p.evaluate(() => { _mostrarBienvenida = false; state.ui.appMode = 'competencial'; state.ui.grupoId = state.grupos[0].id; state.ui.tab = 'resultados'; render(); }); await esperar(250);
@@ -605,8 +605,8 @@ export const PRUEBAS = [
       state.ui.appMode = 'corrector'; state.ui.grupoId = g.id; state.ui.corExamId = act.id; state.ui.corTab = 'diseno'; save(); render(); });
     await esperar(800);
     const texto = () => p.evaluate(() => document.getElementById('tabContent').innerText);
-    t.ok(/Alumno\/a NESE con el examen general:.*Beta, Bruno/s.test(await texto()), 'el Diseño avisa de que hay alumnado NESE sin versión adaptada');
-    await p.click('#tabContent button:has-text("+ Examen alternativo")'); await esperar(400);
+    t.ok(/Alumne\/a NESE amb l'examen general:.*Beta, Bruno/s.test(await texto()), 'el Diseño avisa de que hay alumnado NESE sin versión adaptada');
+    await p.click('#tabContent button:has-text("+ Examen alternatiu")'); await esperar(400);
     await p.check('input[name="altTipo"][value="nese"]'); await p.click('#altSi'); await esperar(1500);
     let r = await p.evaluate(() => { const g = state.grupos[0], act = g.actividades[0], v = act.variantes[0];
       return { v: v && v.nombre, alumnos: (v ? v.alumnos : []).map(id => g.alumnos.find(a => a.id === id).nombre), editando: state.ui.corVarId === (v && v.id), tab: state.ui.corTab, aviso: !!document.querySelector('.cx-aviso-nese') }; });
@@ -683,7 +683,7 @@ export const PRUEBAS = [
       const qs = e => e.body.filter(n => n.type === 'question').map(n => n.id);
       return { hayModelo: !!mbModelo(act, 'B'), a: qs(G), b: qs(B), eyebrow: (B.body.find(n => n.type === 'title') || {}).eyebrow, numB: mbModelo(act, 'B') && mbModelo(act, 'B').num }; });
     t.ok(r.hayModelo && r.b.slice().sort().join() === r.a.slice().sort().join() && r.b.join() !== r.a.join(), 'el modelo B tiene las mismas preguntas en otro orden', JSON.stringify(r));
-    t.ok(/Modelo B/.test(r.eyebrow || '') && r.numB && Object.keys(r.numB).length === 4, 'lleva «Modelo B» encima del título y guarda la numeración de cada pregunta', JSON.stringify(r));
+    t.ok(/Model B/.test(r.eyebrow || '') && r.numB && Object.keys(r.numB).length === 4, 'lleva «Modelo B» encima del título y guarda la numeración de cada pregunta', JSON.stringify(r));
     const ordenB = r.b;
     // Se cambia el general: el B lo sigue (nueva pregunta incluida) sin perder su orden.
     r = await p.evaluate(async () => { exSel(''); await new Promise(r => setTimeout(r, 2000));
@@ -700,11 +700,11 @@ export const PRUEBAS = [
       ex.body.find(n => n.id === 'q2').text = 'TEXTO CAMBIADO EN EL B';
       w.__ee.cargar(ex); w.__ee.flush(); await new Promise(r => setTimeout(r, 1200));
       const B = (await exGet('e1:B')).exam, act = state.grupos[0].actividades[0];
-      return { ordenGuardado: mbModelo(act, 'B').orden._raiz, b: B.body.filter(n => n.type === 'question').map(n => n.id), texto: B.body.find(n => n.id === 'q2').text, aviso: (window.__dialogosLog || []).some(m => /solo cuenta el ORDEN/.test(m)) }; });
+      return { ordenGuardado: mbModelo(act, 'B').orden._raiz, b: B.body.filter(n => n.type === 'question').map(n => n.id), texto: B.body.find(n => n.id === 'q2').text, aviso: (window.__dialogosLog || []).some(m => /només compta l.ORDRE/.test(m)) }; });
     t.ok(r.b.join() === r.ordenGuardado.join() && r.texto === 'Define longitud' && r.aviso, 'en el modelo B el orden manual se guarda y los cambios de texto no (con aviso)', JSON.stringify(r));
     // Reparto y corrección.
     await p.evaluate(() => { state.ui.corTab = 'corregir'; state.ui.corAlId = ''; render(); }); await esperar(300);
-    await p.click('button:has-text("Alternar A/B por lista")'); await esperar(300);
+    await p.click('button:has-text("Alternar A/B per llista")'); await esperar(300);
     r = await p.evaluate(() => { const g = state.grupos[0], act = g.actividades[0]; return { deB: g.alumnos.filter(a => mbModeloDe(act, a.id) === 'B').map(a => a.nombre), botones: document.querySelectorAll('.mb-ab').length }; });
     t.ok(r.deB.join() === 'Beta, Bruno,Delta, Dani' && r.botones === 4, '«Alternar por lista» reparte A, B, A, B y cada alumno/a tiene su selector', JSON.stringify(r));
     await p.evaluate(() => { const g = state.grupos[0]; mbSetModelo(g.alumnos[2].id, 'B'); }); await esperar(200);
@@ -718,7 +718,7 @@ export const PRUEBAS = [
     const ordenFinal = await p.evaluate(() => mbModelo(state.grupos[0].actividades[0], 'B').orden._raiz);
     t.ok(vistaB.join() === ordenFinal.filter(id => id !== 'q5').join() && vistaA.join() === 'q1,q2,q3,q4',   // q5 se añadió al diseño después de importar la rúbrica
        'al corregir, el modelo B sale en el orden del B y el A en el suyo', JSON.stringify({ vistaA, vistaB, ordenFinal }));
-    t.ok(/Modelo B/.test(textoB) && /modelo A: \d/.test(textoB) && !/Modelo B/.test(textoA), 'el B lleva «Modelo B» y el número de cada pregunta en el A', textoB.slice(0, 200));
+    t.ok(/Model B/.test(textoB) && /model A: \d/.test(textoB) && !/Model B/.test(textoA), 'el B lleva «Modelo B» y el número de cada pregunta en el A', textoB.slice(0, 200));
     // Mismas puntuaciones, misma nota: corregir a Bruno con el B y comprobar su nota.
     r = await p.evaluate(() => { const g = state.grupos[0], act = g.actividades[0], al = g.alumnos[1];
       const sc = g.rubricScores[al.id] = g.rubricScores[al.id] || {}; sc[act.id] = {}; cxItemsFlat(act.rubrica).forEach(it => { sc[act.id][it.id] = Number(it.max); });
@@ -726,7 +726,7 @@ export const PRUEBAS = [
     t.ok(r === 10, 'con todo bien en el modelo B la nota es 10: la rúbrica es la misma', String(r));
     // Impresión en el orden del B.
     const imp = await p.evaluate(() => { const g = state.grupos[0]; return cxRubricaBodyHTML(g, g.actividades[0], g.alumnos[1], {}); });
-    t.ok(/Modelo B/.test(imp), 'la rúbrica impresa del modelo B lo indica');
+    t.ok(/Model B/.test(imp), 'la rúbrica impresa del modelo B lo indica');
     // Plano de aula: damero.
     r = await p.evaluate(() => { const g = state.grupos[0]; g.plano.posiciones = { [g.alumnos[0].id]: { fila: 0, col: 0 }, [g.alumnos[1].id]: { fila: 0, col: 1 }, [g.alumnos[2].id]: { fila: 1, col: 0 }, [g.alumnos[3].id]: { fila: 1, col: 1 } };
       save(); render(); mbAlternarPlano(); return g.alumnos.filter(a => mbModeloDe(g.actividades[0], a.id) === 'B').map(a => a.nombre).sort(); });
@@ -767,12 +767,12 @@ export const PRUEBAS = [
       const A = (await exGet('e1')).exam, B = (await exGet('e1:B')).exam, C = (await exGet('e1:C')).exam;
       return { letras: mbLista(act).map(m => m.letra), a: qs(A), b: qs(B), c: qs(C), eyC: (C.body.find(n => n.type === 'title') || {}).eyebrow, viendo: state.ui.corModelo,
         masModelos: [...document.querySelectorAll('#tabContent button')].some(b => /\+ Modelo/.test(b.textContent)) }; });
-    t.ok(r.letras.join() === 'B,C' && r.viendo === 'C' && /Modelo C/.test(r.eyC), 'se crean los modelos B y C, y el C lleva «Modelo C» encima del título', JSON.stringify(r));
+    t.ok(r.letras.join() === 'B,C' && r.viendo === 'C' && /Model C/.test(r.eyC), 'se crean los modelos B y C, y el C lleva «Modelo C» encima del título', JSON.stringify(r));
     t.ok(new Set([r.a.join(), r.b.join(), r.c.join()]).size === 3 && r.b.slice().sort().join() === r.a.join() && r.c.slice().sort().join() === r.a.join(), 'los tres modelos tienen las mismas preguntas en tres órdenes distintos', JSON.stringify(r));
     t.ok(!r.masModelos, 'con A, B y C ya no se ofrece crear otro modelo (máximo tres)');
     // Reparto A/B/C por lista.
     await p.evaluate(() => { state.ui.corTab = 'corregir'; state.ui.corAlId = ''; render(); }); await esperar(300);
-    await p.click('button:has-text("Alternar A/B/C por lista")'); await esperar(300);
+    await p.click('button:has-text("Alternar A/B/C per llista")'); await esperar(300);
     r = await p.evaluate(() => { const g = state.grupos[0], act = g.actividades[0];
       return { rep: g.alumnos.map(a => mbModeloDe(act, a.id)).join(''), botones: [...document.querySelectorAll('.mb-ab')].map(x => x.querySelectorAll('button').length) }; });
     t.ok(r.rep === 'ABCABC' && r.botones.length === 6 && r.botones.every(n => n === 3), '«Alternar por lista» reparte A, B, C, A, B, C y cada alumno/a tiene el selector A/B/C', JSON.stringify(r));
@@ -783,7 +783,7 @@ export const PRUEBAS = [
       cxRecalcAlumno(g, act, al.id);
       return { vista, ordenC: mbModelo(act, 'C').orden._raiz, texto: document.getElementById('tabContent').innerText, nota: g.notasCuant[al.id][act.id],
         imp: cxRubricaBodyHTML(g, act, al, {}) }; });
-    t.ok(r.vista.join() === r.ordenC.join() && /Modelo C/.test(r.texto) && /Modelo C/.test(r.imp), 'al corregir e imprimir, el modelo C sale en su orden y lo indica', JSON.stringify({ vista: r.vista, ordenC: r.ordenC }));
+    t.ok(r.vista.join() === r.ordenC.join() && /Model C/.test(r.texto) && /Model C/.test(r.imp), 'al corregir e imprimir, el modelo C sale en su orden y lo indica', JSON.stringify({ vista: r.vista, ordenC: r.ordenC }));
     t.ok(r.nota === 10, 'con todo bien en el modelo C la nota es 10: la rúbrica es la misma', String(r.nota));
     // Plano con tres modelos: ni el de al lado ni el de delante tienen el mismo.
     r = await p.evaluate(() => { const g = state.grupos[0], act = g.actividades[0], pos = {};
@@ -821,10 +821,10 @@ export const PRUEBAS = [
       const w = document.getElementById('exFrame').contentWindow, ex = w.__ee.get();
       ex.body = ex.body.filter(n => n.type === 'title').concat([{ id: 'q1', type: 'question', title: '', text: 'Pregunta del día del examen', points: '10', children: [] }]);
       w.__ee.cargar(ex); w.__ee.flush(); await new Promise(r => setTimeout(r, 500)); });
-    await p.click('#tabContent button:has-text("+ Examen alternativo")'); await esperar(400);
+    await p.click('#tabContent button:has-text("+ Examen alternatiu")'); await esperar(400);
     let r = await p.evaluate(() => ({ nombre: document.getElementById('altNombre').value, fecha: document.getElementById('altFecha').value,
       marcados: [...document.querySelectorAll('#altAlumnos input:checked')].length }));
-    t.ok(r.nombre === 'Otro día' && /^\d{4}-\d{2}-\d{2}$/.test(r.fecha) && r.marcados === 0, 'por defecto es «Otro día», con la fecha de hoy y sin nadie marcado (tampoco el alumnado NESE)', JSON.stringify(r));
+    t.ok(r.nombre === 'Un altre dia' && /^\d{4}-\d{2}-\d{2}$/.test(r.fecha) && r.marcados === 0, 'por defecto es «Otro día», con la fecha de hoy y sin nadie marcado (tampoco el alumnado NESE)', JSON.stringify(r));
     await p.fill('#altNombre', 'Unidad 1 · recuperación de falta'); await p.fill('#altFecha', '2026-11-20');
     await p.check('input[name="altInicio"][value="blanco"]');
     await p.check('#altAlumnos input[value="' + await p.evaluate(() => state.grupos[0].alumnos[0].id) + '"]');
@@ -932,9 +932,9 @@ export const PRUEBAS = [
     t.ok(r.normal.includes('DETALLE-LARGO-DE-LA-RESPUESTA'), 'la rúbrica normal sigue incluyendo el detalle');
     t.ok(!r.res.includes('DETALLE-LARGO-DE-LA-RESPUESTA'), 'la resumida no incluye el detalle de lo que había que contestar');
     t.ok(r.res.includes('Explica la causa') && r.res.includes('1,5') && r.res.includes('ANOTACION-PREGUNTA') && r.res.includes('COMENTARIO-GENERAL'), 'la resumida conserva pregunta, puntuación y anotaciones del profesor');
-    t.ok(/resumen/i.test(r.res) && /resumida/.test(r.tituloRes), 'se identifica como resumen');
+    t.ok(/resum/i.test(r.res) && /resumida/.test(r.tituloRes), 'se identifica como resumen');
     t.ok(r.res.length < r.normal.length + 1500 && r.res.includes('cx-total-box'), 'incluye el total');
-    t.ok(r.todos.includes('Cada uno ocupa su propia página'), 'imprimir todas (normal) mantiene la portada');
+    t.ok(r.todos.includes('Cadascun ocupa la seua pròpia pàgina'), 'imprimir todas (normal) mantiene la portada');
     t.ok(!r.todosRes.includes('Cada uno ocupa su propia página') && !r.todosRes.includes('DETALLE-LARGO-DE-LA-RESPUESTA'), 'todas resumidas: sin portada ni detalle');
     t.ok((r.todosRes.match(/class="cx-alumno"/g) || []).length === 2 && (r.todosRes.match(/break-before:page/g) || []).length === 1, 'todas resumidas: un bloque por alumno/a corregido y salto de página entre ellos');
   } },
@@ -1000,7 +1000,7 @@ export const PRUEBAS = [
     await p.evaluate(() => { state.ui.corModoPreg = false; save(); render(); });
     // Estadísticas: reparto por niveles.
     await p.evaluate(() => { state.ui.cxVerEstadisticas = true; render(); }); await esperar(200);
-    t.ok(await p.getByText('Reparto por niveles').count() === 1, 'las estadísticas incluyen el reparto por niveles');
+    t.ok(await p.getByText('Repartiment per nivells').count() === 1, 'las estadísticas incluyen el reparto por niveles');
     // Plantilla reutilizable en otro examen.
     await p.evaluate(() => { window.pedirTexto = async () => 'Exposición oral'; window.confirmar = async () => true; window.mostrarAviso = () => {}; });
     await p.evaluate(act => cxGuardarComoPlantilla(act), ids.act); await esperar(100);
@@ -1156,8 +1156,8 @@ export const PRUEBAS = [
     t.ok(r2.sin === 7.5 && r2.t === 8, 'la evaluación suma el extra: 7,5 + 0,5 = 8', JSON.stringify([r2.sin, r2.t]));
     t.ok(r2.f === 8, 'la nota final recoge la evaluación con su extra');
     t.ok(/7,5 \+ 0,5 = 8,0/.test(r2.texto), 'Resultados explica la cuenta');
-    t.ok(/incluye \+1 extra/.test(r2.inf) && /incluye \+0,5 extra/.test(r2.inf), 'el informe del alumno/a indica los extras');
-    t.ok(/Puntos extra/.test(r2.det) && /6,5 \+ 1 extra = <strong>7,5/.test(r2.det), 'el informe detallado desglosa los extras');
+    t.ok(/inclou \+1 extra/.test(r2.inf) && /inclou \+0,5 extra/.test(r2.inf), 'el informe del alumno/a indica los extras');
+    t.ok(/Punts extra/.test(r2.det) && /6,5 \+ 1 extra = <strong>7,5/.test(r2.det), 'el informe detallado desglosa los extras');
     // Papelera: borrar y restaurar al alumno/a y la actividad conserva los extras
     const r3 = await p.evaluate(async ids => { window.__dialogosAuto = { confirmar: true };
       await delAlumno(ids[0]); let g = grupoActual(); const borrado = !g.extras[ids[0]] && !g.extrasEval[ids[0]];

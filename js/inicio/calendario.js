@@ -228,7 +228,7 @@ function agGenerarICS(){
 }
 window.agExportarICS=()=>{
   const evs=agEventosFiltrados(state.eventos||[]);
-  if(!evs.length){ mostrarAviso("No hay eventos para exportar"+((state.ui.agFiltroGrupo||state.ui.agFiltroTipo)?" con este filtro.":".")); return; }
+  if(!evs.length){ mostrarAviso("No hi ha esdeveniments per a exportar"+((state.ui.agFiltroGrupo||state.ui.agFiltroTipo)?" amb este filtre.":".")); return; }
   const blob=new Blob([agGenerarICS()],{type:"text/calendar;charset=utf-8"});
   const u=URL.createObjectURL(blob); const a=document.createElement("a");
   a.href=u; a.download="calendari-fiq.ics"; a.click(); URL.revokeObjectURL(u);
@@ -302,7 +302,7 @@ function agImprimirMesHTML(mesStr,tamano){
   const evFactor = Math.min(1.55, Math.max(0.85, 1+(factor-1)*0.5));
   const cellPadV = px(4*Math.min(1.6,Math.max(0.85,1+(factor-1)*0.35)));
 
-  return `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Calendario — ${esc(AG_MESES[m-1])} ${y}</title>
+  return `<!DOCTYPE html><html lang="ca"><head><meta charset="utf-8"><title>Calendari — ${esc(AG_MESES[m-1])} ${y}</title>
   <style>
     @page{ size: ${tamano} landscape; margin: ${esA4?"0.8cm":"1.1cm"}; }
     *{box-sizing:border-box}
@@ -335,7 +335,7 @@ function agImprimirMesHTML(mesStr,tamano){
       ${centro?`<div class="ap-centro">${centro}</div>`:""}
       <h1>📅 ${esc(AG_MESES[m-1])} ${y}</h1>
     </div>
-    <div class="ap-meta">${grupoFiltro} · ${tipoFiltro}<br>Generado el ${new Date().toLocaleDateString("es-ES")}</div>
+    <div class="ap-meta">${grupoFiltro} · ${tipoFiltro}<br>Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
   </div>
   ${state.ui.agFiltroGrupo?"":`<div class="ap-leyenda">${leyenda}</div>`}
   <table style="${state.ui.agFiltroGrupo?"margin-top:8px":""}">
@@ -386,7 +386,7 @@ function agModalMesGrandeHTML(){
       <div style="padding:14px 22px;border-bottom:1px solid var(--line);flex-shrink:0">
         <div class="flex" style="justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
           <div class="flex" style="gap:6px;align-items:center">
-            <button class="ghost" style="border:1px solid var(--line)" onclick="agCerrarModalMesGrande()">← Volver</button>
+            <button class="ghost" style="border:1px solid var(--line)" onclick="agCerrarModalMesGrande()">← Tornar</button>
             <strong style="font-size:16px;text-transform:capitalize;margin-left:6px">📅 ${AG_MESES[m-1]} ${y}</strong>
             ${grupoFiltro?`<span class="badge" style="margin-left:2px">${grupoFiltro}</span>`:""}
           </div>
@@ -457,7 +457,7 @@ function agImprimirAnioHTML(anio){
     </div>`);
   }
   const leyenda=`<span class="ay-leyenda-item"><span class="ay-dot" style="background:rgba(220,38,38,.5)"></span>Festivo</span>` + AG_TIPOS.map(t=>`<span class="ay-leyenda-item"><span class="ay-dot" style="background:${t.color}"></span>${esc(t.label)}</span>`).join("");
-  return `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Calendario anual ${anio}</title>
+  return `<!DOCTYPE html><html lang="ca"><head><meta charset="utf-8"><title>Calendari anual ${anio}</title>
   <style>
     @page{ size: A4 landscape; margin: 1.1cm; }
     *{box-sizing:border-box}
@@ -544,7 +544,7 @@ function agRenderModalColoresHTML(){
       <span class="pill" style="${pillTinte(color)}">${t.label}</span>
       <div class="flex" style="gap:6px;align-items:center">
         <input type="color" value="${color}" style="width:34px;height:28px;padding:0;border:1px solid var(--line);border-radius:6px;cursor:pointer" onchange="agSetColorTipo('${t.id}',this.value)">
-        ${personalizado?`<button class="ghost small" style="border:1px solid var(--line)" onclick="agResetColorTipo('${t.id}')" title="Restablecer color por defecto">↺</button>`:""}
+        ${personalizado?`<button class="ghost small" style="border:1px solid var(--line)" onclick="agResetColorTipo('${t.id}')" title="Restablir el color per defecte">↺</button>`:""}
       </div>
     </div>`;
   }).join("");
@@ -783,13 +783,13 @@ function agRenderDiaHTML(fecha){
       <button class="ghost" style="padding:2px 10px" onclick="agCerrarDia()" title="Volver al resumen del mes">× Cerrar</button>
     </div>
     <div class="flex" style="margin-top:6px">
-      <button class="ghost small" style="border:1px solid ${esFestivo?"#dc2626":"var(--line)"};color:${esFestivo?"#dc2626":"inherit"}" onclick="agToggleFestivo('${fecha}')">${esFestivo?"✕ Quitar festivo":"🔴 Marcar como festivo"}</button>
+      <button class="ghost small" style="border:1px solid ${esFestivo?"#dc2626":"var(--line)"};color:${esFestivo?"#dc2626":"inherit"}" onclick="agToggleFestivo('${fecha}')">${esFestivo?"✕ Llevar festiu":"🔴 Marcar com a festiu"}</button>
     </div>
     ${horarioDia.length?`<div style="margin-top:12px">
-      <div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">🗓️ Horario</div>
+      <div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">🗓️ Horari</div>
       <div class="ag-lista" style="max-height:170px">${horarioDia.map(agHorarioFilaHTML).join("")}</div>
     </div>`:""}
-    <div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin:14px 0 6px">📌 Eventos</div>
+    <div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin:14px 0 6px">📌 Esdeveniments</div>
     <div class="ag-lista">${filas}</div>
     <div class="flex" style="margin-top:12px">
       <button class="btn small" onclick="agAbrirModal('${fecha}','')">+ Afegir esdeveniment este dia</button>
@@ -843,13 +843,13 @@ function agRenderModalHTML(){
   <div class="modal-overlay" onclick="if(event.target===this) agCerrarModal()">
     <div class="modal-box" style="max-width:440px">
       <div class="flex" style="justify-content:space-between;align-items:flex-start">
-        <h2 style="font-size:17px">${ev?"Editar evento":"Nuevo evento"}</h2>
+        <h2 style="font-size:17px">${ev?"Editar l'esdeveniment":"Nou esdeveniment"}</h2>
         <button class="modal-close" onclick="agCerrarModal()">×</button>
       </div>
-      ${vinc?`<div class="alert-box" style="margin-top:8px">🖊️ Vinculado al examen "${esc(vinc.a.nombre)}" (${esc(vinc.g.nombre)}).
+      ${vinc?`<div class="alert-box" style="margin-top:8px">🖊️ Vinculat a l'examen «${esc(vinc.a.nombre)}» (${esc(vinc.g.nombre)}).
         <button class="btn small" onclick="agCerrarModal();cxAbrirDesdeOtroModo('${vinc.a.id}')">Corregir →</button></div>`:""}
-      ${vincRe?`<div class="alert-box" style="margin-top:8px">🗂️ Vinculado a la reunión "${esc(vincRe.titulo)}".
-        <button class="btn small" onclick="agCerrarModal();reAbrirDesdeOtroModo('${vincRe.id}')">Ver reunión →</button></div>`:""}
+      ${vincRe?`<div class="alert-box" style="margin-top:8px">🗂️ Vinculat a la reunió «${esc(vincRe.titulo)}».
+        <button class="btn small" onclick="agCerrarModal();reAbrirDesdeOtroModo('${vincRe.id}')">Vore la reunió →</button></div>`:""}
       <div class="grid" style="gap:12px;margin-top:10px">
         <div class="flex" style="gap:10px;align-items:flex-start">
           <label style="flex:1;font-size:12.5px;color:var(--mut);font-weight:500">Fecha
@@ -906,7 +906,7 @@ function agRenderModalHTML(){
           <div class="ag-lista" id="agFGrupoLista" style="max-height:120px;margin-top:4px;border:1px solid var(--line);border-radius:10px;padding:6px 10px">
             ${state.grupos.length? state.grupos.map(g=>`<label class="flex" style="gap:8px;align-items:center;font-weight:400;font-size:13px;padding:3px 0">
               <input type="checkbox" class="agFGrupoChk" value="${g.id}" ${ev&&agGrupoIdsDeEvento(ev).includes(g.id)?"checked":""}>${esc(g.nombre)}
-            </label>`).join("") : `<p class="sub" style="margin:2px 0">No hay grupos creados todavía.</p>`}
+            </label>`).join("") : `<p class="sub" style="margin:2px 0">Encara no hi ha grups creats.</p>`}
           </div>
         </div>
         <label style="font-size:12.5px;color:var(--mut);font-weight:500">Notas (opcional)
@@ -916,22 +916,22 @@ function agRenderModalHTML(){
           <label style="font-size:12.5px;color:var(--mut);font-weight:500">Repetir
             <select class="in" style="width:100%;margin-top:4px" id="agFRepetir" onchange="document.getElementById('agRepetirHastaWrap').style.display=this.value?'':'none'">
               <option value="">No repetir</option>
-              <option value="semanal">Cada semana</option>
-              <option value="quincenal">Cada 15 días</option>
+              <option value="semanal">Cada setmana</option>
+              <option value="quincenal">Cada 15 dies</option>
               <option value="mensual">Cada mes</option>
             </select>
           </label>
           <div id="agRepetirHastaWrap" style="display:none;margin-top:8px">
-            <label style="font-size:12.5px;color:var(--mut);font-weight:500">Repetir hasta (inclusive)
+            <label style="font-size:12.5px;color:var(--mut);font-weight:500">Repetir fins al (inclòs)
               <input class="in" style="width:100%;margin-top:4px" type="date" id="agFRepetirHasta">
             </label>
-            <p class="sub" style="margin:4px 0 0;font-size:11.5px">Si además indicas una fecha fin arriba, se ignora la repetición: un evento de varios días no forma serie.</p>
+            <p class="sub" style="margin:4px 0 0;font-size:11.5px">Si a més indiques una data de fi dalt, la repetició s'ignora: un esdeveniment de diversos dies no forma sèrie.</p>
           </div>
         </div>`:""}
-        ${ev&&ev.recurrenciaId?`<p class="sub" style="margin:0;font-size:11.5px">🔁 Forma parte de una serie. "Eliminar" solo quita este día; hay una opción aparte para quitar toda la serie.</p>`:""}
+        ${ev&&ev.recurrenciaId?`<p class="sub" style="margin:0;font-size:11.5px">🔁 Forma part d'una sèrie. «Eliminar» només lleva este dia; hi ha una opció a banda per a llevar tota la sèrie.</p>`:""}
       </div>
       <div class="flex" style="justify-content:space-between;margin-top:18px">
-        <div class="flex">${ev?`<button class="ghost danger" onclick="agEliminarEvento('${ev.id}')">Eliminar</button>`:""}${ev&&ev.recurrenciaId?`<button class="ghost danger" onclick="agEliminarSerie('${ev.recurrenciaId}')">Eliminar serie</button>`:""}${ev?`<button class="ghost" onclick="agDuplicarEvento('${ev.id}')" title="Crea una copia de este evento para otra fecha">⧉ Duplicar</button>`:""}</div>
+        <div class="flex">${ev?`<button class="ghost danger" onclick="agEliminarEvento('${ev.id}')">Eliminar</button>`:""}${ev&&ev.recurrenciaId?`<button class="ghost danger" onclick="agEliminarSerie('${ev.recurrenciaId}')">Eliminar la sèrie</button>`:""}${ev?`<button class="ghost" onclick="agDuplicarEvento('${ev.id}')" title="Crea una còpia d'este esdeveniment per a una altra data">⧉ Duplicar</button>`:""}</div>
         <div class="flex">
           <button class="ghost" onclick="agCerrarModal()">Cancelar</button>
           <button class="btn" id="agFGuardar" onclick="agGuardarEvento()">Guardar</button>

@@ -154,7 +154,7 @@ window.bloqueoActivar=async(cambio)=>{
   let codigo;
   try{ codigo=await B.configurar(pin, cambio?B.minutos:5); }catch(e){ mostrarAviso(e.message||String(e)); return; }
   if(_copiasModalEl) pintarCopias();
-  await mostrarAviso("Apunta este código de recuperación y guárdalo fuera de este dispositivo:\n\n"+codigo+"\n\nSi olvidas el PIN, con él podrás quitarlo («He olvidado el PIN»). No se volverá a mostrar.","🔒 PIN "+(cambio?"cambiado":"activado"));
+  await mostrarAviso("Apunta este codi de recuperació i guarda'l fora d'este dispositiu:\n\n"+codigo+"\n\nSi oblides el PIN, amb ell el podràs llevar («He oblidat el PIN»). No es tornarà a mostrar.","🔒 PIN "+(cambio?"canviat":"activat"));
 };
 window.bloqueoQuitar=async()=>{
   const B=window.BloqueoPIN; if(!B) return;

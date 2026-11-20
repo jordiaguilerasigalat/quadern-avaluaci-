@@ -18,7 +18,7 @@ function extraBadgeHTML(grupo,alId,act){
   const aplicado=extraAplicadoActividad(grupo,alId,act)>0;
   const m=marcaDe(grupo,alId,act.id);
   const porQue=aplicado?"":(m==="NP"?" · No se suma: no presentado (NP)":m==="EX"?" · No se suma: exento":" · Se sumará cuando tenga nota");
-  const titulo=`Puntos extra: +${fmtPts(pts)}${e.motivo?" · "+e.motivo:""}${porQue}`;
+  const titulo=`Punts extra: +${fmtPts(pts)}${e.motivo?" · "+e.motivo:""}${porQue}`;
   return ` <span class="pill extra-pill${aplicado?"":" extra-off"}" title="${esc(titulo)}">+${fmtPts(pts)} extra</span>`;
 }
 function extraEvalBadgeHTML(grupo,alId,periodo){
@@ -72,7 +72,7 @@ function _extraVentana(tipo,clave,focoAlId){
   const base=al=>tipo==="act"?notaActividadSinExtra(grupo,al.id,act):(clave==="final"?notaFinalSinExtra(grupo,al.id):notaTrimestreSinExtra(grupo,al.id,Number(clave)));
   const titulo=tipo==="act"?esc(act.nombre):esc(etiquetaPeriodoExtra(clave));
   const explica=tipo==="act"
-    ? `Se suman a la nota de la actividad${recuperacionesDe(grupo,act.id).length?" (después de aplicar la recuperación)":""} y con ella cuentan en el bloque y en la evaluación. No se suman con NP ni Exento.`
+    ? `Se sumen a la nota de l'activitat${recuperacionesDe(grupo,act.id).length?" (després d'aplicar la recuperació)":""} i amb ella compten en el bloc i en l'avaluació. No se sumen amb NP ni Exempt.`
     : clave==="final"
       ? "Se suman a la nota final de curso (la media de las evaluaciones, que ya llevan sus propios extras)."
       : "Se suman a la nota de la evaluación (la media de los bloques). Con ella cuentan también en la nota final.";
@@ -82,21 +82,21 @@ function _extraVentana(tipo,clave,focoAlId){
     return `<tr data-al="${al.id}">
       <td>${esc(al.nombre)}</td>
       <td style="white-space:nowrap;color:var(--mut)">${m?MARCAS_NOTA[m].etq:fmt(b)}</td>
-      <td><input class="in" type="text" inputmode="decimal" autocomplete="off" data-pts aria-label="Puntos extra de ${esc(al.nombre)}" placeholder="0" style="width:64px" value="${_ptsExtra(e)?fmtPts(e.pts):""}"></td>
-      <td><input class="in" type="text" autocomplete="off" data-motivo aria-label="Motivo para ${esc(al.nombre)}" maxlength="200" style="width:100%" value="${esc((e&&e.motivo)||"")}"></td>
+      <td><input class="in" type="text" inputmode="decimal" autocomplete="off" data-pts aria-label="Punts extra de ${esc(al.nombre)}" placeholder="0" style="width:64px" value="${_ptsExtra(e)?fmtPts(e.pts):""}"></td>
+      <td><input class="in" type="text" autocomplete="off" data-motivo aria-label="Motiu per a ${esc(al.nombre)}" maxlength="200" style="width:100%" value="${esc((e&&e.motivo)||"")}"></td>
     </tr>`;
   }).join("");
-  const selPeriodo=tipo==="eval"?`<select class="in" id="extraPeriodo" aria-label="Evaluación">${["0","1","2","final"].map(p=>`<option value="${p}" ${p===clave?"selected":""}>${esc(etiquetaPeriodoExtra(p))}</option>`).join("")}</select>`:"";
+  const selPeriodo=tipo==="eval"?`<select class="in" id="extraPeriodo" aria-label="Avaluació">${["0","1","2","final"].map(p=>`<option value="${p}" ${p===clave?"selected":""}>${esc(etiquetaPeriodoExtra(p))}</option>`).join("")}</select>`:"";
   div.innerHTML=`<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="extraTit" style="max-width:640px">
-    <div class="flex" style="justify-content:space-between;align-items:center"><h2 id="extraTit" style="font-size:17px">➕ Puntos extra · ${titulo}</h2><button class="modal-close" aria-label="Cerrar">×</button></div>
+    <div class="flex" style="justify-content:space-between;align-items:center"><h2 id="extraTit" style="font-size:17px">➕ Punts extra · ${titulo}</h2><button class="modal-close" aria-label="Cerrar">×</button></div>
     ${selPeriodo?`<div style="margin:6px 0">${selPeriodo}</div>`:""}
-    <p class="sub">Escribe los puntos solo a quien le correspondan (0,5, 1…). ${explica} La nota nunca pasa de 10. Los niveles de logro de criterios y competencias no cambian.</p>
+    <p class="sub">Escriu els punts només a qui li corresponguen (0,5, 1…). ${explica} La nota mai passa de 10. Els nivells d'assoliment de criteris i competències no canvien.</p>
     <div class="flex" style="gap:6px;margin:0 0 8px;flex-wrap:wrap">
-      <input class="in" id="extraMotivoComun" maxlength="200" placeholder="Motivo común (p. ej. «Voluntario/a en la exposición»)" aria-label="Motivo común" style="flex:1;min-width:200px">
+      <input class="in" id="extraMotivoComun" maxlength="200" placeholder="Motiu comú (p. ex. «Voluntari/ària en l'exposició»)" aria-label="Motiu comú" style="flex:1;min-width:200px">
       <button class="ghost small" id="extraMotivoAplicar" style="border:1px solid var(--line)" title="Lo escribe en quien tenga puntos y todavía no tenga motivo">Poner a quien tenga puntos</button>
     </div>
     <div style="max-height:52vh;overflow:auto"><table>
-      <thead><tr><th>Alumno/a</th><th>${tipo==="act"?"Nota":"Nota sin extra"}</th><th>Puntos</th><th>Motivo</th></tr></thead>
+      <thead><tr><th>Alumne/a</th><th>${tipo==="act"?"Nota":"Nota sense extra"}</th><th>Punts</th><th>Motiu</th></tr></thead>
       <tbody>${filas}</tbody></table></div>
     <div class="flex" style="justify-content:flex-end;gap:8px;margin-top:12px"><button class="ghost" id="extraNo" style="border:1px solid var(--line)">Cancelar</button><button class="btn" id="extraSi">Guardar</button></div>
   </div>`;
@@ -130,7 +130,7 @@ function _extraVentana(tipo,clave,focoAlId){
       if(_ptsExtra(destino[alId]&&destino[alId][clave])) n++;
     });
     cerrar(); save(); render();
-    mostrarToast(n?`✓ Puntos extra guardados (${n} alumno${n===1?"":"s"})`:"✓ Sin puntos extra");
+    mostrarToast(n?`✓ Punts extra guardats (${n} alumne${n===1?"":"s"})`:"✓ Sense punts extra");
   };
   setTimeout(()=>{
     const fila=focoAlId&&[...div.querySelectorAll("tbody tr")].find(tr=>tr.getAttribute("data-al")===focoAlId);
@@ -151,7 +151,7 @@ function extrasDeAlumnoCopia(g,alId){
 function _notaInformeExtra(v,pts,e){
   if(v==null) return "—";
   if(!pts) return fmt(v);
-  return `${fmt(v)} <small style="font-weight:400;color:#666">(incluye +${fmtPts(pts)} extra${e&&e.motivo?": "+esc(e.motivo):""})</small>`;
+  return `${fmt(v)} <small style="font-weight:400;color:#666">(inclou +${fmtPts(pts)} extra${e&&e.motivo?": "+esc(e.motivo):""})</small>`;
 }
 function notaActividadInformeHTML(grupo,alId,a){
   return _notaInformeExtra(notaActividad(grupo,alId,a),extraAplicadoActividad(grupo,alId,a),extraActividad(grupo,alId,a.id));

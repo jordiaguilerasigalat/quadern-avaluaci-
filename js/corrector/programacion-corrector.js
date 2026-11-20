@@ -219,7 +219,7 @@ window.cxGuardarRubricaEnProgramacion=async examId=>{
   ref.progAct.variantes=(ref.progAct.variantes||[]).filter(pv=>vivas.has(pv.id));
   if(!ref.progAct.variantes.length) delete ref.progAct.variantes;
   save(); render();
-  mostrarToast(vs.length?`✓ Rúbrica guardada en la Programación, con ${vs.length===1?"su versión adaptada":"sus "+vs.length+" versiones adaptadas"}`:"✓ Rúbrica guardada en la Programación");
+  mostrarToast(vs.length?`✓ Rúbrica guardada en la Programació, amb ${vs.length===1?"la seua versió adaptada":"les seues "+vs.length+" versions adaptades"}`:"✓ Rúbrica guardada en la Programació");
 };
 window.progQuitarRubrica=async actId=>{
   const p=progPorId(state.ui.progId); const a=p&&p.actividades.find(x=>x.id===actId); if(!a) return;

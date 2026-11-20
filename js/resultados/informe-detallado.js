@@ -30,7 +30,7 @@ function renderDistribucionHTML(grupo,trim){
         <span style="width:22px;text-align:right;font-size:13px;font-weight:600;flex-shrink:0">${cnt}</span>
       </div>`;
     }).join("")}
-    <p class="sub" style="margin:4px 0 0">${conNota} de ${total} alumno${total===1?"":"s"} con nota en ${TRIMESTRES[trim]}.</p>
+    <p class="sub" style="margin:4px 0 0">${conNota} de ${total} alumne${total===1?"":"s"} amb nota en la ${TRIMESTRES[trim]}.</p>
   </div>`;
 }
 /* ---------- Modal "Evolución del alumno/a" (icono 👁️ en Resultados) ----------
@@ -64,7 +64,7 @@ function evolucionModalHTML(grupo,al){
           </div>
         </div>
         <div class="flex" style="gap:6px;flex-wrap:wrap;margin-top:10px">
-          ${tabBtn(0,TRIMESTRES[0])}${tabBtn(1,TRIMESTRES[1])}${tabBtn(2,TRIMESTRES[2])}${tabBtn('final',"Evaluación final")}
+          ${tabBtn(0,TRIMESTRES[0])}${tabBtn(1,TRIMESTRES[1])}${tabBtn(2,TRIMESTRES[2])}${tabBtn('final',"Avaluació final")}
         </div>
       </div>
       <div class="informe-modal-content" style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 30px;flex:1">
@@ -158,7 +158,7 @@ function desgloseBloqueHTML(grupo,al,b,trim){
     let celda=m==="EX"?"Exento":(conRec?`${vb==null?"—":fmt(vb)} → <strong>${fmt(va)}</strong>`:(va==null?"—":fmt(va)))+(m==="NP"?" (NP)":"");
     if(ex) celda+=` + ${fmtPts(ex)} extra = <strong>${fmt(notaActividad(grupo,al.id,a))}</strong>`;
     return `<tr>
-        <td>${esc(a.nombre)}<span class="dsg-tag">${esc(a.tipo)}</span>${conRec?`<div class="dsg-muted" style="font-size:11.5px">Recuperada con: ${recs.map(r=>esc(r.nombre)).join(", ")}</div>`:""}${ex?`<div class="dsg-muted" style="font-size:11.5px">Puntos extra: +${fmtPts(ex)}${exE&&exE.motivo?" · "+esc(exE.motivo):""}</div>`:""}</td>
+        <td>${esc(a.nombre)}<span class="dsg-tag">${esc(a.tipo)}</span>${conRec?`<div class="dsg-muted" style="font-size:11.5px">Recuperada amb: ${recs.map(r=>esc(r.nombre)).join(", ")}</div>`:""}${ex?`<div class="dsg-muted" style="font-size:11.5px">Punts extra: +${fmtPts(ex)}${exE&&exE.motivo?" · "+esc(exE.motivo):""}</div>`:""}</td>
         <td style="text-align:right;white-space:nowrap">${celda}</td>
         <td style="text-align:right;white-space:nowrap">${fmtPct(w)}</td>
       </tr>
@@ -188,9 +188,9 @@ function desgloseTrimestreHTML(grupo,al,trim){
   if(modoNotaGrupo(grupo)==="ce") return desgloseNotaPerCEHTML(grupo,al,trimsFinsA(trim),trim,`Nota = mitjana ponderada de les competències específiques, amb tot el que s'ha avaluat fins a la ${esc(TRIMESTRES[trim].toLowerCase())} (avaluació contínua). Cada CE és la mitjana dels seus criteris.`);
   const v=notaTrimestre(grupo,al.id,trim);
   const bloquesHtml=grupo.bloques.map(b=>desgloseBloqueHTML(grupo,al,b,trim)).join("");
-  return `<div class="dsg-formula">Nota = media ponderada de los bloques de calificación de ${esc(TRIMESTRES[trim].toLowerCase())}.</div>
+  return `<div class="dsg-formula">Nota = mitjana ponderada dels blocs de qualificació de la ${esc(TRIMESTRES[trim].toLowerCase())}.</div>
     ${bloquesHtml}
-    ${dsgExtraEvalHTML(grupo,al,trim,notaTrimestreSinExtra(grupo,al.id,trim),"Media de los bloques")}
+    ${dsgExtraEvalHTML(grupo,al,trim,notaTrimestreSinExtra(grupo,al.id,trim),"Mitjana dels blocs")}
     <div class="dsg-total"><span>Nota del periodo</span><span>${v==null?"—":fmt(v)} / 10</span></div>`;
 }
 /* Línea «Media … X · Puntos extra +Y (motivo)» antes del total, solo si hay extra que se suma. */
@@ -199,7 +199,7 @@ function dsgExtraEvalHTML(grupo,al,periodo,base,etiqueta){
   const e=extraEval(grupo,al.id,periodo);
   return `<table class="dsg-mini" style="margin-top:10px"><tbody>
     <tr><td>${etiqueta}</td><td style="text-align:right">${fmt(base)}</td></tr>
-    <tr><td>Puntos extra${e&&e.motivo?` <span class="dsg-muted">· ${esc(e.motivo)}</span>`:""}</td><td style="text-align:right">+${fmtPts(pts)}${base+pts>EXTRA_TOPE?' <span class="dsg-muted">(máximo 10)</span>':""}</td></tr>
+    <tr><td>Punts extra${e&&e.motivo?` <span class="dsg-muted">· ${esc(e.motivo)}</span>`:""}</td><td style="text-align:right">+${fmtPts(pts)}${base+pts>EXTRA_TOPE?' <span class="dsg-muted">(màxim 10)</span>':""}</td></tr>
   </tbody></table>`;
 }
 function desgloseTrimResumenBloquesHTML(grupo,al,trim){
@@ -220,11 +220,11 @@ function desgloseFinalHTML(grupo,al){
     return `<tr><td>${esc(TRIMESTRES[t])}${pe?` <span class="dsg-muted">(incluye +${fmtPts(pe)} extra)</span>`:""}</td><td style="text-align:right">${v==null?"—":fmt(v)}</td><td style="text-align:right">${w==null?"—":fmtPct(w)}</td></tr>`;
   }).join("");
   const detalle=disponibles.map(t=>`<div class="dsg-trim-block"><h3>${esc(TRIMESTRES[t])}</h3>${desgloseTrimResumenBloquesHTML(grupo,al,t)}</div>`).join("");
-  return `<div class="dsg-formula">Nota final = media ponderada de las evaluaciones con nota registrada.</div>
+  return `<div class="dsg-formula">Nota final = mitjana ponderada de les avaluacions amb nota registrada.</div>
     <table class="dsg-tabla"><thead><tr><th>Evaluación</th><th style="text-align:right">Nota</th><th style="text-align:right">Peso</th></tr></thead><tbody>${filasResumen}</tbody></table>
-    ${dsgExtraEvalHTML(grupo,al,"final",notaFinalSinExtra(grupo,al.id),"Media de las evaluaciones")}
+    ${dsgExtraEvalHTML(grupo,al,"final",notaFinalSinExtra(grupo,al.id),"Mitjana de les avaluacions")}
     <div class="dsg-total"><span>Nota final de curso</span><span>${nf==null?"—":fmt(nf)} / 10</span></div>
-    ${detalle?`<div class="dsg-subtitle" style="margin-top:18px">Detalle de bloques por evaluación</div>${detalle}`:""}`;
+    ${detalle?`<div class="dsg-subtitle" style="margin-top:18px">Detall de blocs per avaluació</div>${detalle}`:""}`;
 }
 
 /* ---- Nota cualitativa (competencias): desglose ---- */
@@ -237,7 +237,7 @@ function desgloseCriterioHTML(grupo,al,cid,trim){
       const n=grupo.notas?.[al.id]?.[a.id]?.[cid];
       return `<tr><td>${esc(a.nombre)}</td><td style="text-align:right">${n==null||n===""?"—":Number(n).toFixed(1).replace(".",",")}</td><td style="text-align:right">${fmtPct(Number(l.peso)||0)}</td></tr>`;
     }).join("");
-    return `<table class="dsg-mini"><thead><tr><th>Actividad</th><th style="text-align:right">Nota (0-10)</th><th style="text-align:right">Peso</th></tr></thead><tbody>${filas}</tbody></table>`;
+    return `<table class="dsg-mini"><thead><tr><th>Activitat</th><th style="text-align:right">Nota (0-10)</th><th style="text-align:right">Pes</th></tr></thead><tbody>${filas}</tbody></table>`;
   });
 }
 function desgloseCEHTML(grupo,al,ce,periodo){
@@ -258,10 +258,10 @@ function desgloseCEHTML(grupo,al,ce,periodo){
       if(cp==null) return "";
       const w=pesoCriterio(grupo,c.id);
       return `<div class="dsg-criterio">
-        <div class="dsg-criterio-head"><span>${critLabelPlain(grupo.catalogoKey,c.id)}</span><span>${pct1(cp)} <small>· peso ${fmtPct(w)}</small></span></div>
+        <div class="dsg-criterio-head"><span>${critLabelPlain(grupo.catalogoKey,c.id)}</span><span>${pct1(cp)} <small>· pes ${fmtPct(w)}</small></span></div>
         ${desgloseCriterioHTML(grupo,al,c.id,periodo)}
       </div>`;
-    }).filter(Boolean).join("")||`<p class="dsg-muted">Sin criterios con nota en este periodo.</p>`;
+    }).filter(Boolean).join("")||`<p class="dsg-muted">No hi ha criteris amb nota en este període.</p>`;
   }
   return `<div class="dsg-ce">
     <div class="dsg-ce-head"><span><strong>${esc(ce.id)}</strong> · ${esc(ce.titulo)}</span><span>${pillPlain(grupo,p)}</span></div>
@@ -352,9 +352,9 @@ function desgloseCualitativoHTML(grupo,al,periodo){
   const radar=graficoRadarCCHTML(grupo,al,periodo);
   return `${radar?`<div class="dsg-chart-box" style="margin-bottom:22px"><div class="dsg-subtitle" style="text-align:center">Perfil competencial</div>${radar}</div>`:""}
     <div class="dsg-subtitle">Competencias clave</div>
-    ${ccHtml||'<p class="dsg-muted">Sin datos de competencias en este periodo.</p>'}
+    ${ccHtml||'<p class="dsg-muted">No hi ha dades de competències en este període.</p>'}
     <div class="dsg-subtitle" style="margin-top:22px">Competencias específicas — detalle</div>
-    ${ceHtml||'<p class="dsg-muted">Sin datos de competencias en este periodo.</p>'}`;
+    ${ceHtml||'<p class="dsg-muted">No hi ha dades de competències en este període.</p>'}`;
 }
 
 /* ---- Documento completo + hoja de estilos propia (pantalla e impresión) ---- */
@@ -404,12 +404,12 @@ function informeDetalladoBodyHTML(grupo,al,periodo,opts){
   const cat=getCatalogo(grupo.catalogoKey);
   const periodoLabel=periodo==="final"?"Evaluación final (curso completo)":TRIMESTRES[periodo];
   const notaC=periodo==="final"?notaFinal(grupo,al.id):notaTrimestre(grupo,al.id,periodo);
-  const fechaLarga=new Date().toLocaleDateString("es-ES",{day:"numeric",month:"long",year:"numeric"});
+  const fechaLarga=new Date().toLocaleDateString("ca-ES",{day:"numeric",month:"long",year:"numeric"});
   return `<div class="dsg-report"${opts.pageBreak?' style="page-break-before:always;break-before:page"':''}>
     ${state.centroNombre?`<div class="dsg-letterhead">${esc(state.centroNombre)}</div>`:""}
     <div class="dsg-eyebrow">Informe detallado de evaluación</div>
     <h1 class="dsg-alumno">${esc(al.nombre)}</h1>
-    <div class="dsg-meta">${esc(cat.materia)} ${esc(cat.curso)}<span class="sep">·</span>Grupo ${esc(grupo.nombre)}<span class="sep">·</span><b>${esc(periodoLabel)}</b><span class="sep">·</span>${fechaLarga}</div>
+    <div class="dsg-meta">${esc(cat.materia)} ${esc(cat.curso)}<span class="sep">·</span>Grup ${esc(grupo.nombre)}<span class="sep">·</span><b>${esc(periodoLabel)}</b><span class="sep">·</span>${fechaLarga}</div>
     <div class="dsg-resumen">
       <div><div class="dsg-resumen-label">Nota cuantitativa</div><div class="dsg-resumen-valor">${notaC==null?"—":fmt(notaC)}<small> / 10</small></div></div>
       <div>${pillCuant(notaC)}</div>
@@ -431,8 +431,8 @@ window.exportarInformeDetallado=(alId,periodo)=>{
   const periodoLabel=p==="final"?"final de curso":TRIMESTRES[p];
   const cat=getCatalogo(grupo.catalogoKey);
   const portada=generarPortadaHTML(`Informe detallado — ${al.nombre}`,
-    [`${esc(cat.materia)} · ${esc(cat.curso)} · Grupo ${esc(grupo.nombre)}`,
-     `<strong>${esc(p==="final"?"Evaluación final":periodoLabel)}</strong>`,
+    [`${esc(cat.materia)} · ${esc(cat.curso)} · Grup ${esc(grupo.nombre)}`,
+     `<strong>${esc(p==="final"?"Avaluació final":periodoLabel)}</strong>`,
      `Curso escolar: <strong>${esc(cursoEscolarEfectivo(null))}</strong>`,
      profesorNombreEfectivo(null)?`Elaborado por: <strong>${esc(profesorNombreEfectivo(null))}</strong>`:""], []);
   abrirVentanaInforme(`Informe detallado · ${al.nombre} · ${periodoLabel}`, dsgReportCSS()+informeDetalladoBodyHTML(grupo,al,p), {portada});
@@ -440,7 +440,7 @@ window.exportarInformeDetallado=(alId,periodo)=>{
 function informesDetalladosPortadaHTML(grupo,alumnos,periodo){
   const cat=getCatalogo(grupo.catalogoKey);
   const periodoLabel=periodo==="final"?"Evaluación final (curso completo)":TRIMESTRES[periodo];
-  const fechaLarga=new Date().toLocaleDateString("es-ES",{day:"numeric",month:"long",year:"numeric"});
+  const fechaLarga=new Date().toLocaleDateString("ca-ES",{day:"numeric",month:"long",year:"numeric"});
   const filas=alumnos.map(al=>{
     const v=periodo==="final"?notaFinal(grupo,al.id):notaTrimestre(grupo,al.id,periodo);
     return `<tr><td>${esc(al.nombre)}</td><td style="text-align:right;font-weight:600;white-space:nowrap">${v==null?"—":fmt(v)}</td><td>${pillCuant(v)}</td></tr>`;
@@ -450,8 +450,8 @@ function informesDetalladosPortadaHTML(grupo,alumnos,periodo){
     <div class="dsg-eyebrow">Informes detallados de evaluación</div>
     <h1 class="dsg-alumno" style="font-size:23px">${esc(grupo.nombre)}</h1>
     <div class="dsg-meta">${esc(cat.materia)} ${esc(cat.curso)}<span class="sep">·</span><b>${esc(periodoLabel)}</b><span class="sep">·</span>${fechaLarga}</div>
-    <p class="dsg-muted" style="margin:0 0 16px">${alumnos.length} alumno${alumnos.length===1?"":"s"} con nota en este periodo, ordenados alfabéticamente por apellidos. Cada uno ocupa sus propias páginas a continuación de este índice.</p>
-    <table class="dsg-tabla"><thead><tr><th>Alumno/a</th><th style="text-align:right">Nota</th><th>Calificación</th></tr></thead><tbody>${filas}</tbody></table>
+    <p class="dsg-muted" style="margin:0 0 16px">${alumnos.length} alumne${alumnos.length===1?"":"s"} amb nota en este període, ordenats alfabèticament per cognoms. Cadascun ocupa les seues pròpies pàgines a continuació d'este índex.</p>
+    <table class="dsg-tabla"><thead><tr><th>Alumne/a</th><th style="text-align:right">Nota</th><th>Qualificació</th></tr></thead><tbody>${filas}</tbody></table>
   </div>`;
 }
 window.exportarInformesDetalladosTodos=periodo=>{
