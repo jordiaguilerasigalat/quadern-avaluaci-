@@ -37,7 +37,7 @@ function fitxaResumHTML(g,a){
   const rp=(state.planesRepeticion||[]).find(p=>p.alumnoId===a.id);
   const rf=(state.planesRefuerzo||[]).filter(p=>p.alumnoId===a.id);
   const plans=[
-    a.nese? `<button class="ghost small" style="border:1px solid var(--line)" onclick="cerrarFichaAlumno();${ne?`neAbrirDesdeOtroModo('${escJS(ne.id)}')`:"irModo('nese')"}">🧩 NESE${ne?"":" (sense pla)"}</button>` : "",
+    a.nese? `<button class="ghost small" style="border:1px solid var(--line)" onclick="cerrarFichaAlumno();${ne?`neAbrirDesdeOtroModo('${escJS(ne.id)}')`:"irModo('nese')"}">🧩 NESE${ne?"":" (sense pla)"}${ne&&typeof qnResumCurt==="function"&&qnResumCurt(ne)?" · "+esc(qnResumCurt(ne)):""}</button>` : "",
     rp? `<button class="ghost small" style="border:1px solid var(--line)" onclick="cerrarFichaAlumno();rpAbrirDesdeOtroModo('${escJS(rp.id)}')">🔁 Pla de repetició</button>` : "",
     ...rf.map(p=>`<button class="ghost small" style="border:1px solid var(--line)" onclick="cerrarFichaAlumno();rfAbrirDesdeOtroModo('${escJS(p.id)}')">📈 Pla de reforç${p.titulo?" · "+esc(p.titulo):""}</button>`)
   ].filter(Boolean).join("");

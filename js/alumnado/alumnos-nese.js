@@ -76,6 +76,7 @@ function renderNeListaHTML(root){
       return `<div class="row" style="justify-content:space-between;cursor:pointer" onclick="neAbrirDetalle('${p.id}')">
         <div><strong>${esc(al.nombre)}</strong> <span class="badge">${badgeTxt}</span></div>
         <div class="flex" style="gap:6px">
+          ${typeof qnResumCurt==="function" && qnResumCurt(p)?`<span class="pill" style="background:#ede9fe;color:#5b21b6" title="Quadern de reforç: tasques fetes">${qnResumCurt(p)}</span>`:""}
           ${p.tipo==="altas"?`<span class="sub" style="margin:0">${p.medidasTomadas?"amb mesures registrades":"pla en blanc"}</span>`:`
           <span class="pill" style="background:#dbeafe;color:#1d4ed8">${r.i} I</span>
           <span class="pill" style="background:#fef3c7;color:#92400e">${r.pr} P</span>
@@ -253,6 +254,7 @@ function renderNeDetalleHTML(root){
       </label>
     </div>
   </div>
+  ${typeof qnSeccioHTML==="function"? qnSeccioHTML(p) : ""}
   ${p.tipo==="altas"?"":leyendaHTML}
   ${ceRefHTML}
   ${bloquesHTML}
@@ -343,6 +345,7 @@ window.neImprimirInforme=(id,alcance)=>{
     </table>
     ${ceTabla?`<h2>Competencias específicas</h2>${ceTabla}`:""}
     ${cuerpoBloques}
+    ${typeof qnInformeHTML==="function"? qnInformeHTML(p,alcance) : ""}
     ${valoracionesBody}
   `;
   const portada=generarPortadaHTML(`Pla NESE — ${neNombre(p)}`,
@@ -350,7 +353,7 @@ window.neImprimirInforme=(id,alcance)=>{
      `${etiquetaEv}`,
      `Curso escolar: <strong>${esc(cursoEscolarEfectivo(null))}</strong>`,
      profesorNombreEfectivo(null)?`Elaborado por: <strong>${esc(profesorNombreEfectivo(null))}</strong>`:""],
-    [ceTabla?"Competencias específicas":"", ...bloquesAgrupados.map(b=>b.titulo), valoracionesBody?"Valoración del aprovechamiento del plan":""]);
+    [ceTabla?"Competencias específicas":"", ...bloquesAgrupados.map(b=>b.titulo), p.quadern&&p.quadern.tasques&&p.quadern.tasques.length?"Quadern de reforç":"", valoracionesBody?"Valoración del aprovechamiento del plan":""]);
   abrirVentanaInforme(`Pla NESE — ${neNombre(p)} · ${etiquetaEv}`, body, {portada});
 };
 
