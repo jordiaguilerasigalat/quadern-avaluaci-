@@ -1597,6 +1597,45 @@ export const PRUEBAS = [
     t.ok(r2.auto3 != null && /d'una altra activitat/.test(r2.avis), 'en enganxar els codis s\'afigen i els d\'una altra activitat es rebutgen', JSON.stringify(r2));
     t.ok(!p.errores.length && !errM.length, 'sin errores de JavaScript', p.errores.concat(errM).slice(0, 3).join('; '));
   } },
+  { nombre: 'blocs-desactivar', descripcion: 'Blocs: es poden posar a 0 % i desactivar sense perdre res; els treballs i exposicions no van al bloc de l\'actitud', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const ids = await cuadernoConGrupo(p, t.url);
+    const r = await p.evaluate(async ids => {
+      const g = state.grupos[0], B = g.bloques;
+      const lab = k => (B.find(b => b.id === segBlocsIds(g, k)[0]) || {}).label;
+      const out = { treballs: lab('treballs'), actitud: lab('actitud'), lab: lab('laboratori') };
+      g.actividades = [
+        { id: 'e1', nombre: 'Examen 1', tipo: TIPOS[0], trimestre: 0, bloqueId: B[0].id, esExamen: true, criterios: [] },
+        { id: 'q1', nombre: 'Quadern', tipo: TIPOS[0], trimestre: 0, bloqueId: B[1].id, esExamen: true, criterios: [] }];
+      g.notasCuant = { [ids[0]]: { e1: 8, q1: 2 } };
+      state.ui.appMode = 'competencial'; state.ui.tab = 'ajustes'; save(); render(); _invalidarCaches();
+      out.abans = notaTrimestre(g, ids[0], 0);
+      const caixa = () => document.querySelector('[onchange^="blocActivar(1,"]');
+      out.hiHaCaixa = !!caixa() && caixa().checked;
+      caixa().click(); await new Promise(r => setTimeout(r, 100)); _invalidarCaches();
+      out.inactiu = state.grupos[0].bloques[1].inactiu === true && state.grupos[0].bloques[1].peso === 15;
+      out.desactivat = notaTrimestre(g, ids[0], 0);
+      out.text = document.getElementById('sumaBloquesAviso').textContent;
+      out.marcat = caixa().checked;
+      caixa().click(); await new Promise(r => setTimeout(r, 100)); _invalidarCaches();
+      out.tornat = notaTrimestre(g, ids[0], 0);
+      const inp = document.querySelector('[oninput^="setBloqueW(1,"]');
+      inp.value = '0'; inp.dispatchEvent(new Event('input')); _invalidarCaches();
+      out.zero = [state.grupos[0].bloques[1].peso, notaTrimestre(g, ids[0], 0)];
+      const txt = 'MATERIA: Prova\nCURSO: 1r\n\nBLOQUES\nExàmens = 100\nDeures = 0\n\nCE1: Una | CCL\n1.1: Criteri u.\n';
+      out.importa = validarCatalogo(parseCatalogoTexto(txt)).ok;
+      return out;
+    }, ids);
+    t.ok(/investig/i.test(r.treballs) && /proactiv/i.test(r.actitud), 'Treballs i exposicions van al bloc de treball d\'investigació i l\'Actitud al de proactivitat', JSON.stringify(r));
+    t.ok(r.hiHaCaixa, 'cada bloc té la casella «Compta en la nota» marcada');
+    t.ok(Math.abs(r.abans - (8 * 60 + 2 * 15) / 75) < 1e-9, 'abans: exàmens 60 % i quadern 15 %', String(r.abans));
+    t.ok(r.inactiu && !r.marcat && r.desactivat === 8, 'desactivat: no compta, però conserva el pes', JSON.stringify(r));
+    t.ok(/Desactivat/.test(r.text), 'la suma diu quins blocs estan desactivats', r.text);
+    t.ok(Math.abs(r.tornat - r.abans) < 1e-9, 'reactivat: la nota torna a ser la d\'abans');
+    t.ok(r.zero[0] === 0 && r.zero[1] === 8, 'un bloc a 0 % no compta', JSON.stringify(r.zero));
+    t.ok(r.importa === true, 'una plantilla de matèria pot tindre un bloc a 0 %');
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
   { nombre: 'quadern-nese', descripcion: 'Pla NESE: seguiment del quadern de reforç (tasques fetes, nivell, criteris), progrés per CE, I/P/A i notes del grup', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     await cuadernoConGrupo(p, t.url, { nombres: ['Alfa, Ana', 'Beta, Bruno', 'Gamma, Gema'] });

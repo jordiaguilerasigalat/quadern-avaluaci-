@@ -100,12 +100,13 @@ function renderAjustes(grupo){
         <p id="sumaBloquesAviso" style="font-size:13px;margin:0 0 8px">${sumaBloquesHTML(grupo)}</p>
         <div class="flex">
           ${grupo.bloques.map((b,i)=>{ const nAct=(grupo.actividades||[]).filter(x=>typeof actEnBloque==="function"? actEnBloque(x,b.id) : x.bloqueId===b.id).length; return `
-            <div style="font-size:13.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px;max-width:240px">
+            <div class="blocPes${b.inactiu?" blocInactiu":""}" style="font-size:13.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px;max-width:240px">
               <span style="display:flex;align-items:center;gap:4px">${esc(b.label)} (%)
                 <button class="ghost small" style="padding:0 4px;border:0" title="Canviar el nom del bloc" aria-label="Canviar el nom del bloc ${esc(b.label)}" onclick="blocReanomenar(${i})">✏️</button>
                 ${grupo.bloques.length>1?`<button class="ghost small" style="padding:0 4px;border:0" title="Eliminar el bloc" aria-label="Eliminar el bloc ${esc(b.label)}" onclick="blocEliminar(${i})">🗑️</button>`:""}</span>
-              <input class="in" type="number" value="${b.peso}" aria-label="Pes del bloc ${esc(b.label)} (%)" oninput="setBloqueW(${i},this.value)">
-              <span class="sub" style="font-size:11.5px">${nAct} activitat${nAct===1?"":"s"}</span>
+              <input class="in" type="number" min="0" max="100" step="any" value="${b.peso}" aria-label="Pes del bloc ${esc(b.label)} (%)" oninput="setBloqueW(${i},this.value)" ${b.inactiu?'style="opacity:.55"':""}>
+              <label style="display:flex;align-items:center;gap:5px;font-size:12.5px;cursor:pointer" title="Desactivat, el bloc no compta en la nota però es guarden el pes i les activitats"><input type="checkbox" ${b.inactiu?"":"checked"} onchange="blocActivar(${i},this.checked)"> ${b.inactiu?"<strong>Desactivat:</strong> no compta":"Compta en la nota"}</label>
+              <span class="sub" style="font-size:11.5px">${nAct} activitat${nAct===1?"":"s"}${!b.inactiu&&!(Number(b.peso)>0)?" · amb 0 % no compta":""}</span>
             </div>`; }).join("")}
         </div>
         <button class="ghost" style="border:1px dashed var(--line);margin-top:10px" onclick="blocAfegir()">+ Afegir un bloc (p. ex. Deures)</button>
@@ -263,12 +264,22 @@ window.borrarGrupoId=async id=>{
 window.borrarGrupo=()=>{ const grupo=grupoActual(); if(grupo) borrarGrupoId(grupo.id); };
 window.setBloqueW=(i,v)=>{ const grupo=grupoActual(); grupo.bloques[i].peso=Math.max(0,Number(String(v).replace(",","."))||0); save();
   const el=document.getElementById("sumaBloquesAviso"); if(el) el.innerHTML=sumaBloquesHTML(grupo); };
+/* Activar/desactivar un bloc: desactivat no compta en la nota (com si pesara
+   0 %), però conserva el pes, les activitats i les notes per a quan es reactive. */
+window.blocActivar=(i,on)=>{ const grupo=grupoActual(); const b=grupo&&grupo.bloques[i]; if(!b) return;
+  if(on) delete b.inactiu; else b.inactiu=true;
+  save(); render();
+  mostrarToast(on? `✓ «${b.label}» torna a comptar (${b.peso} %).` : `«${b.label}» desactivat: no compta en la nota. El pes i les notes es guarden.`);
+};
 /* v4: suma de los bloques en vivo. Si no suman 100, la nota se sigue
    calculando (en proporción), pero se avisa para que sea intencionado. */
 function sumaBloquesHTML(grupo){
-  const t=Math.round(grupo.bloques.reduce((n,b)=>n+(Number(b.peso)||0),0)*100)/100;
-  if(Math.abs(t-100)<0.01) return `<span style="color:#1e7a44;font-weight:600">✓ Suman 100 %</span>`;
-  return `<span style="color:#b45309;font-weight:600">⚠️ Suman ${String(t).replace(".",",")} %.</span> <span class="sub">La nota se calcula igualmente en proporción (cada bloque pesa su parte sobre ${String(t).replace(".",",")}), pero lo normal es que sumen 100.</span>`;
+  const t=Math.round(grupo.bloques.reduce((n,b)=>n+pesoBloqueNota(b),0)*100)/100;
+  const off=grupo.bloques.filter(b=>b.inactiu);
+  const nota=off.length? ` <span class="sub">Desactivat${off.length===1?"":"s"} (no compte${off.length===1?"":"n"}): ${off.map(b=>esc(b.label)).join(", ")}.</span>` : "";
+  if(Math.abs(t-100)<0.01) return `<span style="color:#1e7a44;font-weight:600">✓ Sumen 100 %</span>`+nota;
+  if(!(t>0)) return `<span style="color:#b45309;font-weight:600">⚠️ Cap bloc compta.</span> <span class="sub">Activa'n algun o posa-li pes perquè hi haja nota numèrica.</span>`+nota;
+  return `<span style="color:#b45309;font-weight:600">⚠️ Sumen ${String(t).replace(".",",")} %.</span> <span class="sub">La nota es calcula igualment en proporció (cada bloc pesa la seua part sobre ${String(t).replace(".",",")}), però el normal és que sumen 100.</span>`+nota;
 }
 window.setUmbral=(k,v)=>{ grupoActual().umbrales[k]=Number(v)||0; save(); };
 /* Blocs propis: afegir, canviar el nom i eliminar (les activitats d'un bloc

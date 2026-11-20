@@ -169,6 +169,16 @@ function ejecutarPruebas() {
   comprobar('Extra no numérico: se ignora', notaTrimestre(g, 'a1', 0), 6.6);
   g.extrasEval = {}; reiniciar();
 
+  // --- Bloc a 0 % i bloc desactivat (no compten, però es conserven pes i notes)
+  g.bloques[1].peso = 0; reiniciar();
+  comprobar('Bloc Trabajos a 0 %: només compten els exàmens', notaTrimestre(g, 'a1', 0), 6);
+  g.bloques[1].peso = 40; g.bloques[1].inactiu = true; reiniciar();
+  comprobar('Bloc Trabajos desactivat: només compten els exàmens', notaTrimestre(g, 'a1', 0), 6);
+  comprobar('Bloc desactivat: la seua nota es conserva', notaBloque(g, 'a1', 'b1', 0), 7.5);
+  comprobar('Bloc desactivat: pes efectiu 0', pesoBloqueNota(g.bloques[1]), 0);
+  delete g.bloques[1].inactiu; reiniciar();
+  comprobar('Bloc reactivat: torna el 40 %', notaTrimestre(g, 'a1', 0), 6.6);
+
   // --- Competencias (1.ª evaluación)
   comprobar('Criterio 1.1: (7 × 100 + 8 × 50) / 150, en %', scoreCriterio(g, 'a1', '1.1'), 220 / 3);
   comprobar('CE1: media de 1.1 y 1.2', scoreCE(g, 'a1', 'CE1'), (220 / 3 + 40) / 2);
