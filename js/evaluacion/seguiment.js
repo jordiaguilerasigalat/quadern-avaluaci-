@@ -244,7 +244,7 @@ function renderSeguimentAlumne(grupo,act,al){
   const chips=grupo.alumnos.map(a=>{
     const v=grupo.notasCuant?.[a.id]?.[act.id], m=marcaDe(grupo,a.id,act.id);
     const txt=m? m : (v!=null? fmt(v) : "·");
-    return `<button class="gpill ${a.id===al.id?"on":""}" style="font-size:12.5px;padding:4px 10px" onclick="segIrAlumne('${a.id}')" aria-label="${esc(a.nombre)}${v!=null?": "+fmt(v):""}">${esc(a.nombre)} <span style="font-weight:700;margin-left:4px">${txt}</span></button>`;
+    return `<button class="gpill ${a.id===al.id?"on":""}" style="font-size:12.5px;padding:4px 10px" onclick="segIrAlumne('${a.id}')" aria-label="${esc(a.nombre)}${v!=null?": "+fmt(v):""}">${avatarAlumneHTML(a,{mida:20})}${esc(a.nombre)} <span style="font-weight:700;margin-left:4px">${txt}</span></button>`;
   }).join("");
   c.insertAdjacentHTML("afterbegin",`<div class="card">
     <div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px">

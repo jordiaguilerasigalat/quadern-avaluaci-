@@ -59,6 +59,7 @@ Completan el repositorio: `manifest.json` e `icons/` (instalación como app), `.
 | `js/inicio/horario.js` | Horario semanal, franjas horarias y vista «Hoy» |
 | `js/inicio/alertas-home.js` | Alertas automáticas y pantalla de Inicio |
 | `js/ui/grupo-y-copias.js` | Navegación por grupo, pantalla inicial vacía, exportar/importar todo |
+| `js/alumnado/fotos-alumnat.js` | Foto de l'alumnat: avatar al costat del nom, foto des de la fitxa (fitxer o càmera, reduïda a 128 px al navegador), importació en bloc per nom de fitxer i «Amagar les fotos» en este dispositiu |
 | `js/alumnado/plano-aula.js` | Plano de aula y lista de alumnado |
 | `js/alumnado/ficha-familia.js` | Correos de la familia y papelera de alumnado |
 | `js/evaluacion/actividades.js` | Actividades y recuperaciones (interfaz) |

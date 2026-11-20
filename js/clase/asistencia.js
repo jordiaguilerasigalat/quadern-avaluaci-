@@ -212,7 +212,7 @@ function renderAsistencia(grupo){
   const filasLista=grupo.alumnos.length?grupo.alumnos.map(al=>{
     const reg=asistDelDia(grupo,fecha,al.id);
     return `<div class="row" style="flex-wrap:wrap;gap:8px;align-items:center">
-      <div style="flex:1;min-width:150px"><strong style="font-size:13.5px">${esc(al.nombre)}</strong></div>
+      <div style="flex:1;min-width:150px;display:flex;align-items:center">${avatarAlumneHTML(al,{mida:30})}<strong style="font-size:13.5px">${esc(al.nombre)}</strong></div>
       <div class="flex" style="gap:4px;flex-wrap:wrap">
         ${ASIST_ESTADOS.map(e=>`<button class="chip ${reg.estado===e.id?"on":""}" style="font-size:12px;padding:5px 10px${reg.estado===e.id?`;background:${e.color};color:#fff;border-color:${e.color}`:""}" onclick="asistMarcar('${al.id}','${e.id}')">${e.label}</button>`).join("")}
       </div>
@@ -361,7 +361,7 @@ window.asistImprimirResumen=()=>{
   const desde=state.ui.asistDesde||rangoDef.desde, hasta=state.ui.asistHasta||rangoDef.hasta;
   const filas=grupo.alumnos.map(al=>{
     const cnt=asistContarPeriodo(grupo,al.id,desde,hasta);
-    return `<tr><td>${nomFitxaHTML(al)}</td><td style="text-align:center">${cnt.falta_justificada}</td><td style="text-align:center">${cnt.falta_no_justificada}</td><td style="text-align:center">${cnt.retraso}</td></tr>`;
+    return `<tr><td>${esc(al.nombre)}</td><td style="text-align:center">${cnt.falta_justificada}</td><td style="text-align:center">${cnt.falta_no_justificada}</td><td style="text-align:center">${cnt.retraso}</td></tr>`;
   }).join("");
   const body=`
     <h1>Resumen de asistencia</h1>
