@@ -1334,12 +1334,24 @@ export const PRUEBAS = [
       g.notasCuant = { [ids[0]]: { e1: 9 }, [ids[1]]: { e1: 3 } };
       g.notas = { [ids[0]]: { e1: { [c1]: 5 }, l1: { [c2]: 5 } }, [ids[1]]: { e1: { [c1]: 10 }, l1: { [c2]: 10 } } };
       state.ui.appMode = 'competencial'; state.ui.tab = 'ajustes'; save(); render();
+      const amplaCol = () => [...document.querySelectorAll('.mqCol')].map(x => x.getBoundingClientRect().width);
       const out = { radio: !!document.querySelector('input[name="modoNota"][value="ambdues"]') };
       const abans = notaTrimestre(g, ids[0], 0);
       document.querySelector('input[name="modoNota"][value="ambdues"]').click();
       await new Promise(r => setTimeout(r, 100));
       out.mode = state.grupos[0].modoNota; out.pesosVisibles = document.querySelectorAll('[oninput^="setPesoCE"]').length > 0;
-      out.unSolMarcat = document.querySelectorAll('input[name="modoNota"]:checked').length === 1;
+      const cols = [...document.querySelectorAll('.mqCol')];
+      out.unSolMarcat = document.querySelectorAll('input[name="modoNota"]:checked').length === 1 && cols.length === 2
+        && /blocs/i.test(cols[0].querySelector('h3').textContent) && /compet/i.test(cols[1].querySelector('h3').textContent)
+        && Math.abs(cols[0].getBoundingClientRect().top - cols[1].getBoundingClientRect().top) < 2;
+      const amplaDues = amplaCol()[0], qAbans = notaQualitativaCE(g, ids[1], 0);
+      document.querySelector('[onclick="mqAmagar(\'blocs\')"]').click();
+      await new Promise(r => setTimeout(r, 100));
+      out.amagaBlocs = state.grupos[0].modoNota === 'ambdues' && document.querySelectorAll('.mqCol').length === 1 && !document.querySelector('[oninput^="setBloqueW"]')
+        && amplaCol()[0] > amplaDues * 1.6 && notaTrimestre(g, ids[0], 0) === abans && notaQualitativaCE(g, ids[1], 0) === qAbans;
+      document.querySelector('.mqMostrar').click();
+      await new Promise(r => setTimeout(r, 100));
+      out.amagaBlocs = out.amagaBlocs && state.grupos[0].modoNota === 'ambdues' && document.querySelectorAll('.mqCol').length === 2;
       out.mateixaNota = notaTrimestre(g, ids[0], 0) === abans;
       out.q0 = etiquetaQualitativaCE(g, ids[0], 0)?.etq; out.q1 = etiquetaQualitativaCE(g, ids[1], 0)?.etq; out.q2 = notaQualitativaCE(g, ids[2], 0);
       state.ui.tab = 'resultados'; state.ui.resAl = ''; save(); render();
@@ -1354,7 +1366,8 @@ export const PRUEBAS = [
       out.ambInstr = informeAlumnoBodyHTML(g, g.alumnos[1]);
       return out;
     }, ids);
-    t.ok(r.radio && r.mode === 'ambdues' && r.unSolMarcat, 'Ajustos té l\'opció «Les dues» i es guarda', JSON.stringify([r.radio, r.mode, r.unSolMarcat]));
+    t.ok(r.radio && r.mode === 'ambdues' && r.unSolMarcat, 'Ajustos: blocs a l\'esquerra i competències a la dreta en dues columnes; opció «Les dues»', JSON.stringify([r.radio, r.mode, r.unSolMarcat]));
+    t.ok(r.amagaBlocs, 'amagar una columna és només visual: l\'altra ocupa tota l\'amplada i cap nota ni el mode canvien');
     t.ok(r.pesosVisibles, 'amb «Les dues» es poden posar els pesos de les CE');
     t.ok(r.mateixaNota, 'la nota numèrica no canvia: continua eixint dels instruments');
     t.ok(r.q0 === 'Suficient' && r.q1 === 'Excel·lent' && r.q2 == null, 'la qualitativa ix dels criteris (no de la nota de l\'examen)', JSON.stringify([r.q0, r.q1, r.q2]));
