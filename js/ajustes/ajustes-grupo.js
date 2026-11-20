@@ -81,6 +81,7 @@ function renderAjustes(grupo){
           </label>
         </div>`).join("")}
     </div>
+    ${state.grupos.some(g=>g.id!==grupo.id)?`<div class="flex" style="margin-top:10px"><button class="ghost" onclick="obrirCopiarDates()">📋 Copiar a altres grups</button></div>`:""}
   </div>
 
   ${(()=>{
@@ -324,6 +325,57 @@ function sumaPesosCEHTML(grupo){
 }
 window.setPesoTrim=(t,v)=>{ const g=grupoActual(); if(!g.pesosTrim) g.pesosTrim={}; g.pesosTrim[t]=v; save(); };
 window.setFechaTrimestre=(t,campo,v)=>{ const g=grupoActual(); if(!g.fechasTrimestre) g.fechasTrimestre=[{inicio:"",fin:""},{inicio:"",fin:""},{inicio:"",fin:""}]; g.fechasTrimestre[t][campo]=v; save(); };
+/* Copiar les dates d'avaluació d'este grup a altres grups triats. Abans de
+   sobreescriure dates diferents que ja hi hagen, es demana confirmació. */
+function _datesTxt(ft){
+  const d=x=>x?x.split("-").reverse().join("/"):"…";
+  return [0,1,2].map(t=>{ const f=(ft||[])[t]||{}; return f.inicio||f.fin?`${t+1}a: ${d(f.inicio)}–${d(f.fin)}`:""; }).filter(Boolean).join(" · ");
+}
+function _datesIguals(a,b){ return [0,1,2].every(t=>{ const x=(a||[])[t]||{}, y=(b||[])[t]||{}; return (x.inicio||"")===(y.inicio||"")&&(x.fin||"")===(y.fin||""); }); }
+window.obrirCopiarDates=()=>{
+  const g=grupoActual();
+  if(![0,1,2].some(t=>{ const f=g.fechasTrimestre[t]; return f&&(f.inicio||f.fin); })){ mostrarAviso("Este grup encara no té cap data d'avaluació per copiar."); return; }
+  const altres=state.grupos.filter(x=>x.id!==g.id);
+  tancarCopiarDates();
+  const wrap=document.createElement("div"); wrap.id="copiarDatesWrap";
+  wrap.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this) tancarCopiarDates()">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="copiarDatesT" style="max-width:480px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px">
+        <h2 id="copiarDatesT" style="font-size:16.5px;margin:0">Copiar les dates d'avaluació</h2>
+        <button class="modal-close" onclick="tancarCopiarDates()" aria-label="Tancar">×</button>
+      </div>
+      <p class="sub" style="margin:0 0 10px">${esc(_datesTxt(g.fechasTrimestre))}</p>
+      <p style="font-size:14px;margin:0 0 6px">Tria a quins grups vols posar les mateixes dates:</p>
+      <div style="display:flex;flex-direction:column;gap:6px;max-height:50vh;overflow:auto">
+        ${altres.map(x=>{ const ja=_datesTxt(x.fechasTrimestre), igual=_datesIguals(x.fechasTrimestre,g.fechasTrimestre);
+          return `<label style="display:flex;gap:8px;align-items:flex-start;font-size:14px">
+            <input type="checkbox" class="cdGrup" value="${esc(x.id)}" ${igual?"disabled":""} style="margin-top:3px">
+            <span><strong>${esc(x.nombre)}</strong>${igual?` <span class="sub">· ja té les mateixes dates</span>`:ja?`<br><span class="sub" style="font-size:12px">Ara: ${esc(ja)}</span>`:` <span class="sub">· sense dates</span>`}</span></label>`; }).join("")}
+      </div>
+      <div class="flex" style="justify-content:space-between;gap:8px;margin-top:14px">
+        <button class="ghost" onclick="document.querySelectorAll('#copiarDatesWrap .cdGrup:not(:disabled)').forEach(c=>c.checked=true)">Marcar-los tots</button>
+        <div class="flex" style="gap:8px">
+          <button class="ghost" style="border:1px solid var(--line)" onclick="tancarCopiarDates()">Cancel·lar</button>
+          <button class="btn" onclick="aplicarCopiarDates()">Copiar</button>
+        </div>
+      </div>
+    </div></div>`;
+  document.body.appendChild(wrap);
+  document.addEventListener("keydown",_copiarDatesEsc);
+};
+function _copiarDatesEsc(e){ if(e.key==="Escape" && document.getElementById("copiarDatesWrap") && !document.querySelector(".dlg-overlay")) tancarCopiarDates(); }
+window.tancarCopiarDates=()=>{ const el=document.getElementById("copiarDatesWrap"); if(el) el.remove(); document.removeEventListener("keydown",_copiarDatesEsc); };
+window.aplicarCopiarDates=async()=>{
+  const g=grupoActual();
+  const ids=[...document.querySelectorAll("#copiarDatesWrap .cdGrup:checked")].map(c=>c.value);
+  const dest=state.grupos.filter(x=>ids.includes(x.id));
+  if(!dest.length){ mostrarAviso("Marca almenys un grup."); return; }
+  const amb=dest.filter(x=>_datesTxt(x.fechasTrimestre));
+  if(amb.length && !(await confirmar(`${amb.map(x=>x.nombre).join(", ")} ja ${amb.length===1?"té":"tenen"} dates d'avaluació. Es reemplaçaran per les d'este grup.`,{titulo:"Reemplaçar les dates?",ok:"Sí, reemplaçar-les",cancelar:"Cancel·lar"}))) return;
+  dest.forEach(x=>{ x.fechasTrimestre=[0,1,2].map(t=>({...(x.fechasTrimestre||[])[t], inicio:g.fechasTrimestre[t].inicio||"", fin:g.fechasTrimestre[t].fin||""})); });
+  save(); tancarCopiarDates();
+  mostrarAviso(`Dates copiades a ${dest.length===1?`«${dest[0].nombre}»`:`${dest.length} grups`}.`);
+};
 window.setProgramacionGrupo=(id)=>{ const g=grupoActual(); g.programacionId=id; save(); render(); };
 window.irAProgramacion=()=>{ state.ui.appMode="programacion"; state.ui.progTab="lista"; save(); render(); };
 window.setCeCc=(ce,cc,v)=>{ grupoActual().pesos.ceCc[ce+"|"+cc]=v; save(); };
