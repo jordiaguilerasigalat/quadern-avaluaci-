@@ -1380,6 +1380,120 @@ export const PRUEBAS = [
     t.ok(!/Qualitativa/.test(r.ambInstr), 'només per instruments no apareix cap qualitativa');
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'banc-comentaris', descripcion: 'Banc de comentaris: frases per categoria, la de la nota primer, inserir amb el nom posat, editar i desar al banc', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const ids = await cuadernoConGrupo(p, t.url);
+    const r = await p.evaluate(async ids => {
+      const g = state.grupos[0], c1 = getCatalogo('FiQ_2ESO').ces[0].criterios[0].id;
+      g.actividades = [{ id: 'e1', nombre: 'Examen 1', tipo: TIPOS[0], trimestre: 0, bloqueId: g.bloques[0].id, esExamen: true, criterios: [{ critId: c1, peso: 100 }] }];
+      g.notasCuant = { [ids[0]]: { e1: 3 } }; g.notas = { [ids[0]]: { e1: { [c1]: 3 } } };
+      state.ui.appMode = 'competencial'; state.ui.tab = 'resultados'; state.ui.trim = 0; state.ui.resAl = ids[0]; save(); render();
+      const out = {};
+      const boto = [...document.querySelectorAll('#tabContent button')].find(b => /Banc de comentaris/.test(b.textContent));
+      out.boto = !!boto; boto.click(); await new Promise(r => setTimeout(r, 50));
+      out.panell = !!document.querySelector('.bancPanell');
+      out.primera = document.querySelector('.bancGrup').textContent;
+      const ta = document.getElementById('resComentario'); ta.value = 'Inici.'; ta.dispatchEvent(new Event('change'));
+      document.querySelector('.bancFrase').click(); await new Promise(r => setTimeout(r, 50));
+      out.text = g.alumnos[0].comentariosEval[0]; out.ta = document.getElementById('resComentario').value;
+      const n0 = state.bancComentaris.length;
+      document.getElementById('resComentario').value = 'Ana ha millorat molt en els problemes.';
+      const desa = [...document.querySelectorAll('.bancPanell button')].find(b => /Desa al banc/.test(b.textContent)); desa.click();
+      await new Promise(r => setTimeout(r, 50));
+      out.desada = state.bancComentaris.length === n0 + 1 && state.bancComentaris.at(-1).text === '{nom} ha millorat molt en els problemes.' && state.bancComentaris.at(-1).cat === 'millora';
+      bancFiltre('lab'); out.filtre = document.querySelectorAll('.bancGrup').length === 1 && /Laboratori/.test(document.querySelector('.bancGrup').textContent);
+      bancGestio(true); out.gestio = !!document.querySelector('[aria-label="Esborrar la frase"]');
+      return out;
+    }, ids);
+    t.ok(r.boto && r.panell, 'Resultats: botó «Banc de comentaris» que obri el panell');
+    t.ok(/Ha de millorar/.test(r.primera) && /segons la nota/.test(r.primera), 'amb un 3 apareixen primer les frases de «Ha de millorar»', r.primera.slice(0, 80));
+    t.ok(/^Inici\. Ana encara no ha assolit els aprenentatges de la primera avaluació\.$/.test(r.text) && r.ta === r.text, 'la frase s\'afig al comentari amb el nom i l\'avaluació', r.text);
+    t.ok(r.desada, '«Desa al banc» guarda el comentari amb {nom} en la categoria de la nota');
+    t.ok(r.filtre && r.gestio, 'filtre per categoria i mode d\'edició del banc');
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
+  { nombre: 'grafiques', descripcion: 'Gràfiques d\'evolució en Resultats: grup (avaluacions, activitats, CE, altres grups) i alumne/a (línia amb la mitjana del grup)', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const ids = await cuadernoConGrupo(p, t.url);
+    const r = await p.evaluate(async ids => {
+      const g = state.grupos[0], c1 = getCatalogo('FiQ_2ESO').ces[0].criterios[0].id;
+      g.actividades = [
+        { id: 'e1', nombre: 'Examen 1', tipo: TIPOS[0], trimestre: 0, bloqueId: g.bloques[0].id, esExamen: true, criterios: [{ critId: c1, peso: 100 }] },
+        { id: 'e2', nombre: 'Examen 2', tipo: TIPOS[0], trimestre: 1, bloqueId: g.bloques[0].id, esExamen: true, criterios: [{ critId: c1, peso: 100 }] }];
+      g.notasCuant = { [ids[0]]: { e1: 8, e2: 9 }, [ids[1]]: { e1: 2, e2: 4 }, [ids[2]]: { e1: 5 } };
+      g.notas = { [ids[0]]: { e1: { [c1]: 8 }, e2: { [c1]: 9 } }, [ids[1]]: { e1: { [c1]: 2 }, e2: { [c1]: 4 } }, [ids[2]]: { e1: { [c1]: 5 } } };
+      const g2 = JSON.parse(JSON.stringify(g)); g2.id = 'g2'; g2.nombre = '2n ESO B'; state.grupos.push(g2);
+      const abans = JSON.stringify([notaTrimestre(g, ids[0], 0), notaFinal(g, ids[1])]);
+      state.ui.appMode = 'competencial'; state.ui.tab = 'resultados'; state.ui.trim = 0; state.ui.resAl = ''; state.ui.grafObert = {}; save(); render();
+      const out = {};
+      const det = document.querySelector('.grafCard'); out.tancat = det && !det.open && !det.querySelector('svg');
+      det.open = true; await new Promise(r => setTimeout(r, 150));
+      const d2 = document.querySelector('.grafCard');
+      out.svgs = d2.querySelectorAll('svg.grSvg').length; out.text = d2.textContent;
+      out.sus = d2.querySelectorAll('rect.grBarSus').length; out.mapa = d2.querySelectorAll('.grMapa tbody tr').length;
+      out.persisteix = state.ui.grafObert.grup === true;
+      state.ui.resAl = ids[1]; state.ui.grafObert.alumne = true; save(); render();
+      const da = document.querySelector('.grafCard');
+      out.alumne = !!da.querySelector('path.grLinAl') && !!da.querySelector('path.grLinGrup') && /Evolució de l'alumne/.test(da.textContent);
+      out.mateix = JSON.stringify([notaTrimestre(g, ids[0], 0), notaFinal(g, ids[1])]) === abans;
+      return out;
+    }, ids);
+    t.ok(r.tancat, 'la targeta ix plegada i no calcula res fins que s\'obri');
+    t.ok(r.svgs >= 3 && r.persisteix, 'obrint-la: gràfiques per avaluació, per activitat i comparació de grups', String(r.svgs));
+    t.ok(/1\/3 aprovats|2\/3 aprovats/.test(r.text) && /Examen 1/.test(r.text), 'resum de mitjana i aprovats per avaluació', r.text.slice(0, 300));
+    t.ok(r.mapa >= 1, 'mapa de les competències específiques del grup');
+    t.ok(/Comparació amb els altres grups/.test(r.text) && /2n ESO B/.test(r.text), 'compara amb l\'altre grup de la mateixa matèria');
+    t.ok(r.alumne, 'alumne/a: línia de les seues notes i de la mitjana del grup');
+    t.ok(r.mateix, 'les gràfiques no canvien cap nota');
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
+  { nombre: 'anotacions', descripcion: 'Anotacions ràpides en la fitxa: text amb data i tipus, foto reduïda, àudio, esborrar, mode projector i curs nou', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const ids = await cuadernoConGrupo(p, t.url);
+    await p.evaluate(id => { state.ui.appMode = 'competencial'; state.ui.tab = 'alumnos'; save(); render(); abrirFichaAlumno(id); }, ids[0]);
+    await p.waitForSelector('.anotBloc');
+    await p.click('.anotBloc .chip:has-text("Positiva")');
+    await p.fill('#anotText', 'Ha explicat <b>molt bé</b> l\'exercici');
+    await p.click('.anotBloc .chip:has-text("A millorar")');
+    const conservaText = await p.inputValue('#anotText');
+    await p.click('.anotBloc .chip:has-text("Positiva")');
+    // Foto gran (2400×1600) generada al navegador
+    const png = await p.evaluate(() => { const c = document.createElement('canvas'); c.width = 2400; c.height = 1600; const x = c.getContext('2d'); for (let i = 0; i < 400; i++) { x.fillStyle = `hsl(${i},70%,50%)`; x.fillRect((i * 37) % 2400, (i * 53) % 1600, 120, 90); } return c.toDataURL('image/png').split(',')[1]; });
+    await p.setInputFiles('.anotBloc input[type=file]', { name: 'foto.png', mimeType: 'image/png', buffer: Buffer.from(png, 'base64') });
+    await p.waitForSelector('.anotBloc img[alt="Foto adjunta"]');
+    // Àudio: un micròfon fals amb un oscil·lador
+    await p.evaluate(() => { navigator.mediaDevices.getUserMedia = async () => { const ac = new AudioContext(); const o = ac.createOscillator(); const d = ac.createMediaStreamDestination(); o.connect(d); o.start(); return d.stream; }; });
+    await p.click('.anotBloc button:has-text("Àudio")');
+    await p.waitForSelector('.anotBloc button:has-text("Aturar")');
+    await new Promise(r => setTimeout(r, 1200));
+    await p.click('.anotBloc button:has-text("Aturar")');
+    await p.waitForSelector('.anotBloc audio');
+    await p.click('.anotBloc button:has-text("Desa l\'anotació")');
+    await p.waitForSelector('.anotItem');
+    const r = await p.evaluate(async ids => {
+      const g = state.grupos[0], a = g.anotacions[0], out = {};
+      out.n = g.anotacions.length; out.alumne = a.alumnoId === ids[0]; out.tipus = a.tipus; out.text = a.text; out.data = a.fecha === fechaISOLocal();
+      const img = new Image(); img.src = a.foto; await img.decode(); out.foto = [a.foto.slice(0, 15), img.naturalWidth, img.naturalHeight, Math.round(a.foto.length * 3 / 4 / 1024)];
+      out.audio = /^data:audio\//.test(a.audio);
+      out.html = document.querySelector('.anotItem').innerHTML; out.injectat = !!document.querySelector('.anotItem b');
+      out.priv = !!document.querySelector('.anotItem .priv');
+      // una anotació manipulada no pinta res perillós
+      g.anotacions.push({ id: 'x', alumnoId: ids[0], fecha: '2026-01-01', tipus: 'nota', text: '', foto: 'javascript:alert(1)', audio: 'data:text/html;base64,PHNjcmlwdD4=' }); render();
+      out.manip = [...document.querySelectorAll('.anotItem img, .anotItem audio')].every(e => /^data:(image|audio)\//.test(e.getAttribute('src')));
+      g.anotacions = g.anotacions.filter(x => x.id !== 'x');
+      ncAplicar({ curso: '2027-2028', grupos: true, alumnado: true, programaciones: true, festivos: true });
+      out.cursNou = state.grupos[0].anotacions.length === 0;
+      return out;
+    }, ids);
+    t.ok(conservaText === 'Ha explicat <b>molt bé</b> l\'exercici', 'canviar el tipus no esborra el que s\'està escrivint');
+    t.ok(r.n === 1 && r.alumne && r.tipus === 'positiva' && r.data && r.text === 'Ha explicat <b>molt bé</b> l\'exercici', 'es desa amb l\'alumne/a, el tipus i la data de hui', JSON.stringify(r).slice(0, 200));
+    t.ok(r.foto[0] === 'data:image/jpeg' && r.foto[1] === 1024 && r.foto[2] === 683 && r.foto[3] < 400, 'la foto es redueix a 1024 px en JPEG', JSON.stringify(r.foto));
+    t.ok(r.audio, 'l\'àudio gravat es guarda amb l\'anotació');
+    t.ok(!r.injectat && r.priv, 'el text no es converteix en HTML i es difumina en mode projector');
+    t.ok(r.manip, 'una foto o un àudio manipulats en una còpia no es pinten');
+    t.ok(r.cursNou, 'en començar un curs nou les anotacions s\'esborren');
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
   { nombre: 'fotos-alumnat', descripcion: "Foto de l'alumnat: es reduïx al navegador, s'assigna per nom de fitxer, es mostra al costat del nom i no deixa colar codi", async fn(t) {
     const p = await nuevaPagina(t.contexto);
     const ids = await cuadernoConGrupo(p, t.url, { nombres: ['Pérez Martínez, Joan', 'García López, Maria', 'Pérez Soler, Marta'] });

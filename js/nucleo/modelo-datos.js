@@ -14,7 +14,7 @@ function defGrupo(nombre,catalogoKey){
     propuestasMejora:["","",""], propuestasMejoraFinal:"",
     bloques:cat.bloques.map((b,i)=>({id:"b"+i,label:b.label,peso:b.peso})),
     modoNota:(cat.modoNota==="ce"||cat.modoNota==="ambdues")?cat.modoNota:"bloques", pesosCE:{...(cat.pesosCE||{})},
-    marcas:{}, papelera:{alumnos:[],actividades:[]}, diario:{}, asistencia:{}, convivencia:[], contactosFamilia:[], fechasTrimestre:[{inicio:"",fin:""},{inicio:"",fin:""},{inicio:"",fin:""}], programacionId:"",
+    marcas:{}, papelera:{alumnos:[],actividades:[]}, diario:{}, asistencia:{}, convivencia:[], contactosFamilia:[], anotacions:[], fechasTrimestre:[{inicio:"",fin:""},{inicio:"",fin:""},{inicio:"",fin:""}], programacionId:"",
     plano:{filas:5,columnas:6,posiciones:{}}
   };
 }
@@ -48,6 +48,7 @@ function normalizarGrupo(g){
   if(!g.asistencia || typeof g.asistencia!=="object") g.asistencia={};
   if(!Array.isArray(g.convivencia)) g.convivencia=[];
   if(!Array.isArray(g.contactosFamilia)) g.contactosFamilia=[];
+  if(!Array.isArray(g.anotacions)) g.anotacions=[];
   if(!Array.isArray(g.fechasTrimestre) || g.fechasTrimestre.length!==3) g.fechasTrimestre=[{inicio:"",fin:""},{inicio:"",fin:""},{inicio:"",fin:""}];
   if(g.programacionId===undefined) g.programacionId="";
   return g;

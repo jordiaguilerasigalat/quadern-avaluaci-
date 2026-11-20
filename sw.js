@@ -18,10 +18,10 @@
 // Cuaderno_Profesor_v2), que comparte el mismo almacenamiento del navegador.
 
 const CACHE_PREFIJO = 'cuaderno-v3-';
-const CACHE_NAME = CACHE_PREFIJO + '85';
+const CACHE_NAME = CACHE_PREFIJO + '86';
 // Resumen de todos los archivos de esta versión. No lo cambies a mano: «npm run sellar» lo recalcula y, si
 // algún archivo ha cambiado, sube CACHE_NAME. La prueba «version-cache» falla si se sube un cambio sin sellar.
-const HUELLA = '193f8598ce3fb39d';
+const HUELLA = '6316a3f92cea51f7';
 
 // El "esqueleto" de las dos apps: HTML, manifest e iconos.
 const APP_SHELL = [
@@ -62,6 +62,7 @@ const APP_SHELL = [
   './js/alumnado/plan-repeticion.js',
   './js/alumnado/alumnos-nese.js',
   './js/alumnado/fitxa-alumne.js',
+  './js/alumnado/anotacions.js',
   './js/alumnado/fotos-alumnat.js',
   './js/inicio/horario.js',
   './js/inicio/alertas-home.js',
@@ -75,6 +76,8 @@ const APP_SHELL = [
   './js/evaluacion/seguiment.js',
   './js/resultados/informe-detallado.js',
   './js/resultados/resultados.js',
+  './js/resultados/banc-comentaris.js',
+  './js/resultados/grafiques.js',
   './js/resultados/cobertura-diagnostico.js',
   './js/clase/asistencia.js',
   './js/clase/convivencia.js',

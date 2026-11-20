@@ -668,3 +668,22 @@
 .mqMostrar{display:flex;align-items:center;gap:8px;width:100%;margin-top:10px;padding:8px 12px;border:1px dashed var(--line);border-radius:10px;background:transparent;color:var(--ink);font-weight:600;cursor:pointer;text-align:left}
 .mqMostrar:hover{background:var(--overlay-hover)}
 @media(max-width:760px){.mqCols{grid-template-columns:1fr}}
+
+/* Gràfiques d'evolució (js/resultados/grafiques.js): colors del tema, també en fosc */
+.grSvg{width:100%;height:auto;display:block;margin-top:6px}
+.grSvg text{font-size:10.5px;font-family:inherit}
+.grSvg .grTxt{fill:var(--ink);font-weight:700}
+.grSvg .grTxtMut{fill:var(--mut)}
+.grSvg .grLin{stroke:var(--line);stroke-width:1}
+.grSvg .grCinc{stroke-dasharray:4 3}
+.grBar{fill:var(--accent-2)}
+.grBarSus{fill:var(--danger)}
+.grBar2{fill:#5b8db8}.grBar3{fill:#6a9f7a}.grBar4{fill:#a07ab8}
+.grLinAl{stroke:var(--accent-2);stroke-width:2.5}.grLinAlPunt{fill:var(--accent-2)}
+.grLinGrup{stroke:var(--mut);stroke-width:1.5;stroke-dasharray:5 4}.grLinGrupPunt{fill:var(--mut)}
+.grH{font-size:13px;font-weight:700;color:var(--mut);margin:16px 0 4px}
+.grMapa{border-collapse:collapse;font-size:12.5px;width:100%}
+.grMapa th,.grMapa td{padding:4px 6px;border-bottom:1px solid var(--line)}
+.grMapa thead th{font-size:12px;color:var(--mut);text-align:center}
+.grCel{text-align:center;white-space:nowrap}
+.grafCard>summary{list-style-position:outside}
