@@ -58,7 +58,7 @@ function planTempDefaultData(){
 }
 /* Unitats de la planificació a partir dels temes/SdA de la programació (ordenats per trimestre). */
 function planTempUnitatsDe(p){
-  return [...(p.sdas||[])].sort((a,b)=>(a.trimestre||0)-(b.trimestre||0)).map(s=>{
+  return [...(p.sdas||[])].filter(s=>!s.altres).sort((a,b)=>(a.trimestre||0)-(b.trimestre||0)).map(s=>{
     const nom=sdaNom(s)||"Situació sense títol";
     const n=parseInt(s.sesionesPrevistas,10);
     return {name:{es:nom,va:nom},sessions:Number.isFinite(n)&&n>0?n:8,fixed:false};

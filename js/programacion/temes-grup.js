@@ -9,11 +9,15 @@
        fetes (Diari) i previstes, el material, les activitats i les notes;
      - Inici → «Avui» pot dir quin tema toca.
    ============================================================================ */
-function temesDeGrup(g){
+/* Tots els temes de la programació del grup, també els marcats com «Altres» (s.altres:
+   temes que no es faran este curs). temesDeGrup() només torna els que es fan. */
+function temesTotsGrup(g){
   const p=g&&typeof progDeGrupo==="function"? progDeGrupo(g) : null;
   return p? (p.sdas||[]).slice().sort((a,b)=>(a.trimestre-b.trimestre)) : [];
 }
-function temaPerId(g,id){ return id? temesDeGrup(g).find(s=>s.id===id)||null : null; }
+function temesDeGrup(g){ return temesTotsGrup(g).filter(s=>!s.altres); }
+function temesAltresGrup(g){ return temesTotsGrup(g).filter(s=>s.altres); }
+function temaPerId(g,id){ return id? temesTotsGrup(g).find(s=>s.id===id)||null : null; }
 function temaDe(g,a){ return a? temaPerId(g,a.temaId) : null; }
 function temaNomCurt(s){ return s? (s.tema||s.titulo||"(sense títol)") : ""; }
 function _temNorm(x){ return String(x||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ").trim(); }
@@ -22,9 +26,10 @@ function _temNorm(x){ return String(x||"").toLowerCase().normalize("NFD").replac
 function temesMigrarGrup(g){
   if(!g || !Array.isArray(g.actividades)) return false;
   const temes=temesDeGrup(g); if(!temes.length) return false;
+  const tots=temesTotsGrup(g);
   const p=progDeGrupo(g); let canvi=false;
   g.actividades.forEach(a=>{
-    if(a.temaId && temes.some(s=>s.id===a.temaId)) return;
+    if(a.temaId && tots.some(s=>s.id===a.temaId)) return;
     let s=null;
     if(a.progActId && p){ const pa=(p.actividades||[]).find(x=>x.id===a.progActId); const id=pa&&(pa.sdaIds||[])[0]; s=id&&temes.find(x=>x.id===id); }
     if(!s && a.recupera && a.recupera.ids){ const o=g.actividades.find(x=>x.id===a.recupera.ids[0]); s=o&&temaPerId(g,o.temaId); }
@@ -139,7 +144,8 @@ function renderProgramaGrup(g){
       <p class="sub" style="margin:6px 0 0">${totalFet} de ${totalPrev} sessions previstes fetes.${senseTema?` · ${senseTema} activitat${senseTema===1?"":"s"} sense tema: assigna'ls-el en la pestanya Activitats.`:""}</p>
       <div class="flex" style="gap:6px;margin-top:8px;flex-wrap:wrap">${typeof tempEditorHTML==="function"?`<button class="btn small" onclick="tempEditarObrir()">✏️ Editar temes i sessions</button>`:""}<button class="ghost small" style="border:1px solid var(--line)" onclick="progAbrirDetalle('${escJS(p.id)}');irModo('programacion')">📘 Obrir la programació completa</button></div>
     </div>
-    ${[0,1,2].map(t=>{ const ts=temes.filter(s=>s.trimestre===t); return ts.length?`<div class="section-eyebrow" style="margin-top:14px">${esc(TRIMESTRES[t])}</div>${ts.map(cardTema).join("")}`:""; }).join("")}`;
+    ${[0,1,2].map(t=>{ const ts=temes.filter(s=>s.trimestre===t); return ts.length?`<div class="section-eyebrow" style="margin-top:14px">${esc(TRIMESTRES[t])}</div>${ts.map(cardTema).join("")}`:""; }).join("")}
+    ${(()=>{ const al=temesAltresGrup(g); return al.length?`<details style="margin-top:22px"><summary style="cursor:pointer" class="section-eyebrow">Altres temes · no es fan (${al.length})</summary><div style="opacity:.8">${al.map(cardTema).join("")}</div></details>`:""; })()}`;
 }
 
 /* Activitats del període que tenen notes posades però encara no de tot l'alumnat. */
