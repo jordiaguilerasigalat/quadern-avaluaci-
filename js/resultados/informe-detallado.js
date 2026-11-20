@@ -179,7 +179,9 @@ function desgloseNotaPerCEHTML(grupo,al,trims,periodo,titol){
     const crit=ce.criterios.map(c=>{ const x=_scoreCriterioTrims(grupo,al.id,c.id,trims); return x==null?"":`${esc(c.id)}: ${fmt(x/10)}`; }).filter(Boolean).join(" · ");
     return `<tr><td><strong>${esc(ce.id)}</strong>${crit?`<div class="dsg-muted" style="font-size:11.5px">${crit}</div>`:`<div class="dsg-muted" style="font-size:11.5px">Sense criteris avaluats: el seu pes es reparteix</div>`}</td><td style="text-align:right">${sc==null?"—":fmt(sc/10)}</td><td style="text-align:right">${fmtPct(w)}</td></tr>`;
   }).join("");
-  return `<div class="dsg-formula">${titol}</div>
+  const sense=activitatsSenseCriterisCE(grupo,trims);
+  const avis=sense.length?`<div class="dsg-muted" style="font-size:12px;margin:6px 0">⚠️ No compten en esta nota perquè no tenen cap criteri: ${sense.map(a=>esc(a.nombre)).join(", ")}. Enllaça-les amb algun criteri en Activitats.</div>`:"";
+  return `<div class="dsg-formula">${titol}</div>${avis}
     <table class="dsg-tabla"><thead><tr><th>Competència específica (criteris)</th><th style="text-align:right">Nota</th><th style="text-align:right">Pes</th></tr></thead><tbody>${files}</tbody></table>
     ${dsgExtraEvalHTML(grupo,al,periodo,base,"Mitjana ponderada de les CE")}
     <div class="dsg-total"><span>${periodo==="final"?"Nota final de curs":"Nota del període"}</span><span>${v==null?"—":fmt(v)} / 10</span></div>`;
