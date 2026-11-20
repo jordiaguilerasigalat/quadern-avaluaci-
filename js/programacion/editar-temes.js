@@ -9,7 +9,9 @@
        avaluació (Ajustos), el teu horari (classes d'este grup) i els festius
        del calendari, repartint-les en proporció al pes original del tema;
      - qualsevol tema es pot ajustar a mà (🔒): el recàlcul el respecta i
-       reparteix la resta entre els altres.
+       reparteix la resta entre els altres;
+     - es poden afegir temes nous i eliminar-ne (les activitats i sessions
+       del Diari d'un tema eliminat es queden «sense tema»).
    Els canvis es guarden en la programació vinculada (la comparteixen tots els
    grups que la tenen vinculada). «Cancel·lar» ho deixa com estava en obrir.
    ============================================================================ */
@@ -46,7 +48,14 @@ function tempQueFalta(g){
   if(![0,1,2].some(t=>{ const f=(g.fechasTrimestre||[])[t]; return f&&f.inicio&&f.fin; })) falta.push("dates");
   return falta;
 }
-function _tempPes(s){ return Number(s.sessionsOriginals)||Number(s.sesionesPrevistas)||1; }
+/* Pes d'un tema en el repartiment: les sessions que tenia en la programació. Els temes que
+   no en tenien (o els nous) compten com la mitjana dels altres de la mateixa avaluació. */
+function _tempPesBrut(s){ return s.sessionsOriginals!=null? (Number(s.sessionsOriginals)||0) : (Number(s.sesionesPrevistas)||0); }
+function _tempPesos(temes){
+  const b=temes.map(_tempPesBrut), coneguts=b.filter(x=>x>0);
+  const mitja=coneguts.length? coneguts.reduce((a,c)=>a+c,0)/coneguts.length : 1;
+  return b.map(x=>x>0?x:mitja);
+}
 /* Reparteix les sessions de cada avaluació entre els seus temes. Els temes
    ajustats a mà (s.sessionsManual) es respecten. Torna {t:{disp,usades}} o null. */
 function tempRecalcular(g,p){
@@ -63,8 +72,8 @@ function tempRecalcular(g,p){
     let resta=disp-fixos.reduce((n,s)=>n+(Number(s.sesionesPrevistas)||0),0);
     if(autos.length){
       resta=Math.max(resta,autos.length);
-      const pesTot=autos.reduce((n,s)=>n+_tempPes(s),0);
-      const brut=autos.map(s=>resta*_tempPes(s)/pesTot);
+      const pesos=_tempPesos(autos), pesTot=pesos.reduce((a,c)=>a+c,0);
+      const brut=pesos.map(w=>resta*w/pesTot);
       const base=brut.map(x=>Math.max(1,Math.floor(x)));
       let sobra=resta-base.reduce((a,b)=>a+b,0);
       const ordre=brut.map((x,i)=>[x-Math.floor(x),i]).sort((a,b)=>b[0]-a[0]);
@@ -106,7 +115,10 @@ window.tempEditarObrir=()=>{
 window.tempEditarTancar=()=>{ state.ui.tempEditant=""; window.__tempCopia=null; save(); render(); mostrarToast("✓ Temes i sessions guardats"); };
 window.tempEditarCancel=()=>{
   const c=_tempCtx(), k=window.__tempCopia;
-  if(c && k && k.id===c.p.id){ c.p.sdas=k.sdas; c.p.tempReserva=k.reserva; if(c.p.tempReserva===undefined) delete c.p.tempReserva; }
+  if(c && k && k.id===c.p.id){
+    c.p.sdas=k.sdas; c.p.tempReserva=k.reserva; if(c.p.tempReserva===undefined) delete c.p.tempReserva;
+    (k.desfer||[]).reverse().forEach(f=>f());
+  }
   state.ui.tempEditant=""; window.__tempCopia=null; save(); render();
 };
 window.tempSetAval=(id,t)=>{
@@ -154,6 +166,42 @@ window.tempRecalcularTot=async (totsAuto)=>{
   }
   tempRecalcular(c.g,c.p); save(); render(); mostrarToast("✓ Temporització recalculada");
 };
+/* Afegir un tema nou a una avaluació (des del formulari de la secció). */
+window.tempAfegir=t=>{
+  const c=_tempCtx(); if(!c) return;
+  const nom=((document.getElementById("tempNouNom_"+t)||{}).value||"").trim();
+  const ses=parseInt((document.getElementById("tempNouSes_"+t)||{}).value,10);
+  if(!nom){ mostrarAviso("Escriu el nom del tema (per exemple «Tema 9.- Energia»)."); return; }
+  const s=progSdaDefault(t);
+  s.tema=nom;
+  if(Number.isFinite(ses)&&ses>0){ s.sesionesPrevistas=String(ses); s.sessionsOriginals=ses; s.sessionsManual=true; }
+  else { s.sessionsOriginals=""; }
+  let ult=-1; c.p.sdas.forEach((x,i)=>{ if(x.trimestre===t) ult=i; });
+  c.p.sdas.splice(ult+1,0,s);
+  if(state.ui.tempAuto!==false) tempRecalcular(c.g,c.p);
+  save(); render(); mostrarToast("✓ Tema afegit");
+};
+/* Eliminar un tema: les activitats i les sessions del Diari que el tenien queden sense tema
+   (en tots els grups que comparteixen la programació). «Cancel·lar» ho torna a deixar com estava. */
+window.tempEliminar=async id=>{
+  const c=_tempCtx(); if(!c) return; const s=c.p.sdas.find(x=>x.id===id); if(!s) return;
+  const grups=state.grupos.filter(g=>g.programacionId===c.p.id);
+  let nActs=0, nSes=0;
+  grups.forEach(g=>{ nActs+=(g.actividades||[]).filter(a=>a.temaId===id).length; nSes+=Object.values(g.diario||{}).filter(e=>e&&e.unidadId===id).length; });
+  const detall=[nActs?`${nActs} activitat${nActs===1?"":"s"}`:"", nSes?`${nSes} sessió${nSes===1?"":"ns"} del Diari`:""].filter(Boolean).join(" i ");
+  if(!await confirmar(`Eliminar «${temaNomCurt(s)}» de la programació?${detall?` Hi ha ${detall} lligades a este tema: no s'esborren, es queden «sense tema».`:""} Si t'equivoques, «Cancel·lar» ho desfà.`)) return;
+  const k=window.__tempCopia; const desfer=k&&k.id===c.p.id? (k.desfer=k.desfer||[]) : [];
+  grups.forEach(g=>{
+    (g.actividades||[]).forEach(a=>{ if(a.temaId===id){ a.temaId=""; desfer.push(()=>{ a.temaId=id; }); } });
+    Object.values(g.diario||{}).forEach(e=>{ if(e&&e.unidadId===id){ e.unidadId=""; desfer.push(()=>{ e.unidadId=id; }); } });
+    if(g.temaActual===id){ g.temaActual=""; desfer.push(()=>{ g.temaActual=id; }); }
+  });
+  (c.p.actividades||[]).forEach(a=>{ const ids=a.sdaIds||[]; if(ids.includes(id)){ a.sdaIds=ids.filter(x=>x!==id); desfer.push(()=>{ a.sdaIds=ids; }); } });
+  if(state.ui.progTemaObert===id) state.ui.progTemaObert="";
+  c.p.sdas=c.p.sdas.filter(x=>x.id!==id);
+  if(state.ui.tempAuto!==false) tempRecalcular(c.g,c.p);
+  save(); render(); mostrarToast("✓ Tema eliminat");
+};
 function tempQueFaltaText(falta){
   const t=[];
   if(falta.includes("dates")) t.push("les dates de cada avaluació (Ajustos del grup → Dates d'avaluació)");
@@ -195,6 +243,7 @@ function tempEditorHTML(g,p){
             ${[0,1,2].map(k=>`<option value="${k}" ${k===t?"selected":""}>${k+1}a av.</option>`).join("")}
           </select>
           <input class="in" type="number" min="0" step="1" style="width:64px;${man?"border-color:var(--accent,#b7893a);font-weight:700":""}" aria-label="Sessions de ${esc(temaNomCurt(s))}" value="${esc(String(s.sesionesPrevistas||""))}" onchange="tempSetSessions('${escJS(s.id)}',this.value)">
+          <button class="ghost small" style="border:1px solid var(--line)" title="Eliminar este tema" aria-label="Eliminar ${esc(temaNomCurt(s))}" onclick="tempEliminar('${escJS(s.id)}')">🗑</button>
           ${man?`<button class="ghost small" style="border:1px solid var(--line)" title="Ajustat a mà. Clica per a tornar al càlcul automàtic" onclick="tempAlliberar('${escJS(s.id)}')">🔒 a mà</button>`:`<span class="sub" style="margin:0;font-size:12px" title="Calculat soles">auto</span>`}
         </span>
       </div>`;
@@ -206,11 +255,16 @@ function tempEditorHTML(g,p){
       </div>
       ${(()=>{ const f=(g.fechasTrimestre||[])[t]; return f&&f.inicio&&f.fin?`<p class="sub" style="margin:2px 0 0;font-size:12px">${tempDataCurta(f.inicio)} – ${tempDataCurta(f.fin)}</p>`:""; })()}
       ${files||`<p class="sub" style="margin:6px 0 0">Cap tema en esta avaluació. Canvia l'avaluació d'un tema amb el desplegable.</p>`}
+      <div class="flex" style="gap:6px;flex-wrap:wrap;align-items:center;padding-top:8px;border-top:1px dashed var(--line);margin-top:4px">
+        <input class="in" id="tempNouNom_${t}" style="flex:1;min-width:180px" placeholder="Nou tema, p. ex. «Tema 9.- Energia»" aria-label="Nom del tema nou de la ${esc(TRIMESTRES[t])}" onkeydown="if(event.key==='Enter') tempAfegir(${t})">
+        <input class="in" id="tempNouSes_${t}" type="number" min="0" step="1" style="width:104px" placeholder="sessions" aria-label="Sessions del tema nou (opcional)" onkeydown="if(event.key==='Enter') tempAfegir(${t})">
+        <button class="ghost small" style="border:1px solid var(--line)" onclick="tempAfegir(${t})">+ Afegir tema</button>
+      </div>
     </div>`;
   };
   return `<div class="card">
       <h2>✏️ Editar temes i sessions · ${esc(p.nombre)}</h2>
-      <p class="sub" style="margin:0">Tria en quina avaluació va cada tema i ordena'ls amb ▲▼. Les sessions es calculen soles amb les dates de cada avaluació, el teu horari (${perSetmana} sessió${perSetmana===1?"":"ns"} a la setmana amb este grup) i els festius, repartides segons el pes de cada tema en la programació. Si escrius un número, eixe tema queda ajustat a mà (🔒) i el càlcul reparteix la resta entre els altres.</p>
+      <p class="sub" style="margin:0">Tria en quina avaluació va cada tema i ordena'ls amb ▲▼. Les sessions es calculen soles amb les dates de cada avaluació, el teu horari (${perSetmana} sessió${perSetmana===1?"":"ns"} a la setmana amb este grup) i els festius, repartides segons el pes de cada tema en la programació. Si escrius un número, eixe tema queda ajustat a mà (🔒) i el càlcul reparteix la resta entre els altres. Pots afegir temes nous al final de cada avaluació o eliminar-ne amb 🗑 (les activitats d'eixe tema es queden «sense tema»).</p>
       ${falta.length?`<p style="margin:8px 0 0;padding:8px 10px;border-radius:8px;background:var(--warn-soft,#fef3c7);font-size:13px">⚠️ ${esc(tempQueFaltaText(falta))}</p>`:""}
       ${altres.length?`<p class="sub" style="margin:6px 0 0">Esta programació també la té vinculada ${esc(altres.map(x=>x.nombre).join(", "))}: els canvis valen per a tots.</p>`:""}
       <div class="flex" style="gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px">
