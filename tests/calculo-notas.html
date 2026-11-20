@@ -116,6 +116,13 @@ function ejecutarPruebas() {
   act('t1').pesoBloque = 75; act('t2').pesoBloque = 25; reiniciar();
   comprobar('Bloque Trabajos con pesos 75 % / 25 %', notaBloque(g, 'a1', 'b1', 0), 6.75);
   delete act('t1').pesoBloque; delete act('t2').pesoBloque; reiniciar();
+  g.actividades.push({ id: 't3', nombre: 'Trabajo 3', trimestre: 0, bloqueId: 'b1', criterios: [{ critId: '2.1', peso: 100 }] });
+  act('t1').pesoBloque = 80; reiniciar();
+  comprobar('Pes 80 % escrit i dos en blanc: els en blanc es reparteixen el 20 %', [pesoActividadEnBloque(g, act('t1')), pesoActividadEnBloque(g, act('t2')), pesoActividadEnBloque(g, act('t3'))], [80, 10, 10]);
+  comprobar('Bloque Trabajos: 6 × 80 % + 9 × 10 % (t3 sin nota no cuenta)', notaBloque(g, 'a1', 'b1', 0), (6 * 80 + 9 * 10) / 90);
+  act('t2').pesoBloque = 50; reiniciar();
+  comprobar('Pesos escrits que ja passen del 100 %: el que queda en blanc compta com abans', pesoActividadEnBloque(g, act('t3')), 100 / 3);
+  g.actividades = g.actividades.filter(a => a.id !== 't3'); delete act('t1').pesoBloque; delete act('t2').pesoBloque; reiniciar();
 
   // --- Recuperaciones
   comprobar('Recuperación «nota más alta» con tope 5: máx(3, mín(8, 5))', notaActividad(g, 'a2', act('ex1')), 5);
@@ -193,9 +200,27 @@ function ejecutarPruebas() {
   // 1.1 = (7·100 + 8·50) / 150 = 7,333 · 1.2 = 4 · CE1 = (73,33 + 40) / 2 = 56,67 % · CE2 = 2.1 = 90 %
   g.modoNota = 'ce'; g.pesosCE = { CE1: 75, CE2: 25 }; reiniciar();
   comprobar('Per CE: 1.ª avaluació = 5,667 × 75 % + 9 × 25 %', notaTrimestre(g, 'a1', 0), (17 / 3) * 0.75 + 9 * 0.25);
-  comprobar('Per CE: la 2.ª avaluació usa també el treballat en la 1.ª', notaTrimestre(g, 'a1', 1), (17 / 3) * 0.75 + 9 * 0.25);
-  comprobar('Per CE: sense cap criteri avaluat no hi ha nota', notaTrimestre(g, 'a2', 0), null);
-  g.notas.a1.ex2 = { '1.1': 4 }; reiniciar();
+  // L'examen 2 només té la nota numèrica (4): compta per al seu criteri 1.1 → 1.1 = (700 + 400 + 400) / 250 = 6
+  comprobar('Per CE: la 2.ª avaluació usa també el treballat en la 1.ª (i la nota numèrica de l’examen 2)', notaTrimestre(g, 'a1', 1), 6);
+  comprobar('Per CE: sense cap nota no hi ha nota', notaTrimestre(g, 'a3', 0), null);
+  // a2 només té la nota numèrica de l'examen 1 (3) → 1.1 = 30 % → CE1 = 30 % (1.2 sense notes) → 3
+  comprobar('Per CE: un examen amb només la nota numèrica compta per als seus criteris', notaTrimestre(g, 'a2', 0), 3);
+  comprobar('Per CE: la recuperació de la 2.ª no canvia la 1.ª', notaTrimestre(g, 'a2', 0), 3);
+  comprobar('Per CE: recuperació sense criteris amb topall 5: màx(3, mín(8, 5))', notaTrimestre(g, 'a2', 1), 5);
+  g.notas.a2 = { rec1: { '1.1': 8 } }; act('rec1').criterios = [{ critId: '1.1', peso: 100 }]; reiniciar();
+  comprobar('Per CE: el topall de la recuperació s’aplica també a la nota del criteri', notaFinal(g, 'a2'), 5);
+  delete g.notas.a2; act('rec1').criterios = []; reiniciar();
+  g.extras = { a1: { t2: { pts: 0.5 } } }; reiniciar();
+  // 2.1 = 9 + 0,5 = 9,5 → 5,667 × 75 % + 9,5 × 25 %
+  comprobar('Per CE: els punts extra d’una activitat sumen', notaTrimestre(g, 'a1', 0), (17 / 3) * 0.75 + 9.5 * 0.25);
+  g.extras = {}; reiniciar();
+  act('ex1').criterios = []; act('ex1').criteriosPrevistos = ['1.2']; reiniciar();
+  // a2: examen 1 sense criteris enllaçats però amb 1.2 previst → 1.2 = 3 → CE1 = 30 %
+  comprobar('Per CE: un examen sense criteris enllaçats usa els previstos', notaTrimestre(g, 'a2', 0), 3);
+  delete act('ex1').criteriosPrevistos; reiniciar();
+  comprobar('Per CE: un examen sense cap criteri no compta (i s’avisa)', [notaTrimestre(g, 'a2', 0), activitatsSenseCriterisCE(g, [0]).map(a => a.id)], [null, ['ex1']]);
+  act('ex1').criterios = [{ critId: '1.1', peso: 100 }]; reiniciar();
+  g.notas.a1.ex2 = { '1.1': 4 }; g.notasCuant.a1.ex2 = 9; reiniciar();
   // 1.1 amb 1.ª i 2.ª = (700 + 400 + 400) / 250 = 6 → CE1 = (60 + 40) / 2 = 50 %
   comprobar('Per CE: la 1.ª avaluació no veu les notes de la 2.ª', notaTrimestre(g, 'a1', 0), (17 / 3) * 0.75 + 9 * 0.25);
   comprobar('Per CE: 2.ª avaluació acumulada = 5 × 75 % + 9 × 25 %', notaTrimestre(g, 'a1', 1), 6);
@@ -206,7 +231,7 @@ function ejecutarPruebas() {
   comprobar('Per CE: una CE amb pes 0 no compta', notaFinal(g, 'a1'), 5);
   g.pesosCE = { CE1: 75, CE2: 25 }; delete g.notas.a1.t2; reiniciar();
   comprobar('Per CE: el pes d’una CE sense criteris avaluats es reparteix', notaFinal(g, 'a1'), 5);
-  g.notas.a1.t2 = { '2.1': 9 }; delete g.notas.a1.ex2; g.modoNota = 'bloques'; reiniciar();
+  g.notas.a1.t2 = { '2.1': 9 }; delete g.notas.a1.ex2; g.notasCuant.a1.ex2 = 4; g.modoNota = 'bloques'; reiniciar();
   comprobar('Tornant a instruments: la nota torna a eixir dels blocs', notaTrimestre(g, 'a1', 0), 6.6);
 
   // --- Les dues: quantitativa per instruments + qualitativa per competències
@@ -219,6 +244,10 @@ function ejecutarPruebas() {
   comprobar('Les dues: qualitativa final amb tot el curs', notaQualitativaCE(g, 'a1', 'final'), (17 / 3) * 0.75 + 9 * 0.25);
   comprobar('Les dues: sense criteris avaluats no hi ha qualitativa', notaQualitativaCE(g, 'a2', 0), null);
   comprobar('Les dues: modoNotaGrupo continua sent «bloques»', modoNotaGrupo(g), 'bloques');
+  comprobar('Les dues: la qualitativa no usa la nota numèrica de l’examen', notaQualitativaCE(g, 'a2', 0), null);
+  g.extras = { a1: { t2: { pts: 0.5 } } }; reiniciar();
+  comprobar('Les dues: els punts extra no toquen la qualitativa', notaQualitativaCE(g, 'a1', 0), (17 / 3) * 0.75 + 9 * 0.25);
+  g.extras = {}; reiniciar();
   g.modoNota = 'bloques'; reiniciar();
 }
 

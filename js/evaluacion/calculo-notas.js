@@ -220,11 +220,20 @@ function notaActividadBase(grupo,alId,a){
    vinculat a més d'un bloc, també en els de bloquesExtra (amb la nota sencera
    en cadascun). Dins de cada bloc la nota és la mitjana de les activitats. */
 function actEnBloque(a,bloqueId){ return a.bloqueId===bloqueId || (Array.isArray(a.bloquesExtra) && a.bloquesExtra.includes(bloqueId)); }
+/* Pes d'una activitat dins d'un bloc. Les que tenen pes escrit (pesoBloque)
+   el conserven; les que el tenen en blanc es reparteixen a parts iguals el
+   que falta fins al 100 % (80 % escrit + dues en blanc → 10 % cadascuna).
+   Si els pesos escrits ja arriben al 100 %, les en blanc compten com abans
+   (100 / nombre d'activitats del bloc), perquè no desaparega cap nota. */
 function pesoActividadEnBloque(grupo,act,bloqueId){
   const v=act.pesoBloque; if(v!=null && v!=="") return Number(v);
   const bid=bloqueId||act.bloqueId;
-  const n=grupo.actividades.filter(a=>a.trimestre===act.trimestre && actEnBloque(a,bid) && !a.recupera).length;
-  return n>0? 100/n : 100;
+  const del=grupo.actividades.filter(a=>a.trimestre===act.trimestre && actEnBloque(a,bid) && !a.recupera);
+  const n=del.length; if(!n) return 100;
+  let escrit=0, blanc=0;
+  for(const a of del){ const p=a.pesoBloque; if(p!=null && p!=="" && isFinite(Number(p))) escrit+=Number(p); else blanc++; }
+  if(escrit>0 && blanc>0 && escrit<100) return (100-escrit)/blanc;
+  return 100/n;
 }
 function notaBloque(grupo,alId,bloqueId,trim,fins){
   if(fins==null) fins=trim;
@@ -307,21 +316,74 @@ function pesoCEGrupo(grupo,ceId){
   const n=catIndex(grupo.catalogoKey).cat.ces.length;
   return n? 100/n : 0;
 }
+/* Criteris que avalua una activitat a efectes de la nota per competències:
+   els enllaçats (criterios) o, en un examen que encara no en té cap, els
+   previstos en crear-lo (criteriosPrevistos), amb el mateix pes. */
+function criterisActivitatCE(a){
+  if((a.criterios||[]).length) return a.criterios;
+  if(a.esExamen && Array.isArray(a.criteriosPrevistos) && a.criteriosPrevistos.length) return a.criteriosPrevistos.map(c=>({critId:c,peso:100}));
+  return [];
+}
+function _teNotesCriteri(grupo,alId,a){
+  const d=grupo.notas?.[alId]?.[a.id]; if(!d) return false;
+  for(const k in d){ const v=d[k]; if(v!=null && v!=="") return true; }
+  return false;
+}
+/* Nota d'un criteri en una activitat. En mode «ce» (numerica=true), si
+   l'alumne/a no té cap nota per criteris en eixa activitat però sí la nota
+   numèrica de l'examen, eixa nota compta per a tots els criteris de l'examen. */
+function _notaCritCE(grupo,alId,a,cid,numerica){
+  const n=_notaCritCruda(grupo,alId,a,cid);
+  if(n!=null || !numerica || !a.esExamen || _teNotesCriteri(grupo,alId,a)) return n;
+  return notaActividadBase(grupo,alId,a);
+}
+/* Nota que aporta la recuperació r al criteri cid (amb el seu topall). Una
+   recuperació sense criteris propis recupera tots els de l'original amb la
+   seua nota numèrica (només en mode «ce»). */
+function _notaRecCriteri(grupo,alId,r,cid,numerica){
+  let rv;
+  if(!numerica) rv=_notaCritCruda(grupo,alId,r,cid);
+  else{
+    const cr=criterisActivitatCE(r);
+    if(cr.some(l=>l.critId===cid)) rv=_notaCritCE(grupo,alId,r,cid,true);
+    else rv=cr.length? null : notaActividadBase(grupo,alId,r);
+  }
+  if(rv==null) return null;
+  const tope=r.recupera.tope;
+  if(tope!=null && tope!=="" && isFinite(Number(tope))) rv=Math.min(rv,Number(tope));
+  return rv;
+}
+/* Puntuació (0-100) d'un criteri amb les evidències dels trimestres indicats.
+   Les recuperacions compten fins a l'últim d'eixos trimestres (com en mode
+   «bloques»: una recuperació de la 2a no canvia la nota de la 1a).
+   En mode «ce» (la nota numèrica ix d'ací) també: la nota numèrica d'un examen
+   sense notes per criteris i els punts extra de cada activitat. La qualificació
+   qualitativa de «Les dues» continua usant només les notes per criteris. */
 function _scoreCriterioTrims(grupo,alId,cid,trims){
+  const numerica=modoNotaGrupo(grupo)==="ce";
+  const fins=Math.max(...trims);
   let sw=0,sv=0;
   for(const a of grupo.actividades){
     if(a.recupera || !trims.includes(a.trimestre)) continue;
-    const l=(a.criterios||[]).find(x=>x.critId===cid); if(!l) continue;
-    let n=_notaCritCruda(grupo,alId,a,cid);
+    const l=(numerica? criterisActivitatCE(a) : (a.criterios||[])).find(x=>x.critId===cid); if(!l) continue;
+    let n=numerica? _notaCritCE(grupo,alId,a,cid,true) : _notaCritCruda(grupo,alId,a,cid);
     for(const r of recuperacionesDe(grupo,a.id)){
       if(marcaDe(grupo,alId,r.id)==="EX") continue;
-      n=_combinarRec(n,_notaCritCruda(grupo,alId,r,cid),r.recupera.modo);
+      if(!_recCompta(r,fins)) continue;
+      n=_combinarRec(n,_notaRecCriteri(grupo,alId,r,cid,numerica),r.recupera.modo);
     }
     if(n==null||n==="") continue;
+    if(numerica && !marcaDe(grupo,alId,a.id)) n=_sumarExtra(Number(n),ptsExtraActividad(grupo,alId,a.id));
     const w=Number(l.peso)||0; if(w<=0) continue;
     sw+=w; sv+=(Number(n)/10)*100*w;
   }
   return sw>0? sv/sw : null;
+}
+/* Activitats amb alguna nota que, en mode «ce», no compten perquè no tenen
+   cap criteri (ni enllaçat ni previst). Per a avisar-ne. */
+function activitatsSenseCriterisCE(grupo,trims){
+  return grupo.actividades.filter(a=>!a.recupera && trims.includes(a.trimestre) && !criterisActivitatCE(a).length
+    && grupo.alumnos.some(al=>notaActividadBase(grupo,al.id,a)!=null));
 }
 /* Puntuació (0-100) d'una CE amb les evidències dels trimestres indicats. */
 function scoreCETrims(grupo,alId,ceId,trims){
