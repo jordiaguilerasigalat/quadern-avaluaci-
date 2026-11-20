@@ -81,44 +81,63 @@ function renderAjustes(grupo){
           </label>
         </div>`).join("")}
     </div>
+    ${state.grupos.some(g=>g.id!==grupo.id)?`<div class="flex" style="margin-top:10px"><button class="ghost" onclick="obrirCopiarDates()">📋 Copiar a altres grups</button></div>`:""}
   </div>
 
+  ${(()=>{
+    /* Mode de qualificació + dues columnes: blocs (esquerra) i competències (dreta).
+       Amagar una columna és només visual: no canvia el mode ni cap nota. */
+    const ambdues=teQualitativaCE(grupo), modo=modoNotaGrupo(grupo);
+    const amagat=((state.ui||{}).mqAmagat||{})[grupo.id]||"";
+    const veuBlocs=amagat!=="blocs", veuCE=amagat!=="ce";
+    const etiqBlocs=ambdues?"Nota quantitativa · la de l'acta":modo==="ce"?"Ara no compta (el grup qualifica per competències)":"Dona la nota";
+    const etiqCE=ambdues?"Qualificació per competències · Insuficient… Excel·lent":modo==="ce"?"Dona la nota":"Ara no compta: tria «Les dues» per a tindre-la també";
+    const colBlocs=`
+      <section class="mqCol" aria-label="Qualificació per blocs">
+        <div class="mqCap"><div><h3>Per blocs (instruments)</h3><span class="pill mqEtiq">${etiqBlocs}</span></div>
+          <button class="ghost small" onclick="mqAmagar('blocs')" title="Amagar esta columna (només la vista: les notes no canvien)" aria-label="Amagar la qualificació per blocs">Amagar ✕</button></div>
+        <p class="sub">Mitjana ponderada dels blocs de la proposta pedagògica de ${esc(idx.cat.materia)}. Han de sumar 100.</p>
+        <p id="sumaBloquesAviso" style="font-size:13px;margin:0 0 8px">${sumaBloquesHTML(grupo)}</p>
+        <div class="flex">
+          ${grupo.bloques.map((b,i)=>{ const nAct=(grupo.actividades||[]).filter(x=>typeof actEnBloque==="function"? actEnBloque(x,b.id) : x.bloqueId===b.id).length; return `
+            <div style="font-size:13.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px;max-width:240px">
+              <span style="display:flex;align-items:center;gap:4px">${esc(b.label)} (%)
+                <button class="ghost small" style="padding:0 4px;border:0" title="Canviar el nom del bloc" aria-label="Canviar el nom del bloc ${esc(b.label)}" onclick="blocReanomenar(${i})">✏️</button>
+                ${grupo.bloques.length>1?`<button class="ghost small" style="padding:0 4px;border:0" title="Eliminar el bloc" aria-label="Eliminar el bloc ${esc(b.label)}" onclick="blocEliminar(${i})">🗑️</button>`:""}</span>
+              <input class="in" type="number" value="${b.peso}" aria-label="Pes del bloc ${esc(b.label)} (%)" oninput="setBloqueW(${i},this.value)">
+              <span class="sub" style="font-size:11.5px">${nAct} activitat${nAct===1?"":"s"}</span>
+            </div>`; }).join("")}
+        </div>
+        <button class="ghost" style="border:1px dashed var(--line);margin-top:10px" onclick="blocAfegir()">+ Afegir un bloc (p. ex. Deures)</button>
+      </section>`;
+    const colCE=`
+      <section class="mqCol" aria-label="Qualificació per competències">
+        <div class="mqCap"><div><h3>Per competències específiques</h3><span class="pill mqEtiq">${etiqCE}</span></div>
+          <button class="ghost small" onclick="mqAmagar('ce')" title="Amagar esta columna (només la vista: les notes no canvien)" aria-label="Amagar la qualificació per competències">Amagar ✕</button></div>
+        <p class="sub">Cada criteri és la mitjana de les seues evidències, cada CE la mitjana dels seus criteris i la nota, la mitjana ponderada de les CE (cada avaluació amb tot el que s'ha treballat fins a eixe moment; la final, amb tot el curs).</p>
+        ${ambdues?`<p class="sub">La qualitativa ix de les qualificacions de cada <strong>criteri</strong> (també en els exàmens: la nota numèrica de l'examen va a la quantitativa i la de cada criteri, a la qualitativa).</p>`:""}
+        <p class="sub" style="margin-bottom:6px">Pes de cada CE (%). En blanc = repartiment igual. Si una CE no té cap criteri avaluat, el seu pes es reparteix entre la resta.</p>
+        <p id="sumaPesosCEAviso" style="font-size:13px;margin:0 0 8px">${sumaPesosCEHTML(grupo)}</p>
+        <div class="flex">
+          ${idx.cat.ces.map(ce=>`
+            <label style="font-size:13.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px" title="${esc(ce.titulo)}">${esc(ce.id)} (%)
+              <input class="in" style="width:90px" type="number" min="0" placeholder="${fmt(pesoCEGrupo({...grupo,pesosCE:{}},ce.id))}" value="${grupo.pesosCE[ce.id]??''}" oninput="setPesoCE('${escJS(ce.id)}',this.value)"></label>`).join("")}
+        </div>
+      </section>`;
+    const barra=(qui,text)=>`<button class="mqMostrar" onclick="mqMostrar('${qui}')" aria-label="Mostrar ${text}">👁 Mostrar ${text} <span class="sub" style="margin:0;font-weight:400">(amagada només a la vista: la nota es continua calculant)</span></button>`;
+    return `
   <div class="card">
     <h2>Mode de qualificació</h2>
-    <p class="sub">Tria com es qualifica este grup. <strong>Per instruments</strong>: la nota és la mitjana ponderada dels blocs (proves, quadern, laboratori…). <strong>Per competències</strong>: cada criteri és la mitjana de les seues evidències, cada CE la mitjana dels seus criteris i la nota, la mitjana ponderada de les CE (cada avaluació amb tot el que s'ha treballat fins a eixe moment; la final, amb tot el curs). <strong>Les dues</strong>: dues qualificacions per separat, una nota <em>quantitativa</em> per instruments (la numèrica, la de l'acta) i una qualificació <em>qualitativa</em> per competències (Insuficient, Suficient, Bé, Notable o Excel·lent).</p>
+    <p class="sub">Tria quina nota dona este grup. <strong>Les dues</strong>: es calculen per separat i de manera independent la nota per blocs (quantitativa, la de l'acta) i la nota per competències (qualitativa). Els botons «Amagar» només amaguen la columna de la pantalla: no canvien cap nota.</p>
     <div class="flex" role="radiogroup" aria-label="Mode de qualificació">
-      <label style="display:flex;gap:6px;align-items:center"><input type="radio" name="modoNota" value="bloques" ${modoNotaGrupo(grupo)==="bloques"&&!teQualitativaCE(grupo)?"checked":""} onchange="setModoNota(this.value)"> Per instruments (blocs)</label>
-      <label style="display:flex;gap:6px;align-items:center"><input type="radio" name="modoNota" value="ce" ${modoNotaGrupo(grupo)==="ce"?"checked":""} onchange="setModoNota(this.value)"> Per competències específiques</label>
-      <label style="display:flex;gap:6px;align-items:center"><input type="radio" name="modoNota" value="ambdues" ${teQualitativaCE(grupo)?"checked":""} onchange="setModoNota(this.value)"> Les dues: quantitativa per instruments + qualitativa per competències</label>
+      <label style="display:flex;gap:6px;align-items:center"><input type="radio" name="modoNota" value="ambdues" ${ambdues?"checked":""} onchange="setModoNota(this.value)"> Les dues, independents</label>
+      <label style="display:flex;gap:6px;align-items:center"><input type="radio" name="modoNota" value="bloques" ${modo==="bloques"&&!ambdues?"checked":""} onchange="setModoNota(this.value)"> Només per blocs</label>
+      <label style="display:flex;gap:6px;align-items:center"><input type="radio" name="modoNota" value="ce" ${modo==="ce"?"checked":""} onchange="setModoNota(this.value)"> Només per competències</label>
     </div>
-    <div style="${modoNotaGrupo(grupo)==="ce"||teQualitativaCE(grupo)?"":"display:none"};margin-top:12px">
-      ${teQualitativaCE(grupo)?`<p class="sub" style="margin-bottom:6px">La qualitativa ix de les qualificacions de cada <strong>criteri</strong> (també en els exàmens: la nota numèrica de l'examen va a la quantitativa i la de cada criteri, a la qualitativa).</p>`:""}
-      <p class="sub" style="margin-bottom:6px">Pes de cada competència específica (%). En blanc = repartiment igual. Si una CE no té cap criteri avaluat, el seu pes es reparteix entre la resta.</p>
-      <p id="sumaPesosCEAviso" style="font-size:13px;margin:0 0 8px">${sumaPesosCEHTML(grupo)}</p>
-      <div class="flex">
-        ${idx.cat.ces.map(ce=>`
-          <label style="font-size:13.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px" title="${esc(ce.titulo)}">${esc(ce.id)} (%)
-            <input class="in" style="width:90px" type="number" min="0" placeholder="${fmt(pesoCEGrupo({...grupo,pesosCE:{}},ce.id))}" value="${grupo.pesosCE[ce.id]??''}" oninput="setPesoCE('${escJS(ce.id)}',this.value)"></label>`).join("")}
-      </div>
-    </div>
-  </div>
-
-  <div class="card" style="${modoNotaGrupo(grupo)==="ce"?"opacity:.6":""}">
-    <h2>Ponderación de la nota cuantitativa</h2>${modoNotaGrupo(grupo)==="ce"?`<p class="sub"><strong>Este grup qualifica per competències:</strong> els blocs no compten per a la nota, però pots continuar classificant-hi les activitats.</p>`:""}
-    <p class="sub">Bloques de la propuesta pedagógica de ${esc(idx.cat.materia)}. Deben sumar 100.</p>
-    <p id="sumaBloquesAviso" style="font-size:13px;margin:0 0 8px">${sumaBloquesHTML(grupo)}</p>
-    <div class="flex">
-      ${grupo.bloques.map((b,i)=>{ const nAct=(grupo.actividades||[]).filter(x=>typeof actEnBloque==="function"? actEnBloque(x,b.id) : x.bloqueId===b.id).length; return `
-        <div style="font-size:13.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px;max-width:240px">
-          <span style="display:flex;align-items:center;gap:4px">${esc(b.label)} (%)
-            <button class="ghost small" style="padding:0 4px;border:0" title="Canviar el nom del bloc" aria-label="Canviar el nom del bloc ${esc(b.label)}" onclick="blocReanomenar(${i})">✏️</button>
-            ${grupo.bloques.length>1?`<button class="ghost small" style="padding:0 4px;border:0" title="Eliminar el bloc" aria-label="Eliminar el bloc ${esc(b.label)}" onclick="blocEliminar(${i})">🗑️</button>`:""}</span>
-          <input class="in" type="number" value="${b.peso}" aria-label="Pes del bloc ${esc(b.label)} (%)" oninput="setBloqueW(${i},this.value)">
-          <span class="sub" style="font-size:11.5px">${nAct} activitat${nAct===1?"":"s"}</span>
-        </div>`; }).join("")}
-    </div>
-    <button class="ghost" style="border:1px dashed var(--line);margin-top:10px" onclick="blocAfegir()">+ Afegir un bloc (p. ex. Deures)</button>
-  </div>
+    ${!veuBlocs?barra("blocs","la qualificació per blocs"):""}${!veuCE?barra("ce","la qualificació per competències"):""}
+    <div class="mqCols${veuBlocs&&veuCE?"":" mqUna"}">${veuBlocs?colBlocs:""}${veuCE?colCE:""}</div>
+  </div>`;
+  })()}
 
   <div class="card">
     <h2>Cortes de las escalas cualitativas</h2>
@@ -291,6 +310,9 @@ window.blocEliminar=async (i)=>{
   if(typeof segSincronitzarBlocs==="function") segSincronitzarBlocs(g);
   save(); render();
 };
+/* Amagar/mostrar una columna del mode de qualificació: només la vista (per grup). */
+window.mqAmagar=qui=>{ const g=grupoActual(); if(!state.ui.mqAmagat) state.ui.mqAmagat={}; state.ui.mqAmagat[g.id]=qui; save(); render(); };
+window.mqMostrar=()=>{ const g=grupoActual(); if(state.ui.mqAmagat) delete state.ui.mqAmagat[g.id]; save(); render(); };
 window.setModoNota=v=>{ const g=grupoActual(); g.modoNota=(v==="ce"||v==="ambdues"?v:"bloques"); save(); render(); };
 window.setPesoCE=(ceId,v)=>{ const g=grupoActual(); if(!g.pesosCE) g.pesosCE={};
   const t=String(v).trim(); if(t==="") delete g.pesosCE[ceId]; else g.pesosCE[ceId]=Math.max(0,Number(t.replace(",","."))||0);
@@ -303,6 +325,57 @@ function sumaPesosCEHTML(grupo){
 }
 window.setPesoTrim=(t,v)=>{ const g=grupoActual(); if(!g.pesosTrim) g.pesosTrim={}; g.pesosTrim[t]=v; save(); };
 window.setFechaTrimestre=(t,campo,v)=>{ const g=grupoActual(); if(!g.fechasTrimestre) g.fechasTrimestre=[{inicio:"",fin:""},{inicio:"",fin:""},{inicio:"",fin:""}]; g.fechasTrimestre[t][campo]=v; save(); };
+/* Copiar les dates d'avaluació d'este grup a altres grups triats. Abans de
+   sobreescriure dates diferents que ja hi hagen, es demana confirmació. */
+function _datesTxt(ft){
+  const d=x=>x?x.split("-").reverse().join("/"):"…";
+  return [0,1,2].map(t=>{ const f=(ft||[])[t]||{}; return f.inicio||f.fin?`${t+1}a: ${d(f.inicio)}–${d(f.fin)}`:""; }).filter(Boolean).join(" · ");
+}
+function _datesIguals(a,b){ return [0,1,2].every(t=>{ const x=(a||[])[t]||{}, y=(b||[])[t]||{}; return (x.inicio||"")===(y.inicio||"")&&(x.fin||"")===(y.fin||""); }); }
+window.obrirCopiarDates=()=>{
+  const g=grupoActual();
+  if(![0,1,2].some(t=>{ const f=g.fechasTrimestre[t]; return f&&(f.inicio||f.fin); })){ mostrarAviso("Este grup encara no té cap data d'avaluació per copiar."); return; }
+  const altres=state.grupos.filter(x=>x.id!==g.id);
+  tancarCopiarDates();
+  const wrap=document.createElement("div"); wrap.id="copiarDatesWrap";
+  wrap.innerHTML=`<div class="modal-overlay" onclick="if(event.target===this) tancarCopiarDates()">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="copiarDatesT" style="max-width:480px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px">
+        <h2 id="copiarDatesT" style="font-size:16.5px;margin:0">Copiar les dates d'avaluació</h2>
+        <button class="modal-close" onclick="tancarCopiarDates()" aria-label="Tancar">×</button>
+      </div>
+      <p class="sub" style="margin:0 0 10px">${esc(_datesTxt(g.fechasTrimestre))}</p>
+      <p style="font-size:14px;margin:0 0 6px">Tria a quins grups vols posar les mateixes dates:</p>
+      <div style="display:flex;flex-direction:column;gap:6px;max-height:50vh;overflow:auto">
+        ${altres.map(x=>{ const ja=_datesTxt(x.fechasTrimestre), igual=_datesIguals(x.fechasTrimestre,g.fechasTrimestre);
+          return `<label style="display:flex;gap:8px;align-items:flex-start;font-size:14px">
+            <input type="checkbox" class="cdGrup" value="${esc(x.id)}" ${igual?"disabled":""} style="margin-top:3px">
+            <span><strong>${esc(x.nombre)}</strong>${igual?` <span class="sub">· ja té les mateixes dates</span>`:ja?`<br><span class="sub" style="font-size:12px">Ara: ${esc(ja)}</span>`:` <span class="sub">· sense dates</span>`}</span></label>`; }).join("")}
+      </div>
+      <div class="flex" style="justify-content:space-between;gap:8px;margin-top:14px">
+        <button class="ghost" onclick="document.querySelectorAll('#copiarDatesWrap .cdGrup:not(:disabled)').forEach(c=>c.checked=true)">Marcar-los tots</button>
+        <div class="flex" style="gap:8px">
+          <button class="ghost" style="border:1px solid var(--line)" onclick="tancarCopiarDates()">Cancel·lar</button>
+          <button class="btn" onclick="aplicarCopiarDates()">Copiar</button>
+        </div>
+      </div>
+    </div></div>`;
+  document.body.appendChild(wrap);
+  document.addEventListener("keydown",_copiarDatesEsc);
+};
+function _copiarDatesEsc(e){ if(e.key==="Escape" && document.getElementById("copiarDatesWrap") && !document.querySelector(".dlg-overlay")) tancarCopiarDates(); }
+window.tancarCopiarDates=()=>{ const el=document.getElementById("copiarDatesWrap"); if(el) el.remove(); document.removeEventListener("keydown",_copiarDatesEsc); };
+window.aplicarCopiarDates=async()=>{
+  const g=grupoActual();
+  const ids=[...document.querySelectorAll("#copiarDatesWrap .cdGrup:checked")].map(c=>c.value);
+  const dest=state.grupos.filter(x=>ids.includes(x.id));
+  if(!dest.length){ mostrarAviso("Marca almenys un grup."); return; }
+  const amb=dest.filter(x=>_datesTxt(x.fechasTrimestre));
+  if(amb.length && !(await confirmar(`${amb.map(x=>x.nombre).join(", ")} ja ${amb.length===1?"té":"tenen"} dates d'avaluació. Es reemplaçaran per les d'este grup.`,{titulo:"Reemplaçar les dates?",ok:"Sí, reemplaçar-les",cancelar:"Cancel·lar"}))) return;
+  dest.forEach(x=>{ x.fechasTrimestre=[0,1,2].map(t=>({...(x.fechasTrimestre||[])[t], inicio:g.fechasTrimestre[t].inicio||"", fin:g.fechasTrimestre[t].fin||""})); });
+  save(); tancarCopiarDates();
+  mostrarAviso(`Dates copiades a ${dest.length===1?`«${dest[0].nombre}»`:`${dest.length} grups`}.`);
+};
 window.setProgramacionGrupo=(id)=>{ const g=grupoActual(); g.programacionId=id; save(); render(); };
 window.irAProgramacion=()=>{ state.ui.appMode="programacion"; state.ui.progTab="lista"; save(); render(); };
 window.setCeCc=(ce,cc,v)=>{ grupoActual().pesos.ceCc[ce+"|"+cc]=v; save(); };

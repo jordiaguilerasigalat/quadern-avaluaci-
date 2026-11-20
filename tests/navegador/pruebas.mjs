@@ -1334,12 +1334,24 @@ export const PRUEBAS = [
       g.notasCuant = { [ids[0]]: { e1: 9 }, [ids[1]]: { e1: 3 } };
       g.notas = { [ids[0]]: { e1: { [c1]: 5 }, l1: { [c2]: 5 } }, [ids[1]]: { e1: { [c1]: 10 }, l1: { [c2]: 10 } } };
       state.ui.appMode = 'competencial'; state.ui.tab = 'ajustes'; save(); render();
+      const amplaCol = () => [...document.querySelectorAll('.mqCol')].map(x => x.getBoundingClientRect().width);
       const out = { radio: !!document.querySelector('input[name="modoNota"][value="ambdues"]') };
       const abans = notaTrimestre(g, ids[0], 0);
       document.querySelector('input[name="modoNota"][value="ambdues"]').click();
       await new Promise(r => setTimeout(r, 100));
       out.mode = state.grupos[0].modoNota; out.pesosVisibles = document.querySelectorAll('[oninput^="setPesoCE"]').length > 0;
-      out.unSolMarcat = document.querySelectorAll('input[name="modoNota"]:checked').length === 1;
+      const cols = [...document.querySelectorAll('.mqCol')];
+      out.unSolMarcat = document.querySelectorAll('input[name="modoNota"]:checked').length === 1 && cols.length === 2
+        && /blocs/i.test(cols[0].querySelector('h3').textContent) && /compet/i.test(cols[1].querySelector('h3').textContent)
+        && Math.abs(cols[0].getBoundingClientRect().top - cols[1].getBoundingClientRect().top) < 2;
+      const amplaDues = amplaCol()[0], qAbans = notaQualitativaCE(g, ids[1], 0);
+      document.querySelector('[onclick="mqAmagar(\'blocs\')"]').click();
+      await new Promise(r => setTimeout(r, 100));
+      out.amagaBlocs = state.grupos[0].modoNota === 'ambdues' && document.querySelectorAll('.mqCol').length === 1 && !document.querySelector('[oninput^="setBloqueW"]')
+        && amplaCol()[0] > amplaDues * 1.6 && notaTrimestre(g, ids[0], 0) === abans && notaQualitativaCE(g, ids[1], 0) === qAbans;
+      document.querySelector('.mqMostrar').click();
+      await new Promise(r => setTimeout(r, 100));
+      out.amagaBlocs = out.amagaBlocs && state.grupos[0].modoNota === 'ambdues' && document.querySelectorAll('.mqCol').length === 2;
       out.mateixaNota = notaTrimestre(g, ids[0], 0) === abans;
       out.q0 = etiquetaQualitativaCE(g, ids[0], 0)?.etq; out.q1 = etiquetaQualitativaCE(g, ids[1], 0)?.etq; out.q2 = notaQualitativaCE(g, ids[2], 0);
       state.ui.tab = 'resultados'; state.ui.resAl = ''; save(); render();
@@ -1354,7 +1366,8 @@ export const PRUEBAS = [
       out.ambInstr = informeAlumnoBodyHTML(g, g.alumnos[1]);
       return out;
     }, ids);
-    t.ok(r.radio && r.mode === 'ambdues' && r.unSolMarcat, 'Ajustos té l\'opció «Les dues» i es guarda', JSON.stringify([r.radio, r.mode, r.unSolMarcat]));
+    t.ok(r.radio && r.mode === 'ambdues' && r.unSolMarcat, 'Ajustos: blocs a l\'esquerra i competències a la dreta en dues columnes; opció «Les dues»', JSON.stringify([r.radio, r.mode, r.unSolMarcat]));
+    t.ok(r.amagaBlocs, 'amagar una columna és només visual: l\'altra ocupa tota l\'amplada i cap nota ni el mode canvien');
     t.ok(r.pesosVisibles, 'amb «Les dues» es poden posar els pesos de les CE');
     t.ok(r.mateixaNota, 'la nota numèrica no canvia: continua eixint dels instruments');
     t.ok(r.q0 === 'Suficient' && r.q1 === 'Excel·lent' && r.q2 == null, 'la qualitativa ix dels criteris (no de la nota de l\'examen)', JSON.stringify([r.q0, r.q1, r.q2]));
@@ -1365,6 +1378,37 @@ export const PRUEBAS = [
     t.ok(/Qualificació qualitativa per competències/.test(r.acta) && /<th style="width:80px">Qualitativa<\/th>/.test(r.acta), 'acta de la sessió: distribució qualitativa i columna en els suspesos');
     t.ok(/Qualitativa \(competències\)/.test(r.grup), 'informe de grup amb la columna qualitativa');
     t.ok(!/Qualitativa/.test(r.ambInstr), 'només per instruments no apareix cap qualitativa');
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
+  { nombre: 'fotos-alumnat', descripcion: "Foto de l'alumnat: es reduïx al navegador, s'assigna per nom de fitxer, es mostra al costat del nom i no deixa colar codi", async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const ids = await cuadernoConGrupo(p, t.url, { nombres: ['Pérez Martínez, Joan', 'García López, Maria', 'Pérez Soler, Marta'] });
+    const r = await p.evaluate(async ids => {
+      const g = state.grupos[0], out = {};
+      state.ui.appMode = 'competencial'; state.ui.tab = 'asistencia'; save(); render();
+      out.senseFotos = document.querySelectorAll('#tabContent .av-al').length;
+      const c = document.createElement('canvas'); c.width = 1200; c.height = 1600; const x = c.getContext('2d'); x.fillStyle = '#c33'; x.fillRect(0, 0, 1200, 1600);
+      const blob = await new Promise(res => c.toBlob(res, 'image/png'));
+      const foto = await fotoReduir(new File([blob], 'x.png', { type: 'image/png' }));
+      const img = new Image(); img.src = foto; await img.decode();
+      out.mida = [img.naturalWidth, img.naturalHeight]; out.jpeg = foto.startsWith('data:image/jpeg;base64,'); out.kb = foto.length / 1024;
+      out.match = ['Perez Martinez, Joan.jpg', 'maria_garcia_lopez.png', 'GARCÍA LÓPEZ MARIA.jpeg', 'perez.jpg', 'Joan.jpg', 'desconegut.jpg'].map(n => (fotoAlumnePerFitxer(g, n) || {}).id || null);
+      g.alumnos[0].foto = foto; save(); render();
+      out.assist = [...document.querySelectorAll('#tabContent .av-al')].map(e => e.tagName).join(',');
+      state.ui.tab = 'alumnos'; render(); out.llista = document.querySelectorAll('#tablaAlumnos img.av-al').length;
+      out.copia = JSON.stringify(state).includes(foto);
+      g.alumnos[1].foto = 'data:image/png;base64,AAA" onerror="window.__xss=1'; render();
+      out.hostil = !document.querySelector('img.av-al[onerror]') && !window.__xss;
+      fotosAlternarVisibles(); out.amagades = document.querySelectorAll('#tabContent .av-al').length; fotosAlternarVisibles();
+      return out;
+    }, ids);
+    t.ok(r.senseFotos === 0, 'un grup sense cap foto no mostra avatars');
+    t.ok(r.mida[0] === 128 && r.mida[1] === 128 && r.jpeg && r.kb < 30, 'la foto es retalla i es reduïx a 128×128 JPEG', JSON.stringify(r.mida) + ' ' + r.kb);
+    t.ok(JSON.stringify(r.match) === JSON.stringify([ids[0], ids[1], ids[1], null, null, null]), 'importació en bloc: el nom del fitxer troba l\'alumne/a (sense accents, en qualsevol ordre) i no endevina', JSON.stringify(r.match));
+    t.ok(r.assist === 'IMG,SPAN,SPAN,IMG,SPAN,SPAN' && r.llista === 1, 'la foto ix al costat del nom (Assistència i llista) i qui no en té mostra les inicials', r.assist);
+    t.ok(r.copia, 'la foto va dins de la còpia de seguretat');
+    t.ok(r.hostil, 'una foto manipulada en una còpia no es pinta com a codi');
+    t.ok(r.amagades === 0, '«Amagar les fotos» les amaga en este dispositiu');
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
 ];

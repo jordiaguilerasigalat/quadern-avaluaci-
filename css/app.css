@@ -378,7 +378,7 @@
   .plano-grid{ display:grid; gap:8px }
   .plano-mesa{
     aspect-ratio:1; border:2px dashed var(--line); border-radius:10px;
-    display:flex; align-items:center; justify-content:center; text-align:center;
+    display:flex; flex-direction:column; gap:2px; align-items:center; justify-content:center; text-align:center;
     font-size:11px; line-height:1.2; padding:4px; cursor:pointer; background:var(--surface);
     color:var(--ink); user-select:none;
   }
@@ -635,6 +635,12 @@
 
 /* Nom d'alumne/a que obri la fitxa única */
 .nom-fitxa{background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;cursor:pointer;text-align:left;text-decoration:underline dotted 1px;text-underline-offset:3px}
+/* Foto de l'alumnat (js/alumnado/fotos-alumnat.js) */
+.av-al{display:inline-flex;align-items:center;justify-content:center;flex:none;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:7px;background:var(--surface2,#eee);color:var(--mut);font-weight:700;letter-spacing:.02em;box-shadow:0 0 0 1px var(--line);text-decoration:none;line-height:1}
+.av-ini{font-family:inherit}
+.plano-mesa .av-al{margin:0 0 2px}
+.plano-mesa.ocupada .av-ini{background:rgba(255,255,255,.22);color:#fff;box-shadow:none}
+@media print{ .av-al{display:none} }
 .nom-fitxa:hover{color:var(--accent-texto,#7d5a12)}
 @media print{ .nom-fitxa{text-decoration:none} }
 
@@ -651,3 +657,14 @@
 [data-ordre-grups] [data-ordre-grup]{cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .ordre-actiu,.ordre-actiu *{cursor:grabbing!important}
 .ordre-arrossegant{opacity:.55;outline:2px dashed var(--accent);outline-offset:2px;transform:scale(1.02);transition:transform .1s}
+
+/* Ajustos → Mode de qualificació en dues columnes (blocs | competències) */
+.mqCols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}
+.mqCols.mqUna{grid-template-columns:1fr}
+.mqCol{border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0;background:var(--card)}
+.mqCap{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.mqCap h3{margin:0 0 4px;font-size:15.5px}
+.mqEtiq{background:var(--accent-soft);color:var(--accent-ink)}
+.mqMostrar{display:flex;align-items:center;gap:8px;width:100%;margin-top:10px;padding:8px 12px;border:1px dashed var(--line);border-radius:10px;background:transparent;color:var(--ink);font-weight:600;cursor:pointer;text-align:left}
+.mqMostrar:hover{background:var(--overlay-hover)}
+@media(max-width:760px){.mqCols{grid-template-columns:1fr}}
