@@ -1597,4 +1597,58 @@ export const PRUEBAS = [
     t.ok(r2.auto3 != null && /d'una altra activitat/.test(r2.avis), 'en enganxar els codis s\'afigen i els d\'una altra activitat es rebutgen', JSON.stringify(r2));
     t.ok(!p.errores.length && !errM.length, 'sin errores de JavaScript', p.errores.concat(errM).slice(0, 3).join('; '));
   } },
+  { nombre: 'posicio-alumnat', descripcion: "Alumnat: editar no torna dalt (ni en la llista ni en la fitxa), el cursor es queda a la fila i tocar l'alumne/a obri el seguiment (NESE → pantalla NESE i tornar)", async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const noms = Array.from({ length: 30 }, (_, i) => `Cognom${String(i).padStart(2, '0')} X, Nom${i}`);
+    await cuadernoConGrupo(p, t.url, { nombres: noms });
+    const r = await p.evaluate(() => {
+      const g = state.grupos[0], out = {};
+      state.ui.appMode = 'competencial'; state.ui.tab = 'alumnos'; save(); render();
+      const caixa = () => document.querySelector('#tablaAlumnos').closest('.scroll');
+      const fila = n => document.querySelectorAll('#tablaAlumnos tbody tr[data-id]')[n];
+      window.scrollTo(0, 300); caixa().scrollTop = 500;
+      // Edició en la llista
+      const inp = fila(18).querySelector('input'); const id18 = fila(18).dataset.id;
+      inp.focus({ preventScroll: true }); inp.value = 'Cognom18 Y'; inp.dispatchEvent(new Event('change'));
+      out.llista = [scrollY, caixa().scrollTop];
+      out.focus = document.activeElement && document.activeElement.closest('tr') && document.activeElement.closest('tr').dataset.id === id18;
+      // Edició des de la fitxa
+      const id20 = fila(20).dataset.id;
+      abrirFichaAlumno(id20);
+      const nom = document.querySelector('.modal-box input[onchange^="renombrarNombreP"]');
+      nom.value = 'Zzz'; nom.dispatchEvent(new Event('change'));
+      cerrarFichaAlumno();
+      out.fitxa = [scrollY, caixa().scrollTop];
+      out.focusFitxa = document.activeElement && document.activeElement.closest('tr') && document.activeElement.closest('tr').dataset.id === id20;
+      // Seguiment: no NESE → fitxa amb el resum (les dades plegades)
+      obrirSeguimentAlumne(id20);
+      out.seguiment = !!document.querySelector('.modal-box') && !document.querySelector('.modal-box details[open]') && /Notes/.test(document.querySelector('.modal-box').textContent);
+      cerrarFichaAlumno();
+      // NESE amb pla → pantalla NESE i tornar al mateix lloc
+      const a = g.alumnos.find(x => x.id === id20); a.nese = true;
+      state.planesNESE = [{ id: 'pn1', grupoId: g.id, alumnoId: id20, alumnoNombre: a.nombre, tipo: 'curricular', ciclo: '4', filas: [] }];
+      save(); render();
+      window.scrollTo(0, 300); caixa().scrollTop = 500;
+      const boto = [...fila(20).querySelectorAll('button')].find(b => /NESE/.test(b.textContent));
+      out.boto = !!boto; boto.click();
+      out.nese = [state.ui.appMode, state.ui.neTab, state.ui.neId];
+      const tornar = [...document.querySelectorAll('#app button')].find(b => /Tornar a/.test(b.textContent));
+      out.tornar = !!tornar; tornar.click();
+      out.tornat = [state.ui.appMode, state.ui.tab, scrollY, caixa().scrollTop];
+      // NESE sense pla → obri el formulari per a crear-lo
+      state.planesNESE = []; save(); render();
+      obrirSeguimentAlumne(id20);
+      out.crear = state.ui.appMode === 'nese' && !!state.ui.neModalCrear && /Tornar a/.test(document.getElementById('app').textContent);
+      neTornarAlGrup();
+      return out;
+    });
+    t.ok(r.llista[0] === 300 && r.llista[1] === 500, 'editar un nom en la llista no mou la pantalla', JSON.stringify(r.llista));
+    t.ok(r.focus, 'el cursor es queda en la mateixa fila');
+    t.ok(r.fitxa[0] === 300 && r.fitxa[1] === 500 && r.focusFitxa, 'editar des de la fitxa i tancar-la deixa la llista on estava i el cursor en la fila', JSON.stringify(r.fitxa));
+    t.ok(r.seguiment, 'el seguiment d\'un alumne/a no NESE obri la fitxa amb el resum');
+    t.ok(r.boto && r.nese.join() === 'nese,detalle,pn1', 'un alumne/a NESE va directament a la pantalla del seu pla NESE', JSON.stringify(r.nese));
+    t.ok(r.tornar && r.tornat.join() === 'competencial,alumnos,300,500', '«Tornar» porta a la llista al mateix lloc', JSON.stringify(r.tornat));
+    t.ok(r.crear, 'un alumne/a NESE sense pla obri el formulari per a crear-lo');
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
 ];

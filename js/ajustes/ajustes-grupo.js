@@ -187,7 +187,7 @@ window.renombrarMateriaGrupo=()=>{
   delete CAT_CACHE[key];
   save(); render(); mostrarToast("✓ Matèria i curs guardats");
 };
-window.renombrarGrupo=()=>{ const grupo=grupoActual(); const v=document.getElementById("gpNombre").value.trim(); if(v){ grupo.nombre=v; save(); renderShell(); } };
+window.renombrarGrupo=()=>{ const grupo=grupoActual(); const v=document.getElementById("gpNombre").value.trim(); if(v){ grupo.nombre=v; save(); repintarGrupQuiet(); } };
 window.duplicarGrupo=async ()=>{
   const grupo=grupoActual();
   const nombre=await pedirTexto("Nom per al grup nou:", grupo.nombre+" (còpia)");
