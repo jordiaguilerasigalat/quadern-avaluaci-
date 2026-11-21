@@ -135,7 +135,9 @@ function _extraVentana(tipo,clave,focoAlId){
   setTimeout(()=>{
     const fila=focoAlId&&[...div.querySelectorAll("tbody tr")].find(tr=>tr.getAttribute("data-al")===focoAlId);
     if(fila){ fila.style.background="var(--surface-2)"; fila.scrollIntoView({block:"center"}); }
-    const x=(fila||div).querySelector("[data-pts]"); if(x) x.focus();
+    /* Només si encara no s'ha començat a escriure en la finestra: si no, el focus
+       saltava al camp de punts a mitja escriptura (el text del motiu acabava en els punts). */
+    const x=(fila||div).querySelector("[data-pts]"); if(x && !div.contains(document.activeElement)) x.focus();
   },30);
 }
 window.abrirExtrasActividad=(actId,alId)=>_extraVentana("act",actId,alId);

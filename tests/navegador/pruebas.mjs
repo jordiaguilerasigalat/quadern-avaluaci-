@@ -1516,7 +1516,7 @@ export const PRUEBAS = [
     t.ok(r.card && r.editat === 'N|5' && /S · 5/.test(r.pill), 'Ajustos: llindars i nota que apareix editables', JSON.stringify([r.card, r.editat, r.pill]));
     t.ok(/Global/.test(r.ce) && /CE/.test(r.ce) && /\bS\b|NA|B|N|E/.test(r.ceCel) && /\d,\d/.test(r.ceNum), 'Resultats per competències, qualitativa o numèrica', r.ce + ' / ' + r.ceCel + ' / ' + r.ceNum);
     t.ok(/%/.test(r.blocs), 'Resultats per blocs amb una columna per bloc', r.blocs);
-    t.ok(/ITACA · final/.test(r.th) && r.itaca === 9 && r.itacaT === 8 && r.marca, 'columna ITACA: a mà o, en blanc, la calculada', JSON.stringify([r.th, r.itaca, r.itacaT]));
+    t.ok(/Final de curs/.test(r.th) && /ITACA/.test(r.th) && r.itaca === 9 && r.itacaT === 8 && r.marca, 'columna ITACA: a mà o, en blanc, la calculada', JSON.stringify([r.th, r.itaca, r.itacaT]));
     t.ok(/Nota ITACA final/.test(r.csv) && /;8;9(;|\n)/.test(r.csv), 'el CSV porta la nota ITACA', r.csv.split('\n').slice(0, 2).join(' / '));
     t.ok(r.buit == null, 'deixar-la en blanc torna a la calculada');
     t.ok(/notaQualNum[^>]*>\(5,2\)/.test(r.pill), 'al costat del nivell, la nota sobre 10 entre parèntesis en gris', r.pill);
