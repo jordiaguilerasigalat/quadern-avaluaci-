@@ -618,6 +618,14 @@ export const PRUEBAS = [
     const href = await p.evaluate(() => [...document.querySelectorAll('.modal-overlay a[href^="docs/material/"]')].pop().getAttribute('href'));
     const st = await p.evaluate(async h => (await fetch(h, { method: 'HEAD' })).status, href);
     t.ok(st === 200, 'els enllaços apunten a fitxers que existixen', href + ' ' + st);
+    // «✏️ Obrir a l'editor»: l'examen passa al disseny com a preguntes editables
+    const botons = await p.evaluate(() => document.querySelectorAll('.modal-overlay button[onclick^="exObrirMaterial"]').length);
+    t.ok(botons > 80, "cada examen té el botó «✏️ Obrir a l'editor»", String(botons));
+    await p.click('.modal-overlay details[open] details[open] button[onclick^="exObrirMaterial"]'); await esperar(1200);
+    const ed = await p.evaluate(() => { const ex = document.getElementById('exFrame').contentWindow.__ee.get(); const est = document.getElementById('exFrame').contentWindow.__ee.estructura();
+      return { titol: ex.body[0].type === 'title' && ex.body[0].title, preguntes: ex.body.filter(b => b.type === 'question').length,
+        punts: est.nodos.reduce((a, n) => a + (n.max || 0), 0), modal: !!document.querySelector('.modal-overlay') }; });
+    t.ok(ed.titol === 'Examen tema 2' && ed.preguntes >= 4 && ed.punts > 0 && !ed.modal, "l'examen s'obri en l'editor amb preguntes i punts, i conserva el títol de l'activitat", JSON.stringify(ed));
     t.ok(!p.errores.length, 'sense errors de JavaScript', p.errores.join(' | '));
     await p.close();
   } },

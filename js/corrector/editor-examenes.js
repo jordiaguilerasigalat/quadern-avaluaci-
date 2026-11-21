@@ -126,13 +126,32 @@ window.exBancExamens=()=>{
   const g=grupoActual(), act=g&&g.actividades.find(a=>a.id===state.ui.corExamId);
   const s=act&&act.temaId&&typeof temesTotsGrup==="function"? temesTotsGrup(g).find(x=>x.id===act.temaId) : null;
   const n=s? materialNumTema(s) : null, clau=g&&g.catalogoKey;
-  const pinta=()=>exModal(`<h2 style="font-size:16.5px;margin-bottom:4px">📚 Exàmens d'altres anys</h2>${materialExamensHTML(clau,n)}`);
+  const pinta=()=>exModal(`<h2 style="font-size:16.5px;margin-bottom:4px">📚 Exàmens d'altres anys</h2>${materialExamensHTML(clau,n,true)}`);
   // Sense render(): tornar a pintar recarregaria l'editor del disseny.
   const falten=Object.keys(MATERIAL_CURSOS).filter(k=>!(window.MATERIAL_TEMES||{})[k] && _materialEstat[k]!=="no");
   falten.forEach(k=>materialCarregar(k,true));
   if(!falten.length) return pinta();
   const e0=(document.getElementById("exEstado")||{}).textContent; exEstado("Carregant els exàmens…");
   let i=0; const t=setInterval(()=>{ i++; if(Object.keys(MATERIAL_CURSOS).every(k=>_materialEstat[k]!=="carregant")||i>40){ clearInterval(t); exEstado(e0||""); pinta(); } },150);
+};
+/* «✏️ Obrir a l'editor»: carrega en el disseny un examen del material ja convertit a blocs
+   (docs/material/<clau>/editor/<camí>.json, fet amb tools/material/examens_editables.py).
+   Es queden el títol, les dades de l'alumne, la capçalera i el format de l'examen actual;
+   les preguntes passen a ser les de l'examen triat. */
+window.exObrirMaterial=async(clau,f)=>{
+  const w=_exFrame&&_exFrame.contentWindow; if(!w||!w.__ee){ mostrarAviso("L'editor encara no s'ha carregat."); return; }
+  exFlush();
+  let nou;
+  try{ const r=await fetch(`docs/material/${encodeURIComponent(clau)}/editor/${String(f).replace(/\.[^.\/]+$/,"").split("/").map(encodeURIComponent).join("/")}.json`); if(!r.ok) throw new Error(r.status); nou=await r.json(); }
+  catch(e){ mostrarAviso("No s'ha pogut carregar l'examen. Comprova la connexió i torna-ho a provar."); return; }
+  const actual=w.__ee.get()||{}, cos=(actual.body||[]), cap=cos.filter(b=>b.type==="title"||b.type==="datos");
+  const teContingut=cos.some(b=>b.type!=="title"&&b.type!=="datos");
+  if(teContingut && !await confirmar("El disseny actual ja té preguntes. Es substituiran per les de l'examen triat (el títol i les dades de l'alumne es queden).\n\nSi després vols tornar enrere, ho tens en «Versions» o amb el botó de desfer.",{titulo:"✏️ Obrir a l'editor",ok:"Substituir",cancelar:"Cancel·lar",peligro:true})) return;
+  const preguntes=(nou.body||[]).filter(b=>b.type!=="title"&&b.type!=="datos");
+  const ex=Object.assign({},actual,{ body:(cap.length?cap:(nou.body||[]).filter(b=>b.type==="title"||b.type==="datos")).concat(preguntes), updated:Date.now() });
+  if(!actual.id){ ex.page=nou.page; ex.base=nou.base; ex.num=nou.num; }
+  w.__ee.cargar(ex); exFlush();
+  exEstado("Examen carregat: "+(nou.name||"")+". Repassa'l abans d'imprimir.");
 };
 /* Análisis del examen ya corregido: acierto medio por pregunta y por criterio */
 window.exAnalisis=()=>{
