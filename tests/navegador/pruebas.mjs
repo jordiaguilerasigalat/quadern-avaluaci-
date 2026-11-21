@@ -1466,10 +1466,11 @@ export const PRUEBAS = [
       const despres = cap(), trim = state.ui.trim, selVal = document.getElementById('repGrupoSel').value, dalt = document.querySelector('select[aria-label], header select')?.value;
       const s2 = document.getElementById('repGrupoSel'); s2.value = 'final'; s2.dispatchEvent(new Event('change'));
       await new Promise(r => setTimeout(r, 100));
-      return { abans, despres, trim, selVal, finalSel: document.getElementById('repGrupoSel').value, trimFinal: state.ui.trim };
+      return { abans, despres, trim, selVal, finalSel: document.getElementById('repGrupoSel').value, trimFinal: state.ui.trim, capFinal: cap() };
     });
     t.ok(r.trim === 1 && r.selVal === '1' && /2a/i.test(r.despres) && !/2a/i.test(r.abans), 'triar «2a avaluació» canvia la taula a la 2a', JSON.stringify(r));
-    t.ok(r.finalSel === 'final' && r.trimFinal === 1, '«Avaluació final» es queda triada i no canvia la taula');
+    t.ok(r.finalSel === 'final' && r.trimFinal === 1, '«Avaluació final» es queda triada');
+    t.ok(/1a/i.test(r.capFinal) && /2a/i.test(r.capFinal) && /3a/i.test(r.capFinal) && /final/i.test(r.capFinal), 'amb «Avaluació final» la taula mostra 1a, 2a, 3a i la final', r.capFinal);
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
   { nombre: 'escala-competencies-itaca', descripcion: 'Escala qualitativa editable (NA/S/B/N/E), Resultats per blocs i per competències i nota ITACA a mà que va al CSV', async fn(t) {
