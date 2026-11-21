@@ -297,7 +297,7 @@ window.neImprimirInforme=(id,alcance)=>{
     b.filas.push(f);
   });
   let cuerpoBloques;
-  const etiquetaEv={"1":"1ª evaluación","2":"2ª evaluación","3":"3ª evaluación","final":"Curso completo"}[alcance];
+  const etiquetaEv={"1":"1a avaluació","2":"2a avaluació","3":"3a avaluació","final":"Curs complet"}[alcance];
   if(p.tipo==="altas"){
     cuerpoBloques=p.medidasTomadas?`<h2>Medidas y actuaciones aplicadas</h2><p style="white-space:pre-wrap">${esc(p.medidasTomadas)}</p>`:'<p style="color:#999;font-style:italic">Todavía no se han registrado medidas.</p>';
   }else if(alcance==="final"){
@@ -349,7 +349,7 @@ window.neImprimirInforme=(id,alcance)=>{
     ${valoracionesBody}
   `;
   const portada=generarPortadaHTML(`Pla NESE — ${neNombre(p)}`,
-    [alV?`Alumno/a: <strong>${esc(alV.al.nombre)}</strong> · ${esc(alV.g.nombre)}`:`Alumno/a: <strong>${esc(p.alumnoNombre||neNombre(p))}</strong>`,
+    [alV?`Alumne/a: <strong>${esc(alV.al.nombre)}</strong> · ${esc(alV.g.nombre)}`:`Alumne/a: <strong>${esc(p.alumnoNombre||neNombre(p))}</strong>`,
      `${etiquetaEv}`,
      `Curso escolar: <strong>${esc(cursoEscolarEfectivo(null))}</strong>`,
      profesorNombreEfectivo(null)?`Elaborado por: <strong>${esc(profesorNombreEfectivo(null))}</strong>`:""],

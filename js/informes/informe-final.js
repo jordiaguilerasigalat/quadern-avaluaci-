@@ -18,19 +18,20 @@ function informeFinalAlumnoBodyHTML(grupo,al,opts){
   const filas3=TRIMESTRES.map((t,i)=>{const v=notaTrimestre(grupo,al.id,i); const com=(al.comentariosEval&&al.comentariosEval[i])||"";
     return `<tr><td>${t}</td><td>${notaEvalInformeHTML(grupo,al.id,i)}</td><td>${pillCuant(v)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,al.id,i)}</td>`:""}<td>${com?esc(com):"—"}</td></tr>`;}).join("");
 
-  let htmlActsPDF = `<h2>Desglose de actividades (curso completo)</h2>`;
+  let htmlActsPDF = `<h2>Desglossament d'activitats (curs complet)</h2>`;
   const trimsConActs=[0,1,2].filter(t=>grupo.actividades.some(a=>a.trimestre===t));
   if(!trimsConActs.length){
-    htmlActsPDF += '<p>Sin actividades registradas este curso.</p>';
+    htmlActsPDF += '<p>No hi ha activitats registrades este curs.</p>';
   } else {
     trimsConActs.forEach(t=>{
-      const actsT=grupo.actividades.filter(a=>a.trimestre===t);
+      const actsT=grupo.actividades.filter(a=>a.trimestre===t && marcaDe(grupo,al.id,a.id)!=="EX"); // les exemptes (p. ex. el quadern NESE d'un altre alumne/a) no ixen
+      if(!actsT.length) return;
       htmlActsPDF += `<h3 style="font-size:13px;color:#666;margin:14px 0 4px">${TRIMESTRES[t]}</h3>`;
       const sdaMap={};
       actsT.forEach(a=>{ const s=a.sda||'Sin SdA'; if(!sdaMap[s]) sdaMap[s]=[]; sdaMap[s].push(a); });
       Object.keys(sdaMap).forEach(sda=>{
         if(sda!=='Sin SdA') htmlActsPDF += `<div style="font-size:12px;color:#888;margin:6px 0 2px">${esc(sda)}</div>`;
-        htmlActsPDF += '<table><thead><tr><th>Actividad</th><th>Tipo</th><th>Nota (0-10)</th></tr></thead><tbody>';
+        htmlActsPDF += '<table><thead><tr><th>Activitat</th><th>Tipus</th><th>Nota (0-10)</th></tr></thead><tbody>';
         sdaMap[sda].forEach(a=>{
           const val=notaActividad(grupo,al.id,a);
           const valDisplay=notaActividadInformeHTML(grupo,al.id,a);
@@ -46,32 +47,32 @@ function informeFinalAlumnoBodyHTML(grupo,al,opts){
   const critSinNota=[];
   critTrabajados.forEach(cid=>{ const tieneNota=[0,1,2].some(t=>conTrim(t,()=>scoreCriterio(grupo,al.id,cid))!=null); if(!tieneNota) critSinNota.push(cid); });
   const htmlAlertaAsimetria = critSinNota.length>0
-    ? `<div class="alert">⚠️ <strong>Atención:</strong> El alumno no tiene ninguna calificación en todo el curso en los siguientes criterios trabajados por el grupo: ${critSinNota.join(', ')}.</div>`
+    ? `<div class="alert">⚠️ <strong>Atenció:</strong> L'alumne/a no té cap qualificació en tot el curs en els criteris següents treballats pel grup: ${critSinNota.join(', ')}.</div>`
     : '';
 
   const asistCntFinal=asistContarPeriodo(grupo,al.id,"2000-01-01","2099-12-31");
   const htmlAsistenciaFinal=`<h2>Assistència del curs</h2>
     <table><tbody>
-      <tr><th style="width:200px">Faltas justificadas</th><td>${asistCntFinal.falta_justificada}</td></tr>
-      <tr><th>Faltas no justificadas</th><td>${asistCntFinal.falta_no_justificada}</td></tr>
-      <tr><th>Retrasos</th><td>${asistCntFinal.retraso}</td></tr>
+      <tr><th style="width:200px">Faltes justificades</th><td>${asistCntFinal.falta_justificada}</td></tr>
+      <tr><th>Faltes no justificades</th><td>${asistCntFinal.falta_no_justificada}</td></tr>
+      <tr><th>Retards</th><td>${asistCntFinal.retraso}</td></tr>
     </tbody></table>`;
 
   return `
     <div${opts.pageBreak?' style="page-break-before:always;break-before:page"':''}>
     <h1>Informe final de curs</h1>
-    <div class="meta">${esc(cat.materia)} · ${esc(cat.curso)} · Grup ${esc(grupo.nombre)} · Curso completo · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
-    <h2>Alumno/a: ${esc(al.nombre)}</h2>
+    <div class="meta">${esc(cat.materia)} · ${esc(cat.curso)} · Grup ${esc(grupo.nombre)} · Curs complet · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
+    <h2>Alumne/a: ${esc(al.nombre)}</h2>
     ${htmlAlertaAsimetria}
-    <table><thead><tr><th>Periodo</th><th>Nota</th><th>Calificación</th>${teQualitativaCE(grupo)?"<th>Qualitativa (competències)</th>":""}<th>Comentario a la calificación</th></tr></thead><tbody>${filas3}<tr><td><strong>Nota final</strong></td><td><strong>${notaEvalInformeHTML(grupo,al.id,"final")}</strong></td><td>${pillCuant(nf)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,al.id,"final")}</td>`:""}<td></td></tr></tbody></table>
+    <table><thead><tr><th>Període</th><th>Nota</th><th>Qualificació</th>${teQualitativaCE(grupo)?"<th>Qualitativa (competències)</th>":""}<th>Comentari a la qualificació</th></tr></thead><tbody>${filas3}<tr><td><strong>Nota final</strong></td><td><strong>${notaEvalInformeHTML(grupo,al.id,"final")}</strong></td><td>${pillCuant(nf)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,al.id,"final")}</td>`:""}<td></td></tr></tbody></table>
     <p style="font-size:12px;color:#666;margin-top:-2px">La nota final és la mitjana ponderada de les avaluacions amb dades disponibles.</p>
     ${htmlAsistenciaFinal}
     ${htmlActsPDF}
-    <h2>Competencias clave trabajadas (media del curso)</h2>
+    <h2>Competències clau treballades (mitjana del curs)</h2>
     ${ccF.length?`<table><thead><tr><th>Competència clau</th><th>Adquisició</th><th>Activitats i exàmens utilitzats</th></tr></thead><tbody>
       ${ccF.map(x=>`<tr><td>${x.cc} · ${COMP_CLAVE[x.cc]}</td><td>${pillPlain(grupo,x.p)}</td><td style="font-size:12px;color:#555">${esc(abrevActs(actividadesDeCCAnual(grupo,al.id,x.cc),4))}</td></tr>`).join("")}</tbody></table>`:"<p>No hi ha dades en tot el curs.</p>"}
-    <h2>Competencias específicas trabajadas (media del curso)</h2>
-    ${ceF.length?`<table><thead><tr><th>Competencia específica</th><th>Adquisición</th><th>Actividades y exámenes utilizados</th></tr></thead><tbody>
+    <h2>Competències específiques treballades (mitjana del curs)</h2>
+    ${ceF.length?`<table><thead><tr><th>Competència específica</th><th>Adquisició</th><th>Activitats i exàmens utilitzats</th></tr></thead><tbody>
       ${ceF.map(x=>`<tr><td>${x.ce.id} · ${esc(x.ce.titulo)}</td><td>${pillPlain(grupo,x.p)}</td><td style="font-size:12px;color:#555">${esc(abrevActs(actividadesDeCEAnual(grupo,al.id,x.ce.id),4))}</td></tr>`).join("")}</tbody></table>`:"<p>No hi ha dades en tot el curs.</p>"}
     </div>
   `;

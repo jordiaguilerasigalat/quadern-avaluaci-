@@ -1435,6 +1435,44 @@ export const PRUEBAS = [
     t.ok(!/Qualitativa/.test(r.ambInstr), 'només per instruments no apareix cap qualitativa');
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'informe-final-valencia', descripcion: 'Informe final de curs: textos en valencià i sense les activitats on l\'alumne/a és exempt (p. ex. el quadern NESE d\'un altre alumne/a)', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const ids = await cuadernoConGrupo(p, t.url);
+    const r = await p.evaluate(ids => {
+      const g = state.grupos[0], c1 = getCatalogo(g.catalogoKey).ces[0].criterios[0].id;
+      g.actividades = [
+        { id: 'a1', nombre: 'Pràctica comuna', tipo: TIPOS[0], trimestre: 0, bloqueId: g.bloques[0].id, criterios: [{ critId: c1, peso: 100 }] },
+        { id: 'q1', nombre: 'Quadern NESE · Una altra persona', tipo: TIPOS[0], trimestre: 0, bloqueId: g.bloques[0].id, criterios: [{ critId: c1, peso: 100 }] }];
+      g.notas = { [ids[0]]: { a1: { [c1]: 7 } }, [ids[1]]: { a1: { [c1]: 6 }, q1: { [c1]: 8 } } };
+      g.marcas = { [ids[0]]: { q1: 'EX' } };
+      return { a: informeFinalAlumnoBodyHTML(g, g.alumnos.find(x => x.id === ids[0])), b: informeFinalAlumnoBodyHTML(g, g.alumnos.find(x => x.id === ids[1])) };
+    }, ids);
+    t.ok(/Curs complet/.test(r.a) && /Alumne\/a:/.test(r.a) && /Activitats i exàmens utilitzats/.test(r.a) && /Competències específiques treballades/.test(r.a), 'capçaleres en valencià');
+    t.ok(!/Curso completo|Alumno\/a|Actividades y exámenes|Competencias|Faltas|Periodo|Comentario a la calificación|Desglose/.test(r.a), 'cap resta en castellà');
+    t.ok(/Pràctica comuna/.test(r.a) && !/Una altra persona/.test(r.a), 'l\'activitat on és exempt no ix en el seu informe');
+    t.ok(/Una altra persona/.test(r.b), 'sí que ix en l\'informe de qui la fa');
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
+  { nombre: 'resultats-desplegable-avaluacio', descripcion: 'Resultats · Tota la classe: el desplegable d\'avaluació canvia també la taula (no només els informes)', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    await cuadernoConGrupo(p, t.url);
+    const r = await p.evaluate(async () => {
+      state.ui.appMode = 'competencial'; state.ui.tab = 'resultados'; state.ui.resAl = ''; state.ui.trim = 0; save(); render();
+      const cap = () => [...document.querySelectorAll('#tabContent thead th')].map(x => x.textContent).join('|');
+      const sel = document.getElementById('repGrupoSel');
+      const abans = cap();
+      sel.value = '1'; sel.dispatchEvent(new Event('change'));
+      await new Promise(r => setTimeout(r, 100));
+      const despres = cap(), trim = state.ui.trim, selVal = document.getElementById('repGrupoSel').value, dalt = document.querySelector('select[aria-label], header select')?.value;
+      const s2 = document.getElementById('repGrupoSel'); s2.value = 'final'; s2.dispatchEvent(new Event('change'));
+      await new Promise(r => setTimeout(r, 100));
+      return { abans, despres, trim, selVal, finalSel: document.getElementById('repGrupoSel').value, trimFinal: state.ui.trim, capFinal: cap() };
+    });
+    t.ok(r.trim === 1 && r.selVal === '1' && /2a/i.test(r.despres) && !/2a/i.test(r.abans), 'triar «2a avaluació» canvia la taula a la 2a', JSON.stringify(r));
+    t.ok(r.finalSel === 'final' && r.trimFinal === 1, '«Avaluació final» es queda triada');
+    t.ok(/1a/i.test(r.capFinal) && /2a/i.test(r.capFinal) && /3a/i.test(r.capFinal) && /final/i.test(r.capFinal), 'amb «Avaluació final» la taula mostra 1a, 2a, 3a i la final', r.capFinal);
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
   { nombre: 'escala-competencies-itaca', descripcion: 'Escala qualitativa editable (NA/S/B/N/E), Resultats per blocs i per competències i nota ITACA a mà que va al CSV', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     const ids = await cuadernoConGrupo(p, t.url);
