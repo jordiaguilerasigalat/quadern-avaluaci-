@@ -15,7 +15,7 @@ window.exportarCSVGrupo = () => {
    const q = s => '"'+String(s??"").replace(/"/g,'""')+'"';
    let csv = `Alumne;Nota ${TRIMESTRES[trim]} (mitjana);Nota ${TRIMESTRES[trim]} (acta);Qualificacio ${TRIMESTRES[trim]};Nota final (mitjana);Nota final (acta);Qualificacio final`;
    const qual = teQualitativaCE(grupo);
-   if(qual) csv += `;Qualitativa competencies ${TRIMESTRES[trim]};Qualitativa competencies final`;
+   if(qual) csv += `;Per competencies (qualitativa) ${TRIMESTRES[trim]};Per competencies (qualitativa) final`;
    csv += `;Nota ITACA ${TRIMESTRES[trim]};Nota ITACA final`;
    ccKeys.forEach(k => csv += `;${k}`);
    csv += "\n";

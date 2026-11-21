@@ -90,8 +90,8 @@ function renderAjustes(grupo){
     const ambdues=teQualitativaCE(grupo), modo=modoNotaGrupo(grupo);
     const amagat=((state.ui||{}).mqAmagat||{})[grupo.id]||"";
     const veuBlocs=amagat!=="blocs", veuCE=amagat!=="ce";
-    const etiqBlocs=ambdues?"Nota quantitativa · la de l'acta":modo==="ce"?"Ara no compta (el grup qualifica per competències)":"Dona la nota";
-    const etiqCE=ambdues?`Qualificació per competències · ${escalaQual(grupo).map(x=>x.abr||x.nom).join(", ")}`:modo==="ce"?"Dona la nota":"Ara no compta: tria «Les dues» per a tindre-la també";
+    const etiqBlocs=ambdues?"Per continguts (quantitativa) · la de l'acta":modo==="ce"?"Ara no compta (el grup qualifica per competències)":"Dona la nota";
+    const etiqCE=ambdues?`Per competències (qualitativa) · ${escalaQual(grupo).map(x=>x.abr||x.nom).join(", ")}`:modo==="ce"?"Dona la nota":"Ara no compta: tria «Les dues» per a tindre-la també";
     const colBlocs=`
       <section class="mqCol" aria-label="Qualificació per blocs">
         <div class="mqCap"><div><h3>Per blocs (instruments)</h3><span class="pill mqEtiq">${etiqBlocs}</span></div>
