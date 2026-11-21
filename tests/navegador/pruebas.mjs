@@ -1435,6 +1435,55 @@ export const PRUEBAS = [
     t.ok(!/Qualitativa/.test(r.ambInstr), 'només per instruments no apareix cap qualitativa');
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'escala-competencies-itaca', descripcion: 'Escala qualitativa editable (NA/S/B/N/E), Resultats per blocs i per competències i nota ITACA a mà que va al CSV', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const ids = await cuadernoConGrupo(p, t.url);
+    const r = await p.evaluate(async ids => {
+      const g = state.grupos[0], ces = getCatalogo('FiQ_2ESO').ces, c1 = ces[0].criterios[0].id, c2 = ces[1].criterios[0].id;
+      g.modoNota = 'ambdues';
+      g.actividades = [{ id: 'e1', nombre: 'Examen 1', tipo: TIPOS[0], trimestre: 0, bloqueId: g.bloques[0].id, esExamen: true, criterios: [{ critId: c1, peso: 100 }, { critId: c2, peso: 100 }],
+        rubrica: [{ id: 's1', title: 'Pregunta 1', items: [], subs: [{ id: 's1a', title: 'a', items: [{ id: 'i1', label: '1a', max: 4, links: [{ critId: c1, peso: 100 }] }], subs: [] }, { id: 's1b', title: 'b', items: [{ id: 'i2', label: '1b', max: 6, links: [{ critId: c2, peso: 100 }] }], subs: [] }] }] }];
+      g.rubricScores = { [ids[0]]: { e1: { i1: 2, i2: 6 } } };
+      g.notasCuant = {}; g.notas = {};
+      cxRecalcAlumno(g, g.actividades[0], ids[0]);
+      const out = {};
+      out.nota = g.notasCuant[ids[0]].e1; out.c1 = g.notas[ids[0]].e1[c1]; out.c2 = g.notas[ids[0]].e1[c2];
+      out.def = [4.9, 5, 5.95, 6.5, 8.49, 8.5].map(v => nivellQual(g, v).abr).join(',');
+      state.ui.appMode = 'competencial'; state.ui.tab = 'ajustes'; save(); render();
+      out.card = !!document.getElementById('escalaQualCard');
+      setEscalaQual(4, 'des', '9'); setEscalaQual(1, 'nota', '5');
+      out.editat = nivellQual(g, 8.7).abr + '|' + nivellQual(g, 5.2).nota;
+      out.pill = pillNivellQual(g, 5.2, '', true);
+      state.ui.tab = 'resultados'; state.ui.resAl = ''; state.ui.trim = 0; state.ui.resVista = 'blocs'; save(); render();
+      out.blocs = [...document.querySelectorAll('#tabContent thead th')].map(x => x.textContent).join('|');
+      setResVista('ce');
+      out.ce = [...document.querySelectorAll('#tabContent thead th')].map(x => x.textContent).join('|');
+      out.ceCel = [...document.querySelectorAll('#tabContent tbody tr')][0].textContent;
+      setResCEqual(false);
+      out.ceNum = [...document.querySelectorAll('#tabContent tbody tr')][0].textContent;
+      setResVista('notes');
+      out.th = [...document.querySelectorAll('#tabContent thead th')].map(x => x.textContent).join('|');
+      setNotaItaca(ids[0], 'final', '9');
+      out.itaca = notaItaca(g, ids[0], 'final'); out.itacaT = notaItaca(g, ids[0], 0);
+      out.marca = /✍️/.test(document.getElementById('tabContent').textContent);
+      let csv = ''; const oB = window.Blob; window.Blob = function (parts) { csv = parts.join(''); return new oB(parts); };
+      const oC = URL.createObjectURL; URL.createObjectURL = () => 'blob:x'; const oclick = HTMLAnchorElement.prototype.click; HTMLAnchorElement.prototype.click = () => {};
+      exportarCSVGrupo(); window.Blob = oB; URL.createObjectURL = oC; HTMLAnchorElement.prototype.click = oclick;
+      out.csv = csv;
+      setNotaItaca(ids[0], 'final', ''); out.buit = notaItacaManual(g, ids[0], 'final');
+      return out;
+    }, ids);
+    t.ok(r.nota === 8 && r.c1 === 5 && r.c2 === 10, 'subpreguntes amb punts lligades a criteris: nota 8 i cada criteri amb les seues preguntes', JSON.stringify([r.nota, r.c1, r.c2]));
+    t.ok(r.def === 'NA,S,S,B,N,E', 'escala per defecte 0-4,9 NA, 5-5,9 S, 6-6,9 B, 7-8,49 N, 8,5-10 E', r.def);
+    t.ok(r.card && r.editat === 'N|5' && /S · 5/.test(r.pill), 'Ajustos: llindars i nota que apareix editables', JSON.stringify([r.card, r.editat, r.pill]));
+    t.ok(/Global/.test(r.ce) && /CE/.test(r.ce) && /\bS\b|NA|B|N|E/.test(r.ceCel) && /\d,\d/.test(r.ceNum), 'Resultats per competències, qualitativa o numèrica', r.ce + ' / ' + r.ceCel + ' / ' + r.ceNum);
+    t.ok(/%/.test(r.blocs), 'Resultats per blocs amb una columna per bloc', r.blocs);
+    t.ok(/ITACA · final/.test(r.th) && r.itaca === 9 && r.itacaT === 8 && r.marca, 'columna ITACA: a mà o, en blanc, la calculada', JSON.stringify([r.th, r.itaca, r.itacaT]));
+    t.ok(/Nota ITACA final/.test(r.csv) && /;8;9(;|\n)/.test(r.csv), 'el CSV porta la nota ITACA', r.csv.split('\n').slice(0, 2).join(' / '));
+    t.ok(r.buit == null, 'deixar-la en blanc torna a la calculada');
+    t.ok(/notaQualNum[^>]*>\(5,2\)/.test(r.pill), 'al costat del nivell, la nota sobre 10 entre parèntesis en gris', r.pill);
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
   { nombre: 'banc-comentaris', descripcion: 'Banc de comentaris: frases per categoria, la de la nota primer, inserir amb el nom posat, editar i desar al banc', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     const ids = await cuadernoConGrupo(p, t.url);

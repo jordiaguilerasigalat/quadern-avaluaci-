@@ -89,6 +89,75 @@ window.exportarParaTutoria=async()=>{
   const ok=await guardarArchivo(new Blob([JSON.stringify(obj,null,2)],{type:"application/json"}),`para-tutoria-${limpio(grupo.nombre)}-${limpio(obj.materia)}.json`);
   if(ok) mostrarToast("✓ Archivo para la tutoría guardado. El tutor/a lo carga en Gestor de Tutoría → Gestión del Curso.");
 };
+/* ---- Vistes de la taula de tota la classe ----
+   «Notes» (per defecte): avaluació, final i les columnes ITACA (nota a mà).
+   «Per blocs»: nota 0-10 de cada bloc en l'avaluació triada.
+   «Per competències»: nota de cada CE amb tot el treballat fins a eixa
+   avaluació, en número (0-10) o amb l'escala qualitativa del grup. */
+function resVista(){ const v=state.ui.resVista; return v==="blocs"||v==="ce"? v : "notes"; }
+function resVistaBotonsHTML(grupo){
+  const v=resVista(), qual=state.ui.resCEqual!==false;
+  const b=(id,t)=>`<button class="${v===id?"btn":"ghost"} small" style="${v===id?"":"border:1px solid var(--line)"}" aria-pressed="${v===id}" onclick="setResVista('${id}')">${t}</button>`;
+  return `<div class="flex" role="group" aria-label="Què vols veure en la taula" style="gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center">
+    ${b("notes","Notes i ITACA")}${b("blocs","Per blocs")}${b("ce","Per competències")}
+    ${v==="ce"?`<span style="width:10px"></span><label style="display:flex;gap:5px;align-items:center;font-size:13px"><input type="radio" name="resCEqual" ${qual?"checked":""} onchange="setResCEqual(true)"> Qualitativa (${esc(escalaQual(grupo).map(x=>x.abr||x.nom).join(", "))})</label>
+      <label style="display:flex;gap:5px;align-items:center;font-size:13px"><input type="radio" name="resCEqual" ${qual?"":"checked"} onchange="setResCEqual(false)"> Numèrica (0-10)</label>
+      <button class="ghost small" style="border:1px solid var(--line)" title="Canviar els nivells, els llindars i la nota que apareix" onclick="resAnarEscala()">⚙️ Escala</button>`:""}
+  </div>`;
+}
+window.setResVista=v=>{ state.ui.resVista=v; save(); render(); };
+window.setResCEqual=q=>{ state.ui.resCEqual=!!q; save(); render(); };
+window.resAnarEscala=()=>{ irATab("ajustes"); setTimeout(()=>{ const e=document.getElementById("escalaQualCard"); if(e) e.scrollIntoView({block:"start"}); },60); };
+/* Nota ITACA escrita a mà (en blanc = la calculada). */
+window.setNotaItaca=(alId,periodo,v)=>{
+  const g=grupoActual(); const t=String(v==null?"":v).trim().replace(",",".");
+  g.notaItaca=g.notaItaca||{};
+  if(t===""){ if(g.notaItaca[alId]){ delete g.notaItaca[alId][periodo]; if(!Object.keys(g.notaItaca[alId]).length) delete g.notaItaca[alId]; } save(); render(); return; }
+  const n=Number(t);
+  if(!isFinite(n)||n<0||n>10){ mostrarToast("Escriu una nota entre 0 i 10 (o deixa-ho en blanc per a usar la calculada)"); render(); return; }
+  (g.notaItaca[alId]=g.notaItaca[alId]||{})[periodo]=n; save(); render();
+};
+function resCeldaItacaHTML(grupo,a,periodo,calc){
+  const m=notaItacaManual(grupo,a.id,periodo), acta=calc==null? null : notaActa(calc,grupo);
+  const canvi=m!=null && m!==acta;
+  return `<td onclick="event.stopPropagation()" style="white-space:nowrap"><input type="text" inputmode="decimal" autocomplete="off" class="in miniw" style="width:58px;${canvi?"border-color:var(--accent);font-weight:700;background:var(--accent-soft)":""}" placeholder="${acta==null?"":acta}" value="${m==null?"":String(m).replace(".",",")}" title="Nota per a ITACA. En blanc = la calculada (${acta==null?"sense nota":acta}). Escriu-ne una altra per a canviar-la a mà." aria-label="Nota ITACA de ${esc(a.nombre)} (${periodo==="final"?"final":TRIMESTRES[Number(periodo)]})" onchange="setNotaItaca('${a.id}','${periodo}',this.value)">${canvi?` <span title="Canviada a mà (calculada: ${acta==null?"—":acta})" style="font-size:12px">✍️</span>`:""}</td>`;
+}
+function resBotonsFilaHTML(grupo,a,trim){
+  return `<td><button class="ghost small" style="border:1px solid var(--line)" title="Ver la evolución de ${esc(a.nombre)} en esta evaluación" onclick="event.stopPropagation();verEvolucionAlumno('${a.id}')">👁️</button>${grupoTieneEntrega(grupo,a.id,trim)?`<span title="Informe entregado el ${fmt2(grupoTieneEntrega(grupo,a.id,trim).fecha)}" style="margin-left:4px;color:#1e5631;font-weight:700;font-size:13px">✓</span>`:""}</td>
+          <td><button class="ghost" onclick="event.stopPropagation();exportarInformeAlumno('${a.id}')">Informe</button></td>
+          <td><button class="ghost" onclick="event.stopPropagation();exportarInformeFinalAlumno('${a.id}')">Informe final</button></td>`;
+}
+function resTaulaClasseHTML(grupo,al,trim){
+  const v=resVista();
+  const fila=(a,cos)=>`<tr style="cursor:pointer;${a.id===(al&&al.id)?'background:var(--surface-2)':''}" onclick="irAAlumnoResultados('${a.id}')"><td>${avatarAlumneHTML(a)}<strong>${esc(a.nombre)}</strong>${neseBadgeHTML(a)}</td>${cos}</tr>`;
+  if(v==="blocs"){
+    const bl=grupo.bloques||[];
+    return `<div style="overflow-x:auto"><table>
+      <thead><tr><th>Alumno/a</th>${bl.map(b=>`<th title="${esc(b.label)} · ${b.inactiu?"desactivat":(b.peso||0)+" %"}">${esc(b.label)}<div class="sub" style="margin:0;font-weight:400;font-size:11.5px">${b.inactiu?"desactivat":(b.peso||0)+" %"}</div></th>`).join("")}<th>${TRIMESTRES[trim]}</th></tr></thead>
+      <tbody>${grupo.alumnos.map(a=>fila(a,bl.map(b=>{ const n=notaBloque(grupo,a.id,b.id,trim); return `<td style="${b.inactiu?"opacity:.55":""}">${fmt(n)}</td>`; }).join("")+`<td><strong>${fmt(notaTrimestre(grupo,a.id,trim))}</strong></td>`)).join("")}</tbody>
+    </table></div>`;
+  }
+  if(v==="ce"){
+    const qual=state.ui.resCEqual!==false, trims=trimsFinsA(trim);
+    const ces=catIndex(grupo.catalogoKey).cat.ces;
+    const val={}; grupo.alumnos.forEach(a=>{ val[a.id]={}; ces.forEach(ce=>{ const p=scoreCETrims(grupo,a.id,ce.id,trims); val[a.id][ce.id]=p==null? null : p/10; }); });
+    const usades=ces.filter(ce=>grupo.alumnos.some(a=>val[a.id][ce.id]!=null));
+    if(!usades.length) return `<p class="sub">Encara no hi ha cap competència específica avaluada fins a la ${esc(TRIMESTRES[trim])}. Lliga les preguntes de la rúbrica dels exàmens (o les activitats) als criteris i qualifica-les.</p>`;
+    const cel=x=>qual? pillNivellQual(grupo,x,"",true) : `<span title="${x==null?"":fmt(x)}">${fmt(x)}</span>`;
+    return `<p class="sub" style="margin:0 0 6px">Nota de cada CE amb tot el que s'ha treballat fins a la ${esc(TRIMESTRES[trim])} (mitjana dels seus criteris; en els exàmens, de les preguntes lligades a cada criteri). La columna «Global» és la mitjana ponderada de les CE (pesos en Ajustos).</p>
+    <div style="overflow-x:auto"><table>
+      <thead><tr><th>Alumno/a</th>${usades.map(ce=>`<th title="${esc(ce.titulo)}">${esc(ce.id)}</th>`).join("")}<th title="Mitjana ponderada de les CE">Global</th></tr></thead>
+      <tbody>${grupo.alumnos.map(a=>fila(a,usades.map(ce=>`<td>${cel(val[a.id][ce.id])}</td>`).join("")+`<td><strong>${cel(notaPorCE(grupo,a.id,trims))}</strong></td>`)).join("")}</tbody>
+    </table></div>`;
+  }
+  return `<div style="overflow-x:auto"><table>
+      <thead><tr><th>Alumno/a</th><th>${TRIMESTRES[trim]}</th><th title="Nota que posaràs en ITACA per a la ${esc(TRIMESTRES[trim])}. En blanc = la calculada; escriu-ne una altra per a canviar-la a mà. És la que va a «Exportar notes (CSV)».">ITACA · ${TRIMESTRES[trim]}</th><th>Nota final</th><th title="Calificación y nota de acta (entera) de la nota final">Calificación · acta</th><th title="Nota final que posaràs en ITACA. En blanc = la calculada; escriu-ne una altra per a canviar-la a mà. És la que va a «Exportar notes (CSV)».">ITACA · final</th>${teQualitativaCE(grupo)?`<th title="Qualificació qualitativa per competències (mitjana ponderada de les CE)">Qualitativa · ${TRIMESTRES[trim]}</th><th title="Qualificació qualitativa per competències de tot el curs">Qualitativa final</th>`:""}<th></th><th></th><th></th></tr></thead>
+      <tbody>${grupo.alumnos.map(a=>{const t=notaTrimestre(grupo,a.id,trim),f=notaFinal(grupo,a.id);
+        return fila(a,`<td>${fmt(t)}${extraEvalBadgeHTML(grupo,a.id,trim)}${avisoBloquesHTML(grupo,a.id,trim)}</td>${resCeldaItacaHTML(grupo,a,String(trim),t)}<td>${fmt(f)}${extraEvalBadgeHTML(grupo,a.id,"final")}</td>
+          <td>${pillCuant(f)}</td>${resCeldaItacaHTML(grupo,a,"final",f)}${teQualitativaCE(grupo)?`<td>${pillQual(grupo,a.id,trim)}</td><td>${pillQual(grupo,a.id,"final")}</td>`:""}
+          ${resBotonsFilaHTML(grupo,a,trim)}`);}).join("")}</tbody>
+    </table></div>`;
+}
 function renderResultados(grupo){
   const c=document.getElementById("tabContent");
   const idx=catIndex(grupo.catalogoKey);
@@ -121,17 +190,9 @@ function renderResultados(grupo){
         </span>
       </div>
     </div>
+    ${resVistaBotonsHTML(grupo)}
     <p class="sub" style="margin:6px 0 10px">Toca un alumno/a para ver y editar su informe completo debajo.</p>
-    <div style="overflow-x:auto"><table>
-      <thead><tr><th>Alumno/a</th><th>${TRIMESTRES[trim]}</th><th>Nota final</th><th title="Calificación y nota de acta (entera) de la nota final">Calificación · acta</th>${teQualitativaCE(grupo)?`<th title="Qualificació qualitativa per competències (mitjana ponderada de les CE)">Qualitativa · ${TRIMESTRES[trim]}</th><th title="Qualificació qualitativa per competències de tot el curs">Qualitativa final</th>`:""}<th></th><th></th><th></th></tr></thead>
-      <tbody>${grupo.alumnos.map(a=>{const t=notaTrimestre(grupo,a.id,trim),f=notaFinal(grupo,a.id);
-        return `<tr style="cursor:pointer;${a.id===(al&&al.id)?'background:var(--surface-2)':''}" onclick="irAAlumnoResultados('${a.id}')">
-          <td>${avatarAlumneHTML(a)}<strong>${esc(a.nombre)}</strong>${neseBadgeHTML(a)}</td><td>${fmt(t)}${extraEvalBadgeHTML(grupo,a.id,trim)}${avisoBloquesHTML(grupo,a.id,trim)}</td><td>${fmt(f)}${extraEvalBadgeHTML(grupo,a.id,"final")}</td>
-          <td>${pillCuant(f)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,a.id,trim)}</td><td>${pillQual(grupo,a.id,"final")}</td>`:""}
-          <td><button class="ghost small" style="border:1px solid var(--line)" title="Ver la evolución de ${esc(a.nombre)} en esta evaluación" onclick="event.stopPropagation();verEvolucionAlumno('${a.id}')">👁️</button>${grupoTieneEntrega(grupo,a.id,trim)?`<span title="Informe entregado el ${fmt2(grupoTieneEntrega(grupo,a.id,trim).fecha)}" style="margin-left:4px;color:#1e5631;font-weight:700;font-size:13px">✓</span>`:""}</td>
-          <td><button class="ghost" onclick="event.stopPropagation();exportarInformeAlumno('${a.id}')">Informe</button></td>
-          <td><button class="ghost" onclick="event.stopPropagation();exportarInformeFinalAlumno('${a.id}')">Informe final</button></td></tr>`;}).join("")}</tbody>
-    </table></div>
+    ${resTaulaClasseHTML(grupo,al,trim)}
   </div>
   ${state.ui.evolModalAl?evolucionModalHTML(grupo,grupo.alumnos.find(x=>x.id===state.ui.evolModalAl)):""}`;
 
