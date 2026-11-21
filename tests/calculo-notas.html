@@ -250,7 +250,7 @@ function ejecutarPruebas() {
   comprobar('Les dues: la nota numèrica ix dels blocs', notaTrimestre(g, 'a1', 0), 6.6);
   comprobar('Les dues: la final numèrica, també dels blocs', notaFinal(g, 'a1'), notaFinal({ ...g, modoNota: 'bloques' }, 'a1'));
   comprobar('Les dues: qualitativa de la 1.ª = mitjana ponderada de les CE', notaQualitativaCE(g, 'a1', 0), (17 / 3) * 0.75 + 9 * 0.25);
-  comprobar('Les dues: etiqueta qualitativa (6,5 → 7 → Notable, com l’acta)', etiquetaQualitativaCE(g, 'a1', 0).etq, 'Notable');
+  comprobar('Les dues: etiqueta qualitativa amb l’escala del grup (6,5 → Bé: 6-6,99)', etiquetaQualitativaCE(g, 'a1', 0).etq, 'Bé');
   comprobar('Les dues: qualitativa final amb tot el curs', notaQualitativaCE(g, 'a1', 'final'), (17 / 3) * 0.75 + 9 * 0.25);
   comprobar('Les dues: sense criteris avaluats no hi ha qualitativa', notaQualitativaCE(g, 'a2', 0), null);
   comprobar('Les dues: modoNotaGrupo continua sent «bloques»', modoNotaGrupo(g), 'bloques');

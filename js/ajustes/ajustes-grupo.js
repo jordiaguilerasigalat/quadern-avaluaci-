@@ -91,7 +91,7 @@ function renderAjustes(grupo){
     const amagat=((state.ui||{}).mqAmagat||{})[grupo.id]||"";
     const veuBlocs=amagat!=="blocs", veuCE=amagat!=="ce";
     const etiqBlocs=ambdues?"Nota quantitativa · la de l'acta":modo==="ce"?"Ara no compta (el grup qualifica per competències)":"Dona la nota";
-    const etiqCE=ambdues?"Qualificació per competències · Insuficient… Excel·lent":modo==="ce"?"Dona la nota":"Ara no compta: tria «Les dues» per a tindre-la també";
+    const etiqCE=ambdues?`Qualificació per competències · ${escalaQual(grupo).map(x=>x.abr||x.nom).join(", ")}`:modo==="ce"?"Dona la nota":"Ara no compta: tria «Les dues» per a tindre-la també";
     const colBlocs=`
       <section class="mqCol" aria-label="Qualificació per blocs">
         <div class="mqCap"><div><h3>Per blocs (instruments)</h3><span class="pill mqEtiq">${etiqBlocs}</span></div>
@@ -139,6 +139,8 @@ function renderAjustes(grupo){
     <div class="mqCols${veuBlocs&&veuCE?"":" mqUna"}">${veuBlocs?colBlocs:""}${veuCE?colCE:""}</div>
   </div>`;
   })()}
+
+  ${escalaQualAjustosHTML(grupo)}
 
   <div class="card">
     <h2>Cortes de las escalas cualitativas</h2>
@@ -196,6 +198,7 @@ window.duplicarGrupo=async ()=>{
   const nuevo=defGrupo(nombre.trim(),grupo.catalogoKey);
   nuevo.pesos=JSON.parse(JSON.stringify(grupo.pesos));
   nuevo.umbrales={...grupo.umbrales};
+  if(Array.isArray(grupo.escalaQual)) nuevo.escalaQual=grupo.escalaQual.map(x=>({...x}));
   nuevo.pesosTrim={...grupo.pesosTrim};
   nuevo.bloques=grupo.bloques.map(b=>({...b}));
   nuevo.modoNota=grupo.modoNota; nuevo.pesosCE={...(grupo.pesosCE||{})};
@@ -281,6 +284,49 @@ function sumaBloquesHTML(grupo){
   if(!(t>0)) return `<span style="color:#b45309;font-weight:600">⚠️ Cap bloc compta.</span> <span class="sub">Activa'n algun o posa-li pes perquè hi haja nota numèrica.</span>`+nota;
   return `<span style="color:#b45309;font-weight:600">⚠️ Sumen ${String(t).replace(".",",")} %.</span> <span class="sub">La nota es calcula igualment en proporció (cada bloc pesa la seua part sobre ${String(t).replace(".",",")}), però el normal és que sumen 100.</span>`+nota;
 }
+/* Escala qualitativa de les competències (NA, S, B, N, E…): nom, abreviatura,
+   des de quina nota comença cada nivell i nota amb què vols que aparega. */
+function escalaQualAjustosHTML(grupo){
+  const e=escalaQual(grupo), fx=n=>String(n).replace(".",",");
+  return `
+  <div class="card" id="escalaQualCard">
+    <h2>Escala qualitativa de les competències</h2>
+    <p class="sub">S'usa en la qualificació per competències («Les dues») i en Resultats → «Per competències». Cada nivell comença en la nota «Des de» i arriba fins al següent. «Nota que apareix» és opcional: si la poses, eixe nivell es mostra amb eixa nota (p. ex. S · 5); en blanc, es mostra la calculada.</p>
+    <div style="overflow-x:auto"><table class="escalaQualTaula">
+      <thead><tr><th>Abreviatura</th><th>Nom</th><th>Des de</th><th>Rang</th><th>Nota que apareix</th><th></th></tr></thead>
+      <tbody>${e.map((x,i)=>`<tr>
+        <td><input class="in" style="width:70px" value="${esc(x.abr)}" aria-label="Abreviatura del nivell ${i+1}" onchange="setEscalaQual(${i},'abr',this.value)"></td>
+        <td><input class="in" style="width:150px" value="${esc(x.nom)}" aria-label="Nom del nivell ${i+1}" onchange="setEscalaQual(${i},'nom',this.value)"></td>
+        <td>${i===0?'<span class="sub" style="margin:0">0</span>':`<input class="in" style="width:80px" type="text" inputmode="decimal" value="${fx(x.des)}" aria-label="Des de quina nota comença ${esc(x.nom||x.abr)}" onchange="setEscalaQual(${i},'des',this.value)">`}</td>
+        <td><span class="pill" style="background:${x.bg};color:${x.fg}">${esc(rangNivellQual(e,i))}</span></td>
+        <td><input class="in" style="width:110px" type="text" inputmode="decimal" placeholder="calculada" value="${x.nota===""?"":fx(x.nota)}" aria-label="Nota amb què apareix ${esc(x.nom||x.abr)}" onchange="setEscalaQual(${i},'nota',this.value)"></td>
+        <td>${e.length>2?`<button class="ghost small" title="Eliminar el nivell" aria-label="Eliminar el nivell ${esc(x.nom||x.abr)}" onclick="escalaQualEliminar(${i})">🗑️</button>`:""}</td>
+      </tr>`).join("")}</tbody>
+    </table></div>
+    <div class="flex" style="gap:8px;margin-top:10px">
+      <button class="ghost" style="border:1px dashed var(--line)" onclick="escalaQualAfegir()">+ Afegir un nivell</button>
+      <button class="ghost" style="border:1px solid var(--line)" onclick="escalaQualRestaurar()">↺ Tornar a l'escala per defecte</button>
+    </div>
+  </div>`;
+}
+function _escalaQualEditable(g){ if(!Array.isArray(g.escalaQual)||!g.escalaQual.length) g.escalaQual=ESCALA_QUAL_DEF.map(x=>({...x})); return g.escalaQual; }
+function _numCA(v){ const t=String(v==null?"":v).trim().replace(",","."); if(t==="") return ""; const n=Number(t); return isFinite(n)? n : null; }
+window.setEscalaQual=(i,camp,v)=>{
+  const g=grupoActual(), e=_escalaQualEditable(g); if(!e[i]) return;
+  if(camp==="abr"||camp==="nom"){ e[i][camp]=String(v||"").trim(); }
+  else{
+    const n=_numCA(v);
+    if(n===null||(camp==="des"&&n==="")){ mostrarToast("Escriu una nota entre 0 i 10"); render(); return; }
+    if(n!==""&&(n<0||n>10)){ mostrarToast("Escriu una nota entre 0 i 10"); render(); return; }
+    e[i][camp]=n;
+    if(camp==="des"){ e.sort((a,b)=>(Number(a.des)||0)-(Number(b.des)||0)); e[0].des=0; }
+  }
+  if(typeof _invalidarCaches==="function") _invalidarCaches();
+  save(); render();
+};
+window.escalaQualAfegir=()=>{ const g=grupoActual(), e=_escalaQualEditable(g); const last=e[e.length-1]; const des=Math.min(10,Math.round(((Number(last.des)||0)+10)/2*10)/10); e.push({abr:"",nom:"Nivell nou",des,nota:""}); e.sort((a,b)=>(Number(a.des)||0)-(Number(b.des)||0)); save(); render(); };
+window.escalaQualEliminar=i=>{ const g=grupoActual(), e=_escalaQualEditable(g); if(e.length<=2) return; e.splice(i,1); e[0].des=0; save(); render(); };
+window.escalaQualRestaurar=()=>{ const g=grupoActual(); delete g.escalaQual; save(); render(); mostrarToast("✓ Escala per defecte"); };
 window.setUmbral=(k,v)=>{ grupoActual().umbrales[k]=Number(v)||0; save(); };
 /* Blocs propis: afegir, canviar el nom i eliminar (les activitats d'un bloc
    eliminat passen al bloc que tries). */

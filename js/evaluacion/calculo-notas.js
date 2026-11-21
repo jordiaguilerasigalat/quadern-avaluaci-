@@ -307,13 +307,63 @@ function notaQualitativaCE(grupo,alId,periodo){
 }
 function etiquetaQualitativaCE(grupo,alId,periodo){
   const v=notaQualitativaCE(grupo,alId,periodo);
-  return v==null? null : etiquetaNota(v,grupo);
+  return v==null? null : nivellQual(grupo,v);
 }
 /* Píndola amb la qualificació qualitativa (sense número: el número va en el títol). */
 function pillQual(grupo,alId,periodo){
-  const v=notaQualitativaCE(grupo,alId,periodo), e=v==null? null : etiquetaNota(v,grupo);
-  if(!e) return '<span style="color:var(--mut,#888);font-size:13px">—</span>';
-  return `<span class="pill" title="Qualificació per competències (mitjana ponderada de les CE: ${fmt(v)})" style="background:${e.bg};color:${e.fg}">${e.etq}</span>`;
+  const v=notaQualitativaCE(grupo,alId,periodo);
+  return pillNivellQual(grupo,v,"Qualificació per competències (mitjana ponderada de les CE)");
+}
+/* ---- Escala qualitativa de les competències (editable per grup) ----
+   grupo.escalaQual=[{abr,nom,des,nota}] de menor a major: «des» és la nota
+   (0-10) a partir de la qual comença el nivell (el primer, sempre 0) i
+   «nota», opcional, la nota numèrica amb què vols que aparega eixe nivell
+   (en blanc = es mostra la calculada). S'aplica a la qualificació per
+   competències («Les dues») i a la vista per competències de Resultats. */
+const ESCALA_QUAL_DEF=[
+  {abr:"NA",nom:"No assoleix",des:0,nota:""},
+  {abr:"S",nom:"Suficient",des:5,nota:""},
+  {abr:"B",nom:"Bé",des:6,nota:""},
+  {abr:"N",nom:"Notable",des:7,nota:""},
+  {abr:"E",nom:"Excel·lent",des:8.5,nota:""}
+];
+const _COLORS_QUAL=[["#f3dcdc","#912525"],["#f6eccf","#8a5a12"],["#d9e6f2","#1d4e74"],["#e3f0df","#3a6b2a"],["#dcece0","#1e5631"]];
+function escalaQual(grupo){
+  const e=grupo&&Array.isArray(grupo.escalaQual)&&grupo.escalaQual.length? grupo.escalaQual : ESCALA_QUAL_DEF;
+  return e.map((x,i)=>{ const c=_COLORS_QUAL[Math.round(i*(_COLORS_QUAL.length-1)/Math.max(1,e.length-1))];
+    return {abr:String(x.abr||""),nom:String(x.nom||""),des:i===0?0:(Number(x.des)||0),nota:(x.nota===""||x.nota==null||!isFinite(Number(x.nota)))?"":Number(x.nota),bg:c[0],fg:c[1]}; });
+}
+/* Nivell (de l'escala del grup) d'una nota 0-10. Torna {abr,nom,etq,des,nota,bg,fg,v}. */
+function nivellQual(grupo,v){
+  if(v==null||v===""||isNaN(Number(v))) return null;
+  v=Math.max(0,Math.min(10,_limpiaFP(Number(v))));
+  const e=escalaQual(grupo); let r=e[0];
+  for(const x of e) if(v>=x.des-1e-9) r=x;
+  return {...r,etq:r.nom||r.abr,v};
+}
+/* Rang d'un nivell en text: «5 – 5,99». */
+function rangNivellQual(e,i){
+  const f=n=>String(Math.round(n*100)/100).replace(".",",");
+  return i<e.length-1? `${f(e[i].des)} – ${f(Math.max(e[i].des,e[i+1].des-0.01))}` : `${f(e[i].des)} – 10`;
+}
+function pillNivellQual(grupo,v,titol,curt){
+  const n=nivellQual(grupo,v);
+  if(!n) return '<span style="color:var(--mut,#888);font-size:13px">—</span>';
+  const txt=(curt? (n.abr||n.nom) : n.etq)+(n.nota!==""? " · "+String(n.nota).replace(".",",") : "");
+  return `<span style="white-space:nowrap"><span class="pill" title="${esc((titol? titol+": " : "")+fmt(v)+" → "+n.nom+(n.abr?" ("+n.abr+")":""))}" style="background:${n.bg};color:${n.fg}">${esc(txt)}</span>${notaQualNumHTML(v)}</span>`;
+}
+/* Nota calculada sobre 10, entre parèntesis i en gris clar, al costat del nivell (Jordi: sempre). */
+function notaQualNumHTML(v){ return v==null||v===""||isNaN(Number(v))? "" : ` <span class="notaQualNum" style="color:var(--qualnum,#6e7787);font-weight:400;font-size:.92em;white-space:nowrap">(${fmt(v)})</span>`; }
+/* Nota que es posarà en ITACA: la que has escrit a mà o, si no n'hi ha, la
+   d'acta calculada. grupo.notaItaca[alId][periodo] (periodo "0","1","2","final"). */
+function notaItacaManual(grupo,alId,periodo){
+  const v=grupo.notaItaca&&grupo.notaItaca[alId]&&grupo.notaItaca[alId][String(periodo)];
+  return (v==null||v===""||!isFinite(Number(v)))? null : Number(v);
+}
+function notaItaca(grupo,alId,periodo){
+  const m=notaItacaManual(grupo,alId,periodo); if(m!=null) return m;
+  const v=String(periodo)==="final"? notaFinal(grupo,alId) : notaTrimestre(grupo,alId,Number(periodo));
+  return v==null? null : notaActa(v,grupo);
 }
 function pesoCEGrupo(grupo,ceId){
   const v=grupo.pesosCE && grupo.pesosCE[ceId];

@@ -710,3 +710,6 @@ body.aaKioscObert{overflow:hidden}
 .txtOk{color:#15803d}.txtAvis{color:#b45309}
 body[data-tema="oscuro"] .txtOk{color:#6ee7a0}
 body[data-tema="oscuro"] .txtAvis{color:#fbbf72}
+
+/* Nota calculada sobre 10 al costat del nivell qualitatiu (NA, S, B, N, E): gris clar (el color va en línia amb var(--qualnum)) */
+body[data-tema="oscuro"]{--qualnum:#9aa3b5}

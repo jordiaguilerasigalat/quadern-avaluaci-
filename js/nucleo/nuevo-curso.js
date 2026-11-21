@@ -36,6 +36,7 @@ function ncGrupoVacio(g,opc){
   n.pesos=JSON.parse(JSON.stringify(g.pesos||n.pesos));
   n.pesosTrim=JSON.parse(JSON.stringify(g.pesosTrim||{}));
   n.umbrales=Object.assign({},g.umbrales||n.umbrales);
+  if(Array.isArray(g.escalaQual)) n.escalaQual=g.escalaQual.map(x=>({...x}));
   n.sdaPrevistas=Array.isArray(g.sdaPrevistas)?g.sdaPrevistas.slice():n.sdaPrevistas;
   n.programacionId=opc.programaciones?(g.programacionId||""):"";
   n.plano={filas:(g.plano&&g.plano.filas)||5,columnas:(g.plano&&g.plano.columnas)||6,posiciones:{}};
