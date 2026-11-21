@@ -44,7 +44,11 @@ function segBlocAuto(grupo,t){
   for(const re of t.bloc){ const b=grupo.bloques.find(b=>re.test(b.label||"")); if(b) return b; }
   return grupo.bloques.find(b=>!SEG_RE_EXAMEN.test(b.label||""))||grupo.bloques[0];
 }
+/* Llista buida guardada (grupo.segBlocs[k]=[]): l'apartat s'ha desmarcat de
+   tots els blocs i les seues activitats no compten en la nota numèrica. */
+function segCap(grupo,k){ const t=grupo.segBlocs&&grupo.segBlocs[k]; return Array.isArray(t) && !t.length; }
 function segBlocsIds(grupo,k){
+  if(segCap(grupo,k)) return [];
   const tr=segTriats(grupo,k); if(tr.length) return tr;
   const b= k==="examens"? (grupo.bloques.find(b=>SEG_RE_EXAMEN.test(b.label||""))||grupo.bloques[0]) : segBlocAuto(grupo,segTipus(k));
   return b? [b.id] : [];
@@ -53,9 +57,10 @@ function segBloc(grupo,t){ const id=segBlocsIds(grupo,t.k)[0]; return grupo.bloq
 function segBlocExamens(grupo){ const id=segBlocsIds(grupo,"examens")[0]; return grupo.bloques.find(b=>b.id===id); }
 function segActsApartat(g,k){ return g.actividades.filter(a=> k==="examens"? (a.esExamen && !a.seguiment && !a.recupera) : a.seguiment===k); }
 function segAplicarBlocs(g,k){
-  const ids=segBlocsIds(g,k); if(!ids.length) return 0;
+  const ids=segBlocsIds(g,k);
   const acts=segActsApartat(g,k);
-  acts.forEach(a=>{ a.bloqueId=ids[0]; if(ids.length>1) a.bloquesExtra=ids.slice(1); else delete a.bloquesExtra; });
+  if(!ids.length){ if(!segCap(g,k)) return 0; acts.forEach(a=>{ a.sinBloc=true; delete a.bloquesExtra; }); return acts.length; }
+  acts.forEach(a=>{ delete a.sinBloc; a.bloqueId=ids[0]; if(ids.length>1) a.bloquesExtra=ids.slice(1); else delete a.bloquesExtra; });
   return acts.length;
 }
 /* Caselles «Compta en» de cada apartat: es pot marcar un bloc o diversos. */
@@ -66,16 +71,20 @@ function segSelectorBlocHTML(grupo,k){
   const altres=b=>[["examens","Exàmens"],...SEG_TIPUS.map(t=>[t.k,t.nom])].filter(([kk])=>kk!==k && segBlocsIds(grupo,kk).includes(b.id)).map(x=>x[1]);
   return `<div style="margin:2px 0 6px;padding:6px 8px;border-radius:8px;background:var(--soft,rgba(127,127,127,.08));font-size:12.5px">
       <div style="font-weight:600;margin-bottom:4px">⚖️ Pes en la nota${total!==100?` <span class="sub" style="font-weight:400">(els blocs sumen ${String(total).replace(".",",")} %)</span>`:""}</div>
+      ${!tria.length?`<div style="margin:2px 0"><strong>No compta en cap bloc.</strong> <span class="sub" style="margin:0;font-size:11.5px">Les seues activitats no fan nota numèrica. Marca un bloc davall perquè tornen a comptar.</span></div>`:""}
       ${tria.map(b=>{ const comp=altres(b); return `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:2px 0">
         <span>${esc(b.label)}</span>
         <input class="in" type="number" min="0" max="100" step="1" style="width:68px;padding:2px 6px" value="${esc(b.peso)}" aria-label="Pes del bloc ${esc(b.label)} (%)" onchange="segPesBloc('${escJS(b.id)}',this.value)"> %${b.inactiu?` <span class="sub" style="margin:0;font-size:11.5px"><strong>desactivat</strong>: ara no compta (Ajustos)</span>`:""}
-        ${comp.length?`<span class="sub" style="margin:0;font-size:11.5px">compartit amb ${esc(comp.join(", "))}</span>`:""}
+        ${comp.length?`<span class="sub" style="margin:0;font-size:11.5px">🔗 el mateix ${esc(String(b.peso))} % que ${esc(comp.join(", "))} (compta una sola vegada)</span>`:""}
       </div>`; }).join("")}
     </div>
     <details class="gcard-meta"><summary style="cursor:pointer">Canviar en quin bloc compta</summary>
     <div style="display:flex;align-items:center;gap:4px 10px;flex-wrap:wrap;margin-top:4px" role="group" aria-label="Blocs on compta l'apartat">
     ${grupo.bloques.map(x=>`<label style="display:inline-flex;align-items:center;gap:3px;cursor:pointer"><input type="checkbox" ${ids.includes(x.id)?"checked":""} onchange="segTriarBloc('${k}','${escJS(x.id)}',this.checked)"> ${esc(x.label)} (${x.inactiu?"desactivat":esc(x.peso)+" %"})</label>`).join("")}
-    ${ids.length>1?`<span class="sub" style="font-size:11.5px;margin:0">La nota de cada activitat compta en els ${ids.length} blocs.</span>`:""}</div></details>`;
+    ${ids.length>1?`<span class="sub" style="font-size:11.5px;margin:0">La nota de cada activitat compta en els ${ids.length} blocs.</span>`:""}</div>
+    ${tria.some(b=>altres(b).length)?`<div style="margin-top:8px"><button class="ghost small" style="border:1px solid var(--line)" onclick="segSepararBloc('${k}')">✂️ Separar: bloc propi per a «${esc(segNomApartat(k))}»</button>
+      <span class="sub" style="display:block;margin:2px 0 0;font-size:11.5px">El pes nou es lleva del bloc compartit. Amb 0 % no compta.</span></div>`:""}
+    </details>`;
 }
 window.segPesBloc=(id,v)=>{
   const g=grupoActual(); const b=g&&g.bloques.find(x=>x.id===id); if(!b) return;
@@ -89,18 +98,46 @@ window.segTriarBloc=(k,id,on)=>{
   if(on){ if(!ids.includes(id)) ids.push(id); }
   else {
     ids=ids.filter(x=>x!==id);
-    if(!ids.length){ mostrarAviso("Cada apartat ha de comptar com a mínim en un bloc."); render(); return; }
   }
   (g.segBlocs=g.segBlocs||{})[k]=ids;
   const n=segAplicarBlocs(g,k);
   save(); render();
-  mostrarToast(`✓ L'apartat compta en: ${ids.map(x=>g.bloques.find(b=>b.id===x).label).join(" + ")}`+(n?` (${n} activitat${n===1?"":"s"} actualitzada${n===1?"":"s"})`:""));
+  mostrarToast((ids.length?`✓ L'apartat compta en: ${ids.map(x=>g.bloques.find(b=>b.id===x).label).join(" + ")}`:`L'apartat ja no compta en cap bloc: les seues activitats no fan nota numèrica`)+(n?` (${n} activitat${n===1?"":"s"} actualitzada${n===1?"":"s"})`:""));
+};
+function segNomApartat(k){ return k==="examens"? "Exàmens" : (segTipus(k)||{}).nom||k; }
+/* Separar un apartat d'un bloc compartit (p. ex. Treballs i Laboratori en
+   «Treball experimental i d'investigació»): crea un bloc propi amb el nom de
+   l'apartat, li passa les seues activitats i lleva el pes nou del bloc
+   compartit perquè la suma no canvie. */
+window.segSepararBloc=async k=>{
+  const g=grupoActual(); if(!g) return;
+  const ids=segBlocsIds(g,k);
+  const comp=g.bloques.find(b=>ids.includes(b.id) && [["examens"],...SEG_TIPUS.map(t=>[t.k])].some(([kk])=>kk!==k && segBlocsIds(g,kk).includes(b.id)));
+  const nom=segNomApartat(k);
+  const max=comp? Number(comp.peso)||0 : 100;
+  const v=await pedirTexto(`Quin pes vols per a «${nom}» (%)?`+(comp?`\nEs lleva del bloc compartit «${comp.label}» (${comp.peso} %), així la suma no canvia. Posa 0 si no ha de comptar.`:""), String(Math.min(5,max)));
+  if(v==null) return;
+  let pes=Math.max(0,Number(String(v).replace(",","."))||0);
+  if(comp && pes>max){ pes=max; }
+  const altresK=["examens",...SEG_TIPUS.map(t=>t.k)].filter(kk=>kk!==k);
+  const abans=Object.fromEntries(altresK.map(kk=>[kk,segBlocsIds(g,kk)]));
+  const nou={id:"b"+uid(),label:nom.slice(0,60),peso:pes};
+  const pos=comp? g.bloques.indexOf(comp)+1 : g.bloques.length;
+  g.bloques.splice(pos,0,nou);
+  if(comp) comp.peso=Math.round((max-pes)*100)/100;
+  (g.segBlocs=g.segBlocs||{})[k]=[nou.id];
+  /* Els altres apartats que compartien el bloc el conserven explícitament
+     si la cerca automàtica els portaria al bloc nou. */
+  altresK.forEach(kk=>{ if(segBlocsIds(g,kk).join()!==abans[kk].join()) g.segBlocs[kk]=abans[kk]; });
+  const n=segAplicarBlocs(g,k);
+  save(); render();
+  mostrarToast(`✓ «${nom}» té ara el seu bloc (${pes} %)`+(comp?` i «${comp.label}» passa a ${comp.peso} %`:"")+(n?`. ${n} activitat${n===1?"":"s"} actualitzada${n===1?"":"s"}.`:"."));
 };
 /* Quan es crea, reanomena o elimina un bloc, els apartats sense blocs triats
    tornen a buscar el seu bloc (p. ex. un bloc nou «Deures» arreplega l'apartat Deures). */
 function segSincronitzarBlocs(g){
   if(!g) return;
-  SEG_TIPUS.forEach(t=>{ if(!segTriats(g,t.k).length) segAplicarBlocs(g,t.k); });
+  SEG_TIPUS.forEach(t=>{ if(!segTriats(g,t.k).length && !segCap(g,t.k)) segAplicarBlocs(g,t.k); });
 }
 function segPlantilla(t){
   const pl=(state.plantillasRubrica||[]).find(p=>String(p.nombre||"").trim().toLowerCase()===t.plantilla.toLowerCase());
@@ -219,9 +256,10 @@ window.segCrear=k=>{
   if(crits.length) cxItemsFlat(rub).forEach(it=>{ it.links=crits.map(c=>({critId:c,peso:100})); });
   const ids=segBlocsIds(grupo,k);
   const temaId=(document.getElementById("segTema")||{}).value ?? (state.ui.segTema||"");
-  const act={ id:uid(), trimestre:state.ui.trim, nombre:nom, tipo:t.tipo, bloqueId:ids[0]||"", esExamen:true, pesoBloque:"",
+  const act={ id:uid(), trimestre:state.ui.trim, nombre:nom, tipo:t.tipo, bloqueId:ids[0]||(segBlocAuto(grupo,t)||{}).id||"", esExamen:true, pesoBloque:"",
     criterios:[], sda:"", rubrica:rub, escalarA10:true, criteriosPrevistos:crits, seguiment:k, temaId:temaId||"" };
   if(ids.length>1) act.bloquesExtra=ids.slice(1);
+  if(!ids.length) act.sinBloc=true;
   cxSyncCriteriosActividad(act);
   grupo.actividades.push(act);
   state.ui.segAct=act.id; state.ui.segAl=(grupo.alumnos[0]||{}).id||"";
