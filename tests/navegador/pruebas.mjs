@@ -1453,6 +1453,25 @@ export const PRUEBAS = [
     t.ok(/Una altra persona/.test(r.b), 'sí que ix en l\'informe de qui la fa');
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'resultats-desplegable-avaluacio', descripcion: 'Resultats · Tota la classe: el desplegable d\'avaluació canvia també la taula (no només els informes)', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    await cuadernoConGrupo(p, t.url);
+    const r = await p.evaluate(async () => {
+      state.ui.appMode = 'competencial'; state.ui.tab = 'resultados'; state.ui.resAl = ''; state.ui.trim = 0; save(); render();
+      const cap = () => [...document.querySelectorAll('#tabContent thead th')].map(x => x.textContent).join('|');
+      const sel = document.getElementById('repGrupoSel');
+      const abans = cap();
+      sel.value = '1'; sel.dispatchEvent(new Event('change'));
+      await new Promise(r => setTimeout(r, 100));
+      const despres = cap(), trim = state.ui.trim, selVal = document.getElementById('repGrupoSel').value, dalt = document.querySelector('select[aria-label], header select')?.value;
+      const s2 = document.getElementById('repGrupoSel'); s2.value = 'final'; s2.dispatchEvent(new Event('change'));
+      await new Promise(r => setTimeout(r, 100));
+      return { abans, despres, trim, selVal, finalSel: document.getElementById('repGrupoSel').value, trimFinal: state.ui.trim };
+    });
+    t.ok(r.trim === 1 && r.selVal === '1' && /2a/i.test(r.despres) && !/2a/i.test(r.abans), 'triar «2a avaluació» canvia la taula a la 2a', JSON.stringify(r));
+    t.ok(r.finalSel === 'final' && r.trimFinal === 1, '«Avaluació final» es queda triada i no canvia la taula');
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
   { nombre: 'escala-competencies-itaca', descripcion: 'Escala qualitativa editable (NA/S/B/N/E), Resultats per blocs i per competències i nota ITACA a mà que va al CSV', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     const ids = await cuadernoConGrupo(p, t.url);

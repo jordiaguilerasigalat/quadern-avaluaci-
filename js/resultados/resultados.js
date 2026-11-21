@@ -179,9 +179,9 @@ function renderResultados(grupo){
         <button class="ghost" style="border:1px solid var(--line)" title="Sumar puntos a la nota de la evaluación o a la nota final (p. ej. +0,5 por presentarse voluntario/a)" onclick="abrirExtrasEvaluacion(${trim})">➕ Puntos extra</button>
         <button class="ghost" style="border:1px solid var(--line)" title="Esborranys de comentari per a qui encara no en tinga (no en sobreescriu cap)" onclick="comSugerirGrupo('va')">💬 Comentaris buits</button>
         <span class="flex" style="gap:6px;align-items:center">
-          <select class="in" id="repGrupoSel" style="padding:6px 9px">
-            ${TRIMESTRES.map((t,i)=>`<option value="${i}" ${i===state.ui.trim?"selected":""}>${t}</option>`).join("")}
-            <option value="final">Evaluación final (curso completo)</option>
+          <select class="in" id="repGrupoSel" style="padding:6px 9px" title="Avaluació de la taula i dels informes (és la mateixa que la de dalt)" onchange="resTriarAvaluacio(this.value)">
+            ${TRIMESTRES.map((t,i)=>`<option value="${i}" ${i===state.ui.trim&&state.ui.resInfFinal!==true?"selected":""}>${t}</option>`).join("")}
+            <option value="final" ${state.ui.resInfFinal===true?"selected":""}>Evaluación final (curso completo)</option>
           </select>
           <button class="btn" onclick="exportarInformeGrupo(document.getElementById('repGrupoSel').value)">Informe de grupo</button>
           <button class="ghost" style="border:1px solid var(--line)" onclick="exportarInformesDetalladosTodos(document.getElementById('repGrupoSel').value)">🖨️ Informes detallados</button>
@@ -354,3 +354,11 @@ function renderResultados(grupo){
   document.getElementById("resComentario").addEventListener("change",e=>{ al.comentariosEval[trim]=e.target.value; save(); });
 }
 
+
+/* El desplegable de «Tota la classe» canvia també l'avaluació de la taula (la
+   mateixa que el selector de dalt): abans només triava la dels informes i
+   semblava que no feia res. «Avaluació final» deixa la taula com està. */
+window.resTriarAvaluacio=v=>{
+  if(v==="final"){ state.ui.resInfFinal=true; save(); return; }
+  state.ui.resInfFinal=false; state.ui.trim=Number(v)||0; save(); render();
+};

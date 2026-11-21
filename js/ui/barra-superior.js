@@ -34,7 +34,7 @@ function renderTopBar(){
   const trimSel=document.getElementById("trimSel");
   trimSel.innerHTML=TRIMESTRES.map((t,i)=>`<option value="${i}">${t}</option>`).join("");
   trimSel.value=state.ui.trim;
-  trimSel.addEventListener("change",e=>{ state.ui.trim=Number(e.target.value); save(); render(); });
+  trimSel.addEventListener("change",e=>{ state.ui.trim=Number(e.target.value); state.ui.resInfFinal=false; save(); render(); });
 }
 /* Pestanya «📌 Pendents» al costat dels grups: alumnat amb la matèria pendent
    que no tens este curs (js/alumnado/pendents.js). */
