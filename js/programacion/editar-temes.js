@@ -59,6 +59,7 @@ function _tempPesos(temes){
 /* Reparteix les sessions de cada avaluació entre els seus temes. Els temes
    ajustats a mà (s.sessionsManual) es respecten. Torna {t:{disp,usades}} o null. */
 function tempRecalcular(g,p){
+  if(p&&p.tempSenseHorari) return null;   // desvinculat de l'horari: les sessions les posa el docent
   const setmana=tempSessionsSetmana(g);
   if(!Object.values(setmana).some(n=>n>0)) return null;
   const reserva=Math.max(0,Number(p.tempReserva)||0);
@@ -109,7 +110,7 @@ function _tempCtx(){ const g=grupoActual(); const p=g&&progDeGrupo(g); return p?
 window.tempEditarObrir=()=>{
   const c=_tempCtx(); if(!c) return;
   state.ui.tempEditant=c.p.id;
-  window.__tempCopia={id:c.p.id, sdas:JSON.parse(JSON.stringify(c.p.sdas||[])), reserva:c.p.tempReserva};
+  window.__tempCopia={id:c.p.id, sdas:JSON.parse(JSON.stringify(c.p.sdas||[])), reserva:c.p.tempReserva, senseHorari:!!c.p.tempSenseHorari};
   render();
 };
 window.tempEditarTancar=()=>{ state.ui.tempEditant=""; window.__tempCopia=null; save(); render(); mostrarToast("✓ Temes i sessions guardats"); };
@@ -117,6 +118,7 @@ window.tempEditarCancel=()=>{
   const c=_tempCtx(), k=window.__tempCopia;
   if(c && k && k.id===c.p.id){
     c.p.sdas=k.sdas; c.p.tempReserva=k.reserva; if(c.p.tempReserva===undefined) delete c.p.tempReserva;
+    if(k.senseHorari) c.p.tempSenseHorari=true; else delete c.p.tempSenseHorari;
     (k.desfer||[]).reverse().forEach(f=>f());
   }
   state.ui.tempEditant=""; window.__tempCopia=null; save(); render();
@@ -150,7 +152,7 @@ window.tempSetSessions=(id,v)=>{
   const n=parseInt(v,10);
   if(s.sessionsOriginals==null) s.sessionsOriginals=Number(s.sesionesPrevistas)||"";
   s.sesionesPrevistas=Number.isFinite(n)&&n>0? String(n) : "";
-  s.sessionsManual=true;
+  if(!c.p.tempSenseHorari) s.sessionsManual=true;
   if(state.ui.tempAuto!==false) tempRecalcular(c.g,c.p);
   save(); render();
 };
@@ -164,6 +166,21 @@ window.tempSetReserva=v=>{
   tempRecalcular(c.g,c.p); save(); render();
 };
 window.tempSetAuto=on=>{ state.ui.tempAuto=!!on; if(on){ const c=_tempCtx(); if(c) tempRecalcular(c.g,c.p); } save(); render(); };
+/* Desvincular de l'horari: les sessions de cada tema les escriu el docent i no es recalculen.
+   En tornar a vincular, els números que tenia es queden ajustats a mà (🔒), sense perdre res. */
+window.tempSetSenseHorari=on=>{
+  const c=_tempCtx(); if(!c) return;
+  if(on){
+    c.p.tempSenseHorari=true;
+    c.p.sdas.forEach(s=>{ delete s.sessionsManual; });
+    mostrarToast("Desvinculat de l'horari: escriu les sessions que vulgues en cada tema");
+  } else {
+    delete c.p.tempSenseHorari;
+    temesDeGrup(c.g).forEach(s=>{ if(Number(s.sesionesPrevistas)>0) s.sessionsManual=true; });
+    mostrarToast("Vinculat a l'horari. Les teues sessions queden ajustades a mà (🔒); «↺ Tot automàtic» les recalcula");
+  }
+  save(); render();
+};
 window.tempRecalcularTot=async (totsAuto)=>{
   const c=_tempCtx(); if(!c) return;
   const falta=tempQueFalta(c.g);
@@ -193,7 +210,7 @@ window.tempAfegir=t=>{
   if(!nom){ mostrarAviso("Escriu el nom del tema (per exemple «Tema 9.- Energia»)."); return; }
   const s=progSdaDefault(t);
   s.tema=nom;
-  if(Number.isFinite(ses)&&ses>0){ s.sesionesPrevistas=String(ses); s.sessionsOriginals=ses; s.sessionsManual=true; }
+  if(Number.isFinite(ses)&&ses>0){ s.sesionesPrevistas=String(ses); s.sessionsOriginals=ses; if(!c.p.tempSenseHorari) s.sessionsManual=true; }
   else { s.sessionsOriginals=""; }
   let ult=-1; c.p.sdas.forEach((x,i)=>{ if(x.trimestre===t) ult=i; });
   c.p.sdas.splice(ult+1,0,s);
@@ -237,14 +254,16 @@ function tempEditorHTML(g,p){
   const dates=tempDatesTemes(g,p);
   const falta=tempQueFalta(g);
   const auto=state.ui.tempAuto!==false;
+  const lliure=!!p.tempSenseHorari;
   const altres=state.grupos.filter(x=>x.id!==g.id && x.programacionId===p.id);
   const seccio=t=>{
     const ts=temes.filter(s=>s.trimestre===t);
     const dl=tempSessionsAval(g,t,setmana);
     const disp=dl? Math.max(0,dl.length-reserva) : null;
     const usades=ts.reduce((n,s)=>n+(Number(s.sesionesPrevistas)||0),0);
-    const color=disp==null? "var(--mut)" : usades>disp? "var(--danger,#b91c1c)" : usades<disp? "#b45309" : "#16a34a";
-    const resum=disp==null? `${usades} sessions posades · sense dates d'avaluació`
+    const color=lliure||disp==null? "var(--mut)" : usades>disp? "var(--danger,#b91c1c)" : usades<disp? "#b45309" : "#16a34a";
+    const resum=lliure? `${usades} sessions posades${disp!=null?` · l'horari en dona ${disp}`:""}`
+      : disp==null? `${usades} sessions posades · sense dates d'avaluació`
       : `${usades} de ${disp} sessions${reserva?` (+${reserva} reservades)`:""}${usades>disp?" · en sobren "+(usades-disp):usades<disp?" · en queden "+(disp-usades)+" lliures":" · quadra"}`;
     const files=ts.map((s,i)=>{
       const man=!!s.sessionsManual;
@@ -265,7 +284,7 @@ function tempEditorHTML(g,p){
           </select>
           <input class="in" type="number" min="0" step="1" style="width:64px;${man?"border-color:var(--accent,#b7893a);font-weight:700":""}" aria-label="Sessions de ${esc(temaNomCurt(s))}" value="${esc(String(s.sesionesPrevistas||""))}" onchange="tempSetSessions('${escJS(s.id)}',this.value)">
           <button class="ghost small" style="border:1px solid var(--line)" title="Eliminar este tema" aria-label="Eliminar ${esc(temaNomCurt(s))}" onclick="tempEliminar('${escJS(s.id)}')">🗑</button>
-          ${man?`<button class="ghost small" style="border:1px solid var(--line)" title="Ajustat a mà. Clica per a tornar al càlcul automàtic" onclick="tempAlliberar('${escJS(s.id)}')">🔒 a mà</button>`:`<span class="sub" style="margin:0;font-size:12px" title="Calculat soles">auto</span>`}
+          ${lliure?"":man?`<button class="ghost small" style="border:1px solid var(--line)" title="Ajustat a mà. Clica per a tornar al càlcul automàtic" onclick="tempAlliberar('${escJS(s.id)}')">🔒 a mà</button>`:`<span class="sub" style="margin:0;font-size:12px" title="Calculat soles">auto</span>`}
         </span>
       </div>`;
     }).join("");
@@ -285,39 +304,48 @@ function tempEditorHTML(g,p){
   };
   return `<div class="card">
       <h2>✏️ Editar temes i sessions · ${esc(p.nombre)}</h2>
-      <p class="sub" style="margin:0">Tria en quina avaluació va cada tema i ordena'ls amb ▲▼. Les sessions es calculen soles amb les dates de cada avaluació, el teu horari (${perSetmana} sessió${perSetmana===1?"":"ns"} a la setmana amb este grup) i els festius, repartides segons el pes de cada tema en la programació. Si escrius un número, eixe tema queda ajustat a mà (🔒) i el càlcul reparteix la resta entre els altres. Pots afegir temes nous al final de cada avaluació o eliminar-ne amb 🗑 (les activitats d'eixe tema es queden «sense tema»). Els temes que no faràs, posa'ls en «Altres (no es fa)»: es guarden plegats al final.</p>
-      ${falta.length?`<p style="margin:8px 0 0;padding:8px 10px;border-radius:8px;background:var(--warn-soft,#fef3c7);font-size:13px">⚠️ ${esc(tempQueFaltaText(falta))}</p>`:""}
+      ${lliure?`<p class="sub" style="margin:0">Tria en quina avaluació va cada tema i ordena'ls amb ▲▼. <strong>Desvinculat de l'horari:</strong> escriu tu les sessions de cada tema, les que vulgues; no es recalculen soles. Pots afegir temes nous al final de cada avaluació o eliminar-ne amb 🗑. Els temes que no faràs, posa'ls en «Altres (no es fa)».</p>`:`<p class="sub" style="margin:0">Tria en quina avaluació va cada tema i ordena'ls amb ▲▼. Les sessions es calculen soles amb les dates de cada avaluació, el teu horari (${perSetmana} sessió${perSetmana===1?"":"ns"} a la setmana amb este grup) i els festius, repartides segons el pes de cada tema en la programació. Si escrius un número, eixe tema queda ajustat a mà (🔒) i el càlcul reparteix la resta entre els altres. Pots afegir temes nous al final de cada avaluació o eliminar-ne amb 🗑 (les activitats d'eixe tema es queden «sense tema»). Els temes que no faràs, posa'ls en «Altres (no es fa)»: es guarden plegats al final.</p>`}
+      ${falta.length&&!lliure?`<p style="margin:8px 0 0;padding:8px 10px;border-radius:8px;background:var(--warn-soft,#fef3c7);font-size:13px">⚠️ ${esc(tempQueFaltaText(falta))}</p>`:""}
       ${altres.length?`<p class="sub" style="margin:6px 0 0">Esta programació també la té vinculada ${esc(altres.map(x=>x.nombre).join(", "))}: els canvis valen per a tots.</p>`:""}
       <div class="flex" style="gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px">
-        <label style="font-size:13px;display:flex;gap:6px;align-items:center"><input type="checkbox" ${auto?"checked":""} onchange="tempSetAuto(this.checked)"> Recalcular soles en cada canvi</label>
-        <label style="font-size:13px;display:flex;gap:6px;align-items:center">Reservar <input class="in" type="number" min="0" step="1" style="width:56px" value="${reserva||""}" placeholder="0" onchange="tempSetReserva(this.value)"> sessions per avaluació (exàmens, repàs…)</label>
+        <label style="font-size:13px;display:flex;gap:6px;align-items:center;font-weight:600" title="Si el desvincules, les sessions de cada tema les poses tu i no es calculen amb l'horari"><input type="checkbox" ${lliure?"":"checked"} onchange="tempSetSenseHorari(!this.checked)"> 🔗 Calcular les sessions amb el meu horari</label>
+        ${lliure?"":`<label style="font-size:13px;display:flex;gap:6px;align-items:center"><input type="checkbox" ${auto?"checked":""} onchange="tempSetAuto(this.checked)"> Recalcular soles en cada canvi</label>
+        <label style="font-size:13px;display:flex;gap:6px;align-items:center">Reservar <input class="in" type="number" min="0" step="1" style="width:56px" value="${reserva||""}" placeholder="0" onchange="tempSetReserva(this.value)"> sessions per avaluació (exàmens, repàs…)</label>`}
       </div>
       <div class="flex" style="gap:6px;flex-wrap:wrap;margin-top:10px">
         <button class="btn" onclick="tempEditarTancar()">✓ Fet</button>
-        <button class="ghost" style="border:1px solid var(--line)" onclick="tempRecalcularTot(false)">🔄 Recalcular</button>
-        <button class="ghost" style="border:1px solid var(--line)" onclick="tempRecalcularTot(true)">↺ Tot automàtic (oblida els ajustos a mà)</button>
+        ${lliure?"":`<button class="ghost" style="border:1px solid var(--line)" onclick="tempRecalcularTot(false)">🔄 Recalcular</button>
+        <button class="ghost" style="border:1px solid var(--line)" onclick="tempRecalcularTot(true)">↺ Tot automàtic (oblida els ajustos a mà)</button>`}
         <button class="ghost" style="border:1px solid var(--line)" onclick="tempEditarCancel()">Cancel·lar</button>
       </div>
     </div>
     ${[0,1,2].map(seccio).join("")}
     ${tempAltresHTML(g)}`;
 }
-/* Temes marcats com «Altres (no es fa)»: separats, davall de la 3a avaluació i plegats. */
+/* Temes sense avaluació: els marcats com «Altres (no es fa)» i els que no tenen una
+   avaluació vàlida (p. ex. importats sense trimestre). Van davall de la 3a avaluació,
+   plegats, i es poden reanomenar, passar a una avaluació o eliminar com els altres. */
 function tempAltresHTML(g){
-  const al=temesAltresGrup(g);
+  const al=temesSenseAvalGrup(g);
   const files=al.map(s=>`<div class="temp-fila" style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line)">
-      <span style="min-width:0"><span style="font-weight:600;font-size:13.5px">${esc(temaNomCurt(s))}</span>${s.tema&&s.titulo?`<span class="sub" style="margin:0;font-style:italic"> · ${esc(s.titulo)}</span>`:""}</span>
+      <span style="min-width:0">
+        <input class="in" style="width:100%;font-weight:600;font-size:13.5px;padding:3px 8px" value="${esc(s.tema||"")}" placeholder="${esc(s.titulo||"Nom del tema")}" aria-label="Nom del tema" title="Nom del tema (clica per a canviar-lo)" onchange="tempRenomenar('${escJS(s.id)}','tema',this.value)">
+        <input class="in" style="width:100%;font-size:12.5px;font-style:italic;padding:2px 8px;margin-top:3px" value="${esc(s.tema?(s.titulo||""):"")}" placeholder="Situació d'aprenentatge (opcional)" aria-label="Situació d'aprenentatge de ${esc(temaNomCurt(s))}" onchange="tempRenomenar('${escJS(s.id)}','titulo',this.value)">
+        ${s.altres?"":`<span class="sub" style="display:block;margin:2px 0 0;font-size:12px">⚠️ Sense avaluació assignada: tria-li una en el desplegable.</span>`}
+      </span>
       <span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
         <select class="in" style="width:auto" aria-label="Avaluació de ${esc(temaNomCurt(s))}" onchange="tempSetAval('${escJS(s.id)}',this.value)">
+          ${s.altres?"":`<option value="" selected disabled>Sense avaluació</option>`}
           ${[0,1,2].map(k=>`<option value="${k}">${k+1}a av.</option>`).join("")}
-          <option value="altres" selected>Altres (no es fa)</option>
+          <option value="altres" ${s.altres?"selected":""}>Altres (no es fa)</option>
         </select>
         <button class="ghost small" style="border:1px solid var(--line)" title="Eliminar este tema" aria-label="Eliminar ${esc(temaNomCurt(s))}" onclick="tempEliminar('${escJS(s.id)}')">🗑</button>
       </span>
     </div>`).join("");
-  return `<details class="card" id="tempAltres" style="padding:10px 14px;margin-top:26px;opacity:.9" ${state.ui.tempAltresObert?"open":""} ontoggle="state.ui.tempAltresObert=this.open">
-      <summary style="cursor:pointer;font-weight:700">Altres temes · no es fan (${al.length})</summary>
-      <p class="sub" style="margin:4px 0 0;font-size:12px">No compten per a la temporització ni apareixen en el grup. Per a recuperar-ne un, tria-li una avaluació.</p>
+  const sense=al.filter(s=>!s.altres).length;
+  return `<details class="card" id="tempAltres" style="padding:10px 14px;margin-top:26px;opacity:.9" ${state.ui.tempAltresObert||sense?"open":""} ontoggle="state.ui.tempAltresObert=this.open">
+      <summary style="cursor:pointer;font-weight:700">Temes sense avaluació · no es fan (${al.length})</summary>
+      <p class="sub" style="margin:4px 0 0;font-size:12px">No compten per a la temporització. Pots canviar-los el nom ací mateix; per a recuperar-ne un, tria-li una avaluació.</p>
       ${files||`<p class="sub" style="margin:6px 0 0">Cap. Per a amagar un tema que no faràs, tria «Altres (no es fa)» en el seu desplegable.</p>`}
     </details>`;
 }

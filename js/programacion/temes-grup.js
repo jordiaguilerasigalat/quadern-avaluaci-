@@ -17,6 +17,8 @@ function temesTotsGrup(g){
 }
 function temesDeGrup(g){ return temesTotsGrup(g).filter(s=>!s.altres); }
 function temesAltresGrup(g){ return temesTotsGrup(g).filter(s=>s.altres); }
+/* Temes «Altres» i temes sense una avaluació vàlida (0, 1 o 2): van junts, plegats al final. */
+function temesSenseAvalGrup(g){ return temesTotsGrup(g).filter(s=>s.altres || ![0,1,2].includes(s.trimestre)); }
 function temaPerId(g,id){ return id? temesTotsGrup(g).find(s=>s.id===id)||null : null; }
 function temaDe(g,a){ return a? temaPerId(g,a.temaId) : null; }
 function temaNomCurt(s){ return s? (s.tema||s.titulo||"(sense títol)") : ""; }
@@ -145,7 +147,7 @@ function renderProgramaGrup(g){
       <div class="flex" style="gap:6px;margin-top:8px;flex-wrap:wrap">${typeof tempEditorHTML==="function"?`<button class="btn small" onclick="tempEditarObrir()">✏️ Editar temes i sessions</button>`:""}<button class="ghost small" style="border:1px solid var(--line)" onclick="progAbrirDetalle('${escJS(p.id)}');irModo('programacion')">📘 Obrir la programació completa</button></div>
     </div>
     ${[0,1,2].map(t=>{ const ts=temes.filter(s=>s.trimestre===t); return ts.length?`<div class="section-eyebrow" style="margin-top:14px">${esc(TRIMESTRES[t])}</div>${ts.map(cardTema).join("")}`:""; }).join("")}
-    ${(()=>{ const al=temesAltresGrup(g); return al.length?`<details style="margin-top:22px"><summary style="cursor:pointer" class="section-eyebrow">Altres temes · no es fan (${al.length})</summary><div style="opacity:.8">${al.map(cardTema).join("")}</div></details>`:""; })()}`;
+    ${(()=>{ const al=temesSenseAvalGrup(g); return al.length?`<details style="margin-top:22px"><summary style="cursor:pointer" class="section-eyebrow">Temes sense avaluació · no es fan (${al.length})</summary><div style="opacity:.8">${al.map(cardTema).join("")}</div></details>`:""; })()}`;
 }
 
 /* Activitats del període que tenen notes posades però encara no de tot l'alumnat. */

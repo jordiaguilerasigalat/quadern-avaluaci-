@@ -1305,13 +1305,24 @@ export const PRUEBAS = [
       const quart = temesDeGrup(g).find(s => s.trimestre === 1);
       tempSetAval(quart.id, 'altres');
       out.altres = quart.altres === true && !temesDeGrup(g).includes(quart) && temesAltresGrup(g).length === 1 && suma(1) === tempSessionsAval(g, 1).length
-        && /Altres temes · no es fan \(1\)/.test(document.getElementById('tempAltres').textContent);
-      tempEditarTancar(); out.altresVista = /Altres temes · no es fan \(1\)/.test(document.getElementById('tabContent').textContent) && !temaSelectHTML(g, '').includes(quart.id);
+        && /Temes sense avaluació · no es fan \(1\)/.test(document.getElementById('tempAltres').textContent);
+      tempRenomenar(quart.id, 'tema', 'Tema amagat'); out.renomAltres = quart.tema === 'Tema amagat' && quart.altres === true && document.querySelector('#tempAltres input[aria-label="Nom del tema"]').value === 'Tema amagat';
+      const orfe = temesDeGrup(g).find(s => s.trimestre === 2); orfe.trimestre = undefined; render();
+      out.orfe = temesSenseAvalGrup(g).includes(orfe) && /Sense avaluació assignada/.test(document.getElementById('tempAltres').textContent);
+      tempSetAval(orfe.id, '0'); out.orfeRecuperat = orfe.trimestre === 0 && !temesSenseAvalGrup(g).includes(orfe);
+      tempEditarTancar(); out.altresVista = /Temes sense avaluació · no es fan \(1\)/.test(document.getElementById('tabContent').textContent) && !temaSelectHTML(g, '').includes(quart.id);
       tempEditarObrir(); tempSetAval(quart.id, '2'); out.recuperat = !quart.altres && quart.trimestre === 2 && temesAltresGrup(g).length === 0;
       const t1 = temesDeGrup(g)[0]; const num = materialNumTema(t1);
       tempRenomenar(t1.id, 'tema', 'Mesures i unitats'); tempRenomenar(t1.id, 'titulo', 'Nova SdA');
       out.renomenat = t1.tema === 'Mesures i unitats' && t1.titulo === 'Nova SdA' && materialNumTema(t1) === num && !!num && temaNomCurt(temaPerId(g, t1.id)) === 'Mesures i unitats';
-      tempEditarCancel(); out.altresDesfet = !prog.sdas.find(s => s.id === quart.id).altres;
+      tempSetSenseHorari(true); const lliureT = temesDeGrup(g).find(s => s.trimestre === 0);
+      tempSetSessions(lliureT.id, '17'); const altreT = temesDeGrup(g).find(s => s.trimestre === 0 && s.id !== lliureT.id); const abans = altreT.sesionesPrevistas;
+      tempSetReserva('5');
+      out.lliure = prog.tempSenseHorari === true && lliureT.sesionesPrevistas === '17' && !lliureT.sessionsManual && altreT.sesionesPrevistas === abans
+        && /Desvinculat de l'horari/.test(document.getElementById('tabContent').textContent) && !/🔄 Recalcular/.test(document.getElementById('tabContent').textContent);
+      tempSetSenseHorari(false); out.revinculat = !prog.tempSenseHorari && lliureT.sesionesPrevistas === '17' && lliureT.sessionsManual === true && /🔄 Recalcular/.test(document.getElementById('tabContent').textContent);
+      tempSetSenseHorari(true);
+      tempEditarCancel(); out.altresDesfet = !prog.sdas.find(s => s.id === quart.id).altres; out.lliureDesfet = !prog.tempSenseHorari;
       tempEditarObrir(); tempEditarCancel(); out.cancel = temesDeGrup(g).find(s => s.id === primer.id).trimestre === 0 && !temesDeGrup(g).some(s => s.sessionsManual);
       out.tornat = !/Editar temes i sessions ·/.test(document.getElementById('tabContent').textContent);
       return out;
@@ -1327,6 +1338,8 @@ export const PRUEBAS = [
     t.ok(r.desfet, 'Cancel·lar desfà també els temes afegits i eliminats');
     t.ok(r.renomenat, 'reanomenar un tema conserva el seu material i les activitats', JSON.stringify(r));
     t.ok(r.altres && r.altresVista && r.recuperat, "un tema en «Altres» no té sessions, ix plegat al final i es pot recuperar", JSON.stringify(r));
+    t.ok(r.lliure && r.revinculat && r.lliureDesfet, "desvincular de l'horari deixa posar les sessions a mà sense recalcular, i tornar a vincular les conserva", JSON.stringify({l:r.lliure,rv:r.revinculat,ld:r.lliureDesfet}));
+    t.ok(r.renomAltres && r.orfe && r.orfeRecuperat, 'els temes sense avaluació (Altres o sense trimestre) es poden reanomenar i passar a una avaluació', JSON.stringify(r));
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
   { nombre: 'doble-qualificacio', descripcion: 'Les dues qualificacions: quantitativa per instruments i qualitativa per competències, en Ajustos, Resultats, fitxa, informes i acta', async fn(t) {
