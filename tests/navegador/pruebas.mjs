@@ -594,6 +594,34 @@ export const PRUEBAS = [
     t.ok(await encima('#bqp1') === 'encima', '«Activar el PIN»: la ventana del PIN se ve', await encima('#bqp1'));
   } },
 
+  { nombre: 'banc-examens', descripcion: "Editor d'exàmens: «📚 Exàmens d'altres anys» mostra els exàmens del material per curs, amb el tema de l'activitat obert", async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    await cuadernoConGrupo(p, t.url);
+    await p.evaluate(() => { _mostrarBienvenida = false; const g = state.grupos[0]; g.catalogoKey = 'FiQ_3ESO';
+      state.programaciones = [{ id: 'p1', nombre: 'Prog', catalogoKey: 'FiQ_3ESO', sdas: [{ id: 's2', titulo: 'SdA 2', tema: 'Tema 2.- Estats de la matèria', trimestre: 0, criterios: [] }],
+        actividades: [{ id: 'pa1', nombre: 'Examen tema 2', tipo: TIPOS[0], esExamen: true, criterios: [], sdaIds: ['s2'] }] }];
+      migrarEstado(); g.programacionId = 'p1';
+      const act = progCrearActividadEnGrupo(g, state.programaciones[0].actividades[0], 0); g.actividades.push(act);
+      state.ui.appMode = 'corrector'; state.ui.grupoId = g.id; state.ui.corExamId = act.id; state.ui.corTab = 'diseno'; save(); render(); });
+    await esperar(1500);
+    const marc = await p.evaluate(() => { window.__marc = document.getElementById('exFrame'); return !!window.__marc; });
+    await p.click('#tabContent button:has-text("Exàmens d\'altres anys")'); await esperar(1500);
+    const r = await p.evaluate(() => { const m = [...document.querySelectorAll('.modal-overlay')].pop(); if (!m) return {};
+      const curs = m.querySelector('details[open]'), tema = curs && curs.querySelector('details[open]');
+      return { curs: curs && curs.querySelector('summary').innerText, tema: tema && tema.querySelector('summary').innerText,
+        enllacos: m.querySelectorAll('a[href^="docs/material/"]').length, adaptat: !!m.querySelector('a[href*="FiQ_3ESO/tema-02/"][href*="adaptat"]'),
+        altres: /Química 2n Batxillerat/.test(m.innerText), mateixMarc: document.getElementById('exFrame') === window.__marc, teoria: !!m.querySelector('a[href*="dossier-repas"]') }; });
+    t.ok(marc && /FiQ 3r ESO · \d+ exàmens/.test(r.curs || ''), 'el curs del grup ix primer i obert', JSON.stringify(r));
+    t.ok(/Estats de la matèria.*tema d'aquest examen/.test(r.tema || ''), "el tema de l'activitat ix obert", JSON.stringify(r));
+    t.ok(r.enllacos > 80 && r.adaptat && r.altres && !r.teoria, 'llista exàmens (també adaptats) de tots els cursos i res més', JSON.stringify(r));
+    t.ok(r.mateixMarc, "obrir el banc no recarrega l'editor del disseny");
+    const href = await p.evaluate(() => [...document.querySelectorAll('.modal-overlay a[href^="docs/material/"]')].pop().getAttribute('href'));
+    const st = await p.evaluate(async h => (await fetch(h, { method: 'HEAD' })).status, href);
+    t.ok(st === 200, 'els enllaços apunten a fitxers que existixen', href + ' ' + st);
+    t.ok(!p.errores.length, 'sense errors de JavaScript', p.errores.join(' | '));
+    await p.close();
+  } },
+
   { nombre: 'examen-adaptado', descripcion: 'Examen adaptado NESE: aviso, creación desde el Diseño, corrección con su rúbrica y paso por la Programación a otro grupo', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     await cuadernoConGrupo(p, t.url, { nombres: ['Alfa, Ana', 'Beta, Bruno', 'Gamma, Gema'] });

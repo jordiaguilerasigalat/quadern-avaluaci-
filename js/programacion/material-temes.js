@@ -35,12 +35,12 @@ function materialDe(clau){
   materialCarregar(clau);
   return null;
 }
-function materialCarregar(clau){
+function materialCarregar(clau,sensePintar){
   if(!clau || !MATERIAL_CURSOS[clau] || _materialEstat[clau]) return;
   _materialEstat[clau]="carregant";
   const s=document.createElement("script");
   s.src=`js/datos/material/${encodeURIComponent(clau)}.js`;
-  s.onload=()=>{ _materialEstat[clau]="ok"; if(typeof render==="function") render(); };
+  s.onload=()=>{ _materialEstat[clau]="ok"; if(!sensePintar && typeof render==="function") render(); };
   s.onerror=()=>{ _materialEstat[clau]="no"; s.remove(); };
   document.head.appendChild(s);
 }
@@ -113,4 +113,26 @@ function materialDocumentsHTML(){
     </details>`;
   }).join("");
   return `<p class="sub" style="margin:0 0 4px">Material de classe per curs i tema: dossiers de repàs, teoria, presentacions, exercicis, solucions i exàmens d'altres anys. També el trobaràs dins de cada tema de la programació.</p>${blocs||`<p class="sub" style="margin:0">Encara no hi ha material pujat.</p>`}${materialCreditsHTML()}`;
+}
+/* «📚 Exàmens d'altres anys» (editor d'exàmens): tots els exàmens en PDF/Word del material,
+   per curs i tema. Primer el curs del grup, amb el tema de l'activitat obert; la resta
+   de cursos, plegats. clau = catalogoKey del grup; n = número de tema (o null). */
+function materialEsExamen(it){ return it && (it.tipus==="examen" || it.tipus==="solucions" && /exam|recup|final/i.test(it.f)); }
+function materialExamensCursHTML(clau,n,obert){
+  const mat=materialDe(clau); if(!mat) return _materialEstat[clau]==="carregant"? `<p class="sub" style="margin:6px 0">${esc(MATERIAL_CURSOS[clau])}: carregant…</p>` : "";
+  const prog=(state.programaciones||[]).find(x=>x.catalogoKey===clau);
+  const nomTema=k=>{ const s=prog&&(prog.sdas||[]).find(x=>materialNumTema(x)===k); return s&&s.tema? s.tema : `Tema ${k}`; };
+  const temes=Object.keys(mat).filter(k=>k!=="globals").sort((a,b)=>a-b).concat(["globals"])
+    .map(k=>[k,(mat[k]||[]).filter(materialEsExamen)]).filter(([,a])=>a.length);
+  const total=temes.reduce((a,[,v])=>a+v.length,0); if(!total) return "";
+  const llista=a=>`<div class="flex" style="flex-wrap:wrap;gap:6px;margin:4px 0 2px">${a.map(it=>`<a class="chip" style="text-decoration:none" href="docs/material/${esc(clau)}/${esc(it.f)}" target="_blank" rel="noopener" title="${esc(it.t)}${it.a?" · Autoria: "+esc(it.a):""}${materialMida(it.kb)}">${/\.docx?$/i.test(it.f)?"📄":"📝"} ${esc(it.t)}${materialAutorHTML(it)}</a>`).join("")}</div>`;
+  return `<details ${obert?"open":""} style="padding:8px 0;border-bottom:1px solid var(--line)"><summary style="cursor:pointer;font-weight:600;font-size:13.5px">${esc(MATERIAL_CURSOS[clau])} · ${total} exàmens</summary>
+    ${temes.map(([k,a])=>`<details ${obert&&k===n?"open":""} style="margin:6px 0 0 14px"><summary style="cursor:pointer;font-size:13px">${k==="globals"?"Recuperacions i finals":esc(nomTema(k))} (${a.length})${obert&&k===n?" · <strong>tema d'aquest examen</strong>":""}</summary>${llista(a)}</details>`).join("")}
+  </details>`;
+}
+function materialExamensHTML(clau,n){
+  const claus=Object.keys(MATERIAL_CURSOS), propi=MATERIAL_CURSOS[clau]? clau : null;
+  const ordre=propi? [propi].concat(claus.filter(k=>k!==propi)) : claus;
+  const blocs=ordre.map(k=>materialExamensCursHTML(k,n,k===propi)).join("");
+  return `<p class="sub" style="margin:0 0 6px">Exàmens d'altres anys del material de cada curs, ordenats per tema. Els que porten «adaptat» són versions per a l'alumnat NESE. S'obrin en una pestanya nova per a consultar-los, imprimir-los o copiar-ne preguntes al disseny.</p>${blocs||`<p class="sub" style="margin:0">Encara no hi ha exàmens al material.</p>`}`;
 }

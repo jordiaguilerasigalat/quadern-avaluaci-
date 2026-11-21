@@ -94,7 +94,7 @@ function exAvisoCopia(){
 }
 function exModal(html){
   const d=document.createElement("div"); d.className="modal-overlay"; d.style.zIndex="1500";
-  d.innerHTML=`<div class="modal-box" style="max-width:660px;max-height:85vh;overflow:auto">${html}<div class="flex" style="justify-content:flex-end;margin-top:14px"><button class="btn">Cerrar</button></div></div>`;
+  d.innerHTML=`<div class="modal-box" style="max-width:660px;max-height:85vh;overflow:auto">${html}<div class="flex" style="justify-content:flex-end;margin-top:14px"><button class="btn">Tancar</button></div></div>`;
   d.onclick=e=>{ if(e.target===d||e.target.tagName==="BUTTON") d.remove(); };
   document.body.appendChild(d);
 }
@@ -120,6 +120,19 @@ window.exCobertura=()=>{
   exModal(`<h2 style="font-size:16.5px;margin-bottom:4px">📊 Cobertura de criteris</h2><p class="sub" style="margin:0 0 10px">${hojas.length} ${hojas.length===1?"ítem puntuable":"ítems puntuables"} · ${cxFmtPts(total)} punts${conPrev?" · criteris previstos de l'examen":" · criteris marcats"}</p>
     ${av.length?`<div class="alert-box" style="margin-bottom:10px">${av.map(a=>"• "+a).join("<br>")}</div>`:`<p style="color:var(--ok,#15803d);margin:0 0 10px">✓ Sense avisos: totes les preguntes tenen criteri i el total és correcte.</p>`}
     ${filas?`<table style="width:100%;border-collapse:collapse;font-size:13px">${filas}</table>`:`<p class="sub">Cap pregunta té encara criteris marcats.</p>`}`);
+};
+/* «📚 Exàmens d'altres anys»: exàmens del material (js/programacion/material-temes.js), amb el curs del grup i el tema de l'activitat oberts. */
+window.exBancExamens=()=>{
+  const g=grupoActual(), act=g&&g.actividades.find(a=>a.id===state.ui.corExamId);
+  const s=act&&act.temaId&&typeof temesTotsGrup==="function"? temesTotsGrup(g).find(x=>x.id===act.temaId) : null;
+  const n=s? materialNumTema(s) : null, clau=g&&g.catalogoKey;
+  const pinta=()=>exModal(`<h2 style="font-size:16.5px;margin-bottom:4px">📚 Exàmens d'altres anys</h2>${materialExamensHTML(clau,n)}`);
+  // Sense render(): tornar a pintar recarregaria l'editor del disseny.
+  const falten=Object.keys(MATERIAL_CURSOS).filter(k=>!(window.MATERIAL_TEMES||{})[k] && _materialEstat[k]!=="no");
+  falten.forEach(k=>materialCarregar(k,true));
+  if(!falten.length) return pinta();
+  const e0=(document.getElementById("exEstado")||{}).textContent; exEstado("Carregant els exàmens…");
+  let i=0; const t=setInterval(()=>{ i++; if(Object.keys(MATERIAL_CURSOS).every(k=>_materialEstat[k]!=="carregant")||i>40){ clearInterval(t); exEstado(e0||""); pinta(); } },150);
 };
 /* Análisis del examen ya corregido: acierto medio por pregunta y por criterio */
 window.exAnalisis=()=>{
@@ -371,6 +384,7 @@ function renderCorDiseno(grupo){
     <button class="ghost" style="border:1px solid var(--line)" title="Guarda este diseño como plantilla de la actividad de la Programación para reutilizarlo en otros grupos" onclick="exComoPlantilla()">💾 Plantilla de la Programación</button>
     ${exModeloViendo(act)?`<button class="ghost" style="border:1px solid var(--line)" title="Torna a barrejar l'ordre de les preguntes" onclick="exMezclar()">🔀 Barrejar de nou</button><button class="ghost danger" style="border:1px solid var(--line)" onclick="exQuitarModelo()">Llevar el model ${exModeloViendo(act)}</button>`:""}
     ${act.rubrica&&mbSinEnlazar(act)&&!cxVarEditando(act)?`<button class="ghost" style="border:1px solid var(--line)" title="Aparella cada ítem de la rúbrica amb la seua pregunta de l'examen, sense canviar res del que ja està corregit. Cal perquè la rúbrica isca en l'ordre de cada model." onclick="mbEnlazarRubrica()">🔗 Enllaçar la rúbrica amb el disseny (${mbSinEnlazar(act)} sense enllaçar)</button>`:""}
+    <button class="ghost" style="border:1px solid var(--line)" title="Exàmens d'altres anys del material de cada curs, per tema" onclick="exBancExamens()">📚 Exàmens d'altres anys</button>
     <button class="ghost" style="border:1px solid var(--line)" title="Qué criterios evalúa el examen y con qué peso" onclick="exCobertura()">📊 Cobertura</button>
     <button class="ghost" style="border:1px solid var(--line)" title="Ocupa toda la pantalla con el editor (útil en el iPad)" onclick="exPantallaCompleta(true)">⛶ Pantalla completa</button>
     <button class="ghost" style="border:1px solid var(--line)" title="Descarga examen, rúbrica, exámenes alternativos y modelos para reutilizarlos en otro grupo o curso (sin alumnado ni notas)" onclick="exExportarPaquete()">📦 Exportar paquete</button>
