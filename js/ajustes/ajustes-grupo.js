@@ -316,7 +316,7 @@ window.blocEliminar=async (i)=>{
   acts.forEach(a=>{ a.bloqueId=desti.id; });
   ((g.papelera&&g.papelera.actividades)||[]).forEach(a=>{ if(a&&a.bloqueId===b.id) a.bloqueId=desti.id; });
   g.bloques.splice(i,1);
-  if(g.segBlocs) Object.keys(g.segBlocs).forEach(k=>{ const v=[].concat(g.segBlocs[k]||[]).filter(x=>x!==b.id); if(v.length) g.segBlocs[k]=v; else delete g.segBlocs[k]; });
+  if(g.segBlocs) Object.keys(g.segBlocs).forEach(k=>{ const o=[].concat(g.segBlocs[k]||[]); if(!o.length) return; const v=o.filter(x=>x!==b.id); if(v.length) g.segBlocs[k]=v; else delete g.segBlocs[k]; });
   g.actividades.forEach(a=>{ if(Array.isArray(a.bloquesExtra)){ a.bloquesExtra=a.bloquesExtra.filter(x=>x!==b.id); if(!a.bloquesExtra.length) delete a.bloquesExtra; } });
   if(typeof segSincronitzarBlocs==="function") segSincronitzarBlocs(g);
   save(); render();

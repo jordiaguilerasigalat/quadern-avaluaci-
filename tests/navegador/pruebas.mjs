@@ -1696,6 +1696,47 @@ export const PRUEBAS = [
     t.ok(r.importa === true, 'una plantilla de matèria pot tindre un bloc a 0 %');
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'separar-bloc-compartit', descripcion: 'Seguiment: Treballs es pot separar del bloc que comparteix amb Laboratori sense canviar la suma', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    await cuadernoConGrupo(p, t.url);
+    const r = await p.evaluate(async () => {
+      const g = state.grupos[0];
+      const lab0 = segBlocsIds(g, 'laboratori')[0], tr0 = segBlocsIds(g, 'treballs')[0];
+      const suma = () => Math.round(g.bloques.reduce((n, b) => n + pesoBloqueNota(b), 0) * 100) / 100;
+      const out = { compartit: lab0 === tr0, suma0: suma(), pesLab0: g.bloques.find(b => b.id === lab0).peso };
+      g.actividades.push({ id: 'tw1', nombre: 'Exposició', tipo: TIPOS[0], trimestre: 0, bloqueId: tr0, seguiment: 'treballs', esExamen: true, criterios: [] });
+      state.ui.appMode = 'competencial'; state.ui.tab = 'actividades'; save(); render();
+      await new Promise(r => setTimeout(r, 100));
+      out.boto = !!document.querySelector('[onclick="segSepararBloc(\'treballs\')"]');
+      window.__dialogosAuto = { texto: '5' };
+      await segSepararBloc('treballs');
+      const nou = g.bloques.find(b => b.id === segBlocsIds(g, 'treballs')[0]);
+      out.nou = nou && [nou.label, nou.peso].join('|');
+      out.pesLab = g.bloques.find(b => b.id === lab0).peso;
+      out.labIgual = segBlocsIds(g, 'laboratori')[0] === lab0;
+      out.act = g.actividades.find(a => a.id === 'tw1').bloqueId === (nou && nou.id);
+      out.suma = suma();
+      delete window.__dialogosAuto;
+      // Desmarcar tots els blocs: l'apartat no compta; tornar a marcar-ne un i compartir-lo
+      const al = g.alumnos[0].id; (g.notasCuant[al] = g.notasCuant[al] || {}).tw1 = 3;
+      g.actividades.push({ id: 'ex1', nombre: 'Examen', tipo: TIPOS[0], trimestre: 0, bloqueId: segBlocsIds(g, 'examens')[0], esExamen: true, criterios: [] });
+      g.notasCuant[al].ex1 = 9; _invalidarCaches();
+      out.ambTreballs = notaTrimestre(g, al, 0);
+      segTriarBloc('treballs', nou.id, false); _invalidarCaches();
+      out.cap = [segBlocsIds(g, 'treballs').length, g.actividades.find(a => a.id === 'tw1').sinBloc === true, notaTrimestre(g, al, 0)];
+      out.textCap = /No compta en cap bloc/.test(document.getElementById('tabContent').textContent);
+      segTriarBloc('treballs', segBlocsIds(g, 'examens')[0], true); _invalidarCaches();
+      out.compartit2 = [segBlocsIds(g, 'treballs').join() === segBlocsIds(g, 'examens').join(), !g.actividades.find(a => a.id === 'tw1').sinBloc, notaTrimestre(g, al, 0)];
+      return out;
+    });
+    t.ok(r.compartit && r.boto, 'Treballs i Laboratori comparteixen bloc i hi ha el botó «Separar»', JSON.stringify(r));
+    t.ok(r.nou === 'Treballs i exposicions|5' && r.pesLab === r.pesLab0 - 5 && r.labIgual, 'Treballs té bloc propi a 5 % i Laboratori perd eixe 5 %', JSON.stringify(r));
+    t.ok(r.act, 'les activitats de Treballs passen al bloc nou');
+    t.ok(r.suma === r.suma0, 'la suma dels blocs no canvia', JSON.stringify(r));
+    t.ok(r.cap[0] === 0 && r.cap[1] && r.cap[2] === 9 && r.textCap && r.ambTreballs !== 9, 'es pot desmarcar l\'últim bloc: l\'apartat deixa de comptar', JSON.stringify(r));
+    t.ok(r.compartit2[0] && r.compartit2[1] && r.compartit2[2] === 6, 'tornar a marcar un bloc (compartit amb Exàmens) el fa comptar de nou', JSON.stringify(r));
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
   { nombre: 'quadern-nese', descripcion: 'Pla NESE: seguiment del quadern de reforç (tasques fetes, nivell, criteris), progrés per CE, I/P/A i notes del grup', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     await cuadernoConGrupo(p, t.url, { nombres: ['Alfa, Ana', 'Beta, Bruno', 'Gamma, Gema'] });

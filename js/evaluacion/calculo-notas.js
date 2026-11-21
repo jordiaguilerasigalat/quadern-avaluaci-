@@ -222,7 +222,9 @@ function notaActividadBase(grupo,alId,a){
 /* Pes d'un bloc en la nota numèrica: 0 si està desactivat (b.inactiu), sense
    perdre el pes escrit, que torna quan es reactiva. Un bloc a 0 % no compta. */
 function pesoBloqueNota(b){ return b && !b.inactiu ? (Number(b.peso)||0) : 0; }
-function actEnBloque(a,bloqueId){ return a.bloqueId===bloqueId || (Array.isArray(a.bloquesExtra) && a.bloquesExtra.includes(bloqueId)); }
+/* a.sinBloc: el seu apartat de Seguiment s'ha desmarcat de tots els blocs, així
+   que l'activitat no compta en la nota numèrica (conserva bloqueId per si es torna a marcar). */
+function actEnBloque(a,bloqueId){ if(a.sinBloc) return false; return a.bloqueId===bloqueId || (Array.isArray(a.bloquesExtra) && a.bloquesExtra.includes(bloqueId)); }
 /* Pes d'una activitat dins d'un bloc. Les que tenen pes escrit (pesoBloque)
    el conserven; les que el tenen en blanc es reparteixen a parts iguals el
    que falta fins al 100 % (80 % escrit + dues en blanc → 10 % cadascuna).
