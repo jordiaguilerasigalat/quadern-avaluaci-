@@ -64,7 +64,7 @@ function informeFinalAlumnoBodyHTML(grupo,al,opts){
     <div class="meta">${esc(cat.materia)} · ${esc(cat.curso)} · Grup ${esc(grupo.nombre)} · Curs complet · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     <h2>Alumne/a: ${esc(al.nombre)}</h2>
     ${htmlAlertaAsimetria}
-    <table><thead><tr><th>Període</th><th>Nota</th><th>Qualificació</th>${teQualitativaCE(grupo)?"<th>Qualitativa (competències)</th>":""}<th>Comentari a la qualificació</th></tr></thead><tbody>${filas3}<tr><td><strong>Nota final</strong></td><td><strong>${notaEvalInformeHTML(grupo,al.id,"final")}</strong></td><td>${pillCuant(nf)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,al.id,"final")}</td>`:""}<td></td></tr></tbody></table>
+    <table><thead><tr><th>Període</th><th>${teQualitativaCE(grupo)?ETQ_QUANT:"Nota"}</th><th>Qualificació</th>${teQualitativaCE(grupo)?`<th>${ETQ_QUAL}</th>`:""}<th>Comentari a la qualificació</th></tr></thead><tbody>${filas3}<tr><td><strong>Nota final</strong></td><td><strong>${notaEvalInformeHTML(grupo,al.id,"final")}</strong></td><td>${pillCuant(nf)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,al.id,"final")}</td>`:""}<td></td></tr></tbody></table>
     <p style="font-size:12px;color:#666;margin-top:-2px">La nota final és la mitjana ponderada de les avaluacions amb dades disponibles.</p>
     ${htmlAsistenciaFinal}
     ${htmlActsPDF}
@@ -113,7 +113,7 @@ window.exportarInformeGrupo=(modo)=>{
 
   if(esFinal){
     tituloPeriodo="Evaluación final · curso completo";
-    cabNotas=`<th>Alumno/a</th><th>1ª ev.</th><th>2ª ev.</th><th>3ª ev.</th><th>Nota final</th><th>Calificación</th>${teQualitativaCE(grupo)?"<th>Qualitativa (competències)</th>":""}`;
+    cabNotas=`<th>Alumno/a</th><th>1ª ev.</th><th>2ª ev.</th><th>3ª ev.</th><th>Nota final</th><th>Calificación</th>${teQualitativaCE(grupo)?`<th>${ETQ_QUAL}</th>`:""}`;
     filasAl=grupo.alumnos.map(a=>{
       const t0=notaTrimestre(grupo,a.id,0),t1=notaTrimestre(grupo,a.id,1),t2=notaTrimestre(grupo,a.id,2),f=notaFinal(grupo,a.id);
       return `<tr><td>${esc(a.nombre)}</td><td>${fmt(t0)}</td><td>${fmt(t1)}</td><td>${fmt(t2)}</td><td><strong>${fmt(f)}</strong></td><td>${pillCuant(f)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,a.id,"final")}</td>`:""}</tr>`;}).join("");
@@ -129,7 +129,7 @@ window.exportarInformeGrupo=(modo)=>{
     }).join("");
   }else{
     tituloPeriodo=TRIMESTRES[trim];
-    cabNotas=`<th>Alumne/a</th><th>Nota · ${TRIMESTRES[trim]}</th><th>Qualificació</th>${teQualitativaCE(grupo)?"<th>Qualitativa (competències)</th>":""}`;
+    cabNotas=`<th>Alumne/a</th><th>Nota · ${TRIMESTRES[trim]}</th><th>Qualificació</th>${teQualitativaCE(grupo)?`<th>${ETQ_QUAL}</th>`:""}`;
     filasAl=grupo.alumnos.map(a=>{
       const t=notaTrimestre(grupo,a.id,trim);
       return `<tr><td>${esc(a.nombre)}</td><td><strong>${fmt(t)}</strong></td><td>${pillCuant(t)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,a.id,trim)}</td>`:""}</tr>`;}).join("");
@@ -156,7 +156,7 @@ window.exportarInformeGrupo=(modo)=>{
     <h1>Informe de grup${esFinal?" · final de curs":""}</h1>
     <div class="meta">${esc(cat.materia)} · ${esc(cat.curso)} · Grup ${esc(grupo.nombre)} · ${tituloPeriodo} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     ${resumenHTML}
-    <h2>Calificación cuantitativa</h2>
+    <h2>Qualificació per continguts (quantitativa)</h2>
     <table><thead><tr>${cabNotas}</tr></thead><tbody>${filasAl}</tbody></table>
     <h2>Media del grupo · competencias clave</h2>
     <table><thead><tr><th>Competencia clave</th><th>Adquisición media</th><th>Alumnado con datos</th></tr></thead><tbody>${ccFilas}</tbody></table>
@@ -170,7 +170,7 @@ window.exportarInformeGrupo=(modo)=>{
      `<strong>${esc(tituloPeriodo)}</strong>`,
      `Curso escolar: <strong>${esc(cursoEscolarEfectivo(null))}</strong>`,
      profesorNombreEfectivo(null)?`Elaborado por: <strong>${esc(profesorNombreEfectivo(null))}</strong>`:""],
-    ["Calificación cuantitativa","Media del grupo · competencias clave","Media del grupo · competencias específicas",asistConvTitulo]);
+    ["Qualificació per continguts (quantitativa)","Media del grupo · competencias clave","Media del grupo · competencias específicas",asistConvTitulo]);
   abrirVentanaInforme(`Informe de grupo · ${grupo.nombre} · ${tituloPeriodo}`,body,{portada});
 };
 

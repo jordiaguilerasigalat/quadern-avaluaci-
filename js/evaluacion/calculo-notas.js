@@ -320,6 +320,8 @@ function pillQual(grupo,alId,periodo){
    «nota», opcional, la nota numèrica amb què vols que aparega eixe nivell
    (en blanc = es mostra la calculada). S'aplica a la qualificació per
    competències («Les dues») i a la vista per competències de Resultats. */
+/* Noms de les dues qualificacions (Jordi): la numèrica és «per continguts» i la de les CE, «per competències». */
+const ETQ_QUANT="Per continguts (quantitativa)", ETQ_QUAL="Per competències (qualitativa)";
 const ESCALA_QUAL_DEF=[
   {abr:"NA",nom:"No assoleix",des:0,nota:""},
   {abr:"S",nom:"Suficient",des:5,nota:""},

@@ -197,7 +197,7 @@ function informeAlumnoBodyHTML(grupo,al,opts){
     <div class="meta">${esc(cat.materia)} · ${esc(cat.curso)} · Grup ${esc(grupo.nombre)} · ${TRIMESTRES[trim]} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
     <h2>Alumne/a: ${esc(al.nombre)}</h2>
     ${htmlAlertaAsimetria}
-    <table><thead><tr><th>Període</th><th>Nota</th><th>Qualificació</th>${teQualitativaCE(grupo)?"<th>Qualitativa (competències)</th>":""}<th>Comentari a la qualificació</th></tr></thead><tbody>${filas3}<tr><td><strong>Nota final</strong></td><td><strong>${notaEvalInformeHTML(grupo,al.id,"final")}</strong></td><td>${pillCuant(nf)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,al.id,"final")}</td>`:""}<td></td></tr></tbody></table>
+    <table><thead><tr><th>Període</th><th>${teQualitativaCE(grupo)?ETQ_QUANT:"Nota"}</th><th>Qualificació</th>${teQualitativaCE(grupo)?`<th>${ETQ_QUAL}</th>`:""}<th>Comentari a la qualificació</th></tr></thead><tbody>${filas3}<tr><td><strong>Nota final</strong></td><td><strong>${notaEvalInformeHTML(grupo,al.id,"final")}</strong></td><td>${pillCuant(nf)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,al.id,"final")}</td>`:""}<td></td></tr></tbody></table>
     ${htmlAsistencia}
     ${htmlConvivencia}
     ${htmlActsPDF}

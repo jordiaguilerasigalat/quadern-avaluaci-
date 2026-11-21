@@ -158,16 +158,16 @@ function resTaulaClasseHTML(grupo,al,trim){
   const td=(html,ini)=>`<td${ini?' style="border-left:2px solid var(--line)"':""}>${html}</td>`;
   const titQual=t=>`Qualificació per competències amb TOT el que s'ha treballat fins a la ${TRIMESTRES[t]} (avaluació contínua), a partir de les notes de cada criteri. Per això pot no coincidir amb la nota numèrica de l'avaluació, que només compta les activitats d'esta avaluació i ix dels blocs.`;
   const titItacaF="Nota final que posaràs en ITACA. En blanc = la calculada; escriu-ne una altra per a canviar-la a mà. És la que va a «Exportar notes (CSV)».";
-  const fin=`${th("Nota","Mitjana ponderada de les tres avaluacions",true)}${th("Qualificació (acta)","Qualificació i nota d'acta (entera) de la nota final")}${q?th("Qualitativa","Qualificació per competències de tot el curs"):""}${th("ITACA",titItacaF)}`;
+  const fin=`${th(ETQ_QUANT,"Nota numèrica final: mitjana ponderada de les tres avaluacions",true)}${th("Qualificació (acta)","Qualificació i nota d'acta (entera) de la nota final")}${q?th(ETQ_QUAL,"Qualificació per competències de tot el curs"):""}${th("ITACA",titItacaF)}`;
   const nFin=3+(q?1:0);
   const acc=`${th("Evolució","Gràfica de l'evolució de l'alumne/a",true)}${th("Informe","Informe de l'avaluació (PDF)")}${th("Informe final","Informe final de curs (PDF)")}`;
   const celFin=(a,f)=>td(`${fmt(f)}${extraEvalBadgeHTML(grupo,a.id,"final")}`,true)+td(pillCuant(f))+(q?td(pillQual(grupo,a.id,"final")):"")+resCeldaItacaHTML(grupo,a,"final",f);
-  const nota=`<p class="sub" style="margin:0 0 6px">${q?`<strong>Nota</strong> = nota numèrica (instruments i blocs) · <strong>Qualitativa</strong> = per competències, acumulada fins a eixa avaluació (per això pot no coincidir amb la nota) · `:""}<strong>ITACA</strong> = la que es passa a ITACA (en blanc, la calculada; es pot canviar a mà).</p>`;
+  const nota=`<p class="sub" style="margin:0 0 6px">${q?`<strong>Per continguts (quantitativa)</strong> = nota numèrica (instruments i blocs) · <strong>Per competències (qualitativa)</strong> = acumulada fins a eixa avaluació, a partir dels criteris (per això pot no coincidir amb la quantitativa) · `:""}<strong>ITACA</strong> = la que es passa a ITACA (en blanc, la calculada; es pot canviar a mà).</p>`;
   if(finalCurs){
     const perAv=1+(q?1:0);
     return nota+`<div style="overflow-x:auto"><table>
       <thead><tr><th rowspan="2" scope="col">Alumne/a</th>${[0,1,2].map(t=>thG(TRIMESTRES[t],perAv)).join("")}${thG("Final de curs",nFin,"Nota final del curs")}${thG("Accions",3)}</tr>
-      <tr>${[0,1,2].map(t=>th("Nota","Nota numèrica de la "+TRIMESTRES[t],true)+(q?th("Qualitativa",titQual(t)):"")).join("")}${fin}${acc}</tr></thead>
+      <tr>${[0,1,2].map(t=>th(ETQ_QUANT,"Nota numèrica de la "+TRIMESTRES[t],true)+(q?th(ETQ_QUAL,titQual(t)):"")).join("")}${fin}${acc}</tr></thead>
       <tbody>${grupo.alumnos.map(a=>{ const f=notaFinal(grupo,a.id);
         return fila(a,[0,1,2].map(t=>td(`${fmt(notaTrimestre(grupo,a.id,t))}${extraEvalBadgeHTML(grupo,a.id,t)}`,true)+(q?td(pillQual(grupo,a.id,t)):"")).join("")
           +celFin(a,f)+resBotonsFilaHTML(grupo,a,trim).replace("<td>",'<td style="border-left:2px solid var(--line)">')); }).join("")}</tbody>
@@ -176,7 +176,7 @@ function resTaulaClasseHTML(grupo,al,trim){
   const nAv=2+(q?1:0);
   return nota+`<div style="overflow-x:auto"><table>
       <thead><tr><th rowspan="2" scope="col">Alumne/a</th>${thG(TRIMESTRES[trim],nAv)}${thG("Final de curs",nFin,"Nota final del curs (mitjana de les avaluacions)")}${thG("Accions",3)}</tr>
-      <tr>${th("Nota","Nota numèrica de la "+TRIMESTRES[trim]+" (mitjana ponderada dels blocs)",true)}${q?th("Qualitativa",titQual(trim)):""}${th("ITACA","Nota que posaràs en ITACA per a la "+TRIMESTRES[trim]+". En blanc = la calculada; escriu-ne una altra per a canviar-la a mà. És la que va a «Exportar notes (CSV)».")}${fin}${acc}</tr></thead>
+      <tr>${th(ETQ_QUANT,"Nota numèrica de la "+TRIMESTRES[trim]+" (mitjana ponderada dels blocs)",true)}${q?th(ETQ_QUAL,titQual(trim)):""}${th("ITACA","Nota que posaràs en ITACA per a la "+TRIMESTRES[trim]+". En blanc = la calculada; escriu-ne una altra per a canviar-la a mà. És la que va a «Exportar notes (CSV)».")}${fin}${acc}</tr></thead>
       <tbody>${grupo.alumnos.map(a=>{const t=notaTrimestre(grupo,a.id,trim),f=notaFinal(grupo,a.id);
         return fila(a,td(`${fmt(t)}${extraEvalBadgeHTML(grupo,a.id,trim)}${avisoBloquesHTML(grupo,a.id,trim)}`,true)+(q?td(pillQual(grupo,a.id,trim)):"")+resCeldaItacaHTML(grupo,a,String(trim),t)
           +celFin(a,f)+resBotonsFilaHTML(grupo,a,trim).replace("<td>",'<td style="border-left:2px solid var(--line)">'));}).join("")}</tbody>
@@ -309,7 +309,7 @@ function renderResultados(grupo){
   ${htmlAlertaAsimetria}
 
   <div class="card">
-    <h2 style="font-size:15px">Calificación cuantitativa</h2>
+    <h2 style="font-size:15px">Qualificació per continguts (quantitativa)</h2>
     <p class="sub">Ponderación: ${grupo.bloques.map(b=>`${esc(b.label)} ${b.inactiu?"desactivat":b.peso+" %"}`).join(" · ")}.</p>
     <div class="flex" style="gap:24px;align-items:flex-end">
       <div><div style="font-size:12.5px;color:var(--mut)">Nota de ${TRIMESTRES[trim]}${extraEvalBadgeHTML(grupo,al.id,trim)}</div>
@@ -326,8 +326,8 @@ function renderResultados(grupo){
   ${grafiquesAlumneHTML(grupo,al)}
 
   ${teQualitativaCE(grupo)?`<div class="card">
-    <h2 style="font-size:15px">Qualificació qualitativa (per competències)</h2>
-    <p class="sub">Mitjana ponderada de les competències específiques amb la qualificació de cada criteri (pesos en Ajustos → Mode de qualificació). Va per separat de la nota quantitativa i els punts extra no la toquen.</p>
+    <h2 style="font-size:15px">Qualificació per competències (qualitativa)</h2>
+    <p class="sub">Mitjana ponderada de les competències específiques amb la qualificació de cada criteri (pesos en Ajustos → Mode de qualificació). Va per separat de la qualificació per continguts (quantitativa) i els punts extra no la toquen.</p>
     <div class="flex" style="gap:24px;align-items:flex-end">
       <div><div style="font-size:12.5px;color:var(--mut)">${TRIMESTRES[trim]}</div><div style="margin-top:4px">${pillQual(grupo,al.id,trim)}</div></div>
       <div><div style="font-size:12.5px;color:var(--mut)">Final (tot el curs)</div><div style="margin-top:4px">${pillQual(grupo,al.id,"final")}</div></div>

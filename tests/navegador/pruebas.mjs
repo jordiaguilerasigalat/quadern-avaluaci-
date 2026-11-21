@@ -1412,7 +1412,7 @@ export const PRUEBAS = [
       state.ui.tab = 'resultados'; state.ui.resAl = ''; save(); render();
       out.taula = [...document.querySelectorAll('#tabContent thead th')].map(x => x.textContent).join('|');
       state.ui.resAl = ids[1]; save(); render();
-      out.fitxaRes = /Qualificació qualitativa \(per competències\)/.test(document.getElementById('tabContent').textContent);
+      out.fitxaRes = /Qualificació per competències \(qualitativa\)/.test(document.getElementById('tabContent').textContent);
       out.fitxa = fitxaResumHTML(g, g.alumnos[1]);
       out.inf = informeAlumnoBodyHTML(g, g.alumnos[1]); out.infF = informeFinalAlumnoBodyHTML(g, g.alumnos[1]);
       out.fam = informeFamiliaBodyHTML(g, g.alumnos[1], 0); out.acta = actaSessioBodyHTML(g, 0);
@@ -1426,13 +1426,13 @@ export const PRUEBAS = [
     t.ok(r.pesosVisibles, 'amb «Les dues» es poden posar els pesos de les CE');
     t.ok(r.mateixaNota, 'la nota numèrica no canvia: continua eixint dels instruments');
     t.ok(r.q0 === 'Suficient' && r.q1 === 'Excel·lent' && r.q2 == null, 'la qualitativa ix dels criteris (no de la nota de l\'examen)', JSON.stringify([r.q0, r.q1, r.q2]));
-    t.ok(/Qualitativa/.test(r.taula), 'Resultats: columnes de qualitativa en la taula de la classe', r.taula);
-    t.ok(r.fitxaRes && /Qualitativa \(competències\)/.test(r.fitxa) && /Excel·lent/.test(r.fitxa), 'Resultats i la fitxa de l\'alumne mostren la qualitativa');
-    t.ok(/Qualitativa \(competències\)/.test(r.inf) && /Excel·lent/.test(r.inf) && /Qualitativa \(competències\)/.test(r.infF), 'informe individual i informe final amb les dues notes');
-    t.ok(/Competències:/.test(r.fam) && /Excel·lent/.test(r.fam), 'informe per a la família amb la qualitativa');
-    t.ok(/Qualificació qualitativa per competències/.test(r.acta) && /<th style="width:80px">Qualitativa<\/th>/.test(r.acta), 'acta de la sessió: distribució qualitativa i columna en els suspesos');
-    t.ok(/Qualitativa \(competències\)/.test(r.grup), 'informe de grup amb la columna qualitativa');
-    t.ok(!/Qualitativa/.test(r.ambInstr), 'només per instruments no apareix cap qualitativa');
+    t.ok(/qualitativa/.test(r.taula), 'Resultats: columnes de qualitativa en la taula de la classe', r.taula);
+    t.ok(r.fitxaRes && /Per competències \(qualitativa\)/.test(r.fitxa) && /Excel·lent/.test(r.fitxa), 'Resultats i la fitxa de l\'alumne mostren la qualitativa');
+    t.ok(/Per competències \(qualitativa\)/.test(r.inf) && /Excel·lent/.test(r.inf) && /Per competències \(qualitativa\)/.test(r.infF), 'informe individual i informe final amb les dues notes');
+    t.ok(/Per competències \(qualitativa\):/.test(r.fam) && /Excel·lent/.test(r.fam), 'informe per a la família amb la qualitativa');
+    t.ok(/Qualificació per competències \(qualitativa\)/.test(r.acta) && /<th style="width:80px">Per competències \(qualitativa\)<\/th>/.test(r.acta), 'acta de la sessió: distribució qualitativa i columna en els suspesos');
+    t.ok(/Per competències \(qualitativa\)/.test(r.grup), 'informe de grup amb la columna qualitativa');
+    t.ok(!/[Qq]ualitativa/.test(r.ambInstr), 'només per instruments no apareix cap qualitativa');
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
   { nombre: 'informe-final-valencia', descripcion: 'Informe final de curs: textos en valencià i sense les activitats on l\'alumne/a és exempt (p. ex. el quadern NESE d\'un altre alumne/a)', async fn(t) {
