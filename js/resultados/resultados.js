@@ -150,23 +150,36 @@ function resTaulaClasseHTML(grupo,al,trim){
       <tbody>${grupo.alumnos.map(a=>fila(a,usades.map(ce=>`<td>${cel(val[a.id][ce.id])}</td>`).join("")+`<td><strong>${cel(notaPorCE(grupo,a.id,trims))}</strong></td>`)).join("")}</tbody>
     </table></div>`;
   }
-  if(state.ui.resInfFinal===true){
-    /* Avaluació final: les tres avaluacions (quantitativa i, amb «Les dues», qualitativa) i la final. */
-    const q=teQualitativaCE(grupo);
-    return `<div style="overflow-x:auto"><table>
-      <thead><tr><th>Alumno/a</th>${[0,1,2].map(t=>`<th>${TRIMESTRES[t]}</th>${q?`<th title="Qualificació qualitativa per competències fins a la ${esc(TRIMESTRES[t])}">Qualitativa · ${TRIMESTRES[t]}</th>`:""}`).join("")}<th>Nota final</th><th title="Calificación y nota de acta (entera) de la nota final">Calificación · acta</th><th title="Nota final que posaràs en ITACA. En blanc = la calculada; escriu-ne una altra per a canviar-la a mà. És la que va a «Exportar notes (CSV)».">ITACA · final</th>${q?`<th title="Qualificació qualitativa per competències de tot el curs">Qualitativa final</th>`:""}<th></th><th></th><th></th></tr></thead>
+  /* «Notes i ITACA»: capçalera en dos files, agrupada per a que es veja a què
+     correspon cada columna (l'avaluació triada, el final de curs o accions). */
+  const q=teQualitativaCE(grupo), finalCurs=state.ui.resInfFinal===true;
+  const thG=(txt,n,tit)=>`<th colspan="${n}" scope="colgroup" class="res-grup" title="${esc(tit||"")}" style="text-align:center;border-bottom:2px solid var(--line);border-left:2px solid var(--line)">${txt}</th>`;
+  const th=(txt,tit,ini)=>`<th scope="col" title="${esc(tit||"")}"${ini?' style="border-left:2px solid var(--line)"':""}>${txt}</th>`;
+  const td=(html,ini)=>`<td${ini?' style="border-left:2px solid var(--line)"':""}>${html}</td>`;
+  const titQual=t=>`Qualificació per competències amb TOT el que s'ha treballat fins a la ${TRIMESTRES[t]} (avaluació contínua), a partir de les notes de cada criteri. Per això pot no coincidir amb la nota numèrica de l'avaluació, que només compta les activitats d'esta avaluació i ix dels blocs.`;
+  const titItacaF="Nota final que posaràs en ITACA. En blanc = la calculada; escriu-ne una altra per a canviar-la a mà. És la que va a «Exportar notes (CSV)».";
+  const fin=`${th("Nota","Mitjana ponderada de les tres avaluacions",true)}${th("Qualificació (acta)","Qualificació i nota d'acta (entera) de la nota final")}${q?th("Qualitativa","Qualificació per competències de tot el curs"):""}${th("ITACA",titItacaF)}`;
+  const nFin=3+(q?1:0);
+  const acc=`${th("Evolució","Gràfica de l'evolució de l'alumne/a",true)}${th("Informe","Informe de l'avaluació (PDF)")}${th("Informe final","Informe final de curs (PDF)")}`;
+  const celFin=(a,f)=>td(`${fmt(f)}${extraEvalBadgeHTML(grupo,a.id,"final")}`,true)+td(pillCuant(f))+(q?td(pillQual(grupo,a.id,"final")):"")+resCeldaItacaHTML(grupo,a,"final",f);
+  const nota=`<p class="sub" style="margin:0 0 6px">${q?`<strong>Nota</strong> = nota numèrica (instruments i blocs) · <strong>Qualitativa</strong> = per competències, acumulada fins a eixa avaluació (per això pot no coincidir amb la nota) · `:""}<strong>ITACA</strong> = la que es passa a ITACA (en blanc, la calculada; es pot canviar a mà).</p>`;
+  if(finalCurs){
+    const perAv=1+(q?1:0);
+    return nota+`<div style="overflow-x:auto"><table>
+      <thead><tr><th rowspan="2" scope="col">Alumne/a</th>${[0,1,2].map(t=>thG(TRIMESTRES[t],perAv)).join("")}${thG("Final de curs",nFin,"Nota final del curs")}${thG("Accions",3)}</tr>
+      <tr>${[0,1,2].map(t=>th("Nota","Nota numèrica de la "+TRIMESTRES[t],true)+(q?th("Qualitativa",titQual(t)):"")).join("")}${fin}${acc}</tr></thead>
       <tbody>${grupo.alumnos.map(a=>{ const f=notaFinal(grupo,a.id);
-        return fila(a,[0,1,2].map(t=>`<td>${fmt(notaTrimestre(grupo,a.id,t))}${extraEvalBadgeHTML(grupo,a.id,t)}</td>${q?`<td>${pillQual(grupo,a.id,t)}</td>`:""}`).join("")
-          +`<td><strong>${fmt(f)}</strong>${extraEvalBadgeHTML(grupo,a.id,"final")}</td><td>${pillCuant(f)}</td>${resCeldaItacaHTML(grupo,a,"final",f)}${q?`<td>${pillQual(grupo,a.id,"final")}</td>`:""}
-          ${resBotonsFilaHTML(grupo,a,trim)}`); }).join("")}</tbody>
+        return fila(a,[0,1,2].map(t=>td(`${fmt(notaTrimestre(grupo,a.id,t))}${extraEvalBadgeHTML(grupo,a.id,t)}`,true)+(q?td(pillQual(grupo,a.id,t)):"")).join("")
+          +celFin(a,f)+resBotonsFilaHTML(grupo,a,trim).replace("<td>",'<td style="border-left:2px solid var(--line)">')); }).join("")}</tbody>
     </table></div>`;
   }
-  return `<div style="overflow-x:auto"><table>
-      <thead><tr><th>Alumno/a</th><th>${TRIMESTRES[trim]}</th><th title="Nota que posaràs en ITACA per a la ${esc(TRIMESTRES[trim])}. En blanc = la calculada; escriu-ne una altra per a canviar-la a mà. És la que va a «Exportar notes (CSV)».">ITACA · ${TRIMESTRES[trim]}</th><th>Nota final</th><th title="Calificación y nota de acta (entera) de la nota final">Calificación · acta</th><th title="Nota final que posaràs en ITACA. En blanc = la calculada; escriu-ne una altra per a canviar-la a mà. És la que va a «Exportar notes (CSV)».">ITACA · final</th>${teQualitativaCE(grupo)?`<th title="Qualificació qualitativa per competències (mitjana ponderada de les CE)">Qualitativa · ${TRIMESTRES[trim]}</th><th title="Qualificació qualitativa per competències de tot el curs">Qualitativa final</th>`:""}<th></th><th></th><th></th></tr></thead>
+  const nAv=2+(q?1:0);
+  return nota+`<div style="overflow-x:auto"><table>
+      <thead><tr><th rowspan="2" scope="col">Alumne/a</th>${thG(TRIMESTRES[trim],nAv)}${thG("Final de curs",nFin,"Nota final del curs (mitjana de les avaluacions)")}${thG("Accions",3)}</tr>
+      <tr>${th("Nota","Nota numèrica de la "+TRIMESTRES[trim]+" (mitjana ponderada dels blocs)",true)}${q?th("Qualitativa",titQual(trim)):""}${th("ITACA","Nota que posaràs en ITACA per a la "+TRIMESTRES[trim]+". En blanc = la calculada; escriu-ne una altra per a canviar-la a mà. És la que va a «Exportar notes (CSV)».")}${fin}${acc}</tr></thead>
       <tbody>${grupo.alumnos.map(a=>{const t=notaTrimestre(grupo,a.id,trim),f=notaFinal(grupo,a.id);
-        return fila(a,`<td>${fmt(t)}${extraEvalBadgeHTML(grupo,a.id,trim)}${avisoBloquesHTML(grupo,a.id,trim)}</td>${resCeldaItacaHTML(grupo,a,String(trim),t)}<td>${fmt(f)}${extraEvalBadgeHTML(grupo,a.id,"final")}</td>
-          <td>${pillCuant(f)}</td>${resCeldaItacaHTML(grupo,a,"final",f)}${teQualitativaCE(grupo)?`<td>${pillQual(grupo,a.id,trim)}</td><td>${pillQual(grupo,a.id,"final")}</td>`:""}
-          ${resBotonsFilaHTML(grupo,a,trim)}`);}).join("")}</tbody>
+        return fila(a,td(`${fmt(t)}${extraEvalBadgeHTML(grupo,a.id,trim)}${avisoBloquesHTML(grupo,a.id,trim)}`,true)+(q?td(pillQual(grupo,a.id,trim)):"")+resCeldaItacaHTML(grupo,a,String(trim),t)
+          +celFin(a,f)+resBotonsFilaHTML(grupo,a,trim).replace("<td>",'<td style="border-left:2px solid var(--line)">'));}).join("")}</tbody>
     </table></div>`;
 }
 function renderResultados(grupo){
