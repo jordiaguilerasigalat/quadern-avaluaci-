@@ -19,7 +19,8 @@ window.MATERIAL_TEMES["FiQ_1BAT"]={
    "f": "tema-01/examen-formulacio-inorganica-25-26.pdf",
    "t": "Examen Unitat 1 · Formulació inorgànica (25-26)",
    "tipus": "examen",
-   "kb": 231
+   "kb": 231,
+   "ed": 1
   },
   {
    "f": "tema-01/presentacio-formulacio-inorganica.pdf",
@@ -57,13 +58,15 @@ window.MATERIAL_TEMES["FiQ_1BAT"]={
    "f": "tema-02/examen-estructura-atomica-25-26.pdf",
    "t": "Examen Unitat 2 · Estructura atòmica (25-26)",
    "tipus": "examen",
-   "kb": 251
+   "kb": 251,
+   "ed": 1
   },
   {
    "f": "tema-02/examen-estructura-atomica-25-26-model-b.pdf",
    "t": "Examen Unitat 2 · Estructura atòmica, model B (25-26)",
    "tipus": "examen",
-   "kb": 222
+   "kb": 222,
+   "ed": 1
   },
   {
    "f": "tema-02/presentacio-estructura-atomica.pdf",
@@ -83,7 +86,8 @@ window.MATERIAL_TEMES["FiQ_1BAT"]={
    "f": "tema-03/examen-lleis-basiques-25-26.pdf",
    "t": "Examen Unitat 3 · Lleis i conceptes bàsics (25-26)",
    "tipus": "examen",
-   "kb": 107
+   "kb": 107,
+   "ed": 1
   },
   {
    "f": "tema-03/presentacio-lleis-basiques.pdf",
@@ -103,19 +107,22 @@ window.MATERIAL_TEMES["FiQ_1BAT"]={
    "f": "tema-04/examen-estequiometria-25-26-v1.pdf",
    "t": "Examen Unitat 4 · Estequiometria, versió 1 (25-26)",
    "tipus": "examen",
-   "kb": 140
+   "kb": 140,
+   "ed": 1
   },
   {
    "f": "tema-04/examen-estequiometria-25-26-v2.pdf",
    "t": "Examen Unitat 4 · Estequiometria, versió 2 (25-26)",
    "tipus": "examen",
-   "kb": 130
+   "kb": 130,
+   "ed": 1
   },
   {
    "f": "tema-04/examen-estequiometria-25-26-v3.pdf",
    "t": "Examen Unitat 4 · Estequiometria, versió 3 (25-26)",
    "tipus": "examen",
-   "kb": 130
+   "kb": 130,
+   "ed": 1
   },
   {
    "f": "tema-04/presentacio-estequiometria.pdf",
@@ -135,7 +142,8 @@ window.MATERIAL_TEMES["FiQ_1BAT"]={
    "f": "tema-05/examen-quimica-organica-25-26.pdf",
    "t": "Examen Unitat 5 · Química orgànica (25-26)",
    "tipus": "examen",
-   "kb": 216
+   "kb": 216,
+   "ed": 1
   },
   {
    "f": "tema-05/activitats-quimica-organica-alumnat.pdf",
@@ -167,13 +175,15 @@ window.MATERIAL_TEMES["FiQ_1BAT"]={
    "f": "tema-06/examen-cinematica-2026-04.pdf",
    "t": "Examen Unitat 6 · Cinemàtica (abril 2026)",
    "tipus": "examen",
-   "kb": 541
+   "kb": 541,
+   "ed": 1
   },
   {
    "f": "tema-06/examen-cinematica-model-a.docx",
    "t": "Examen Unitat 6 · Cinemàtica, model A (Word)",
    "tipus": "examen",
-   "kb": 530
+   "kb": 530,
+   "ed": 1
   },
   {
    "f": "tema-06/examen-cinematica-model-a-solucions.docx",
@@ -205,13 +215,15 @@ window.MATERIAL_TEMES["FiQ_1BAT"]={
    "f": "tema-07/examen-dinamica-25-26.pdf",
    "t": "Examen Unitat 7 · Dinàmica (25-26)",
    "tipus": "examen",
-   "kb": 170
+   "kb": 170,
+   "ed": 1
   },
   {
    "f": "tema-07/examen-dinamica-aplicat.docx",
    "t": "Examen de dinàmica aplicada (Word)",
    "tipus": "examen",
-   "kb": 37
+   "kb": 37,
+   "ed": 1
   },
   {
    "f": "tema-07/presentacio-dinamica.pdf",
@@ -233,31 +245,36 @@ window.MATERIAL_TEMES["FiQ_1BAT"]={
    "f": "globals/recuperacio-2n-trimestre-25-26.pdf",
    "t": "Examen de recuperació del 2n trimestre (25-26)",
    "tipus": "examen",
-   "kb": 137
+   "kb": 137,
+   "ed": 1
   },
   {
    "f": "globals/recuperacio-final-25-26.pdf",
    "t": "Examen de recuperació final (25-26)",
    "tipus": "examen",
-   "kb": 141
+   "kb": 141,
+   "ed": 1
   },
   {
    "f": "globals/final-fisica-25-26.pdf",
    "t": "Examen final de Física (25-26)",
    "tipus": "examen",
-   "kb": 430
+   "kb": 430,
+   "ed": 1
   },
   {
    "f": "globals/final-quimica-25-26-v1.pdf",
    "t": "Examen final de Química, versió 1 (25-26)",
    "tipus": "examen",
-   "kb": 125
+   "kb": 125,
+   "ed": 1
   },
   {
    "f": "globals/final-quimica-25-26-v2.pdf",
    "t": "Examen final de Química, versió 2 (25-26)",
    "tipus": "examen",
-   "kb": 130
+   "kb": 130,
+   "ed": 1
   }
  ]
 };

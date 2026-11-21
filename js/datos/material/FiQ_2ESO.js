@@ -119,19 +119,22 @@ window.MATERIAL_TEMES["FiQ_2ESO"]={
    "f": "tema-06/examen-moviment-19-20.docx",
    "t": "Examen · El moviment (19-20, Word)",
    "tipus": "examen",
-   "kb": 69
+   "kb": 69,
+   "ed": 1
   },
   {
    "f": "tema-06/examen-moviment-recup-t1-19-20.docx",
    "t": "Examen · El moviment + recuperació T1 (19-20, Word)",
    "tipus": "examen",
-   "kb": 69
+   "kb": 69,
+   "ed": 1
   },
   {
    "f": "tema-06/examen-moviment-recup-t1-19-20-adaptat.docx",
    "t": "Examen adaptat · El moviment + recuperació T1 (19-20, Word)",
    "tipus": "examen",
-   "kb": 82
+   "kb": 82,
+   "ed": 1
   }
  ],
  "7": [
@@ -151,37 +154,43 @@ window.MATERIAL_TEMES["FiQ_2ESO"]={
    "f": "tema-07/examen-forces-25-26-a.pdf",
    "t": "Examen · Força i pressió, model A (25-26)",
    "tipus": "examen",
-   "kb": 118
+   "kb": 118,
+   "ed": 1
   },
   {
    "f": "tema-07/examen-forces-25-26-b.pdf",
    "t": "Examen · Força i pressió, model B (25-26)",
    "tipus": "examen",
-   "kb": 112
+   "kb": 112,
+   "ed": 1
   },
   {
    "f": "tema-07/examen-pressio-25-26.pdf",
    "t": "Examen · Pressió (25-26)",
    "tipus": "examen",
-   "kb": 119
+   "kb": 119,
+   "ed": 1
   },
   {
    "f": "tema-07/examen-pressio-25-26-adaptat.pdf",
    "t": "Examen adaptat · Pressió (25-26)",
    "tipus": "examen",
-   "kb": 131
+   "kb": 131,
+   "ed": 1
   },
   {
    "f": "tema-07/examen-forca-pressio-19-20.docx",
    "t": "Examen · Força i pressió (19-20, Word)",
    "tipus": "examen",
-   "kb": 68
+   "kb": 68,
+   "ed": 1
   },
   {
    "f": "tema-07/examen-forca-pressio-19-20-adaptat.docx",
    "t": "Examen adaptat · Força i pressió (19-20, Word)",
    "tipus": "examen",
-   "kb": 68
+   "kb": 68,
+   "ed": 1
   },
   {
    "f": "tema-07/teoria-forca-pressio.pdf",
@@ -231,37 +240,43 @@ window.MATERIAL_TEMES["FiQ_2ESO"]={
    "f": "tema-08/examen-energia-25-26.pdf",
    "t": "Examen · Treball i energia (25-26)",
    "tipus": "examen",
-   "kb": 398
+   "kb": 398,
+   "ed": 1
   },
   {
    "f": "tema-08/examen-energia-25-26-adaptat.pdf",
    "t": "Examen adaptat · Treball i energia (25-26)",
    "tipus": "examen",
-   "kb": 374
+   "kb": 374,
+   "ed": 1
   },
   {
    "f": "tema-08/examen-energia-23-24.pdf",
    "t": "Examen · Treball i energia (23-24)",
    "tipus": "examen",
-   "kb": 366
+   "kb": 366,
+   "ed": 1
   },
   {
    "f": "tema-08/examen-energia-23-24-adaptat.pdf",
    "t": "Examen adaptat · Treball i energia (23-24)",
    "tipus": "examen",
-   "kb": 670
+   "kb": 670,
+   "ed": 1
   },
   {
    "f": "tema-08/examen-calor-energia-23-24.pdf",
    "t": "Examen · Calor, temperatura, treball i energia (23-24)",
    "tipus": "examen",
-   "kb": 412
+   "kb": 412,
+   "ed": 1
   },
   {
    "f": "tema-08/examen-calor-energia-23-24-adaptat.pdf",
    "t": "Examen adaptat · Calor, temperatura, treball i energia (23-24)",
    "tipus": "examen",
-   "kb": 691
+   "kb": 691,
+   "ed": 1
   },
   {
    "f": "tema-08/presentacio-treball-energia.pdf",
@@ -323,31 +338,36 @@ window.MATERIAL_TEMES["FiQ_2ESO"]={
    "f": "tema-09/examen-calor-temperatura-25-26.pdf",
    "t": "Examen · Calor i temperatura (25-26)",
    "tipus": "examen",
-   "kb": 166
+   "kb": 166,
+   "ed": 1
   },
   {
    "f": "tema-09/examen-calor-temperatura-25-26-adaptat.pdf",
    "t": "Examen adaptat · Calor i temperatura (25-26)",
    "tipus": "examen",
-   "kb": 176
+   "kb": 176,
+   "ed": 1
   },
   {
    "f": "tema-09/examen-calor-temperatura-18-19.docx",
    "t": "Examen · Calor i temperatura (18-19, Word)",
    "tipus": "examen",
-   "kb": 211
+   "kb": 211,
+   "ed": 1
   },
   {
    "f": "tema-09/examen-calor-temperatura-18-19-b.docx",
    "t": "Examen · Calor i temperatura, model B (18-19, Word)",
    "tipus": "examen",
-   "kb": 209
+   "kb": 209,
+   "ed": 1
   },
   {
    "f": "tema-09/examen-calor-temperatura-18-19-adaptat.docx",
    "t": "Examen adaptat · Calor i temperatura (18-19, Word)",
    "tipus": "examen",
-   "kb": 203
+   "kb": 203,
+   "ed": 1
   },
   {
    "f": "tema-09/presentacio-calor-temperatura.pdf",
@@ -385,37 +405,43 @@ window.MATERIAL_TEMES["FiQ_2ESO"]={
    "f": "globals/recuperacio-1r-2n-trimestre-25-26.pdf",
    "t": "Examen de recuperació 1r i 2n trimestre (25-26)",
    "tipus": "examen",
-   "kb": 118
+   "kb": 118,
+   "ed": 1
   },
   {
    "f": "globals/examen-1r-trimestre-23-24.pdf",
    "t": "Examen 1r trimestre: mètode científic i moviment (23-24)",
    "tipus": "examen",
-   "kb": 90
+   "kb": 90,
+   "ed": 1
   },
   {
    "f": "globals/examen-2n-trimestre-23-24.pdf",
    "t": "Examen 2n trimestre: força i pressió (23-24)",
    "tipus": "examen",
-   "kb": 100
+   "kb": 100,
+   "ed": 1
   },
   {
    "f": "globals/examen-3r-trimestre-23-24.pdf",
    "t": "Examen 3r trimestre: calor i energia (23-24)",
    "tipus": "examen",
-   "kb": 412
+   "kb": 412,
+   "ed": 1
   },
   {
    "f": "globals/examen-1r-3r-trimestre-2024.docx",
    "t": "Examen de recuperació 1r i 3r trimestre (2024, Word)",
    "tipus": "examen",
-   "kb": 1025
+   "kb": 1025,
+   "ed": 1
   },
   {
    "f": "globals/examen-recuperacio.pdf",
    "t": "Examen de recuperació",
    "tipus": "examen",
-   "kb": 89
+   "kb": 89,
+   "ed": 1
   },
   {
    "f": "globals/dossier-recuperacio-2n-trimestre.pdf",

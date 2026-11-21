@@ -58,12 +58,14 @@ window.MATERIAL_TEMES["FiQ_3ESO"]={
   {
    "f": "tema-01/examen-tema-1-2022-23.pdf",
    "t": "Examen tema 1 (2022-23)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-01/examen-tema-1-2021-22-adaptat.pdf",
    "t": "Examen tema 1 adaptat (2021-22)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   }
  ],
  "2": [
@@ -151,52 +153,62 @@ window.MATERIAL_TEMES["FiQ_3ESO"]={
   {
    "f": "tema-02/examen-tema-2a-2022-23.pdf",
    "t": "Examen tema 2a (2022-23)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-02/examen-tema-2a-2022-23-adaptat.pdf",
    "t": "Examen tema 2a adaptat (2022-23)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-02/examen-tema-2a-2022-23-adaptat-2.pdf",
    "t": "Examen tema 2a adaptat, model 2 (2022-23)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-02/examen-tema-2b-2022-23.pdf",
    "t": "Examen tema 2b (2022-23)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-02/examen-tema-2b-2022-23-adaptat.pdf",
    "t": "Examen tema 2b adaptat (2022-23)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-02/examen-estats-gasos-2020-21.pdf",
    "t": "Examen estats de la matèria i gasos (2020-21)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-02/examen-estats-gasos-2020-21-adaptat.pdf",
    "t": "Examen estats de la matèria i gasos adaptat (2020-21)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-02/examen-estats-gasos-2019-20.pdf",
    "t": "Examen estats de la matèria i gasos (2019-20)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-02/examen-estats-gasos-2019-20-adaptat.pdf",
    "t": "Examen estats de la matèria i gasos adaptat (2019-20)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-02/examen-estats-gasos-adaptat-recup-t1.pdf",
    "t": "Examen estats de la matèria i gasos adaptat + recuperació tema 1",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   }
  ],
  "3": [
@@ -250,27 +262,32 @@ window.MATERIAL_TEMES["FiQ_3ESO"]={
   {
    "f": "tema-03/examen-tema-3-2022-23.pdf",
    "t": "Examen tema 3 (2022-23)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-03/examen-tema-3-2022-23-adaptat.pdf",
    "t": "Examen tema 3 adaptat (2022-23)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-03/examen-mescles-2020-21.pdf",
    "t": "Examen mescles i dissolucions (2020-21)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-03/examen-mescles-2020-21-recuperacio.pdf",
    "t": "Examen mescles i dissolucions, recuperació (2020-21)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-03/examen-mescles-2019-20-adaptat.pdf",
    "t": "Examen mescles i dissolucions adaptat (2019-20)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   }
  ],
  "4": [
@@ -339,32 +356,38 @@ window.MATERIAL_TEMES["FiQ_3ESO"]={
   {
    "f": "tema-04/examen-reaccions-2021-22.pdf",
    "t": "Examen reaccions químiques i mol (2021-22)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-04/examen-reaccions-2021-22-adaptat.pdf",
    "t": "Examen reaccions químiques i mol adaptat (2021-22)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-04/examen-reaccions-part-2-2020-21.pdf",
    "t": "Examen reaccions químiques, part II (2020-21)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-04/examen-reaccions-part-2-2020-21-adaptat.pdf",
    "t": "Examen reaccions químiques, part II adaptat (2020-21)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-04/examen-atom-reaccions-2020-21.pdf",
    "t": "Examen configuració electrònica i reaccions (2020-21)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-04/examen-atom-reaccions-2020-21-adaptat.pdf",
    "t": "Examen configuració electrònica i reaccions adaptat (2020-21)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   }
  ],
  "5": [
@@ -403,37 +426,44 @@ window.MATERIAL_TEMES["FiQ_3ESO"]={
   {
    "f": "tema-05/examen-atom-2022-23.pdf",
    "t": "Examen estructura atòmica (2022-23)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-05/examen-atom-2022-23-adaptat.pdf",
    "t": "Examen estructura atòmica adaptat (2022-23)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-05/examen-atom-part-1-2020-21.pdf",
    "t": "Examen estructura atòmica, part I (2020-21)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-05/examen-atom-part-1-2020-21-adaptat.pdf",
    "t": "Examen estructura atòmica, part I adaptat (2020-21)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-05/examen-atom-flexible-1.pdf",
    "t": "Examen estructura atòmica, model 1 (2019-20)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-05/examen-atom-flexible-2.pdf",
    "t": "Examen estructura atòmica, model 2",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-05/examen-gasos-atom-2019-20.pdf",
    "t": "Examen gasos i àtom (2019-20)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   }
  ],
  "6": [
@@ -460,12 +490,14 @@ window.MATERIAL_TEMES["FiQ_3ESO"]={
   {
    "f": "tema-06/examen-forces-electriques.pdf",
    "t": "Examen forces elèctriques",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-06/examen-forces-electriques-adaptat.pdf",
    "t": "Examen forces elèctriques adaptat",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   }
  ],
  "7": [
@@ -512,7 +544,8 @@ window.MATERIAL_TEMES["FiQ_3ESO"]={
   {
    "f": "globals/examen-recuperacio-2024-25.pdf",
    "t": "Examen de recuperació (2024-25)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   }
  ]
 };

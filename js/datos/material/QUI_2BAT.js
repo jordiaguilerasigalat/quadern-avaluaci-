@@ -47,12 +47,14 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   {
    "f": "tema-00/examen-tema-0-2023-24.pdf",
    "t": "Examen: estequiometria (2023-24)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-00/examen-tema-0-2023-24-versio-b.pdf",
    "t": "Examen: estequiometria, versió B (2023-24)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   }
  ],
  "1": [
@@ -77,7 +79,8 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   {
    "f": "tema-01/examen-temes-1-2-2023-24.pdf",
    "t": "Examen: estructura atòmica i enllaç (2023-24)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   }
  ],
  "2": [
@@ -89,7 +92,8 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   {
    "f": "tema-01/examen-temes-1-2-2023-24.pdf",
    "t": "Examen: estructura atòmica i enllaç (2023-24)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   }
  ],
  "3": [
@@ -138,7 +142,8 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   {
    "f": "tema-03/examen-tema-3-2023-24.pdf",
    "t": "Examen: termodinàmica (2023-24)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   }
  ],
  "4": [
@@ -169,7 +174,8 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   {
    "f": "tema-04/examen-tema-4-2023-24.pdf",
    "t": "Examen: cinètica química (2023-24)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   }
  ],
  "5": [
@@ -205,12 +211,14 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   {
    "f": "tema-05/examen-equilibri-quimic-2023-24.pdf",
    "t": "Examen: equilibri químic (2023-24)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-05/examen-solubilitat-2023-24.pdf",
    "t": "Examen: equilibris de solubilitat (2023-24)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   }
  ],
  "6": [
@@ -244,12 +252,14 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   {
    "f": "tema-06/examen-tema-6-2023-24.pdf",
    "t": "Examen: àcid-base (2023-24)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-06/examen-tema-6-2023-24-versio-b.pdf",
    "t": "Examen: àcid-base, versió B (2023-24)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   }
  ],
  "7": [
@@ -272,12 +282,14 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   {
    "f": "tema-07/examen-tema-7-2023-24.pdf",
    "t": "Examen: redox (2023-24)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   },
   {
    "f": "tema-07/examen-tema-7-2023-24-versio-b.pdf",
    "t": "Examen: redox, versió B (2023-24)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   }
  ],
  "8": [
@@ -314,7 +326,8 @@ window.MATERIAL_TEMES["QUI_2BAT"]={
   {
    "f": "globals/recuperacio-1r-trimestre-2023-24.pdf",
    "t": "Recuperació 1r trimestre (2023-24)",
-   "tipus": "examen"
+   "tipus": "examen",
+   "ed": 1
   }
  ]
 };
