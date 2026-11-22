@@ -20,10 +20,16 @@ function _renderActividadesLlista(grupo){
   const previewPct=pesoActividadEnBloque({actividades:[...grupo.actividades.filter(a=>a.id!==f.editId),{id:"_nova",trimestre:state.ui.trim,bloqueId:f.bloqueId,pesoBloque:""}]},{trimestre:state.ui.trim,bloqueId:f.bloqueId,pesoBloque:""}).toFixed(0);
   const prog=progDeGrupo(grupo);
   const c=document.getElementById("tabContent");
+  /* Amb Programació vinculada, el formulari lliure s'obri a demanda per a crear
+     activitats pròpies (deures, exàmens, treballs…) que no són de cap SdA. */
+  const propia=!!prog && !editando;
   const formularioLibreHTML=`
-  <div class="card">
-    <h2>${editando?"Editar l'activitat":"Nova activitat d'avaluació"}</h2>
-    <p class="sub">${editando?"Modifica les dades i guarda els canvis.":`Es crea en la ${TRIMESTRES[state.ui.trim]}.`} Marca un o diversos criteris, cadascun amb el seu pes dins de l'activitat. El bloc decidix en què compta per a la nota quantitativa.</p>
+  <div class="card" id="actFormLliure">
+    <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;flex-wrap:wrap">
+      <h2>${editando?"Editar l'activitat":propia?"Activitat pròpia (sense Situació d'Aprenentatge)":"Nova activitat d'avaluació"}</h2>
+      ${propia?`<button class="ghost" onclick="actTancarFormLliure()">✕ Tancar</button>`:""}
+    </div>
+    <p class="sub">${editando?"Modifica les dades i guarda els canvis.":`Es crea en la ${TRIMESTRES[state.ui.trim]}${propia?" i no queda vinculada a cap Situació d'Aprenentatge de la Programació":""}.`} Tria el tipus (deures, examen, treball…) i el bloc on compta per a la nota quantitativa. ${f.esExamen?"En un examen els criteris són opcionals: la nota que compta és la que poses en Qualificar.":"Marca un o diversos criteris, cadascun amb el seu pes dins de l'activitat: l'escala de 4 nivells s'aplica a cada criteri."}</p>
     <div class="grid" style="margin-bottom:14px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
       <input class="in" id="fN" placeholder="Nombre de la actividad" value="${esc(f.nombre)}">
       <label style="display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--mut)">📅 Data (opcional; apareix al calendari)<input class="in" type="date" id="fData" value="${esc(f.fecha||"")}" onchange="state.ui.form.fecha=this.value;save()"></label>
@@ -61,8 +67,8 @@ function _renderActividadesLlista(grupo){
       `).join("")}
     </div>
     <div class="flex" style="margin-top:12px">
-      <button class="btn" id="fSave" onclick="saveActividad()" ${(!f.nombre.trim()||!f.links.length)?"disabled":""}>${editando?"Guardar els canvis":"Guardar l'activitat"}</button>
-      ${editando?`<button class="ghost" onclick="cancelarEdicionActividad()">Cancelar</button>`:""}
+      <button class="btn" id="fSave" onclick="saveActividad()" ${!actFormValid(f)?"disabled":""}>${editando?"Guardar els canvis":"Guardar l'activitat"}</button>
+      ${editando||propia?`<button class="ghost" onclick="${editando?"cancelarEdicionActividad()":"actTancarFormLliure()"}">Cancel·lar</button>`:""}
     </div>
   </div>`;
   const selectorProgramacionHTML=!prog?"":`
@@ -81,8 +87,12 @@ function _renderActividadesLlista(grupo){
       <button class="btn" onclick="actAnadirDesdeProgramacion()">+ Añadir esta actividad</button>
     </div>
     <p class="sub" style="margin-top:8px">¿Falta la actividad que buscas? <a onclick="irAProgramacion()" style="cursor:pointer;text-decoration:underline;color:var(--brand-3)">Añádela en Programación de Aula</a> y vuelve aquí — se puede ir completando durante el curso.</p>
+    <div style="border-top:1px solid var(--line);margin-top:12px;padding-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <button class="btn" onclick="actObrirFormLliure()">+ Activitat pròpia (sense SA)</button>
+      <span class="sub" style="margin:0">Deures, un examen, un treball… que només fas en este grup i no és de cap Situació d'Aprenentatge.</span>
+    </div>
   </div>`;
-  c.innerHTML=(editando||!prog?formularioLibreHTML:selectorProgramacionHTML)+`
+  c.innerHTML=(editando||!prog||state.ui.formLliure?formularioLibreHTML:selectorProgramacionHTML)+`
   <div class="card">
     <h2>Activitats de ${TRIMESTRES[state.ui.trim]}</h2>
     ${actsTrim(grupo).length>1?`<p class="sub" style="margin:4px 0 0">Ordena-les com vulgues: arrossega una activitat per ⠿ o usa ▲▼. L'ordre també s'usa en Qualificar, Resultats i informes.</p>`:""}
@@ -135,20 +145,29 @@ function _renderActividadesLlista(grupo){
     </div>
   </div>` : ""}`;
   document.getElementById("fN")?.addEventListener("input",e=>{ state.ui.form.nombre=e.target.value; save();
-    document.getElementById("fSave").disabled=!(state.ui.form.nombre.trim()&&state.ui.form.links.length); });
+    document.getElementById("fSave").disabled=!actFormValid(state.ui.form); });
   document.getElementById("fSdA")?.addEventListener("input",e=>{ state.ui.form.sda=e.target.value; save(); });
   document.getElementById("fT")?.addEventListener("change",e=>{ const ff=state.ui.form; ff.tipo=e.target.value; ff.esExamen=e.target.value.includes("examen"); ff.bloqueId=defBloque(e.target.value,grupo.bloques); save(); render(); });
   document.getElementById("fPB")?.addEventListener("change",e=>{ setPesoBloqueForm(e.target.value); render(); });
   document.getElementById("fB")?.addEventListener("change",e=>{ state.ui.form.bloqueId=e.target.value; save(); });
   document.getElementById("fE")?.addEventListener("change",e=>{ state.ui.form.esExamen=e.target.checked; save(); render(); });
 }
+/* Un examen pot no tindre criteris (compta la nota quantitativa); la resta
+   s'avalua amb l'escala de 4 nivells per criteri i en necessita almenys un. */
+function actFormValid(f){ return !!(f.nombre||"").trim() && (f.esExamen || f.links.length>0); }
+window.actObrirFormLliure=()=>{
+  state.ui.form={editId:null,nombre:"",tipo:TIPOS[0],esExamen:false,bloqueId:"",pesoBloque:"",links:[],sda:""};
+  state.ui.formLliure=true; save(); render();
+  const el=document.getElementById("fN"); if(el){ el.scrollIntoView({block:"center"}); el.focus(); }
+};
+window.actTancarFormLliure=()=>{ state.ui.formLliure=false; state.ui.form={editId:null,nombre:"",tipo:TIPOS[0],esExamen:false,bloqueId:"",pesoBloque:"",links:[],sda:""}; save(); render(); };
 window.toggleCrit=cid=>{ const L=state.ui.form.links; const i=L.findIndex(x=>x.critId===cid);
   if(i>=0) L.splice(i,1); else L.push({critId:cid,peso:100}); save(); render(); };
 window.setLinkPeso=(cid,v)=>{ const l=state.ui.form.links.find(x=>x.critId===cid); if(l){ l.peso=v; save(); } };
 window.editarActividad=id=>{ const grupo=grupoActual(); const a=grupo.actividades.find(x=>x.id===id); if(!a) return;
   state.ui.form={editId:id,nombre:a.nombre,tipo:a.tipo,esExamen:a.esExamen,bloqueId:a.bloqueId,pesoBloque:a.pesoBloque??"",links:a.criterios.map(l=>({...l})),sda:a.sda||"",temaId:a.temaId||"",fecha:agDataActivitat(a.id)};
   save(); render(); window.scrollTo(0,0); };
-window.cancelarEdicionActividad=()=>{ state.ui.form={editId:null,nombre:"",tipo:TIPOS[0],esExamen:false,bloqueId:"",pesoBloque:"",links:[],sda:""}; save(); render(); };
+window.cancelarEdicionActividad=()=>{ state.ui.formLliure=false; state.ui.form={editId:null,nombre:"",tipo:TIPOS[0],esExamen:false,bloqueId:"",pesoBloque:"",links:[],sda:""}; save(); render(); };
 window.actActualizarSelectorActividad=()=>{
   const grupo=grupoActual();
   const prog=progDeGrupo(grupo);
@@ -304,7 +323,7 @@ window.recQuitar=async rid=>{
 };
 window.setPesoBloqueForm=v=>{ state.ui.form.pesoBloque=v; save(); };
 window.saveActividad=()=>{ const grupo=grupoActual(); const f=state.ui.form;
-  if(!f.nombre.trim()||!f.links.length) return;
+  if(!actFormValid(f)) return;
   const criterios=f.links.map(l=>({critId:l.critId,peso:Number(l.peso)||0}));
   const pesoBloque=(f.pesoBloque===""||f.pesoBloque==null)?"":Number(f.pesoBloque);
   const sdaStr = (f.sda||"").trim();
@@ -325,10 +344,14 @@ window.saveActividad=()=>{ const grupo=grupoActual(); const f=state.ui.form;
     const nova={id:uid(),trimestre:state.ui.trim,nombre:f.nombre.trim(),tipo:f.tipo,bloqueId:f.bloqueId,esExamen:f.esExamen,pesoBloque,criterios,sda:sdaStr,temaId};
     grupo.actividades.push(nova);
     agFixarDataActivitat(grupo,nova,dataSel);
+    if(state.ui.formLliure) mostrarToast("✓ Activitat pròpia creada: «"+nova.nombre+"»");
   }
+  state.ui.formLliure=false;
   state.ui.form={editId:null,nombre:"",tipo:TIPOS[0],esExamen:false,bloqueId:"",pesoBloque:"",links:[],sda:""}; save(); render(); };
 window.delActividad=async id=>{ const grupo=grupoActual(); const a=grupo.actividades.find(x=>x.id===id); if(!a) return;
-  if(await confirmar(`¿Eliminar la actividad "${a.nombre}"? Podrás restaurarla desde la papelera de esta pestaña si te equivocas.`)){
+  const nAv=grupo.alumnos.filter(al=>grupo.notasCuant?.[al.id]?.[id]!=null || (grupo.notas?.[al.id]?.[id] && Object.keys(grupo.notas[al.id][id]).length) || grupo.rubricScores?.[al.id]?.[id]).length;
+  const avisNotes=nAv? `\n\n⚠️ S'esborraran també les notes d'esta activitat (${nAv} alumne${nAv===1?"":"s"} avaluat${nAv===1?"":"s"}) i deixaran de comptar en la qualificació.` : "";
+  if(await confirmar(`Vols eliminar l'activitat «${a.nombre}»?${avisNotes}\n\nSi t'equivoques, la pots restaurar des de la Paperera d'activitats (al final de «Totes les activitats del període»).`)){
     const notas={}; const notasCuant={}; const rubricScores={}; const examComentarios={}; const extras={};
     for(const alId in grupo.notas){ if(grupo.notas[alId]?.[id]) notas[alId]=JSON.parse(JSON.stringify(grupo.notas[alId][id])); }
     for(const alId in grupo.notasCuant){ if(grupo.notasCuant[alId]?.[id]!=null) notasCuant[alId]=grupo.notasCuant[alId][id]; }

@@ -171,6 +171,7 @@ function segExamensHTML(grupo){
       <span style="font-size:13.5px"><strong>${esc(a.nombre)}</strong>${a.rubrica?` <span class="badge">rúbrica</span>`:""}<br><span class="sub" style="margin:0">${n} de ${grupo.alumnos.length} avaluats · mitjana ${mitj}</span></span>
       ${segDataInputHTML(a)}
       ${a.rubrica?`<button class="btn small" onclick="segObrir('${a.id}')">Corregir →</button>`:`<button class="btn small" onclick="segQualificar('${a.id}')">Posar notes →</button>`}
+      <button class="ghost small" title="Eliminar l'activitat" aria-label="Eliminar ${esc(a.nombre)}" onclick="delActividad('${a.id}')">🗑</button>
     </div>`;}).join("");
   return `<div class="gcard">
     <div class="gcard-title">📄 Exàmens i proves escrites</div>
@@ -197,7 +198,7 @@ window.segNouExamen=()=>{ state.ui.appMode="corrector"; state.ui.corTab="crear";
 window.segNouExamenSimple=()=>{
   const b=segBlocExamens(grupoActual());
   state.ui.form={editId:null,nombre:"",tipo:TIPO_EXAMEN,esExamen:true,bloqueId:b?b.id:"",pesoBloque:"",links:[],sda:""};
-  save(); render();
+  state.ui.formLliure=true; save(); render();
   const el=document.getElementById("fN"); if(el){ el.scrollIntoView({block:"center"}); el.focus(); }
 };
 function segApartatsHTML(grupo){
@@ -224,6 +225,7 @@ function segApartatsHTML(grupo){
         <span style="font-size:13.5px"><strong>${esc(a.nombre)}</strong><br><span class="sub" style="margin:0">${n} de ${grupo.alumnos.length} avaluats · mitjana ${mitj}</span></span>
         ${segDataInputHTML(a)}
         <button class="btn small" onclick="segObrir('${a.id}')">Avaluar →</button>
+        <button class="ghost small" title="Eliminar l'activitat" aria-label="Eliminar ${esc(a.nombre)}" onclick="delActividad('${a.id}')">🗑</button>
       </div>`;}).join("");
     return `<div class="gcard">
       <div class="gcard-title">${t.ico} ${esc(t.nom)}</div>

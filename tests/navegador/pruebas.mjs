@@ -2046,6 +2046,46 @@ export const PRUEBAS = [
     t.ok(/generat amb IA/.test(r.modal) && /60 km\/h/.test(r.modal), 'el resum ensenya el que ha canviat i les solucions', r.modal.slice(0, 200));
     t.ok(!p.errores.length, 'sense errors de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+
+  { nombre: 'activitat-propia', descripcion: 'Grup amb Programació: es pot crear una activitat pròpia, sense cap SdA (examen sense criteris o deures amb criteris)', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    await cuadernoConGrupo(p, t.url);
+    await p.evaluate(() => { const g = state.grupos[0];
+      state.programaciones = [{ id: 'p1', nombre: 'Prog', catalogoKey: 'FiQ_2ESO', sdas: [{ id: 's1', titulo: 'SdA 1', trimestre: 0 }], actividades: [] }];
+      migrarEstado(); g.programacionId = 'p1'; state.ui.grupoId = g.id; state.ui.appMode = 'competencial'; state.ui.tab = 'actividades'; save(); render(); });
+    await esperar(600);
+    t.ok(await p.isVisible('text=+ Activitat pròpia (sense SA)') && !(await p.$('#fN')), 'amb Programació es veu el selector i el botó d\'activitat pròpia');
+    await p.click('text=+ Activitat pròpia (sense SA)'); await esperar(400);
+    t.ok(await p.isVisible('#fN') && await p.isVisible('text=Activitat pròpia (sense Situació d\'Aprenentatge)'), 'el botó obri el formulari lliure');
+    await p.selectOption('#fT', await p.evaluate(() => TIPO_EXAMEN)); await esperar(400);
+    await p.fill('#fN', 'Control sorpresa');
+    t.ok(!(await p.isDisabled('#fSave')), 'un examen es pot guardar sense criteris');
+    await p.click('#fSave'); await esperar(400);
+    let r = await p.evaluate(() => { const a = state.grupos[0].actividades.find(x => x.nombre === 'Control sorpresa'); return a && { ex: a.esExamen, sda: a.sda, n: a.criterios.length, form: !!document.getElementById('fN') }; });
+    t.ok(r && r.ex && !r.sda && r.n === 0 && !r.form, 'es crea l\'examen sense SdA i el formulari es tanca', JSON.stringify(r));
+    await p.click('text=+ Activitat pròpia (sense SA)'); await esperar(400);
+    await p.selectOption('#fT', await p.evaluate(() => TIPOS[1])); await esperar(400);
+    await p.fill('#fN', 'Deures tema 1');
+    t.ok(await p.isDisabled('#fSave'), 'uns deures necessiten almenys un criteri');
+    await p.click('.critbox input[type=checkbox] >> nth=0'); await esperar(400);
+    await p.click('#fSave'); await esperar(400);
+    r = await p.evaluate(() => { const a = state.grupos[0].actividades.find(x => x.nombre === 'Deures tema 1'); return a && { ex: a.esExamen, n: a.criterios.length }; });
+    t.ok(r && !r.ex && r.n === 1, 'es creen els deures amb el criteri', JSON.stringify(r));
+    // Eliminar des de la targeta del bloc d'exàmens, amb confirmació que avisa de les notes
+    await p.evaluate(() => { const g = state.grupos[0], a = g.actividades.find(x => x.nombre === 'Control sorpresa');
+      g.notasCuant[g.alumnos[0].id] = { ...(g.notasCuant[g.alumnos[0].id] || {}), [a.id]: 7 }; save(); render(); });
+    await p.click('button[aria-label="Eliminar Control sorpresa"]'); await esperar(300);
+    const msg = await p.evaluate(() => document.querySelector('.dlg-overlay .dlg-msg')?.innerText || '');
+    t.ok(/Control sorpresa/.test(msg) && /notes d'esta activitat \(1 alumne avaluat\)/.test(msg), 'demana confirmació i avisa que s\'esborren les notes', msg);
+    await p.click('.dlg-overlay .dlg-no'); await esperar(200);
+    t.ok(await p.evaluate(() => state.grupos[0].actividades.some(x => x.nombre === 'Control sorpresa')), 'si cancel·les, no s\'elimina');
+    await p.click('button[aria-label="Eliminar Control sorpresa"]'); await esperar(300);
+    await p.click('.dlg-overlay .dlg-si'); await esperar(300);
+    r = await p.evaluate(() => { const g = state.grupos[0]; return { hi: g.actividades.some(x => x.nombre === 'Control sorpresa'), pap: g.papelera.actividades.length, nota: Object.values(g.notasCuant).some(o => Object.values(o || {}).includes(7)) }; });
+    t.ok(!r.hi && r.pap === 1 && !r.nota, 'en confirmar s\'elimina (amb les notes) i va a la paperera', JSON.stringify(r));
+    t.ok(!p.errores.length, 'sense errors de JavaScript', p.errores.slice(0, 3).join('; '));
+    await p.close();
+  } },
   { nombre: 'taula-notes', descripcion: "Avaluar → Taula de notes: alumnat × activitats de l'avaluació, per data, colors, nota de l'avaluació i clic → qualificar eixe alumne/a", async fn(t) {
     const p = await nuevaPagina(t.contexto);
     const ids = await cuadernoConGrupo(p, t.url);
