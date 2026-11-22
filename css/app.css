@@ -537,7 +537,11 @@
   body[data-proyector="1"] .priv{ filter:blur(7px); -webkit-user-select:none; user-select:none }
   body[data-proyector="1"] input.priv:focus, body[data-proyector="1"] textarea.priv:focus, body[data-proyector="1"] select.priv:focus{ filter:none }
   body[data-proyector="1"] #proyectorBtn{ background:var(--accent); color:var(--accent-ink)!important; border-color:var(--accent)!important }
-  @media print{ body[data-proyector="1"] .priv{ filter:none!important } }
+  /* També la informació sensible de l'alumnat: NESE, plans de reforç/repetició,
+     repetidor, pendents, anotacions, faltes, convivència i família (classe .sens). */
+  body[data-proyector="1"] .sens{ filter:blur(6px); -webkit-user-select:none; user-select:none; pointer-events:none }
+  body[data-proyector="1"] .av-al{ filter:blur(6px) }
+  @media print{ body[data-proyector="1"] .priv, body[data-proyector="1"] .sens{ filter:none!important } }
   /* v3 · Secciones del grupo: pestañas a la vista en pantallas anchas, desplegable en estrechas */
   .gseccions{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:10px;padding:4px;border-radius:14px;background:var(--surface-2)}
   .gseccio{padding:8px 6px;border-radius:10px;border:0;background:transparent;color:var(--mut);font-size:13.5px;font-weight:700;cursor:pointer;min-height:40px;transition:.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

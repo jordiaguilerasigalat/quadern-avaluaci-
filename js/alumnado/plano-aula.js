@@ -254,15 +254,15 @@ function renderAlumnos(grupo){
         <tr data-id="${a.id}" data-buscar="${esc(normalizarTexto(a.apellidos+" "+a.nombreP))}">
           <td><div style="display:flex;align-items:center">${avatarAlumneHTML(a,{mida:28})}<input class="in" style="width:100%;min-width:0;border-color:transparent;background:transparent" value="${esc(a.apellidos||"")}" onchange="renombrarApellidos('${a.id}',this.value)"></div></td>
           <td><input class="in" style="width:100%;border-color:transparent;background:transparent" value="${esc(a.nombreP||"")}" onchange="renombrarNombreP('${a.id}',this.value)"></td>
-          ${alumColVisible("nese")?`<td style="text-align:center"><input type="checkbox" ${a.nese?"checked":""} onchange="toggleNese('${a.id}',this.checked)"></td>`:""}
-          ${alumColVisible("nivelNese")?`<td style="font-size:12.5px">${a.nese?neseNivelHTML(a):'<span style="color:var(--mut);font-size:12.5px">—</span>'}</td>`:""}
-          ${alumColVisible("plan")?`<td><select class="in" style="width:100%;font-size:12.5px;padding:6px 8px" onchange="setAlumnoPlan('${a.id}',this.value)">
+          ${alumColVisible("nese")?`<td class="sens" style="text-align:center"><input type="checkbox" ${a.nese?"checked":""} onchange="toggleNese('${a.id}',this.checked)"></td>`:""}
+          ${alumColVisible("nivelNese")?`<td class="sens" style="font-size:12.5px">${a.nese?neseNivelHTML(a):'<span style="color:var(--mut);font-size:12.5px">—</span>'}</td>`:""}
+          ${alumColVisible("plan")?`<td class="sens"><select class="in" style="width:100%;font-size:12.5px;padding:6px 8px" onchange="setAlumnoPlan('${a.id}',this.value)">
             <option value="" ${!a.plan?"selected":""}>— Ninguno —</option>
             <option value="refuerzo" ${a.plan==="refuerzo"?"selected":""}>Refuerzo</option>
             <option value="repeticion" ${a.plan==="repeticion"?"selected":""}>Repetición</option>
           </select></td>`:""}
-          ${alumColVisible("repite")?`<td style="text-align:center"><input type="checkbox" ${a.repetidor?"checked":""} onchange="toggleRepetidor('${a.id}',this.checked)"></td>`:""}
-          ${alumColVisible("pendientes")?`<td><button class="ghost" style="font-size:11.5px;padding:5px 8px;width:100%;overflow:hidden;text-overflow:ellipsis" onclick="togglePendientesRow('${a.id}')">${a.pendientes.length?esc(a.pendientes.map(n=>n+"º").join(", ")):"— Ninguna —"}</button></td>`:""}
+          ${alumColVisible("repite")?`<td class="sens" style="text-align:center"><input type="checkbox" ${a.repetidor?"checked":""} onchange="toggleRepetidor('${a.id}',this.checked)"></td>`:""}
+          ${alumColVisible("pendientes")?`<td class="sens"><button class="ghost" style="font-size:11.5px;padding:5px 8px;width:100%;overflow:hidden;text-overflow:ellipsis" onclick="togglePendientesRow('${a.id}')">${a.pendientes.length?esc(a.pendientes.map(n=>n+"º").join(", ")):"— Ninguna —"}</button></td>`:""}
           ${alumColVisible("nacimiento")?`<td>
             <input type="date" class="in" style="width:100%;font-size:12.5px;padding:6px 8px" value="${esc(a.fechaNacimiento||"")}" onchange="setFechaNacimiento('${a.id}',this.value)" onblur="refrescarFechaNacimiento()">
             ${a.fechaNacimiento?"":`<input type="text" class="in" placeholder="o DD/MM/AAAA" title="Escriu la data completa (o només apega-la) i polsa Intro o ix del camp" style="width:100%;font-size:11px;padding:3px 8px;margin-top:3px;border-color:transparent;background:transparent" onkeydown="if(event.key==='Enter'){ if(setFechaNacimientoTexto('${a.id}',this.value)) this.blur(); }" onblur="if(this.value){ setFechaNacimientoTexto('${a.id}',this.value); this.value=''; }">`}

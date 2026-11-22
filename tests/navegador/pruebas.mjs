@@ -525,6 +525,15 @@ export const PRUEBAS = [
         grupoVisible: !document.querySelector('.gpill.on').closest('.priv'), blur: getComputedStyle(document.querySelector('.priv')).filter }; });
     t.ok(notas.filas === 3 && notas.notasOcultas && /blur/.test(notas.blur), 'las notas de cada fila también se difuminan', JSON.stringify(notas));
     t.ok(notas.grupoVisible, 'el resto (grupo, actividades, botones) se sigue viendo');
+    const sens = await p.evaluate(async () => { const g = state.grupos[0]; g.alumnos[0].nese = true; g.alumnos[1].repetidor = true; state.ui.tab = 'alumnos'; save(); render();
+      const espera = () => new Promise(r => setTimeout(r, 200)); await espera();
+      const blur = el => !!el && /blur/.test(getComputedStyle(el).filter);
+      const tds = [...document.querySelectorAll('#tabContent td.sens')]; const cols = tds.length > 0 && tds.every(blur);
+      state.ui.tab = 'calificar'; render(); await espera(); const badge = blur(document.querySelector('.badge-nese'));
+      state.ui.fichaAlumnoId = g.alumnos[0].id; render(); await espera();
+      const fitxa = [...document.querySelectorAll('.sens')].filter(el => el.closest('.modal-overlay, .modal, [role=dialog]')); const fx = fitxa.length > 0 && fitxa.every(blur);
+      state.ui.fichaAlumnoId = null; render(); return { badge, cols, fitxa: fx }; });
+    t.ok(sens.badge && sens.cols && sens.fitxa, 'també es difumina la informació sensible: NESE, plans, repetidor, pendents i la fitxa (anotacions, faltes, convivència, família, diversitat)', JSON.stringify(sens));
     await p.click('#cronoFab'); await p.click('[data-clase-tab="sorteo"]'); await p.click('button:has-text("Triar algú")'); await esperar(900);
     t.ok(await p.evaluate(() => !document.getElementById('claseElegido').closest('.priv') && /Wenceslao|Brígida|Úrsula/.test(document.getElementById('claseElegido').textContent)), 'el sorteo sí muestra el nombre (está pensado para proyectarlo)');
     await p.reload(); await esperar(1500);
