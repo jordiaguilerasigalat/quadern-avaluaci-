@@ -141,14 +141,14 @@ window.aplicarArreglosDiagnostico=async()=>{
 };
 
 /* v3 · Tarjeta de novedades: se ve una vez tras actualizar, y se cierra. */
-const NOVEDADES_VERSION="fiq-2";
+const NOVEDADES_VERSION="fiq-3";
 window.cerrarNovedades=()=>{ state.novedadesVistas=NOVEDADES_VERSION; save(); render(); };
 const NOVEDADES_V3=[
-  ["🧾 Acta de la sessió d'avaluació","en Resultats: mitjanes, distribució de notes, suspesos per tema, alumnat amb mesures, faltes i espai per als acords."],
-  ["👪 Informes per a les famílies","una pàgina per alumne/a amb notes, temes, faltes, observacions i signatures (Resultats o la fitxa de l'alumne/a)."],
-  ["🔁 Repàs per temes","en la Programació del grup, cada tema té un dossier de repàs en PDF (exercicis + models d'examen) i fitxes personalitzades per a qui ha de recuperar."],
-  ["🛟 Més recordatoris de còpia","cada dispositiu guarda les seues dades: l'app avisa en Inici als 3 dies o 20 canvis sense còpia."],
-  ["✍️ Crèdits","el material d'altres autors (Nelo Traver, Rafael Bueno, Jesús Escrivà, PAU) porta el seu nom."]
+  ["📋 Taula de notes","en Avaluar: tot l'alumnat × totes les activitats de l'avaluació, amb colors. Toca una nota per a vore la rúbrica, o el nom d'una activitat per a qualificar tot el grup."],
+  ["🔀 Examen alternatiu","des del Corrector: una còpia amb altres dades numèriques o una versió nova generada amb IA."],
+  ["🏫 Capçalera del centre","puja la imatge en Inici i ix (si vols) en informes, actes i exàmens."],
+  ["➕ Activitats pròpies","«+ Nova activitat» en Activitats o en la Taula de notes; es poden eliminar (van a la paperera)."],
+  ["✨ Més senzill","menys botons repetits: un sol «Inici», el quadern NESE en una columna i les opcions avançades plegades."]
 ];
 function novedadesHTML(){
   if(state.novedadesVistas===NOVEDADES_VERSION) return "";

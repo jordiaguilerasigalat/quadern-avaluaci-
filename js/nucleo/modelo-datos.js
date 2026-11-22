@@ -106,8 +106,8 @@ function ordenarAlumnos(grupo){
 }
 function neseBadgeHTML(a){
   if(!a.nese) return "";
-  const txt = a.neseNivel? `NESE · ${a.neseNivel}` : "NESE";
-  return `<span class="badge" style="font-size:10px;margin-left:9px;color:var(--warning);border-color:var(--warning);vertical-align:middle" title="Necesidad específica de apoyo educativo">${esc(txt)}</span>`;
+  const txt = a.neseNivel? `NESE · ${typeof traduirText==="function"?traduirText(a.neseNivel):a.neseNivel}` : "NESE";
+  return `<span class="badge badge-nese" style="font-size:10px;margin-left:9px;color:var(--warning);border-color:var(--warning);vertical-align:middle" title="Necesidad específica de apoyo educativo">${esc(txt)}</span>`;
 }
 function planBadgeHTML(a){
   if(!a.plan) return "";
@@ -169,7 +169,7 @@ function alumColVisible(colId){ return !(state.ui.alumColumnasOcultas||[]).inclu
 // arrastrando el borde derecho de cualquier cabecera; lo elegido se recuerda.
 const ALUM_COL_ANCHO_DEFECTO={
   apellidos:205, nombre:130, nese:55, nivelNese:115, plan:110,
-  repite:65, pendientes:105, nacimiento:130, edad:65, familia:90
+  repite:65, pendientes:105, nacimiento:148, edad:65, familia:90
 };
 function alumColAncho(colId){
   const guardado=(state.ui.alumColAnchos||{})[colId];

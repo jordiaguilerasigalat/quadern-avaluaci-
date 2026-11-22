@@ -309,7 +309,7 @@ window.restaurarCopiaAuto=async id=>{
   let c; try{ c=await idbGet("copias",id); }catch(e){}
   if(!c){ mostrarAviso("No se encuentra esa copia."); return; }
   const actual=resumenEstado(state);
-  if(!await confirmar(`¿Restaurar la copia del ${_fechaHora(c.fecha)}?\n• ${c.resumen}\n\nSustituirá lo que tienes ahora (${actual.texto}). Antes se guarda una copia de lo actual, por si quieres volver atrás.`)) return;
+  if(!await confirmar(`Vols restaurar la còpia del ${_fechaHora(c.fecha)}?\n• ${c.resumen}\n\nSubstituirà el que tens ara (${actual.texto}). Abans es guarda una còpia del que hi ha ara, per si vols tornar arrere.`)) return;
   await crearCopiaAuto("Antes de restaurar",true);
   let nuevo; try{ nuevo=JSON.parse(c.json); }catch(e){ mostrarAviso("La copia está dañada y no se puede restaurar."); return; }
   if(cargarEstadoCompleto(nuevo)){ cerrarCopias(); mostrarToast("✓ Copia restaurada"); }

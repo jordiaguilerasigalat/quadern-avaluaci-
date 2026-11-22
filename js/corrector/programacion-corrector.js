@@ -202,7 +202,7 @@ window.progAbrirEnCorrector=async actId=>{
   const trim=trims.length? Math.min(...trims) : state.ui.trim;
   act=progCrearActividadEnGrupo(grupo,progAct,trim);
   cxAbrirEditor(grupo,act);
-  mostrarToast(`✓ Añadido a Evaluación de ${grupo.nombre} (${TRIMESTRES[trim]}) con rúbrica`);
+  mostrarToast(`✓ Afegit a l'avaluació de ${grupo.nombre} (${TRIMESTRES[trim]}) amb rúbrica`);
 };
 /* Guardar la rúbrica de un examen del grupo en su actividad de la Programación. */
 window.cxGuardarRubricaEnProgramacion=async examId=>{

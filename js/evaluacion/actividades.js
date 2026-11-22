@@ -28,7 +28,7 @@ function _renderActividadesLlista(grupo){
   <div class="card" id="actFormLliure">
     <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;flex-wrap:wrap">
       <h2>${editando?"Editar l'activitat":propia?"Activitat pròpia (sense Situació d'Aprenentatge)":"Nova activitat d'avaluació"}</h2>
-      ${propia?`<button class="ghost" onclick="actTancarFormLliure()">✕ Tancar</button>`:""}
+      ${!editando?`<button class="ghost" onclick="actTancarFormLliure()">✕ Tancar</button>`:""}
     </div>
     <p class="sub">${editando?"Modifica les dades i guarda els canvis.":`Es crea en la ${TRIMESTRES[state.ui.trim]}${propia?" i no queda vinculada a cap Situació d'Aprenentatge de la Programació":""}.`} Tria el tipus (deures, examen, treball…) i el bloc on compta per a la nota quantitativa. ${f.esExamen?"En un examen els criteris són opcionals: la nota que compta és la que poses en Qualificar.":"Marca un o diversos criteris, cadascun amb el seu pes dins de l'activitat: l'escala de 4 nivells s'aplica a cada criteri."}</p>
     <div class="grid" style="margin-bottom:14px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
@@ -36,10 +36,10 @@ function _renderActividadesLlista(grupo){
       <label style="display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--mut)">📅 Data (opcional; apareix al calendari)<input class="in" type="date" id="fData" value="${esc(f.fecha||"")}" onchange="state.ui.form.fecha=this.value;save()"></label>
       ${prog?`<label style="display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--mut)">Tema${temaSelectHTML(grupo,f.temaId??(state.ui.segTema||((temaActualGrup(grupo)||{}).id)||""),'id="fTema" aria-label="Tema de l\x27activitat" onchange="state.ui.form.temaId=this.value;save()"')}</label>`:`<input class="in" id="fSdA" placeholder="Situación de Aprendizaje (opcional, ej. SdA 1)" value="${esc(f.sda||'')}">`}
     </div>
-    <div class="grid" style="margin-bottom:14px">
-      <div class="flex">
-        <select class="in" id="fT">${TIPOS.map(t=>`<option ${t===f.tipo?"selected":""}>${t}</option>`).join("")}</select>
-        <select class="in" id="fB">${grupo.bloques.map(b=>`<option value="${b.id}" ${b.id===f.bloqueId?"selected":""}>${esc(b.label)} (${b.inactiu?"desactivat":b.peso+" %"})</option>`).join("")}</select>
+    <div class="grid" style="margin-bottom:14px;grid-template-columns:minmax(0,1fr)">
+      <div class="flex" style="flex-wrap:wrap">
+        <select class="in" id="fT" style="max-width:100%;min-width:0">${TIPOS.map(t=>`<option ${t===f.tipo?"selected":""}>${t}</option>`).join("")}</select>
+        <select class="in" id="fB" style="max-width:100%;min-width:0">${grupo.bloques.map(b=>`<option value="${b.id}" ${b.id===f.bloqueId?"selected":""}>${esc(b.label)} (${b.inactiu?"desactivat":b.peso+" %"})</option>`).join("")}</select>
         <label style="display:flex;align-items:center;gap:7px;font-size:14px;color:var(--mut)">
           <input type="checkbox" id="fE" ${f.esExamen?"checked":""}> Es examen / prueba objetiva (nota cuantitativa propia)
         </label>
@@ -69,7 +69,7 @@ function _renderActividadesLlista(grupo){
     </div>
     <div class="flex" style="margin-top:12px">
       <button class="btn" id="fSave" onclick="saveActividad()" ${!actFormValid(f)?"disabled":""}>${editando?"Guardar els canvis":"Guardar l'activitat"}</button>
-      ${editando||propia?`<button class="ghost" onclick="${editando?"cancelarEdicionActividad()":"actTancarFormLliure()"}">Cancel·lar</button>`:""}
+      <button class="ghost" onclick="${editando?"cancelarEdicionActividad()":"actTancarFormLliure()"}">Cancel·lar</button>
     </div>
   </div>`;
   const selectorProgramacionHTML=!prog?"":`
@@ -93,14 +93,27 @@ function _renderActividadesLlista(grupo){
       <span class="sub" style="margin:0">Deures, un examen, un treball… que només fas en este grup i no és de cap Situació d'Aprenentatge.</span>
     </div>
   </div>`;
-  c.innerHTML=(editando||!prog||state.ui.formLliure?formularioLibreHTML:selectorProgramacionHTML)+`
-  <div class="card">
-    <h2>Activitats de ${TRIMESTRES[state.ui.trim]}</h2>
+  /* Sense Programació, el formulari s'obri només en prémer «+ Nova activitat»
+     (abans estava sempre obert i feia la pantalla molt llarga). */
+  const botoNovaHTML=`
+  <div class="card" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <button class="btn" onclick="actObrirFormLliure()">+ Nova activitat</button>
+    <span class="sub" style="margin:0">Una activitat de qualsevol tipus, triant tu el bloc i els criteris. Per a Deures, Laboratori… també pots usar el «+ Nova» de cada apartat de dalt.</span>
+  </div>`;
+  const nActs=actsTrim(grupo).length;
+  /* Amb els apartats de dalt (Exàmens, Deures…) les activitats ja es veuen allí:
+     la llista completa queda plegada fins que l'obris. */
+  const hiHaApartats=typeof segApartatsHTML==="function" && !!segApartatsHTML(grupo);
+  const llistaOberta=state.ui.actLlistaOberta===true || (state.ui.actLlistaOberta!==false && !hiHaApartats) || editando;
+  c.innerHTML=(editando||state.ui.formLliure?formularioLibreHTML:prog?selectorProgramacionHTML:botoNovaHTML)+`
+  <details class="card act-llista" ${llistaOberta?"open":""} ontoggle="state.ui.actLlistaOberta=this.open;save()">
+    <summary style="cursor:pointer"><h2 style="display:inline">Totes les activitats de la ${TRIMESTRES[state.ui.trim]} <span class="sub" style="font-weight:400">(${nActs})</span></h2>
+      <div class="sub" style="margin:2px 0 0">Ordenar, editar, duplicar, crear recuperacions i eliminar.</div></summary>
     ${actsTrim(grupo).length>1?`<p class="sub" style="margin:4px 0 0">Ordena-les com vulgues: arrossega una activitat per ⠿ o usa ▲▼. L'ordre també s'usa en Qualificar, Resultats i informes.</p>`:""}
     ${actsTrim(grupo).length? `<div class="grid" style="margin-top:8px">${actsTrim(grupo).map((a,iAct,lista)=>{
       const b=grupo.bloques.find(x=>x.id===a.bloqueId);
       const pctEnBloque=pesoActividadEnBloque(grupo,a).toFixed(0);
-      const tipoDesc = a.rubrica ? "examen amb rúbrica: nota quantitativa + % per criteri (gestionat des del Corrector)"
+      const tipoDesc = a.rubrica ? (/examen/i.test(a.tipo||"")?"examen amb rúbrica":"amb rúbrica")+": nota quantitativa + % per criteri (gestionat des del Corrector)"
         : a.esExamen ? "examen: nota quantitativa + escala de 4 nivells per criteri" : "escala de 4 nivells";
       const nAct=lista.length;
       return `<div class="act-row" ${nAct>1?`ondragstart="actDragStart(event,'${a.id}')" ondragend="actDragEnd()" ondragover="actDragOver(event,this)" ondragleave="this.classList.remove('act-drop')" ondrop="actDrop(event,'${a.id}')"`:""} data-actid="${a.id}" style="border:1px solid var(--line);border-radius:8px;padding:10px 12px">
@@ -129,7 +142,7 @@ function _renderActividadesLlista(grupo){
         </div>
       </div>`;}).join("")}</div>`
       : '<p style="color:var(--mut);font-size:14px">Todavía no hay actividades en este periodo.</p>'}
-  </div>
+  </details>
   ${state.ui.recModalAct?recModalHTML(grupo):""}
   ${grupo.papelera.actividades.length? `<div class="card">
     <h2 style="font-size:15px">Paperera d'activitats</h2>
@@ -345,7 +358,7 @@ window.saveActividad=()=>{ const grupo=grupoActual(); const f=state.ui.form;
     const nova={id:uid(),trimestre:state.ui.trim,nombre:f.nombre.trim(),tipo:f.tipo,bloqueId:f.bloqueId,esExamen:f.esExamen,pesoBloque,criterios,sda:sdaStr,temaId};
     grupo.actividades.push(nova);
     agFixarDataActivitat(grupo,nova,dataSel);
-    if(state.ui.formLliure) mostrarToast("✓ Activitat pròpia creada: «"+nova.nombre+"»");
+    if(state.ui.formLliure) mostrarToast((progDeGrupo(grupo)?"✓ Activitat pròpia creada: «":"✓ Activitat creada: «")+nova.nombre+"»");
   }
   state.ui.formLliure=false;
   state.ui.form={editId:null,nombre:"",tipo:TIPOS[0],esExamen:false,bloqueId:"",pesoBloque:"",links:[],sda:""}; save(); render(); };

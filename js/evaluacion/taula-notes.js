@@ -48,10 +48,15 @@ function tnCriterisCap(grupo,a){
 function renderTaulaNotes(grupo){
   const c=document.getElementById("tabContent");
   const trim=state.ui.trim;
-  const selTrim=`<label class="tn-trim">Avaluació
-    <select class="in" onchange="tnTriarAvaluacio(this.value)">${TRIMESTRES.map((t,i)=>`<option value="${i}" ${i===trim?"selected":""}>${t}</option>`).join("")}</select></label>`;
-  const acts=tnActivitats(grupo);
-  if(!grupo.alumnos.length || !acts.length){
+  /* L'avaluació es tria amb el selector de la barra de dalt (un sol selector per a tota l'app). */
+  const selTrim="";
+  const totes=tnActivitats(grupo);
+  /* Les tasques del quadern NESE (una per alumne/a i tema) s'ajunten en una
+     sola columna; «Vore les tasques» les desplega una per una. */
+  const qn=totes.filter(x=>x.a.quadernNese);
+  const qnDetall=!!state.ui.tnQnDetall;
+  const acts=qnDetall? totes : totes.filter(x=>!x.a.quadernNese);
+  if(!grupo.alumnos.length || !totes.length){
     c.innerHTML=`<div class="card"><div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px"><h2>Taula de notes</h2>${selTrim}</div>
       <p class="sub" style="margin:8px 0 0">${!grupo.alumnos.length?"Afig abans l'alumnat del grup.":"Encara no hi ha cap activitat en esta avaluació. Crea-les en <strong>Activitats</strong> i ací apareixeran en columnes."}</p>${grupo.alumnos.length?`<button class="btn" style="margin-top:10px" onclick="tnNovaActivitat()">＋ Nova activitat</button>`:""}</div>`;
     return;
@@ -64,6 +69,13 @@ function renderTaulaNotes(grupo){
       <div class="tn-act-crit" title="${esc(crits.join(", "))}">${crits.length?esc(crits.join(" · ")):'<span class="tn-mut">sense criteris</span>'}</div>
     </th>`;
   }).join("");
+  const qnResum=qn.length && !qnDetall;
+  const capQn=!qn.length? "" : qnResum
+    ? `<th scope="col" class="tn-act tn-qn" title="Tasques del quadern de reforç NESE (cada alumne/a només les seues)">
+      <button type="button" class="tn-act-nom" onclick="tnQnDetall(true)" title="Vore les ${qn.length} tasques del quadern NESE una per una">📒 Quadern NESE</button>
+      <div class="tn-act-data">${qn.length} tasques</div>
+      <div class="tn-act-crit"><button type="button" class="tn-qn-tog" onclick="tnQnDetall(true)">Vore-les ▸</button></div></th>`
+    : "";
   const files=grupo.alumnos.map((al,i)=>{
     const cel=acts.map(({a})=>{
       const m=marcaDe(grupo,al.id,a.id);
@@ -74,8 +86,17 @@ function renderTaulaNotes(grupo){
       const rec=!a.recupera && recuperacionesDe(grupo,a.id).some(r=>notaActividadBase(grupo,al.id,r)!=null);
       return `<td class="tn-cel${m==="EX"?" tn-ex":""}"${bg?` style="background:${bg}"`:""}><button type="button" onclick="tnObrir('${al.id}','${a.id}')" aria-label="${esc(al.nombre)} · ${esc(a.nombre)}: ${m==="EX"?"exempt":txt||"sense nota"}"${m==="EX"?' title="Exempt: no compta per a este alumne/a"':""}>${txt}${extra?'<sup title="Amb punts extra">+</sup>':""}${rec?'<sup title="Amb recuperació">🔁</sup>':""}</button></td>`;
     }).join("");
+    let celQn="";
+    if(qnResum){
+      const vs=qn.filter(({a})=>marcaDe(grupo,al.id,a.id)!=="EX").map(({a})=>tnNota(grupo,al.id,a,trim)).filter(v=>v!=null&&!isNaN(v));
+      const nTas=qn.filter(({a})=>marcaDe(grupo,al.id,a.id)!=="EX").length;
+      const mitj=vs.length? vs.reduce((x,y)=>x+y,0)/vs.length : null;
+      celQn= nTas
+        ? `<td class="tn-cel"${mitj!=null?` style="background:${tnColor(mitj)}"`:""}><button type="button" onclick="tnQnDetall(true)" aria-label="${esc(al.nombre)} · quadern NESE: ${mitj==null?"sense nota":"mitjana "+fmt(mitj)}" title="Mitjana de ${vs.length} de ${nTas} tasques del quadern NESE">${mitj==null?"":fmt(mitj)}</button></td>`
+        : `<td class="tn-cel tn-ex"><span class="tn-mut" title="No té quadern NESE">—</span></td>`;
+    }
     const nt=notaTrimestre(grupo,al.id,trim);
-    return `<tr><th scope="row" class="tn-al"><span class="tn-num">${i+1}.</span> ${nomFitxaHTML(al)}${neseBadgeHTML(al)}</th>${cel}
+    return `<tr><th scope="row" class="tn-al"><span class="tn-num">${i+1}.</span> ${nomFitxaHTML(al)}${neseBadgeHTML(al)}</th>${cel}${celQn}
       <td class="tn-cel tn-final"${nt!=null?` style="background:${tnColor(nt)}"`:""}><span>${nt==null?"—":fmt(nt)}</span></td><td class="tn-cel tn-nova-cel"></td></tr>`;
   }).join("");
   c.innerHTML=`<div class="card tn-card">
@@ -86,7 +107,7 @@ function renderTaulaNotes(grupo){
     </div>
     <div class="tn-wrap scroll" tabindex="0" aria-label="Taula de notes de ${esc(TRIMESTRES[trim]||"")}">
       <table class="tn-taula">
-        <thead><tr><th scope="col" class="tn-al tn-esq">Alumnat <span class="tn-mut">(${grupo.alumnos.length})</span></th>${cap}<th scope="col" class="tn-act tn-final"><div class="tn-act-nom">Nota ${esc((TRIMESTRES[trim]||"").replace(/ avaluació$/," av."))}</div><div class="tn-act-data">&nbsp;</div><div class="tn-act-crit">${modoNotaGrupo(grupo)==="ce"?"per competències":"per blocs"}</div></th><th scope="col" class="tn-act tn-nova"><button type="button" class="tn-nova-bt" onclick="tnNovaActivitat()" title="Crear una activitat nova en esta avaluació (es crea en Activitats, com totes)"><span aria-hidden="true">＋</span>Nova activitat</button></th></tr></thead>
+        <thead><tr><th scope="col" class="tn-al tn-esq">Alumnat <span class="tn-mut">(${grupo.alumnos.length})</span>${qn.length&&qnDetall?`<div><button type="button" class="tn-qn-tog" onclick="tnQnDetall(false)">◂ Ajuntar el quadern NESE</button></div>`:""}</th>${cap}${capQn}<th scope="col" class="tn-act tn-final"><div class="tn-act-nom">Nota ${esc((TRIMESTRES[trim]||"").replace(/ avaluació$/," av."))}</div><div class="tn-act-data">&nbsp;</div><div class="tn-act-crit">${modoNotaGrupo(grupo)==="ce"?"per competències":"per blocs"}</div></th><th scope="col" class="tn-act tn-nova"><button type="button" class="tn-nova-bt" onclick="tnNovaActivitat()" title="Crear una activitat nova en esta avaluació (es crea en Activitats, com totes)"><span aria-hidden="true">＋</span>Nova activitat</button></th></tr></thead>
         <tbody>${files}</tbody>
       </table>
     </div>
@@ -96,6 +117,7 @@ function renderTaulaNotes(grupo){
     if(w&&th){ w.scrollLeft=Math.max(0,th.offsetLeft-w.clientWidth/2); th.classList.add("tn-recent"); } }
 }
 
+window.tnQnDetall=v=>{ state.ui.tnQnDetall=!!v; save(); render(); };
 window.tnTriarAvaluacio=v=>{ state.ui.trim=Number(v)||0; state.ui.tnCel=null; save(); render(); };
 window.tnObrirQualificar=actId=>{ state.ui.calAct=actId; state.ui.tnCel=null; state.ui.tab="calificar"; save(); render(); };
 let _tnModalScroll=0;
@@ -187,7 +209,7 @@ window.tnNovaActivitat=()=>{
   const grupo=grupoActual(); if(!grupo) return;
   state.ui.tnTornar=true; state.ui.tnCel=null; state.ui.segAct="";
   state.ui.form={editId:null,nombre:"",tipo:TIPOS[0],esExamen:false,bloqueId:"",pesoBloque:"",links:[],sda:""};
-  state.ui.formLliure=false;
+  state.ui.formLliure=!progDeGrupo(grupo);
   state.ui.tab="actividades"; save(); render(); window.scrollTo(0,0);
 };
 window.tnTornarTaula=()=>{ state.ui.tnTornar=false; state.ui.formLliure=false; state.ui.tab="taula"; save(); render(); };

@@ -142,9 +142,12 @@ function renderAjustes(grupo){
 
   ${escalaQualAjustosHTML(grupo)}
 
-  <div class="card">
-    <h2>Cortes de las escalas cualitativas</h2>
-    <p class="sub">Percentatge mínim de cada nivell. Per davall d’«En procés» → Necessita millorar.</p>
+  <details class="card ajustos-avancats" ${state.ui.ajAvancats?"open":""} ontoggle="state.ui.ajAvancats=this.open;save()">
+    <summary style="cursor:pointer"><h2 style="display:inline">⚙️ Opcions avançades del perfil competencial</h2>
+      <div class="sub" style="margin:2px 0 0">Normalment no cal tocar-les. Afecten només els percentatges del perfil (competències clau i CE en %), no la nota.</div></summary>
+  <div style="margin-top:14px">
+    <h3 style="font-size:15px;margin:0 0 4px">Etiquetes del perfil en percentatge</h3>
+    <p class="sub">Percentatge mínim de cada nivell. Per davall d’«En procés» → Necessita millorar. S'usen només en les gràfiques i els perfils en % (p. ex. «72 % Adequat»). La qualificació NA/S/B/N/E es configura en «Escala qualitativa de les competències», dalt.</p>
     <div class="flex">
       ${[["excelente","Excel·lent ≥"],["adecuado","Adequat ≥"],["enProceso","En procés ≥"]].map(([k,l])=>`
         <label style="font-size:13.5px;color:var(--mut);display:flex;flex-direction:column;gap:4px">${l}
@@ -152,8 +155,8 @@ function renderAjustes(grupo){
     </div>
   </div>
 
-  <div class="card">
-    <h2>Peso de cada competencia específica dentro de su competencia clave</h2>
+  <div style="margin-top:18px">
+    <h3 style="font-size:15px;margin:0 0 4px">Pes de cada competència específica dins de la seua competència clau</h3>
     <p class="sub">Pesos relativos: se normalizan solos. En blanco = reparto equitativo.</p>
     ${Object.keys(COMP_CLAVE).filter(cc=>idx.cat.ces.some(ce=>ce.cc.includes(cc))).map(cc=>`
       <div style="margin-bottom:12px">
@@ -164,8 +167,8 @@ function renderAjustes(grupo){
       </div>`).join("")}
   </div>
 
-  <div class="card">
-    <h2>Peso de cada criterio dentro de su competencia específica</h2>
+  <div style="margin-top:18px">
+    <h3 style="font-size:15px;margin:0 0 4px">Pes de cada criteri dins de la seua competència específica</h3>
     <p class="sub">En blanco = reparto equitativo entre los criterios de cada CE.</p>
     ${idx.cat.ces.map(ce=>`
       <div style="margin-bottom:12px">
@@ -174,7 +177,8 @@ function renderAjustes(grupo){
           <label style="font-size:12.5px;color:var(--mut);display:flex;align-items:center;gap:5px">${cr.id}
             <input class="in miniw" type="number" placeholder="${pesoCriterio(grupo,cr.id).toFixed(0)}" value="${grupo.pesos.crit[cr.id]??''}" oninput="setCrit('${cr.id}',this.value)"></label>`).join("")}</div>
       </div>`).join("")}
-  </div>`;
+  </div>
+  </details>`;
   document.getElementById("gpNombre").addEventListener("keydown",e=>{ if(e.key==="Enter") renombrarGrupo(); });
   ["gpMateria","gpCurso"].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener("keydown",e=>{ if(e.key==="Enter") renombrarMateriaGrupo(); }); });
 }
