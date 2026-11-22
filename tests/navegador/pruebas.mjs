@@ -1956,7 +1956,7 @@ export const PRUEBAS = [
     t.ok(despres > abans + 3, 'en Criteris d\'avaluació, «Mostrar tots els criteris» obri tot el currículum', abans + ' → ' + despres);
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
-  { nombre: 'tornar', descripcion: 'Botó «← Tornar» de la barra superior: torna a la pantalla anterior (grup, secció, corrector…) en totes les pantalles', async fn(t) {
+  { nombre: 'tornar', descripcion: 'Botó flotant «← Tornar»: torna a la pantalla anterior (grup, secció, corrector…) en totes les pantalles', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     await cuadernoConGrupo(p, t.url, { nombres: ['Alfa, Ana', 'Beta, Bruno'] });
     const estat = () => p.evaluate(() => [state.ui.appMode, state.ui.tab, state.ui.corTab].join('/'));
@@ -1964,18 +1964,20 @@ export const PRUEBAS = [
     await p.evaluate(() => { state.ui.appMode = 'competencial'; state.ui.grupoId = state.grupos[0].id; state.ui.tab = 'alumnos'; save(); render(); }); await esperar(200);
     await p.evaluate(() => { state.ui.tab = 'resultados'; save(); render(); }); await esperar(200);
     await p.evaluate(() => { state.ui.appMode = 'corrector'; state.ui.corTab = 'lista'; save(); render(); }); await esperar(300);
-    t.ok(await p.isVisible('#btnTornar') && await p.isEnabled('#btnTornar'), 'el Corrector d\'exàmens té el botó «← Tornar» actiu');
-    await p.click('#btnTornar'); await esperar(200);
+    t.ok(await p.isVisible('#navFab') && await p.isEnabled('#navFab'), 'el Corrector d\'exàmens té el botó flotant «← Tornar»');
+    await p.evaluate(() => window.scrollTo(0, 5000)); await esperar(100);
+    t.ok(await p.isVisible('#navFab'), 'el botó flotant «← Tornar» es veu encara que la barra de dalt quede fora de la pantalla');
+    await p.click('#navFab'); await esperar(200);
     const a = await estat();
-    await p.click('#btnTornar'); await esperar(200);
+    await p.click('#navFab'); await esperar(200);
     const b = await estat();
-    await p.click('#btnTornar'); await esperar(200);
+    await p.click('#navFab'); await esperar(200);
     const c = await estat();
     t.ok(a === 'competencial/resultados/lista' && b === 'competencial/alumnos/lista' && /^inicio\//.test(c), 'torna pas a pas: Resultats → Alumnat → Inici', [a, b, c].join(' · '));
-    t.ok(await p.isDisabled('#btnTornar'), 'quan no hi ha on tornar, el botó queda desactivat');
+    t.ok(!(await p.isVisible('#navFab')), 'quan no hi ha on tornar, el botó flotant no ix');
     for (const mode of ['programacion', 'reuniones', 'refuerzo', 'repeticion', 'nese', 'biblioteca', 'memoria', 'pendents']) {
       await p.evaluate(m => { state.ui.appMode = m; save(); render(); }, mode); await esperar(150);
-      t.ok(await p.isVisible('#btnTornar') && await p.isEnabled('#btnTornar'), 'botó «← Tornar» a ' + mode);
+      t.ok(await p.isVisible('#navFab') && await p.isEnabled('#navFab'), 'botó «← Tornar» a ' + mode);
     }
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
@@ -2083,5 +2085,46 @@ export const PRUEBAS = [
     t.ok(!r.hi && r.pap === 1 && !r.nota, 'en confirmar s\'elimina (amb les notes) i va a la paperera', JSON.stringify(r));
     t.ok(!p.errores.length, 'sense errors de JavaScript', p.errores.slice(0, 3).join('; '));
     await p.close();
+  } },
+  { nombre: 'taula-notes', descripcion: "Avaluar → Taula de notes: alumnat × activitats de l'avaluació, per data, colors, nota de l'avaluació i clic → qualificar eixe alumne/a", async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const ids = await cuadernoConGrupo(p, t.url);
+    const r = await p.evaluate(async ids => {
+      const g = state.grupos[0], cr = (g.bloques[0] && g.bloques[0].id) || '';
+      const cid = '1.1';
+      g.actividades.push({ id: 'a1', nombre: 'Deures 1', tipo: TIPOS[0], trimestre: 0, bloqueId: cr, esExamen: false, criterios: [{ critId: cid, peso: 100 }] });
+      g.actividades.push({ id: 'a2', nombre: 'Examen 1', tipo: TIPOS[0], trimestre: 0, bloqueId: cr, esExamen: true, criterios: [] });
+      g.actividades.push({ id: 'a3', nombre: 'Altra avaluació', tipo: TIPOS[0], trimestre: 1, bloqueId: cr, esExamen: true, criterios: [] });
+      agFixarDataActivitat(g, g.actividades[0], '2026-10-20'); agFixarDataActivitat(g, g.actividades[1], '2026-10-05');
+      g.notas[ids[0]] = { a1: { [cid]: 10 } }; g.notasCuant[ids[0]] = { a2: 3 };
+      g.marcas[ids[1]] = { a2: 'NP' }; aplicarMarca(g, g.actividades[1], ids[1]);
+      state.ui.appMode = 'competencial'; state.ui.tab = 'taula'; save(); render();
+      await new Promise(r => setTimeout(r, 100));
+      const out = {};
+      out.cols = [...document.querySelectorAll('.tn-taula thead .tn-act:not(.tn-final) .tn-act-nom')].map(x => x.textContent.trim());
+      out.files = document.querySelectorAll('.tn-taula tbody tr').length;
+      const fila0 = [...document.querySelectorAll('.tn-taula tbody tr')[0].querySelectorAll('.tn-cel')];
+      out.f0 = fila0.map(x => x.textContent.trim()); out.bg = fila0.map(x => x.style.background || '');
+      out.np = document.querySelectorAll('.tn-taula tbody tr')[1].querySelectorAll('.tn-cel')[0].textContent.trim();
+      out.data = document.querySelector('.tn-taula thead .tn-act-data').textContent.trim();
+      // Clic en la casella de Deures 1 d'Ana → diàleg amb els criteris; canviar la nota
+      document.querySelectorAll('.tn-taula tbody tr')[0].querySelectorAll('.tn-cel button')[1].click();
+      await new Promise(r => setTimeout(r, 50));
+      out.modal = !!document.querySelector('.tn-modal') && /Deures 1/.test(document.querySelector('.tn-modal').textContent);
+      const chip = [...document.querySelectorAll('.tn-modal .cal-chips .chip')].find(b => /\(5\)/.test(b.textContent));
+      chip.click(); await new Promise(r => setTimeout(r, 50));
+      out.despres = [g.notas[ids[0]].a1[cid], !!document.querySelector('.tn-modal'), document.querySelectorAll('.tn-taula tbody tr')[0].querySelectorAll('.tn-cel')[1].textContent.trim()];
+      tnMoure(1, 0); await new Promise(r => setTimeout(r, 50));
+      out.seg = state.ui.tnCel.al === ids[1];
+      tnTriarAvaluacio(1); await new Promise(r => setTimeout(r, 50));
+      out.trim1 = [...document.querySelectorAll('.tn-taula thead .tn-act:not(.tn-final) .tn-act-nom')].map(x => x.textContent.trim());
+      out.tancat = !document.querySelector('.tn-modal');
+      return out;
+    }, ids);
+    t.ok(r.cols[0] === 'Examen 1' && r.cols[1] === 'Deures 1' && !r.cols.includes('Altra avaluació') && r.files === 3, "una columna per activitat de l'avaluació, ordenades per data, i una fila per alumne/a", JSON.stringify(r));
+    t.ok(r.f0[0] === '3,0' && r.f0[1] === '10,0' && r.bg[0] && r.bg[1] && r.bg[0] !== r.bg[1] && r.np === 'NP' && r.data === '05-10-26', 'notes, NP, data i colors', JSON.stringify(r));
+    t.ok(r.modal && r.despres[0] === 5 && r.despres[1] && r.despres[2] === '5,0', "tocar la nota obri l'activitat d'eixe alumne/a i el canvi es guarda i es veu en la taula", JSON.stringify(r));
+    t.ok(r.seg && r.tancat && r.trim1.length === 1 && r.trim1[0] === 'Altra avaluació', 'navegar a l\'alumne/a següent i canviar d\'avaluació', JSON.stringify(r));
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
 ];

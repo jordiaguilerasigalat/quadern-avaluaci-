@@ -204,7 +204,7 @@ window.importarTodo=inp=>{ _procesarArchivoCopiaJSON(inp.files[0],()=>{ inp.valu
    l'aplicació (irATab('asistencia'), etc.) segueixen funcionant igual. */
 const GRUPO_SECCIONS=[
   ["alumnat","👥 Alumnat",[["alumnos","Llista"],["plano","Plànol d'aula"],["asistencia","Assistència"],["convivencia","Convivència"],["familias","Famílies"]]],
-  ["avaluar","✍️ Avaluar",[["programa","Programació"],["diario","Diari de classe"],["actividades","Activitats"],["calificar","Qualificar"]]],
+  ["avaluar","✍️ Avaluar",[["programa","Programació"],["diario","Diari de classe"],["actividades","Activitats"],["taula","Taula de notes"],["calificar","Qualificar"]]],
   ["resultats","📊 Resultats",[["resultados","Notes i informes"],["resumen","Resum del grup"],["cobertura","Cobertura de criteris"]]],
   ["ajustos","⚙️ Ajustos",[["ajustes","Ajustos del grup"]]]
 ];
@@ -242,12 +242,14 @@ function renderGrupo(grupo){
   </div>
   <div id="tabContent"></div>`;
   const t=state.ui.tab;
+  if(t!=="taula") state.ui.tnCel=null;
   try{
     if(t==="alumnos") renderAlumnos(grupo);
     else if(t==="plano") renderPlano(grupo);
     else if(t==="programa") renderProgramaGrup(grupo);
     else if(t==="actividades") renderActividades(grupo);
     else if(t==="seguiment"){ state.ui.tab="actividades"; renderActividades(grupo); }
+    else if(t==="taula") renderTaulaNotes(grupo);
     else if(t==="calificar") renderCalificar(grupo);
     else if(t==="resultados") renderResultados(grupo);
     else if(t==="resumen") renderResumen(grupo);
