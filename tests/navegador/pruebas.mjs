@@ -1225,7 +1225,7 @@ export const PRUEBAS = [
     t.ok(!vistos.length, 'cap text en castellà a les pantalles principals', vistos.join(' | '));
     await p.evaluate(() => { state.ui.appMode = 'competencial'; state.ui.tab = 'actividades'; render(); }); await esperar(200);
     const txt = await p.evaluate(() => document.getElementById('tabContent').innerText);
-    t.ok(/Exàmens i proves escrites/.test(txt) && /Nova activitat d'avaluació/.test(txt), 'Activitats en valencià', txt.slice(0, 200));
+    t.ok(/Exàmens i proves escrites/.test(txt) && /\+ Nova activitat/.test(txt) && /Totes les activitats de la/.test(txt), 'Activitats en valencià', txt.slice(0, 200));
     t.ok(await p.evaluate(() => traduirText('Todavía no hay actividades en este periodo.') === 'Encara no hi ha activitats en este període.'), 'el diccionari tradueix textos exactes');
     t.ok(await p.evaluate(() => /^Vore l'evolució de Pérez, Ana en esta avaluació$/.test(traduirText('Ver la evolución de Pérez, Ana en esta evaluación'))), 'els patrons conserven les parts variables');
     t.ok(!p.errores.length, 'sense errors de JavaScript', p.errores.slice(0, 3).join('; '));
