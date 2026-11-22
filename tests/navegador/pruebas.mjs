@@ -1956,7 +1956,7 @@ export const PRUEBAS = [
     t.ok(despres > abans + 3, 'en Criteris d\'avaluació, «Mostrar tots els criteris» obri tot el currículum', abans + ' → ' + despres);
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
-  { nombre: 'tornar', descripcion: 'Botó «← Tornar» de la barra superior: torna a la pantalla anterior (grup, secció, corrector…) en totes les pantalles', async fn(t) {
+  { nombre: 'tornar', descripcion: 'Botó flotant «← Tornar»: torna a la pantalla anterior (grup, secció, corrector…) en totes les pantalles', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     await cuadernoConGrupo(p, t.url, { nombres: ['Alfa, Ana', 'Beta, Bruno'] });
     const estat = () => p.evaluate(() => [state.ui.appMode, state.ui.tab, state.ui.corTab].join('/'));
@@ -1964,20 +1964,20 @@ export const PRUEBAS = [
     await p.evaluate(() => { state.ui.appMode = 'competencial'; state.ui.grupoId = state.grupos[0].id; state.ui.tab = 'alumnos'; save(); render(); }); await esperar(200);
     await p.evaluate(() => { state.ui.tab = 'resultados'; save(); render(); }); await esperar(200);
     await p.evaluate(() => { state.ui.appMode = 'corrector'; state.ui.corTab = 'lista'; save(); render(); }); await esperar(300);
-    t.ok(await p.isVisible('#btnTornar') && await p.isEnabled('#btnTornar'), 'el Corrector d\'exàmens té el botó «← Tornar» actiu');
+    t.ok(await p.isVisible('#navFab') && await p.isEnabled('#navFab'), 'el Corrector d\'exàmens té el botó flotant «← Tornar»');
     await p.evaluate(() => window.scrollTo(0, 5000)); await esperar(100);
     t.ok(await p.isVisible('#navFab'), 'el botó flotant «← Tornar» es veu encara que la barra de dalt quede fora de la pantalla');
-    await p.click('#btnTornar'); await esperar(200);
+    await p.click('#navFab'); await esperar(200);
     const a = await estat();
-    await p.click('#btnTornar'); await esperar(200);
+    await p.click('#navFab'); await esperar(200);
     const b = await estat();
-    await p.click('#btnTornar'); await esperar(200);
+    await p.click('#navFab'); await esperar(200);
     const c = await estat();
     t.ok(a === 'competencial/resultados/lista' && b === 'competencial/alumnos/lista' && /^inicio\//.test(c), 'torna pas a pas: Resultats → Alumnat → Inici', [a, b, c].join(' · '));
-    t.ok(await p.isDisabled('#btnTornar'), 'quan no hi ha on tornar, el botó queda desactivat');
+    t.ok(!(await p.isVisible('#navFab')), 'quan no hi ha on tornar, el botó flotant no ix');
     for (const mode of ['programacion', 'reuniones', 'refuerzo', 'repeticion', 'nese', 'biblioteca', 'memoria', 'pendents']) {
       await p.evaluate(m => { state.ui.appMode = m; save(); render(); }, mode); await esperar(150);
-      t.ok(await p.isVisible('#btnTornar') && await p.isEnabled('#btnTornar'), 'botó «← Tornar» a ' + mode);
+      t.ok(await p.isVisible('#navFab') && await p.isEnabled('#navFab'), 'botó «← Tornar» a ' + mode);
     }
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
