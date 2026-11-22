@@ -551,8 +551,11 @@ window.cxNuevoAlternativo=()=>{
       <label style="font-size:12.5px;color:var(--mut);font-weight:500">Data (opcional)<input class="in" id="altFecha" type="date" style="display:block;margin-top:4px" value="${iso}"></label>
     </div>
     <fieldset style="border:0;padding:0;margin:12px 0 0"><legend class="section-eyebrow" style="margin-bottom:6px">Comença</legend>
-      <label style="display:inline-flex;gap:6px;align-items:center;font-size:13.5px;margin-right:16px"><input type="radio" name="altInicio" value="copia" checked> Com a còpia de l'examen general</label>
-      <label style="display:inline-flex;gap:6px;align-items:center;font-size:13.5px"><input type="radio" name="altInicio" value="blanco"> En blanc</label>
+      <label style="display:flex;gap:6px;align-items:center;font-size:13.5px;margin-bottom:4px"><input type="radio" name="altInicio" value="copia" checked> Com a còpia de l'examen general</label>
+      <label style="display:flex;gap:6px;align-items:flex-start;font-size:13.5px;margin-bottom:4px"><input type="radio" name="altInicio" value="dades"> <span><b>🔢 Còpia amb altres dades numèriques</b> · mateixes preguntes i rúbrica, canvien els valors (20 g → 35 g). Sense internet.</span></label>
+      <label style="display:flex;gap:6px;align-items:flex-start;font-size:13.5px;margin-bottom:4px"><input type="radio" name="altInicio" value="ia"> <span><b>✨ Generat amb IA</b> · preguntes noves de dificultat similar, més fàcil o més difícil. Necessita la teua clau.</span></label>
+      <label style="display:flex;gap:6px;align-items:center;font-size:13.5px"><input type="radio" name="altInicio" value="blanco"> En blanc</label>
+      ${typeof eaPanellIAHTML==="function"?eaPanellIAHTML():""}
     </fieldset>
     <div class="section-eyebrow" style="margin:12px 0 6px">Alumnat que el fa</div>
     <div id="altAlumnos" class="flex" style="flex-wrap:wrap;gap:6px 16px">${grupo.alumnos.map(al=>{ const o=ocupadoEn(al);
@@ -566,13 +569,36 @@ window.cxNuevoAlternativo=()=>{
     if(/^(Otro día|Un altre dia|Adaptada \(NESE\))$/.test(nombre.value.trim())||!nombre.value.trim()) nombre.value=nese?"Adaptada (NESE)":"Un altre dia";
     div.querySelectorAll("#altAlumnos input").forEach(c=>{ c.checked=nese&&c.dataset.nese==="1"; });
   });
+  const panIA=div.querySelector("#altIA"), estIA=div.querySelector("#altIAEstat");
+  div.querySelectorAll('input[name="altInicio"]').forEach(r=>r.onchange=()=>{ if(panIA) panIA.hidden=div.querySelector('input[name="altInicio"]:checked').value!=="ia"; if(estIA) estIA.textContent=""; });
   div.querySelector("#altNo").onclick=()=>div.remove();
-  div.querySelector("#altSi").onclick=()=>{
+  const btnSi=div.querySelector("#altSi");
+  btnSi.onclick=async()=>{
     const tipo=div.querySelector('input[name="altTipo"]:checked').value, alumnos=[...div.querySelectorAll("#altAlumnos input:checked")].map(c=>c.value);
-    const enBlanco=div.querySelector('input[name="altInicio"]:checked').value==="blanco", fecha=div.querySelector("#altFecha").value;
+    const inicio=div.querySelector('input[name="altInicio"]:checked').value, enBlanco=inicio==="blanco", fecha=div.querySelector("#altFecha").value;
+    // Còpia amb altres dades o generat amb IA: el disseny es fa ara, a partir de l'examen general.
+    let disseny=null;
+    if(inicio==="dades"||inicio==="ia"){
+      const avisa=t=>{ if(estIA&&inicio==="ia") estIA.textContent=t; else mostrarAviso(t,"+ Examen alternatiu"); };
+      let general=null; try{ exFlush(); general=(await exGet(act.id)||{}).exam; }catch(e){}
+      if(!general||!(general.body||[]).some(n=>n.type==="question"||n.type==="section")){ avisa("Primer cal dissenyar l'examen general (pestanya ✏️ Disseny): l'alternatiu es fa a partir d'ell."); return; }
+      if(inicio==="dades"){ const r=eaVariarDades(general); disseny={exam:r.exam,info:{titol:"🔢 Còpia amb altres dades",html:eaResumHTML(r)}}; }
+      else{
+        const clau=div.querySelector("#altIAClau").value.trim(), model=div.querySelector("#altIAModel").value, nova=div.querySelector('input[name="altIARub"]:checked').value==="nova";
+        if(!clau){ avisa("Apega la teua clau de Claude (mira «Com aconseguir la clau»)."); div.querySelector("#altIAClau").focus(); return; }
+        eaRecordarIA(clau,model,div.querySelector("#altIARec").checked);
+        btnSi.disabled=true; btnSi.textContent="Generant…"; estIA.textContent="⏳ Generant l'examen amb IA. Pot tardar un minut…";
+        try{
+          const r=await eaGenerarIA(grupo,act,general,{clau,model,nova,dificultat:div.querySelector("#altIADif").value,indicacions:div.querySelector("#altIAInd").value.trim()});
+          disseny={exam:r.exam,info:{titol:"✨ Examen generat amb IA",nova,html:eaResumHTML(r)}};
+        }catch(e){ btnSi.disabled=false; btnSi.textContent="Crear"; estIA.textContent="⚠️ "+(e&&e.message||"No s'ha pogut generar."); return; }
+        if(!document.body.contains(div)) return;
+      }
+    }
     div.remove();
     const v=cxCrearVariante(grupo,act,{tipo,nombre:nombre.value.trim()||undefined,fecha,enBlanco,alumnos});
     alumnos.forEach(id=>cxRecalcAlumno(grupo,act,id));
+    if(disseny){ try{ await eaGuardarDisseny(act,v,disseny.exam,disseny.info); state.ui.corTab="diseno"; }catch(e){ mostrarAviso("L'examen alternatiu s'ha creat, però no s'ha pogut guardar el seu disseny."); } }
     state.ui.corVarId=v.id; state.ui.corModelo="";
     save(); render();
     const n=v.alumnos.length;

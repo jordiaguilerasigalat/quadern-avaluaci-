@@ -1956,4 +1956,69 @@ export const PRUEBAS = [
     t.ok(despres > abans + 3, 'en Criteris d\'avaluació, «Mostrar tots els criteris» obri tot el currículum', abans + ' → ' + despres);
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+
+  { nombre: 'examen-alternatiu-auto', descripcion: 'Examen alternatiu: còpia amb altres dades numèriques i generat amb IA (resposta simulada), amb la rúbrica al dia', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    await cuadernoConGrupo(p, t.url, { nombres: ['Alfa, Ana', 'Beta, Bruno'] });
+    const cr = await p.evaluate(async () => { _mostrarBienvenida = false; const g = state.grupos[0], cr = getCatalogo('FiQ_2ESO').ces[0].criterios[0].id;
+      state.programaciones = [{ id: 'p1', nombre: 'Prog', catalogoKey: 'FiQ_2ESO', sdas: [], actividades: [{ id: 'pa1', nombre: 'Examen tema 1', tipo: TIPOS[0], esExamen: true, criterios: [{ critId: cr, peso: 100 }], sdaIds: [] }] }];
+      migrarEstado(); g.programacionId = 'p1'; g.catalogoKey = 'FiQ_2ESO';
+      const act = progCrearActividadEnGrupo(g, state.programaciones[0].actividades[0], 0); g.actividades.push(act);
+      state.ui.appMode = 'corrector'; state.ui.grupoId = g.id; state.ui.corExamId = act.id; state.ui.corTab = 'diseno'; save(); render(); return cr; });
+    await esperar(1500);
+    // Examen general: dues preguntes amb dades, punts i criteri; rúbrica importada del disseny.
+    await p.evaluate(async cr => { const g = state.grupos[0], act = g.actividades[0], w = document.getElementById('exFrame').contentWindow, ex = w.__ee.get();
+      const q1 = w.newNode('question'); q1.id = 'q1'; q1.text = 'Un cotxe recorre 120 km en 2 h. Calcula la velocitat en m/s. Dada: g = 9,8 m/s<sup>2</sup>.'; q1.points = '6'; q1.crit = [cr];
+      const q2 = w.newNode('question'); q2.id = 'q2'; q2.text = 'Dissolem 20 g de NaCl en 500 mL d\'aigua. Calcula la concentració en g/L (20 g).'; q2.points = '4'; q2.crit = [cr];
+      ex.body.push(q1, q2); w.__ee.cargar(ex); w.__ee.flush();
+      await new Promise(r => setTimeout(r, 400));
+      if (!act.rubrica) act.rubrica = [];
+      await cxImportarEstructura(g, act, exConReparto(w.__ee.estructura()), act); save(); }, cr);
+    await esperar(400);
+    // 1) Còpia amb altres dades numèriques
+    await p.click('#tabContent button:has-text("+ Examen alternatiu")'); await esperar(400);
+    await p.check('input[name="altInicio"][value="dades"]'); await p.click('#altSi'); await esperar(2200);
+    let r = await p.evaluate(() => { const act = state.grupos[0].actividades[0], v = act.variantes[0], w = document.getElementById('exFrame').contentWindow, ex = w.__ee.get();
+      const q = id => ex.body.find(n => n.id === id) || {};
+      return { editant: state.ui.corVarId === v.id, t1: q('q1').text, t2: q('q2').text, punts: q('q1').points + '/' + q('q2').points,
+        rub: cxItemsFlat(v.rubrica).map(i => i.fuenteId + ':' + i.max).join(), modal: ([...document.querySelectorAll('.modal-overlay')].pop() || {}).innerText || '' }; });
+    const m2 = (r.t2.match(/(\d+) g de NaCl.*\((\d+) g\)/) || []);
+    t.ok(r.editant && !/120 km/.test(r.t1) && /\d+ km en \d+ h/.test(r.t1) && /9,8 m\/s<sup>2<\/sup>/.test(r.t1), 'les dades canvien i la constant g es queda', r.t1);
+    t.ok(m2[1] && m2[1] === m2[2] && m2[1] !== '20' && r.punts === '6/4', 'el mateix valor canvia igual dins de la pregunta; els punts no canvien', r.t2 + ' · ' + r.punts);
+    t.ok(r.rub === 'q1:6,q2:4', 'la rúbrica de l\'alternatiu és la mateixa (mateixes preguntes i punts)', r.rub);
+    t.ok(/Còpia amb altres dades/.test(r.modal) && /120 km/.test(r.modal), 'un resum ensenya les dades canviades', r.modal.slice(0, 200));
+    await p.evaluate(() => [...document.querySelectorAll('.modal-overlay')].forEach(m => m.remove()));
+    // «🔢 Altres dades» torna a canviar-les
+    await p.click('#tabContent button:has-text("Altres dades")'); await esperar(600);
+    const t1b = await p.evaluate(() => document.getElementById('exFrame').contentWindow.__ee.get().body.find(n => n.id === 'q1').text);
+    t.ok(t1b !== r.t1 && /\d+ km en \d+ h/.test(t1b), '«🔢 Altres dades» en el disseny les torna a canviar', t1b);
+    await p.evaluate(() => [...document.querySelectorAll('.modal-overlay')].forEach(m => m.remove()));
+    // 2) Generat amb IA (resposta simulada), rúbrica nova
+    let enviat = null;
+    await p.route('https://api.anthropic.com/v1/messages', async route => {
+      enviat = { h: route.request().headers(), b: JSON.parse(route.request().postData() || '{}') };
+      const body = [{ id: 'q1', type: 'question', text: 'Una moto recorre 90 km en 1,5 h. Calcula la velocitat.', points: 5, crit: [cr] },
+        { id: 'nou1', type: 'question', text: 'Explica què és la densitat <script>x</script>.', points: 5, crit: [cr, 'X.9'], children: [{ id: 'nou2', type: 'lines', count: 4 }] }];
+      await route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' },
+        body: JSON.stringify({ stop_reason: 'end_turn', content: [{ type: 'text', text: JSON.stringify({ body, resum: 'Preguntes noves més difícils.', solucions: [{ id: 'q1', text: '60 km/h' }] }) }] }) });
+    });
+    await p.evaluate(() => { state.ui.corVarId = ''; render(); }); await esperar(1200);
+    await p.click('#tabContent button:has-text("+ Examen alternatiu")'); await esperar(400);
+    await p.check('input[name="altInicio"][value="ia"]');
+    await p.click('#altSi'); await esperar(300);
+    t.ok(/clau/.test(await p.evaluate(() => document.getElementById('altIAEstat').textContent)), 'sense clau, demana la clau i no crea res');
+    await p.fill('#altIAClau', 'sk-ant-prova'); await p.selectOption('#altIADif', 'dificil'); await p.check('input[name="altIARub"][value="nova"]');
+    await p.click('#altSi'); await esperar(2500);
+    r = await p.evaluate(() => { const act = state.grupos[0].actividades[0], v = act.variantes[1], w = document.getElementById('exFrame').contentWindow, ex = w.__ee.get();
+      return { n: act.variantes.length, editant: state.ui.corVarId === (v && v.id), preguntes: ex.body.filter(n => n.type === 'question').map(n => n.text + '|' + n.points + '|' + (n.crit || []).join('+')),
+        linies: ex.body.filter(n => n.type === 'question')[1]?.children?.[0]?.count, rub: v ? cxItemsFlat(v.rubrica).map(i => i.max).join() : '', rubGeneral: cxItemsFlat(act.rubrica).map(i => i.max).join(),
+        clau: localStorage.getItem('cuaderno_ia_clau'), enCopia: JSON.stringify(state).includes('sk-ant-prova'), modal: ([...document.querySelectorAll('.modal-overlay')].pop() || {}).innerText || '' }; });
+    t.ok(enviat && enviat.h['x-api-key'] === 'sk-ant-prova' && enviat.h['anthropic-dangerous-direct-browser-access'] === 'true' && /MÉS DIFÍCIL/.test(enviat.b.messages[0].content) && /120 km/.test(enviat.b.messages[0].content), 'envia l\'examen a la IA amb la clau i la dificultat triada');
+    t.ok(enviat && !/Alfa|Beta/.test(JSON.stringify(enviat.b)), 'no envia res de l\'alumnat');
+    t.ok(r.n === 2 && r.editant && r.preguntes.length === 2 && /moto/.test(r.preguntes[0]) && r.preguntes[1] === 'Explica què és la densitat x.|5|' + cr && r.linies === 4, 'l\'examen generat s\'obri en el disseny (HTML net, criteris vàlids)', JSON.stringify(r.preguntes));
+    t.ok(r.rub === '5,5' && r.rubGeneral === '6,4', 'rúbrica nova a partir de les preguntes generades; la general no canvia', r.rub + ' / ' + r.rubGeneral);
+    t.ok(r.clau === 'sk-ant-prova' && !r.enCopia, 'la clau es recorda en el navegador però no va en les dades (ni en les còpies)');
+    t.ok(/generat amb IA/.test(r.modal) && /60 km\/h/.test(r.modal), 'el resum ensenya el que ha canviat i les solucions', r.modal.slice(0, 200));
+    t.ok(!p.errores.length, 'sense errors de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
 ];
