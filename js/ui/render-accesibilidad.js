@@ -132,6 +132,17 @@ function _navRegistrar(){
   _navTornant=false; _navActual=f;
 }
 function navPotTornar(){ return _navPila.length>0; }
+/* Botó flotant «← Tornar» (baix a l'esquerra): sempre a la vista, encara que la barra
+   de dalt haja quedat fora de la pantalla en fer scroll (p. ex. dins del Corrector). */
+function navPintarFlotant(){
+  let b=document.getElementById("navFab");
+  const mostrar=!_mostrarBienvenida && navPotTornar();
+  if(!mostrar){ if(b) b.hidden=true; return; }
+  if(!b){ b=document.createElement("button"); b.id="navFab"; b.type="button"; b.className="home-fab nav-fab";
+    b.title="Tornar a la pantalla anterior"; b.setAttribute("aria-label","Tornar a la pantalla anterior");
+    b.innerHTML="←<span class=\"tb-txt\"> Tornar</span>"; b.onclick=()=>navTornar(); document.body.appendChild(b); }
+  b.hidden=false;
+}
 window.navTornar=()=>{
   while(_navPila.length){
     const f=_navPila.pop();
@@ -220,6 +231,7 @@ ${esc(err.stack||"")}</pre>
     console.error("Error al renderizar la pantalla '"+state.ui.appMode+"':", err);
   }
 
+  try{ navPintarFlotant(); }catch(e){}
   try{ accesibilidadPasada(document); }catch(e){}
   if(mismaVista){
     restaurarPosicio(pos);
