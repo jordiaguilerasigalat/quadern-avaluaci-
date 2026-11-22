@@ -1914,4 +1914,46 @@ export const PRUEBAS = [
     t.ok(/📒 2\/47 tasques/.test(r), 'la fitxa de l\'alumne/a mostra per on va el quadern', r.match(/NESE[^<]*/)?.[0]);
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'capcalera-centre', descripcion: 'Capçalera del centre: es puja una vegada, botó Sí/No en cada document (també en cada full per alumne), a l\'editor d\'exàmens i «Mostrar tots els criteris»', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    await cuadernoConGrupo(p, t.url, { nombres: ['Alfa, Ana', 'Beta, Bruno', 'Gamma, Gema'] });
+    // Imatge de prova: un PNG xicotet fet amb canvas (apaïsat).
+    await p.evaluate(() => { _mostrarBienvenida = false; const c = document.createElement('canvas'); c.width = 400; c.height = 50; const x = c.getContext('2d'); x.fillStyle = '#0a5'; x.fillRect(0, 0, 400, 50);
+      state.capcalera = { src: c.toDataURL('image/png'), w: 400, h: 50, perDefecte: true, docs: {} }; state.ui.appMode = 'inicio'; save(); render(); });
+    await esperar(300);
+    t.ok(await p.evaluate(() => /Capçalera del centre/.test(document.getElementById('app').innerText) && !!document.querySelector('img[alt="Capçalera del centre"]')), 'Inici mostra la capçalera pujada amb els botons per a canviar-la');
+    let r = await p.evaluate(() => { exportarInformesFamiliaTots(0); const sh = document.querySelector('#printOverlay .print-hoja').shadowRoot;
+      return { n: sh.querySelectorAll('.doc-capcalera-centre').length, fulls: sh.querySelectorAll('.ia-full').length, boto: document.getElementById('prtCapcalera').textContent, desa: (_imprimibleActual.docHtml.match(/doc-capcalera-centre/g) || []).length }; });
+    t.ok(r.boto === '🏫 Capçalera: Sí' && r.n === r.fulls && r.n === 3 && r.desa === 3, 'per defecte, un informe per alumne/a porta la capçalera dalt de cada full (i també en el fitxer que es guarda)', JSON.stringify(r));
+    r = await p.evaluate(() => { document.getElementById('prtCapcalera').click(); const sh = document.querySelector('#printOverlay .print-hoja').shadowRoot;
+      const o = { n: sh.querySelectorAll('.doc-capcalera-centre').length, boto: document.getElementById('prtCapcalera').textContent, desa: /doc-capcalera-centre/.test(_imprimibleActual.docHtml) }; cerrarImprimible();
+      exportarInformesFamiliaTots(0); o.recorda = document.getElementById('prtCapcalera').textContent; cerrarImprimible();
+      exportarActaSessio(0); o.acta = document.getElementById('prtCapcalera').textContent; o.actaN = document.querySelector('#printOverlay .print-hoja').shadowRoot.querySelectorAll('.doc-capcalera-centre').length; cerrarImprimible(); return o; });
+    t.ok(r.n === 0 && r.boto === '🏫 Capçalera: No' && !r.desa && r.recorda === '🏫 Capçalera: No', 'el botó la lleva i la tria es recorda per a eixe tipus de document', JSON.stringify(r));
+    t.ok(r.acta === '🏫 Capçalera: Sí' && r.actaN === 1, 'un altre tipus de document la continua portant', JSON.stringify(r));
+    // Editor d'exàmens
+    await p.evaluate(() => { const g = state.grupos[0], ces = getCatalogo('FiQ_2ESO').ces, cr = ces[0].criterios[0].id;
+      state.programaciones = [{ id: 'p1', nombre: 'Prog', catalogoKey: 'FiQ_2ESO', sdas: [], actividades: [{ id: 'pa1', nombre: 'Examen tema 1', tipo: TIPOS[0], esExamen: true, criterios: [{ critId: cr, peso: 100 }], sdaIds: [] }] }];
+      migrarEstado(); g.programacionId = 'p1'; g.catalogoKey = 'FiQ_2ESO';
+      const act = progCrearActividadEnGrupo(g, state.programaciones[0].actividades[0], 0); g.actividades.push(act);
+      state.ui.appMode = 'corrector'; state.ui.grupoId = g.id; state.ui.corExamId = act.id; state.ui.corTab = 'diseno'; save(); render(); });
+    await esperar(1500);
+    const fr = p.frameLocator('#exFrame');
+    r = await p.evaluate(() => { const w = document.getElementById('exFrame').contentWindow, ex = w.__ee.get(); return { primer: ex.body[0].type + ':' + !!ex.body[0].centre, first: ex.header.first, boto: w.document.getElementById('btnCentre').textContent }; });
+    t.ok(r.primer === 'image:true' && r.first === false && /✓/.test(r.boto), 'un examen nou ja porta la capçalera del centre dalt (i la de text passa a les pàgines següents)', JSON.stringify(r));
+    await fr.locator('#btnCentre').click(); await esperar(300);
+    r = await p.evaluate(() => { const w = document.getElementById('exFrame').contentWindow, ex = w.__ee.get(); return { te: ex.body.some(n => n.centre), first: ex.header.first, boto: w.document.getElementById('btnCentre').textContent }; });
+    t.ok(!r.te && r.first === true && !/✓/.test(r.boto), 'el botó «🏫 Capçalera del centre» la lleva i torna la capçalera de text a la primera pàgina', JSON.stringify(r));
+    await fr.locator('#btnCentre').click(); await esperar(300);
+    t.ok(await p.evaluate(() => document.getElementById('exFrame').contentWindow.__ee.teCapcalera()), 'i la torna a posar');
+    // Criteris: només els previstos, o tots.
+    await p.evaluate(() => { const w = document.getElementById('exFrame').contentWindow, ex = w.__ee.get(); const q = w.newNode('question'); ex.body.push(q); w.__ee.cargar(ex); w.selectNode(q.id); });
+    await esperar(300);
+    const nCrit = () => p.evaluate(() => document.getElementById('exFrame').contentWindow.document.querySelectorAll('#inspector input[type=checkbox]').length);
+    const abans = await nCrit();
+    await fr.locator('#inspector button:has-text("Mostrar tots els criteris")').click(); await esperar(200);
+    const despres = await nCrit();
+    t.ok(despres > abans + 3, 'en Criteris d\'avaluació, «Mostrar tots els criteris» obri tot el currículum', abans + ' → ' + despres);
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
 ];

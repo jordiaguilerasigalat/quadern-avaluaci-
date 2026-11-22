@@ -56,11 +56,21 @@
   };
   var rs0=renderSide;
   renderSide=function(){ rs0.apply(this,arguments); try{ critPane(); }catch(e){} };
+  var critTots=false;
   function critPane(){
-    var L=window.__eeCriterios; if(!L||!L.length||S.tab!=='block'||!S.sel) return;
+    var P=window.__eeCriterios||[], T=window.__eeCriteriosTots||[]; if((!P.length&&!T.length)||S.tab!=='block'||!S.sel) return;
     var f=findNode(S.exam.body,S.sel); if(!f||(f.node.type!=='question'&&f.node.type!=='subquestion')) return;
     var n=f.node, cur=n.crit||[];
+    /* Si l'activitat té criteris previstos en la Programació, només es mostren eixos;
+       «Mostrar tots els criteris» obri tot el currículum del grup. Un criteri ja marcat
+       que no és dels previstos es mostra sempre. */
+    var ids={}; P.forEach(function(c){ ids[c.id]=1; });
+    var hiHaMes=T.some(function(c){ return !ids[c.id]; });
+    var L=(critTots||!P.length)? (T.length?T:P) : P.concat(T.filter(function(c){ return !ids[c.id]&&cur.indexOf(c.id)>=0; }));
     var box=h('div',{class:'sec'},h('h3',{},'Criteris d\'avaluació'),h('small',{class:'hint'},'Es vincularan a aquesta pregunta (i a les seues subpreguntes) en importar a la rúbrica.'));
+    if(hiHaMes && P.length) box.append(h('div',{class:'tools',style:{margin:'6px 0'}},
+      h('button',{class:'btn sm',type:'button','aria-pressed':critTots?'true':'false',onclick:function(){ critTots=!critTots; renderSide(); }},
+        critTots?'Només els previstos en la Programació ('+P.length+')':'Mostrar tots els criteris ('+T.length+')')));
     L.forEach(function(c){
       var cb=h('input',{type:'checkbox'}); cb.checked=cur.indexOf(c.id)>=0;
       cb.onchange=function(){ var a=(n.crit||[]).filter(function(x){return x!==c.id;}); if(cb.checked) a.push(c.id); n.crit=a; change({}); };
@@ -68,11 +78,67 @@
     });
     $('#inspector').append(box);
   }
+  /* --- Capçalera del centre: la imatge es guarda en el Quadern (Inici → les meues dades).
+     Ací entra com un bloc d'imatge al principi de l'examen (marcat amb centre:true), de
+     manera que la paginació, el PDF i el Word la tracten com qualsevol altra imatge. Mentre
+     hi és, la capçalera de text no ix en la primera pàgina (es restaura en llevar-la). --- */
+  function capcSrc(){ try{ var P=window.parent; return (P&&P!==window&&typeof P.capcaleraImg==='function')? P.capcaleraImg() : ''; }catch(e){ return ''; } }
+  function teCapc(ex){ return !!(ex&&ex.body||[]).some(function(n){ return n.type==='image'&&n.centre; }); }
+  function posarCapc(ex,src){
+    if(!ex||!src) return ex;
+    ex.body=(ex.body||[]).filter(function(n){ return !(n.type==='image'&&n.centre); });
+    var n=newNode('image'); n.src=src; n.widthPct=100; n.imgAlign='left'; n.caption=''; n.centre=true;
+    ex.header=ex.header||{};
+    if(ex.header.on!==false && ex.header.first!==false){ ex.header.first=false; n.prevFirst=true; }
+    ex.body.unshift(n); return ex;
+  }
+  function llevarCapc(ex){
+    var torna=false;
+    ex.body=(ex.body||[]).filter(function(n){ if(n.type==='image'&&n.centre){ if(n.prevFirst) torna=true; return false; } return true; });
+    if(torna&&ex.header) ex.header.first=true;
+    return ex;
+  }
+  function alternarCapc(){
+    var src=capcSrc();
+    if(!teCapc(S.exam) && !src){ toast('Primer puja la imatge de la capçalera en el Quadern: Inici → les meues dades → 🏫 Capçalera del centre.'); return; }
+    if(teCapc(S.exam)) llevarCapc(S.exam); else posarCapc(S.exam,src);
+    if(S.sel && !findNode(S.exam.body,S.sel)) S.sel=null;
+    change({tree:true,insp:true,now:true}); pintaBotoCapc();
+    toast(teCapc(S.exam)?'Capçalera del centre posada al principi de l\'examen':'Capçalera del centre llevada');
+  }
+  var botoCapc=null;
+  function pintaBotoCapc(){
+    if(!botoCapc) return;
+    var on=teCapc(S.exam), hiHa=!!capcSrc();
+    botoCapc.hidden=!on&&!hiHa&&!(window.parent&&window.parent!==window);
+    botoCapc.textContent=on?'🏫 Capçalera del centre ✓':'🏫 Capçalera del centre';
+    botoCapc.setAttribute('aria-pressed',on?'true':'false');
+    botoCapc.classList.toggle('primary',on);
+    botoCapc.title=on?'Llevar la capçalera del centre d\'este examen':(hiHa?'Posar la capçalera del centre dalt de l\'examen':'Puja primer la capçalera en Inici → les meues dades');
+  }
+  function muntaBotoCapc(){
+    var ref=document.getElementById('btnBank'); if(!ref||botoCapc) return;
+    botoCapc=h('button',{class:'btn',id:'btnCentre',type:'button',onclick:alternarCapc},'🏫 Capçalera del centre');
+    ref.parentNode.insertBefore(botoCapc,ref.nextSibling); pintaBotoCapc();
+  }
+  var rt0=renderTree;
+  renderTree=function(){ rt0.apply(this,arguments); try{ muntaBotoCapc(); pintaBotoCapc(); }catch(e){} };
+  /* També en la pestanya «Capçalera i peu», per a qui la busque allí. */
+  var bp0=barsPane;
+  barsPane=function(){
+    var out=bp0.apply(this,arguments), on=teCapc(S.exam);
+    var g=h('div',{class:'sec'},h('h3',{},'Capçalera del centre (imatge)'),
+      h('small',{class:'hint'},on?'Ix dalt de la primera pàgina, com un bloc més de l\'examen. La capçalera de text es queda per a les pàgines següents.':'La imatge que has pujat en el Quadern (Inici → les meues dades).'),
+      h('div',{class:'tools',style:{marginTop:'6px'}},h('button',{class:'btn sm'+(on?'':' primary'),type:'button',onclick:alternarCapc},on?'Llevar la capçalera del centre':'🏫 Posar la capçalera del centre')));
+    return [g].concat(out);
+  };
   window.__eeActivo=false;
   window.__ee={
     cargar:function(ex){ var e=sanitizeExam(ex); MEM[e.id]=JSON.stringify(e); try{ asegurarFuentesWeb(e); }catch(_){} loadExam(e); window.__eeActivo=true; },
     flush:function(){ if(saveTimer){ clearTimeout(saveTimer); saveTimer=0; } if(S.exam&&window.__eeActivo) saveExamLocal(S.exam); },
     get:function(){ return S.exam? JSON.parse(JSON.stringify(S.exam)) : null; },
+    teCapcalera:function(){ return teCapc(S.exam); },
+    posarCapcalera:function(ex,src){ return posarCapc(ex,src||capcSrc()); },
     mezclar:function(){
       var ex=JSON.parse(JSON.stringify(S.exam));
       function sh(a){ var idx=[],q=[]; a.forEach(function(n,i){ if(n.type==='question'){ idx.push(i); q.push(n); } });

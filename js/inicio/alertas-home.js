@@ -138,6 +138,7 @@ function renderHome(){
         <input class="in" style="display:block;margin-top:3px;width:110px;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);color:#fff" placeholder="46001234" value="${esc(state.centroCodigo||"")}" onchange="setDatoGlobal('centroCodigo',this.value)">
       </label>
     </div>
+    ${typeof capcaleraIniciHTML==="function"?capcaleraIniciHTML():""}
     <p class="hero-tag" style="margin-top:8px;font-size:12px;max-width:none;opacity:.75">Estes dades s'usen en les portades de tots els documents imprimibles. Cada Programació d'Aula pot tindre el seu propi curs escolar i professor/a si cal; si els deixa en blanc, usa estos.</p>
     <div class="flex" style="gap:8px;margin-top:10px;flex-wrap:wrap"><button class="ghost small" style="color:#fff;border:1px solid rgba(255,255,255,.35)" onclick="abrirDiagnostico()">🩺 Revisar les meues dades</button><button class="ghost small" style="color:#fff;border:1px solid rgba(255,255,255,.35)" onclick="abrirCopias()">🛟 Còpies de seguretat</button><button class="ghost small" style="color:#fff;border:1px solid rgba(255,255,255,.35)" onclick="abrirNuevoCurso()" title="Arxiva el curs que acaba i prepara el següent conservant grups, programacions i horari">🎓 Començar curs nou</button></div>
     </details>
