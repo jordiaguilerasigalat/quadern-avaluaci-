@@ -42,6 +42,7 @@ Abren la app en un Chromium sin ventana y comprueban que funciona de verdad:
 | `avisos-encima` | Los avisos y ventanas de contraseña salen por encima de la ventana desde la que se abren |
 | `examen-adaptado` | Examen adaptado NESE: aviso, creación desde el Diseño, corrección con su rúbrica, paso por la Programación a otro grupo |
 | `modelo-b` | Modelo B: sigue al general, reparto A/B (lista y plano), rúbrica en el orden del B, enlace de una rúbrica hecha a mano |
+| `examen-alternatiu-auto` | Examen alternatiu automàtic: còpia amb altres dades numèriques (constants i subíndexs intactes) i generat amb IA (resposta simulada), rúbrica al dia, clau fora de les dades |
 | `que-me-falta` | Avisos de notas a medias y comentarios pendientes |
 | `calificar` | Calificar con Intro y guardado de notas |
 | `corregir-desplegable` | Corregir: puntuación de cada ítem en un desplegable y «No presentado» |

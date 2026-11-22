@@ -21,7 +21,7 @@ const CACHE_PREFIJO = 'cuaderno-v3-';
 const CACHE_NAME = CACHE_PREFIJO + '110';
 // Resumen de todos los archivos de esta versión. No lo cambies a mano: «npm run sellar» lo recalcula y, si
 // algún archivo ha cambiado, sube CACHE_NAME. La prueba «version-cache» falla si se sube un cambio sin sellar.
-const HUELLA = 'ca86feb2175c674b';
+const HUELLA = '53a03d88944b565d';
 
 // El "esqueleto" de las dos apps: HTML, manifest e iconos.
 const APP_SHELL = [
@@ -110,6 +110,7 @@ const APP_SHELL = [
   './js/corrector/corregir.js',
   './js/corrector/rubrica-niveles.js',
   './js/corrector/modelo-b.js',
+  './js/corrector/examen-alternatiu-auto.js',
   './js/nucleo/nuevo-curso.js',
   './js/ui/buscador.js',
   './js/ui/privacidad.js',
