@@ -62,7 +62,16 @@ function docsContingutFix(id){
           <button class="ghost small" style="border:1px solid var(--line)" onclick="docsObrirTemporitzacio('${escJS(p.id)}')">🗓️ Obrir la planificació temporal</button>
         </div>`).join("")
       : `<p class="sub" style="margin:0">Encara no tens cap programació en el Quadern. Crea-la des de la pestanya «Programacions» i ací podràs obrir la seua planificació temporal (sessions de cada SdA repartides en el calendari del curs).</p>`;
-    return `<p class="sub" style="margin:0 0 4px">Temporització de cada programació: quantes sessions té cada Situació d'Aprenentatge i en quines setmanes cau.</p>${llista}`;
+    /* Programacions del departament que encara no estan en el Quadern: la seua
+       temporització (sessions de cada tema) ve amb elles, i es creen d'un toc. */
+    const falten=(typeof PROG_DEPARTAMENTO!=="undefined"? Object.keys(PROG_DEPARTAMENTO) : [])
+      .filter(k=>getCatalogo(k) && !docsProgDeCataleg(k).length);
+    const faltenHTML=!falten.length? "" : `<p class="sub" style="margin:14px 0 4px"><strong>Del departament, encara no creades en el Quadern</strong> (en crear-les ja porten les sessions de cada tema):</p>`+
+      falten.map(k=>`<div class="flex" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)">
+          <div style="font-weight:600;font-size:13.5px">${esc(getCatalogo(k).materia)} · ${esc(getCatalogo(k).curso)}</div>
+          <button class="ghost small" style="border:1px solid var(--line)" onclick="docsCarregarProg('${escJS(k)}')">📥 Crear la programació en el Quadern</button>
+        </div>`).join("");
+    return `<p class="sub" style="margin:0 0 4px">Temporització de cada programació: quantes sessions té cada Situació d'Aprenentatge i en quines setmanes cau.</p>${llista}${faltenHTML}`;
   }
   if(id==="mat") return typeof materialDocumentsHTML==="function"? materialDocumentsHTML() : "";
   if(id==="div"){
