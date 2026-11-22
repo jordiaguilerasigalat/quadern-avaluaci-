@@ -1956,4 +1956,27 @@ export const PRUEBAS = [
     t.ok(despres > abans + 3, 'en Criteris d\'avaluació, «Mostrar tots els criteris» obri tot el currículum', abans + ' → ' + despres);
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'tornar', descripcion: 'Botó «← Tornar» de la barra superior: torna a la pantalla anterior (grup, secció, corrector…) en totes les pantalles', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    await cuadernoConGrupo(p, t.url, { nombres: ['Alfa, Ana', 'Beta, Bruno'] });
+    const estat = () => p.evaluate(() => [state.ui.appMode, state.ui.tab, state.ui.corTab].join('/'));
+    await p.evaluate(() => { _mostrarBienvenida = false; state.ui.appMode = 'inicio'; save(); render(); }); await esperar(200);
+    await p.evaluate(() => { state.ui.appMode = 'competencial'; state.ui.grupoId = state.grupos[0].id; state.ui.tab = 'alumnos'; save(); render(); }); await esperar(200);
+    await p.evaluate(() => { state.ui.tab = 'resultados'; save(); render(); }); await esperar(200);
+    await p.evaluate(() => { state.ui.appMode = 'corrector'; state.ui.corTab = 'lista'; save(); render(); }); await esperar(300);
+    t.ok(await p.isVisible('#btnTornar') && await p.isEnabled('#btnTornar'), 'el Corrector d\'exàmens té el botó «← Tornar» actiu');
+    await p.click('#btnTornar'); await esperar(200);
+    const a = await estat();
+    await p.click('#btnTornar'); await esperar(200);
+    const b = await estat();
+    await p.click('#btnTornar'); await esperar(200);
+    const c = await estat();
+    t.ok(a === 'competencial/resultados/lista' && b === 'competencial/alumnos/lista' && /^inicio\//.test(c), 'torna pas a pas: Resultats → Alumnat → Inici', [a, b, c].join(' · '));
+    t.ok(await p.isDisabled('#btnTornar'), 'quan no hi ha on tornar, el botó queda desactivat');
+    for (const mode of ['programacion', 'reuniones', 'refuerzo', 'repeticion', 'nese', 'biblioteca', 'memoria', 'pendents']) {
+      await p.evaluate(m => { state.ui.appMode = m; save(); render(); }, mode); await esperar(150);
+      t.ok(await p.isVisible('#btnTornar') && await p.isEnabled('#btnTornar'), 'botó «← Tornar» a ' + mode);
+    }
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
 ];

@@ -116,8 +116,35 @@ function restaurarPosicio(pos){
 /* Repinta el grup sense moure la pantalla (les funcions que criden
    renderShell() directament, sense passar per render()). */
 function repintarGrupQuiet(){ const pos=capturarPosicio(); renderShell(); restaurarPosicio(pos); }
+/* ---- «← Tornar»: historial de pantalles (només en memòria, no es guarda) ----
+   Cada vegada que canvia la pantalla (mode, grup, secció, pestanya, examen, pla…)
+   es guarda on estàvem; el botó «← Tornar» de la barra superior hi torna. */
+const NAV_CLAUS=["appMode","grupoId","tab","corTab","corExamId","corVarId","calAct","reTab","reId","rfTab","rfId","rpTab","rpId","neTab","neId","progId","progTab","progDetTab","fichaAlumnoId","convId","convVista","docsTab","pdCurs","segAct"];
+let _navPila=[], _navActual=null, _navTornant=false;
+function _navFoto(){ const f={}; NAV_CLAUS.forEach(k=>{ f[k]=state.ui[k]; }); return f; }
+function _navClau(f){ return NAV_CLAUS.map(k=>f[k]==null?"":String(f[k])).join("|"); }
+function _navRegistrar(){
+  if(_mostrarBienvenida) return;
+  const f=_navFoto();
+  if(_navActual && _navClau(f)!==_navClau(_navActual) && !_navTornant){
+    _navPila.push(_navActual); if(_navPila.length>50) _navPila.shift();
+  }
+  _navTornant=false; _navActual=f;
+}
+function navPotTornar(){ return _navPila.length>0; }
+window.navTornar=()=>{
+  while(_navPila.length){
+    const f=_navPila.pop();
+    // Un grup, examen o pla que ja no existeix no és un lloc on tornar.
+    if(f.grupoId && !state.grupos.some(g=>g.id===f.grupoId)) continue;
+    if(typeof cerrarImprimible==="function") cerrarImprimible();
+    Object.assign(state.ui,f); _navTornant=true; save(); render(); return;
+  }
+  irInicio();
+};
 function render(){
   _invalidarCaches();
+  try{ _navRegistrar(); }catch(e){}
   const sig=[_mostrarBienvenida?1:0,state.ui.appMode,state.ui.grupoId,state.ui.tab,state.ui.trim,
              state.ui.corTab,state.ui.corExamId,state.ui.corAlId,state.ui.calAct,
              state.ui.reTab,state.ui.reId,state.ui.reModalNueva,
