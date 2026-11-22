@@ -195,23 +195,31 @@ function renderResultados(grupo){
   <div class="card">
     <div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
       <h2 style="font-size:15px">Toda la clase</h2>
-      <div class="flex res-acciones">
-        <button class="ghost" style="border:1px solid var(--line)" onclick="exportarCSVGrupo()" title="Hoja de cálculo con la media y la nota de acta (entera) de cada alumno/a, lista para pasar a ITACA">Exportar notas (CSV)</button>
-        <button class="ghost" style="border:1px solid var(--line)" onclick="exportarInformesTodos()">Exportar todos los informes</button>
-        <button class="ghost" style="border:1px solid var(--line)" onclick="exportarInformesFinalesTodos()">Exportar informes finales de curso</button>
-        <button class="ghost" style="border:1px solid var(--line)" title="Archivo con los suspensos de tu materia en cada evaluación, para cargarlo en el Gestor de Tutoría del tutor/a del grupo" onclick="exportarParaTutoria()">👥 Para la tutoría</button>
+      <div class="flex res-barra" style="gap:8px;flex-wrap:wrap;align-items:center">
+        <select class="in" id="repGrupoSel" style="padding:6px 9px" title="Avaluació de la taula i dels informes (és la mateixa que la de dalt; ací també pots triar la final)" onchange="resTriarAvaluacio(this.value)">
+          ${TRIMESTRES.map((t,i)=>`<option value="${i}" ${i===state.ui.trim&&state.ui.resInfFinal!==true?"selected":""}>${t}</option>`).join("")}
+          <option value="final" ${state.ui.resInfFinal===true?"selected":""}>Evaluación final (curso completo)</option>
+        </select>
+        <details class="res-menu">
+          <summary class="btn">🖨️ Informes ▾</summary>
+          <div class="res-menu-pop" onclick="if(event.target.closest('button')) this.parentElement.open=false">
+            <button class="ghost" onclick="exportarInformeGrupo(document.getElementById('repGrupoSel').value)">Informe de grupo</button>
+            <button class="ghost" onclick="exportarInformesDetalladosTodos(document.getElementById('repGrupoSel').value)">🖨️ Informes detallados</button>
+            <button class="ghost" title="Acta per a la sessió d'avaluació: mitjanes, suspesos per tema, alumnat amb mesures, faltes i espai per als acords" onclick="exportarActaSessio(document.getElementById('repGrupoSel').value)">🧾 Acta de la sessió</button>
+            <button class="ghost" title="Una pàgina per alumne/a per a les famílies: notes, temes, faltes, observacions i signatures" onclick="(v=>exportarInformesFamiliaTots(v==='final'?2:v))(document.getElementById('repGrupoSel').value)">👪 Informes per a les famílies</button>
+          </div>
+        </details>
+        <details class="res-menu">
+          <summary class="ghost" style="border:1px solid var(--line)">📤 Exportar ▾</summary>
+          <div class="res-menu-pop" onclick="if(event.target.closest('button')) this.parentElement.open=false">
+            <button class="ghost" onclick="exportarCSVGrupo()" title="Hoja de cálculo con la media y la nota de acta (entera) de cada alumno/a, lista para pasar a ITACA">Exportar notas (CSV)</button>
+            <button class="ghost" onclick="exportarInformesTodos()">Exportar todos los informes</button>
+            <button class="ghost" onclick="exportarInformesFinalesTodos()">Exportar informes finales de curso</button>
+            <button class="ghost" title="Archivo con los suspensos de tu materia en cada evaluación, para cargarlo en el Gestor de Tutoría del tutor/a del grupo" onclick="exportarParaTutoria()">👥 Para la tutoría</button>
+          </div>
+        </details>
         <button class="ghost" style="border:1px solid var(--line)" title="Sumar puntos a la nota de la evaluación o a la nota final (p. ej. +0,5 por presentarse voluntario/a)" onclick="abrirExtrasEvaluacion(${trim})">➕ Puntos extra</button>
         <button class="ghost" style="border:1px solid var(--line)" title="Esborranys de comentari per a qui encara no en tinga (no en sobreescriu cap)" onclick="comSugerirGrupo('va')">💬 Comentaris buits</button>
-        <span class="flex" style="gap:6px;align-items:center">
-          <select class="in" id="repGrupoSel" style="padding:6px 9px" title="Avaluació de la taula i dels informes (és la mateixa que la de dalt)" onchange="resTriarAvaluacio(this.value)">
-            ${TRIMESTRES.map((t,i)=>`<option value="${i}" ${i===state.ui.trim&&state.ui.resInfFinal!==true?"selected":""}>${t}</option>`).join("")}
-            <option value="final" ${state.ui.resInfFinal===true?"selected":""}>Evaluación final (curso completo)</option>
-          </select>
-          <button class="btn" onclick="exportarInformeGrupo(document.getElementById('repGrupoSel').value)">Informe de grupo</button>
-          <button class="ghost" style="border:1px solid var(--line)" onclick="exportarInformesDetalladosTodos(document.getElementById('repGrupoSel').value)">🖨️ Informes detallados</button>
-          <button class="ghost" style="border:1px solid var(--line)" title="Acta per a la sessió d'avaluació: mitjanes, suspesos per tema, alumnat amb mesures, faltes i espai per als acords" onclick="exportarActaSessio(document.getElementById('repGrupoSel').value)">🧾 Acta de la sessió</button>
-          <button class="ghost" style="border:1px solid var(--line)" title="Una pàgina per alumne/a per a les famílies: notes, temes, faltes, observacions i signatures" onclick="(v=>exportarInformesFamiliaTots(v==='final'?2:v))(document.getElementById('repGrupoSel').value)">👪 Informes per a les famílies</button>
-        </span>
       </div>
     </div>
     ${resVistaBotonsHTML(grupo)}
