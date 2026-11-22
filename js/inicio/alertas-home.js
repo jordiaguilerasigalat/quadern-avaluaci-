@@ -123,7 +123,7 @@ function renderHome(){
     <div class="hero-eyebrow">${esc(materiasEtiqueta())}</div>
     <h1 class="hero-title">Inici</h1>
     <details class="hero-dades" ${(state.cursoEscolarGlobal&&state.profesorNombreGlobal&&state.centroNombre)?"":"open"}>
-      <summary style="cursor:pointer;color:rgba(255,255,255,.85);font-size:13px;font-weight:600;margin-top:4px">${state.profesorNombreGlobal?esc(state.profesorNombreGlobal)+" · ":""}${esc(state.cursoEscolarGlobal||"")}${state.centroNombre?" · "+esc(state.centroNombre):""}${(state.cursoEscolarGlobal||state.profesorNombreGlobal)?" — ":""}les meues dades i còpies</summary>
+      <summary style="cursor:pointer;color:rgba(255,255,255,.85);font-size:13px;font-weight:600;margin-top:4px">${state.profesorNombreGlobal?esc(state.profesorNombreGlobal)+" · ":""}${esc(state.cursoEscolarGlobal||"")}${state.centroNombre?" · "+esc(state.centroNombre):""}${(state.cursoEscolarGlobal||state.profesorNombreGlobal)?" — ":""}<span style="display:inline-block;margin-left:4px;padding:2px 10px;border:1px solid rgba(255,255,255,.45);border-radius:14px;background:rgba(255,255,255,.1)">⚙️ Les meues dades, capçalera del centre i còpies</span></summary>
     <div class="flex" style="gap:10px;margin-top:12px;flex-wrap:wrap">
       <label style="font-size:12px;color:rgba(255,255,255,.75);font-weight:500">Curs escolar
         <input class="in" style="display:block;margin-top:3px;width:130px;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);color:#fff" placeholder="2026-2027" value="${esc(state.cursoEscolarGlobal||"")}" onchange="setDatoGlobal('cursoEscolarGlobal',this.value)">

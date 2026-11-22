@@ -24,6 +24,7 @@ function renderTopBar(){
     ? `<button class="tb-copia" onclick="exportarTodo()" title="${copiaTitulo}" aria-label="Convé exportar una còpia de seguretat (última: ${state.lastBackupAt?haceTiempo(state.lastBackupAt):'mai'})" style="border:none;border-radius:20px;padding:4px 11px;font-size:12px;font-weight:600;background:var(--warning-soft);color:var(--warning);border:1px solid var(--warning);cursor:pointer">⚠️<span class="tb-txt"> Convé exportar còpia (${state.lastBackupAt?haceTiempo(state.lastBackupAt):'mai'})</span></button>`
     : `<span class="badge tb-fuera-movil" title="${copiaTitulo}">Còpia: ${haceTiempo(state.lastBackupAt)}</span>`;
   document.getElementById("backupBar").innerHTML = `
+    <button class="ghost" id="btnTornar" style="border:1px solid var(--line);${navPotTornar()?"":"opacity:.45"}" onclick="navTornar()" ${navPotTornar()?"":"disabled"} title="Tornar a la pantalla anterior" aria-label="Tornar a la pantalla anterior">←<span class="tb-txt"> Tornar</span></button>
     <button class="ghost" style="border:1px solid var(--line)" onclick="irInicio()" aria-label="Inici">🏠<span class="tb-txt"> Inici</span></button>
     ${copiaBadge}
     <select class="in" id="trimSel" style="padding:6px 9px" aria-label="Període" title="Període (avaluació) amb què treballes"></select>
