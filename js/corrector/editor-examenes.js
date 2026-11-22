@@ -401,6 +401,7 @@ function renderCorDiseno(grupo){
   c.innerHTML=cxSubtabs(act,"diseno")+cxAvisoNeseHTML(grupo,act)+`<div class="card" style="padding:10px 14px"><div class="flex" style="gap:8px;flex-wrap:wrap;align-items:center">
     ${exSelectorVariante(act)}<button class="btn" onclick="exImportar()">Importar a la rúbrica →</button>
     <button class="ghost" style="border:1px solid var(--line)" title="Guarda este diseño como plantilla de la actividad de la Programación para reutilizarlo en otros grupos" onclick="exComoPlantilla()">💾 Plantilla de la Programación</button>
+    ${cxVarEditando(act)&&typeof eaAltresDades==="function"?`<button class="ghost" style="border:1px solid var(--line)" title="Canvia els valors numèrics amb unitats (masses, volums, temps…) per uns altres, amb les mateixes xifres significatives. L'estructura i els punts no canvien." onclick="eaAltresDades()">🔢 Altres dades</button>`:""}
     ${exModeloViendo(act)?`<button class="ghost" style="border:1px solid var(--line)" title="Torna a barrejar l'ordre de les preguntes" onclick="exMezclar()">🔀 Barrejar de nou</button><button class="ghost danger" style="border:1px solid var(--line)" onclick="exQuitarModelo()">Llevar el model ${exModeloViendo(act)}</button>`:""}
     ${act.rubrica&&mbSinEnlazar(act)&&!cxVarEditando(act)?`<button class="ghost" style="border:1px solid var(--line)" title="Aparella cada ítem de la rúbrica amb la seua pregunta de l'examen, sense canviar res del que ja està corregit. Cal perquè la rúbrica isca en l'ordre de cada model." onclick="mbEnlazarRubrica()">🔗 Enllaçar la rúbrica amb el disseny (${mbSinEnlazar(act)} sense enllaçar)</button>`:""}
     <button class="ghost" style="border:1px solid var(--line)" title="Exàmens d'altres anys del material de cada curs, per tema" onclick="exBancExamens()">📚 Exàmens d'altres anys</button>
@@ -438,6 +439,7 @@ function renderCorDiseno(grupo){
       if(avisoB) mostrarToast(avisoB,"info");
       const g0=win.__ee.get(); g0.updated=0; _exFirma=JSON.stringify(g0);
       await exPut({key:clave,exam:win.__ee.get(),actualizado:Date.now(),nombre:act.nombre});
+      if(vr && typeof eaDespresCarregar==="function") await eaDespresCarregar(grupo,act,vr,win);   // alternatiu acabat de generar: rúbrica al dia i resum
       win.__eeOnSave=ex=>{
         const g=JSON.parse(JSON.stringify(ex)); g.updated=0; const fr=JSON.stringify(g); if(fr===_exFirma) return; _exFirma=fr;
         // Modelos B y C: solo cuenta el orden de sus preguntas; el contenido sale siempre del general.
