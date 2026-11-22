@@ -75,7 +75,7 @@ function summaryOf(n) {
     case 'question': return n.title || plainOf(n.text);
     case 'subquestion': case 'text': return plainOf(n.text);
     case 'table': return `Taula ${n.table.cells.length}×${n.table.cells[0]?.length || 0}`;
-    case 'image': return n.src ? (n.caption || 'Imatge') : '(sense imatge)';
+    case 'image': return n.centre ? '🏫 Capçalera del centre' : n.src ? (n.caption || 'Imatge') : '(sense imatge)';
     case 'lines': return `${n.count} línies`;
     case 'box': return n.title || plainOf(n.text);
     case 'spacer': return `Espai · ${n.height} mm`;

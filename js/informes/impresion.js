@@ -22,7 +22,8 @@ function _adaptarCSSImprimible(css){
   css=css.replace(/\bbody\s+(?=[.#\w])/g,".doc-root ");
   return {css,paginas};
 }
-function mostrarImprimible(docHtml,titulo){
+function mostrarImprimible(docHtml,titulo,opts){
+  opts=opts||{};
   cerrarImprimible();
   let doc; try{ doc=new DOMParser().parseFromString(docHtml,"text/html"); }catch(e){ doc=null; }
   /* Els documents imprimibles es pinten dins d'un shadow DOM, on no arriba el
@@ -62,10 +63,16 @@ function mostrarImprimible(docHtml,titulo){
   if(!pag){ pag=document.createElement("style"); pag.id="printPageRule"; document.head.appendChild(pag); }
   pag.textContent=paginas.join("\n");
   _imprimibleActual={docHtml,titulo:titulo||"documento"};
+  /* Capçalera del centre (js/informes/capcalera-centre.js): botó per a posar-la o no.
+     El fitxer que es guarda porta el mateix que es veu. */
+  if(opts.capcalera!==false && doc && typeof capcaleraBotoImprimible==="function"){
+    const root=sh.querySelector(".doc-root");
+    try{ capcaleraBotoImprimible(ov,root,titulo,()=>{ try{ doc.body.innerHTML=root.innerHTML; _imprimibleActual.docHtml="<!DOCTYPE html>"+doc.documentElement.outerHTML; }catch(e){} }); }catch(e){}
+  }
   ov.querySelector("#prtImprimir").onclick=()=>{ try{ window.print(); }catch(e){ mostrarAviso("No se ha podido abrir la impresión. Usa «Guardar archivo» y ábrelo en el navegador para imprimirlo."); } };
   ov.querySelector("#prtGuardar").onclick=()=>{
     const nombre=(titulo||"documento").replace(/[\\/:*?"<>|·]+/g," ").replace(/\s+/g," ").trim().slice(0,90)+".html";
-    guardarArchivo(new Blob([docHtml],{type:"text/html"}),nombre);
+    guardarArchivo(new Blob([(_imprimibleActual&&_imprimibleActual.docHtml)||docHtml],{type:"text/html"}),nombre);
   };
   ov.querySelector("#prtCerrar").onclick=cerrarImprimible;
   setTimeout(()=>{ try{ ov.querySelector("#prtImprimir").focus(); }catch(e){} },30);

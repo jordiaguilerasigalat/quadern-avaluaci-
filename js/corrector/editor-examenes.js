@@ -144,8 +144,8 @@ window.exObrirMaterial=async(clau,f)=>{
   let nou;
   try{ const r=await fetch(`docs/material/${encodeURIComponent(clau)}/editor/${String(f).replace(/\.[^.\/]+$/,"").split("/").map(encodeURIComponent).join("/")}.json`); if(!r.ok) throw new Error(r.status); nou=await r.json(); }
   catch(e){ mostrarAviso("No s'ha pogut carregar l'examen. Comprova la connexió i torna-ho a provar."); return; }
-  const actual=w.__ee.get()||{}, cos=(actual.body||[]), cap=cos.filter(b=>b.type==="title"||b.type==="datos");
-  const teContingut=cos.some(b=>b.type!=="title"&&b.type!=="datos");
+  const actual=w.__ee.get()||{}, cos=(actual.body||[]), cap=cos.filter(b=>b.type==="title"||b.type==="datos"||(b.type==="image"&&b.centre));
+  const teContingut=cos.some(b=>b.type!=="title"&&b.type!=="datos"&&!(b.type==="image"&&b.centre));
   if(teContingut && !await confirmar("El disseny actual ja té preguntes. Es substituiran per les de l'examen triat (el títol i les dades de l'alumne es queden).\n\nSi després vols tornar enrere, ho tens en «Versions» o amb el botó de desfer.",{titulo:"✏️ Obrir a l'editor",ok:"Substituir",cancelar:"Cancel·lar",peligro:true})) return;
   const preguntes=(nou.body||[]).filter(b=>b.type!=="title"&&b.type!=="datos");
   const ex=Object.assign({},actual,{ body:(cap.length?cap:(nou.body||[]).filter(b=>b.type==="title"||b.type==="datos")).concat(preguntes), updated:Date.now() });
@@ -356,9 +356,9 @@ window.exAyuda=()=>exModal(`<h2 style="font-size:16.5px;margin-bottom:8px">❔ C
   <p style="font-size:13px;margin:0 0 10px"><b>PDF.</b> «Exportar PDF» abre la vista previa de impresión del Cuaderno; elige «Guardar como PDF», márgenes «Ninguno» y escala 100 %. Lora e Inter funcionan sin conexión; las demás fuentes del editor necesitan internet (sin conexión se sustituyen por otra parecida).</p>
   <div class="alert-box" style="font-size:12.5px"><b>Seguridad.</b> Los diseños se guardan en una base propia del navegador, no en las copias automáticas 🛟. «Exportar copia» (normal o cifrada) sí los incluye: hazla con regularidad. Además hay una copia automática diaria de los diseños. Las «Versiones» del editor son solo un historial de este dispositivo.</div>
   <div style="margin-top:10px"><button class="ghost small" style="border:1px solid var(--line)" onclick="exCopiasDiseno()">🛟 Copias de los diseños</button></div>`);
-function exCriteriosDe(grupo,act){
+function exCriteriosDe(grupo,act,tots){
   const out=[]; try{
-    const idx=catIndex(grupo.catalogoKey), prev=cxCriteriosPrevistos(grupo,act), ok=prev&&prev.length? new Set(prev) : null;
+    const idx=catIndex(grupo.catalogoKey), prev=tots?null:cxCriteriosPrevistos(grupo,act), ok=prev&&prev.length? new Set(prev) : null;
     ((idx&&idx.cat&&idx.cat.ces)||[]).forEach(ce=>(ce.criterios||[]).forEach(c=>{ if(!ok||ok.has(c.id)) out.push({id:c.id,texto:String(c.texto||"").slice(0,140)}); }));
   }catch(e){}
   return out;
@@ -370,7 +370,7 @@ window.exImprimirDesdeEditor=(docHtml,titulo,fontCss,links)=>{
     if(!st){ st=document.createElement("style"); st.id="exFuentesImpresion"; st.textContent=fontCss||""; document.head.appendChild(st); }
     (links||[]).forEach(u=>{ if(![...document.querySelectorAll("link[data-exfuente]")].some(l=>l.href===u)){ const l=document.createElement("link"); l.rel="stylesheet"; l.href=u; l.dataset.exfuente="1"; document.head.appendChild(l); } });
   }catch(e){}
-  mostrarImprimible(docHtml,titulo);
+  mostrarImprimible(docHtml,titulo,{capcalera:false});   // l'examen porta la seua pròpia capçalera
   const ov=document.getElementById("printOverlay");
   if(ov&&!ov.querySelector(".ex-pdf-nota")){ const n=document.createElement("div"); n.className="ex-pdf-nota"; n.style.cssText="padding:6px 16px;background:#13213a;color:#cfd8e6;font-size:12.5px"; n.textContent="Para el PDF: tamaño de papel A4 (o el del examen), márgenes «Ninguno», escala 100 % y sin encabezados ni pies del navegador."; ov.insertBefore(n,ov.children[1]); }
 };
@@ -429,8 +429,10 @@ function renderCorDiseno(grupo){
       if(_exFrame!==f) return;
       let exam;
       if(rec) exam=rec.exam;
-      else { const b=win.blankExam(); b.name=act.nombre; b.body[0].title=act.nombre; b.body[0].eyebrow=grupo.nombre; if(vr&&vr.tipo==="ausencia"&&vr.fecha) b.body[0].eyebrow+=" · "+cxFechaCorta(vr.fecha); exam=JSON.parse(JSON.stringify(b)); }
+      else { const b=win.blankExam(); b.name=act.nombre; b.body[0].title=act.nombre; b.body[0].eyebrow=grupo.nombre; if(vr&&vr.tipo==="ausencia"&&vr.fecha) b.body[0].eyebrow+=" · "+cxFechaCorta(vr.fecha); exam=JSON.parse(JSON.stringify(b));
+        if(typeof capcaleraImg==="function" && capcaleraImg() && capcaleraPerDefecte() && win.__ee.posarCapcalera) win.__ee.posarCapcalera(exam,capcaleraImg()); }
       win.__eeCriterios=exCriteriosDe(grupo,act);
+      win.__eeCriteriosTots=exCriteriosDe(grupo,act,true);   // «Mostrar tots els criteris» del currículum
       win.__ee.cargar(exam);
       if(!vr && !esB && mbModelos(act)) mbActualizar(act,exam,win);   // numeración de los modelos al día
       if(avisoB) mostrarToast(avisoB,"info");
