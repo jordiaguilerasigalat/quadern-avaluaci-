@@ -155,7 +155,7 @@ function desgloseBloqueHTML(grupo,al,b,trim){
     const m=marcaDe(grupo,al.id,a.id);
     const recs=recuperacionesDe(grupo,a.id).filter(r=>notaActividadBase(grupo,al.id,r)!=null && _recCompta(r,trim));
     const conRec=recs.length && va!=null && (vb==null || Math.abs(va-vb)>1e-9);
-    let celda=m==="EX"?"Exento":(conRec?`${vb==null?"—":fmt(vb)} → <strong>${fmt(va)}</strong>`:(va==null?"—":fmt(va)))+(m==="NP"?" (NP)":"");
+    let celda=m==="EX"?"Exempt":(conRec?`${vb==null?"—":fmt(vb)} → <strong>${fmt(va)}</strong>`:(va==null?"—":fmt(va)))+(m==="NP"?" (NP)":"");
     if(ex) celda+=` + ${fmtPts(ex)} extra = <strong>${fmt(notaActividad(grupo,al.id,a))}</strong>`;
     return `<tr>
         <td>${esc(a.nombre)}<span class="dsg-tag">${esc(a.tipo)}</span>${conRec?`<div class="dsg-muted" style="font-size:11.5px">Recuperada amb: ${recs.map(r=>esc(r.nombre)).join(", ")}</div>`:""}${ex?`<div class="dsg-muted" style="font-size:11.5px">Punts extra: +${fmtPts(ex)}${exE&&exE.motivo?" · "+esc(exE.motivo):""}</div>`:""}</td>

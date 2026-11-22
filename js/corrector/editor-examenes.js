@@ -224,7 +224,7 @@ function exRenderPorPregunta(grupo,act){
     const rubAl=cxRubricaDe(act,al.id), nivAl=cxnNiveles(rubAl), posAl=it&&nivAl.length&&marcaDe(grupo,al.id,act.id)!=="NP"? cxnPosicion(it,v,nivAl) : null;
     const botones=it&&nivAl.length? `<span class="cxn-mini" role="group" aria-label="Nivel de ${esc(al.nombre)}">${nivAl.map((l,i)=>{ const col=cxnColor(l.color,i), on=!!(posAl&&posAl.exacto===l.id);
       return `<button type="button" class="cxn-mini-btn${on?" on":""}" style="--cxn:${col};--cxn-tinta:${cxnTinta(col)}" aria-pressed="${on}" onclick="cxnElegir('${al.id}','${act.id}','${it.id}','${l.id}')">${esc(l.nombre||"")}</button>`; }).join("")}</span> ` : "";
-    const celda= marcaDe(grupo,al.id,act.id)==="EX"? '<span class="badge">Exento</span>'
+    const celda= marcaDe(grupo,al.id,act.id)==="EX"? '<span class="badge">Exempt</span>'
       : it? `${botones}${cxSelectPuntuacionHTML(it.max,v,"ex-preg-in",`onchange="exPregScore('${al.id}','${act.id}','${it.id}',this)" onkeydown="exEnter(event,this)"`,marcaDe(grupo,al.id,act.id)==="NP")} <span style="font-size:12px;color:var(--mut)">/ ${cxFmtPts(it.max)}</span>`
       : `<span style="color:var(--mut);font-size:12.5px">— la seua rúbrica adaptada no inclou aquesta ${cxEsNiveles(act.rubrica)?"categoria":"pregunta"}</span>`;
     return `<tr><td style="padding:5px 8px 5px 0">${esc(al.nombre)}${neseBadgeHTML(al)}</td><td>${celda}</td></tr>`;

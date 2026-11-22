@@ -2101,7 +2101,7 @@ export const PRUEBAS = [
       state.ui.appMode = 'competencial'; state.ui.tab = 'taula'; save(); render();
       await new Promise(r => setTimeout(r, 100));
       const out = {};
-      out.cols = [...document.querySelectorAll('.tn-taula thead .tn-act:not(.tn-final) .tn-act-nom')].map(x => x.textContent.trim());
+      out.cols = [...document.querySelectorAll('.tn-taula thead .tn-act:not(.tn-final):not(.tn-nova) .tn-act-nom')].map(x => x.textContent.trim());
       out.files = document.querySelectorAll('.tn-taula tbody tr').length;
       const fila0 = [...document.querySelectorAll('.tn-taula tbody tr')[0].querySelectorAll('.tn-cel')];
       out.f0 = fila0.map(x => x.textContent.trim()); out.bg = fila0.map(x => x.style.background || '');
@@ -2117,14 +2117,28 @@ export const PRUEBAS = [
       tnMoure(1, 0); await new Promise(r => setTimeout(r, 50));
       out.seg = state.ui.tnCel.al === ids[1];
       tnTriarAvaluacio(1); await new Promise(r => setTimeout(r, 50));
-      out.trim1 = [...document.querySelectorAll('.tn-taula thead .tn-act:not(.tn-final) .tn-act-nom')].map(x => x.textContent.trim());
+      out.trim1 = [...document.querySelectorAll('.tn-taula thead .tn-act:not(.tn-final):not(.tn-nova) .tn-act-nom')].map(x => x.textContent.trim());
       out.tancat = !document.querySelector('.tn-modal');
+      // ＋ Nova activitat: obri Activitats amb el formulari i, en guardar, torna a la taula amb la columna nova
+      tnTriarAvaluacio(0); await new Promise(r => setTimeout(r, 50));
+      document.querySelector('.tn-nova-bt').click(); await new Promise(r => setTimeout(r, 50));
+      out.anarAct = state.ui.tab === 'actividades' && !!document.querySelector('.tn-tornar') && !!document.getElementById('fN');
+      state.ui.form.nombre = 'Deures 2'; state.ui.form.links = [{ critId: cid, peso: 100 }]; save();
+      saveActividad(); await new Promise(r => setTimeout(r, 50));
+      out.tornat = [state.ui.tab, [...document.querySelectorAll('.tn-taula thead .tn-act:not(.tn-final):not(.tn-nova) .tn-act-nom')].map(x => x.textContent.trim()).includes('Deures 2'), !!g.actividades.find(a => a.nombre === 'Deures 2' && a.trimestre === 0)];
+      // En un grup amb apartats (Deures, Laboratori…): «+ Nova» d'un apartat també torna a la taula
+      document.querySelector('.tn-nova-bt').click(); await new Promise(r => setTimeout(r, 50));
+      const inp = document.getElementById('segNom_deures');
+      if (inp) { inp.value = 'Deures 3'; segCrear('deures'); await new Promise(r => setTimeout(r, 50)); }
+      out.seg = [!!inp, state.ui.tab, state.ui.segAct, !!g.actividades.find(a => a.nombre === 'Deures 3')];
       return out;
     }, ids);
+    t.ok(r.seg[0] && (r.seg[1] === 'taula' && r.seg[2] === '' && r.seg[3]), '«+ Nova» d\'un apartat (Deures…) també torna a la taula', JSON.stringify(r.seg));
     t.ok(r.cols[0] === 'Examen 1' && r.cols[1] === 'Deures 1' && !r.cols.includes('Altra avaluació') && r.files === 3, "una columna per activitat de l'avaluació, ordenades per data, i una fila per alumne/a", JSON.stringify(r));
     t.ok(r.f0[0] === '3,0' && r.f0[1] === '10,0' && r.bg[0] && r.bg[1] && r.bg[0] !== r.bg[1] && r.np === 'NP' && r.data === '05-10-26', 'notes, NP, data i colors', JSON.stringify(r));
     t.ok(r.modal && r.despres[0] === 5 && r.despres[1] && r.despres[2] === '5,0', "tocar la nota obri l'activitat d'eixe alumne/a i el canvi es guarda i es veu en la taula", JSON.stringify(r));
     t.ok(r.seg && r.tancat && r.trim1.length === 1 && r.trim1[0] === 'Altra avaluació', 'navegar a l\'alumne/a següent i canviar d\'avaluació', JSON.stringify(r));
+    t.ok(r.anarAct && r.tornat[0] === 'taula' && r.tornat[1] && r.tornat[2], '«＋ Nova activitat» crea l\'activitat en Activitats i torna a la taula amb la columna nova', JSON.stringify(r));
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
 ];

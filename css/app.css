@@ -759,3 +759,11 @@ body[data-tema="oscuro"]{--qualnum:#9aa3b5}
 }
 .tn-taula th,.tn-taula td,.tn-taula .nom-fitxa{font-family:inherit;text-transform:none;letter-spacing:normal}
 .tn-taula thead .tn-esq{font-size:13px}
+.tn-nova{width:96px;min-width:96px;max-width:96px;vertical-align:middle!important}
+.tn-nova-bt{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;padding:6px 4px;border:1.5px dashed var(--line);border-radius:10px;color:var(--accent-texto,var(--ink));font-size:12px;font-weight:600;text-align:center;line-height:1.15}
+.tn-nova-bt span{font-size:20px;line-height:1}
+.tn-nova-bt:hover{border-color:currentColor;background:var(--paper)}
+.tn-nova-bt:focus-visible{outline:2px solid var(--accent,#2b6cb0);outline-offset:2px}
+.tn-nova-cel{background:transparent!important}
+.tn-taula thead th.tn-recent{box-shadow:inset 0 -3px 0 var(--accent,#2b6cb0)}
+.tn-tornar{border-left:4px solid var(--accent,#2b6cb0)}
