@@ -265,7 +265,7 @@ function renderAlumnos(grupo){
           ${alumColVisible("pendientes")?`<td><button class="ghost" style="font-size:11.5px;padding:5px 8px;width:100%;overflow:hidden;text-overflow:ellipsis" onclick="togglePendientesRow('${a.id}')">${a.pendientes.length?esc(a.pendientes.map(n=>n+"º").join(", ")):"— Ninguna —"}</button></td>`:""}
           ${alumColVisible("nacimiento")?`<td>
             <input type="date" class="in" style="width:100%;font-size:12.5px;padding:6px 8px" value="${esc(a.fechaNacimiento||"")}" onchange="setFechaNacimiento('${a.id}',this.value)" onblur="refrescarFechaNacimiento()">
-            <input type="text" class="in" placeholder="o DD/MM/AAAA" title="Escriu la data completa (o només apega-la) i polsa Intro o ix del camp" style="width:100%;font-size:11px;padding:3px 8px;margin-top:3px;border-color:transparent;background:transparent" onkeydown="if(event.key==='Enter'){ if(setFechaNacimientoTexto('${a.id}',this.value)) this.blur(); }" onblur="if(this.value){ setFechaNacimientoTexto('${a.id}',this.value); this.value=''; }">
+            ${a.fechaNacimiento?"":`<input type="text" class="in" placeholder="o DD/MM/AAAA" title="Escriu la data completa (o només apega-la) i polsa Intro o ix del camp" style="width:100%;font-size:11px;padding:3px 8px;margin-top:3px;border-color:transparent;background:transparent" onkeydown="if(event.key==='Enter'){ if(setFechaNacimientoTexto('${a.id}',this.value)) this.blur(); }" onblur="if(this.value){ setFechaNacimientoTexto('${a.id}',this.value); this.value=''; }">`}
           </td>`:""}
           ${alumColVisible("edad")?`<td style="text-align:center;font-size:12.5px;color:${edad==null?"var(--mut)":"var(--ink)"}">${edad==null?"—":edad+" anys"}</td>`:""}
           ${alumColVisible("familia")?(()=>{ const ok=familiaCorreos(a).length, mal=(a.familia||[]).some(f=>f.email&&!emailValido(f.email)); return `<td style="text-align:center;font-size:12.5px"><button class="ghost small" style="padding:3px 7px;${mal?"color:#dc2626":""}" title="${mal?"Hi ha un correu mal escrit":ok?familiaCorreos(a).join(", "):"Sense correu de la família"}" onclick="abrirFichaAlumno('${a.id}')">${mal?"⚠️":ok?"✉️ "+ok:"—"}</button></td>`; })():""}
@@ -293,8 +293,8 @@ function renderAlumnos(grupo){
     <p id="alSinResultados" style="display:none;color:var(--mut);font-size:13.5px;margin-top:6px">Ningún alumno/a coincide con la búsqueda.</p>
     </div></div>
 
-  <div class="card">
-    <h2>Añadir varios a la vez</h2>
+  <details class="card" ${grupo.alumnos.length?"":"open"}>
+    <summary style="cursor:pointer"><h2 style="display:inline">Añadir varios a la vez</h2></summary>
     <p class="sub">Pega una lista (un alumno por línea, en formato <strong>Apellidos, Nombre</strong> — p. ej. "Pérez Martínez, Juan") o importa un CSV. Se aceptan tanto archivos con una columna (Apellidos, Nombre en la misma celda) como con dos columnas separadas (Apellidos / Nombre).</p>
     <div class="flex" style="align-items:flex-start;gap:20px">
       <div style="flex:1;min-width:220px">
@@ -309,7 +309,7 @@ function renderAlumnos(grupo){
         <p class="sub" style="margin:8px 0 0">Si la primera fila es una cabecera (p. ej. "Alumno" o "Apellidos"), se detecta y se ignora. Si además hay una columna "Fecha de nacimiento" (formato DD/MM/AAAA), se importa también. El NESE y su nivel no se importan por CSV: se marcan a mano en la tabla de arriba.</p>
       </div>
     </div>
-  </div>
+  </details>
 
   ${pap.length? `<div class="card">
     <h2 style="font-size:15px">Papelera de alumnado</h2>

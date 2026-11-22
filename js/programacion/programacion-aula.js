@@ -275,14 +275,7 @@ function progListaHTML(root){
         <button class="chip" style="font-weight:700" onclick="progCargarTotesDepartament()">📥 Carregar totes les que falten</button>
         ${Object.keys(PROG_DEPARTAMENTO).filter(k=>getCatalogo(k)).map(k=>`<button class="chip" onclick="progCargarDepartamento('${escJS(k)}')">${esc(getCatalogo(k).materia)} · ${esc(getCatalogo(k).curso)}</button>`).join("")}
       </div>
-      <p class="sub" style="margin:10px 0 6px"><strong>📄 Programacions d'aula originals (PDF, sense noms ni dades dels grups):</strong></p>
-      <div class="flex" style="flex-wrap:wrap;gap:6px">
-        ${PROG_DOCUMENTS_PDF.filter(([f])=>/^PA_/.test(f)).map(([f,t])=>`<a class="chip" style="text-decoration:none" href="docs/programacions/${f}" target="_blank" rel="noopener">${esc(t)}</a>`).join("")}
-      </div>
-      <p class="sub" style="margin:10px 0 6px"><strong>🧭 Propostes pedagògiques (PDF):</strong></p>
-      <div class="flex" style="flex-wrap:wrap;gap:6px">
-        ${PROG_DOCUMENTS_PDF.filter(([f])=>/^PP_/.test(f)).map(([f,t])=>`<a class="chip" style="text-decoration:none" href="docs/programacions/${f}" target="_blank" rel="noopener">${esc(t)}</a>`).join("")}
-      </div>
+      <p class="sub" style="margin:10px 0 0">📄 Les programacions originals i les propostes pedagògiques en PDF estan en la <a onclick="irModo('biblioteca')" style="cursor:pointer;text-decoration:underline;color:var(--brand-3)">📚 Biblioteca</a>.</p>
     </div>
     <p class="sub" style="margin:8px 0 0">Importar añade la programación del archivo a tu lista, sin tocar ni sobrescribir ninguna de las que ya tengas.</p>
   </div>
