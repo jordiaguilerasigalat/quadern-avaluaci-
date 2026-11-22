@@ -713,3 +713,47 @@ body[data-tema="oscuro"] .txtAvis{color:#fbbf72}
 
 /* Nota calculada sobre 10 al costat del nivell qualitatiu (NA, S, B, N, E): gris clar (el color va en línia amb var(--qualnum)) */
 body[data-tema="oscuro"]{--qualnum:#9aa3b5}
+
+/* ---- Taula de notes (Avaluar → Taula de notes): alumnat × activitats ---- */
+.tn-card{padding-bottom:12px}
+.tn-trim{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut)}
+.tn-trim select{font-size:14px;padding:5px 8px}
+.tn-mut{color:var(--mut);font-weight:400}
+.tn-wrap{overflow:auto;max-height:calc(100vh - 230px);min-height:240px;border:1px solid var(--line);border-radius:10px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.tn-taula{border-collapse:separate;border-spacing:0;font-size:13.5px;width:max-content;min-width:100%}
+.tn-taula th,.tn-taula td{border-bottom:1px solid var(--line);padding:0;margin:0}
+.tn-taula thead th{position:sticky;top:0;z-index:2;background:var(--card);vertical-align:bottom;border-bottom:2px solid var(--line)}
+.tn-taula .tn-al{position:sticky;left:0;z-index:1;background:var(--card);text-align:left;font-weight:500;padding:6px 10px;min-width:190px;max-width:240px;border-right:2px solid var(--line);line-height:1.25}
+.tn-taula thead .tn-esq{z-index:3;font-weight:600;color:var(--ink)}
+.tn-taula tbody tr:nth-child(even) .tn-al{background:var(--paper)}
+.tn-num{color:var(--mut);font-size:12px;font-weight:400}
+.tn-act{width:108px;min-width:108px;max-width:108px;padding:6px 6px 5px!important;text-align:center;font-weight:500;border-left:1px solid var(--line)}
+.tn-act-nom{all:unset;cursor:pointer;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--accent-texto,var(--ink));font-size:13px;line-height:1.2;min-height:2.4em;text-align:center;width:100%}
+.tn-act-nom:hover{text-decoration:underline}
+.tn-act-nom:focus-visible{outline:2px solid var(--accent,#2b6cb0);outline-offset:2px;border-radius:4px}
+.tn-final .tn-act-nom{cursor:default;text-decoration:none!important;font-weight:700;color:var(--ink)}
+.tn-act-data{font-size:12px;color:var(--mut);margin-top:3px}
+.tn-act-crit{font-size:10.5px;color:var(--mut);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:400;border-top:1px solid var(--line);padding-top:3px}
+.tn-cel{text-align:center;color:#141b28;border-left:1px solid var(--line);height:44px}
+.tn-taula tbody tr:nth-child(even) .tn-cel:not([style]){background:var(--paper)}
+.tn-cel:not([style]){color:var(--ink)}
+.tn-cel button{all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-height:44px;cursor:pointer;font-size:14px;font-variant-numeric:tabular-nums}
+.tn-cel button:hover{box-shadow:inset 0 0 0 2px rgba(20,27,40,.35)}
+.tn-cel button:focus-visible{box-shadow:inset 0 0 0 3px var(--accent,#2b6cb0)}
+.tn-cel sup{font-size:9px;margin-left:1px}
+.tn-ex{color:var(--mut)!important;font-size:12px}
+.tn-final{border-left:2px solid var(--line)!important;font-weight:700;min-width:84px}
+.tn-taula td.tn-final{padding:0 8px}
+.tn-nav{gap:4px;margin:10px 0 4px;flex-wrap:nowrap}
+.tn-nav button{white-space:nowrap;padding-left:6px;padding-right:6px}
+.tn-nota{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;padding:10px 12px;margin:8px 0 12px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.tn-cuant{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut);margin-bottom:8px}
+@media (max-width:640px){
+  .tn-wrap{max-height:calc(100vh - 200px)}
+  .tn-taula .tn-al{min-width:128px;max-width:150px;padding:5px 6px;font-size:12.5px}
+  .tn-taula .tn-al .avatar-alumne,.tn-taula .tn-al img{display:none}
+  .tn-act{width:84px;min-width:84px;max-width:84px}
+  .tn-act-nom{font-size:12px}
+}
+.tn-taula th,.tn-taula td,.tn-taula .nom-fitxa{font-family:inherit;text-transform:none;letter-spacing:normal}
+.tn-taula thead .tn-esq{font-size:13px}
