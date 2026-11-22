@@ -344,6 +344,8 @@
   }
   .home-fab:hover{ background:var(--accent); color:var(--accent-ink) }
   @media print{ .home-fab{ display:none !important } }
+  .nav-fab[hidden]{ display:none !important }
+  body.imprimiendo .nav-fab, body:has(.ex-wrap.ex-full) .nav-fab, body:has(.modal-overlay) .nav-fab{ display:none !important }
   /* Mòbil: només queda el botó «🏠 Inici» de la barra superior (que no es mou
      en fer scroll); els de dins de cada pantalla s'amaguen per no repetir-lo. */
   @media (max-width:700px){ #app button[onclick="irInicio()"], #app .boto-inici-intern{ display:none !important } }

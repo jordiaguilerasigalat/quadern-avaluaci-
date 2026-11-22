@@ -1965,6 +1965,8 @@ export const PRUEBAS = [
     await p.evaluate(() => { state.ui.tab = 'resultados'; save(); render(); }); await esperar(200);
     await p.evaluate(() => { state.ui.appMode = 'corrector'; state.ui.corTab = 'lista'; save(); render(); }); await esperar(300);
     t.ok(await p.isVisible('#btnTornar') && await p.isEnabled('#btnTornar'), 'el Corrector d\'exàmens té el botó «← Tornar» actiu');
+    await p.evaluate(() => window.scrollTo(0, 5000)); await esperar(100);
+    t.ok(await p.isVisible('#navFab'), 'el botó flotant «← Tornar» es veu encara que la barra de dalt quede fora de la pantalla');
     await p.click('#btnTornar'); await esperar(200);
     const a = await estat();
     await p.click('#btnTornar'); await esperar(200);
