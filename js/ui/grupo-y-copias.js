@@ -204,7 +204,7 @@ window.importarTodo=inp=>{ _procesarArchivoCopiaJSON(inp.files[0],()=>{ inp.valu
    l'aplicació (irATab('asistencia'), etc.) segueixen funcionant igual. */
 const GRUPO_SECCIONS=[
   ["alumnat","👥 Alumnat",[["alumnos","Llista"],["plano","Plànol d'aula"],["asistencia","Assistència"],["convivencia","Convivència"],["familias","Famílies"]]],
-  ["avaluar","✍️ Avaluar",[["programa","Programació"],["diario","Diari de classe"],["actividades","Activitats"],["taula","Taula de notes"],["calificar","Qualificar"]]],
+  ["avaluar","✍️ Avaluar",[["programa","Programació"],["diario","Diari de classe"],["actividades","Activitats"],["taula","Taula de notes"],["calificar","Qualificar",true]]],
   ["resultats","📊 Resultats",[["resultados","Notes i informes"],["resumen","Resum del grup"],["cobertura","Cobertura de criteris"]]],
   ["ajustos","⚙️ Ajustos",[["ajustes","Ajustos del grup"]]]
 ];
@@ -236,8 +236,8 @@ function renderGrupo(grupo){
     <div class="gseccions" role="tablist" aria-label="Seccions del grup">
       ${GRUPO_SECCIONS.map(([k,l])=>`<button class="gseccio ${sec[0]===k?"on":""}" role="tab" aria-selected="${sec[0]===k?"true":"false"}" onclick="irASeccio('${k}')">${l}</button>`).join("")}
     </div>
-    ${sec[2].length>1?`<div class="gtabs" role="tablist" aria-label="Apartats de ${esc(sec[1].replace(/^\S+\s/,""))}">
-      ${sec[2].map(([k,l])=>`<button class="gtab ${state.ui.tab===k?"on":""}" role="tab" aria-selected="${state.ui.tab===k?"true":"false"}" onclick="irATab('${k}')">${l}</button>`).join("")}
+    ${sec[2].filter(([k,,amagat])=>!amagat||state.ui.tab===k).length>1?`<div class="gtabs" role="tablist" aria-label="Apartats de ${esc(sec[1].replace(/^\S+\s/,""))}">
+      ${sec[2].filter(([k,,amagat])=>!amagat||state.ui.tab===k).map(([k,l])=>`<button class="gtab ${state.ui.tab===k?"on":""}" role="tab" aria-selected="${state.ui.tab===k?"true":"false"}" onclick="irATab('${k}')">${l}</button>`).join("")}
     </div>`:""}
   </div>
   <div id="tabContent"></div>`;

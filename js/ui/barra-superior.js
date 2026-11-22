@@ -20,7 +20,9 @@ function renderTopBar(){
   const cambios = state.cambiosSinCopia||0;
   const copiaUrge = typeof copiaEstat==="function"? copiaEstat().urgeix : (diasSinCopia>7 || cambios>=40 || !state.lastBackupAt);
   const copiaTitulo = state.lastBackupAt?new Date(state.lastBackupAt).toLocaleString('ca-ES'):'Encara no has exportat cap còpia';
-  const copiaBadge = copiaUrge
+  /* En Inici ja ix la targeta gran «Toca fer una còpia»: el botó groc no es repetix. */
+  const targetaInici = state.ui.appMode==="inicio" && typeof copiaRecordatoriHTML==="function" && !!copiaRecordatoriHTML();
+  const copiaBadge = targetaInici ? "" : copiaUrge
     ? `<button class="tb-copia" onclick="exportarTodo()" title="${copiaTitulo}" aria-label="Convé exportar una còpia de seguretat (última: ${state.lastBackupAt?haceTiempo(state.lastBackupAt):'mai'})" style="border:none;border-radius:20px;padding:4px 11px;font-size:12px;font-weight:600;background:var(--warning-soft);color:var(--warning);border:1px solid var(--warning);cursor:pointer">⚠️<span class="tb-txt"> Convé exportar còpia (${state.lastBackupAt?haceTiempo(state.lastBackupAt):'mai'})</span></button>`
     : `<span class="badge tb-fuera-movil" title="${copiaTitulo}">Còpia: ${haceTiempo(state.lastBackupAt)}</span>`;
   document.getElementById("backupBar").innerHTML = `
