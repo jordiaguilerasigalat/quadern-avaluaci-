@@ -123,7 +123,7 @@ function resCeldaItacaHTML(grupo,a,periodo,calc){
   return `<td onclick="event.stopPropagation()" style="white-space:nowrap"><input type="text" inputmode="decimal" autocomplete="off" class="in miniw" style="width:58px;${canvi?"border-color:var(--accent);font-weight:700;background:var(--accent-soft)":""}" placeholder="${acta==null?"":acta}" value="${m==null?"":String(m).replace(".",",")}" title="Nota per a ITACA. En blanc = la calculada (${acta==null?"sense nota":acta}). Escriu-ne una altra per a canviar-la a mà." aria-label="Nota ITACA de ${esc(a.nombre)} (${periodo==="final"?"final":TRIMESTRES[Number(periodo)]})" onchange="setNotaItaca('${a.id}','${periodo}',this.value)">${canvi?` <span title="Canviada a mà (calculada: ${acta==null?"—":acta})" style="font-size:12px">✍️</span>`:""}</td>`;
 }
 function resBotonsFilaHTML(grupo,a,trim){
-  return `<td><button class="ghost small" style="border:1px solid var(--line)" title="Ver la evolución de ${esc(a.nombre)} en esta evaluación" onclick="event.stopPropagation();verEvolucionAlumno('${a.id}')">👁️</button>${grupoTieneEntrega(grupo,a.id,trim)?`<span title="Informe entregado el ${fmt2(grupoTieneEntrega(grupo,a.id,trim).fecha)}" style="margin-left:4px;color:#1e5631;font-weight:700;font-size:13px">✓</span>`:""}</td>
+  return `<td><button class="ghost small" style="border:1px solid var(--line)" title="Vore l'evolució de ${esc(a.nombre)} en esta avaluació" onclick="event.stopPropagation();verEvolucionAlumno('${a.id}')">👁️</button>${grupoTieneEntrega(grupo,a.id,trim)?`<span title="Informe entregado el ${fmt2(grupoTieneEntrega(grupo,a.id,trim).fecha)}" style="margin-left:4px;color:#1e5631;font-weight:700;font-size:13px">✓</span>`:""}</td>
           <td><button class="ghost" onclick="event.stopPropagation();exportarInformeAlumno('${a.id}')">Informe</button></td>
           <td><button class="ghost" onclick="event.stopPropagation();exportarInformeFinalAlumno('${a.id}')">Informe final</button></td>`;
 }
@@ -291,7 +291,7 @@ function renderResultados(grupo){
      ? `<div class="alert-box" style="margin-bottom:16px">⚠️ <strong>Bloque sin nota:</strong> no tiene ninguna calificación en <strong>${esc(_bloquesVacios.join(", "))}</strong>, así que su nota de ${TRIMESTRES[trim]} sale solo del resto de bloques. Si no se ha presentado, márcalo como <strong>NP</strong> en Calificar (cuenta 0); si no le corresponde, como <strong>Exento</strong>.</div>`
      : '';
   const htmlAlertaAsimetria = htmlAlertaBloques + (critSinNota.length > 0 
-     ? `<div class="alert-box" style="margin-bottom:16px">⚠️ <strong>Atención:</strong> El alumno no tiene calificación en los siguientes criterios trabajados por el grupo este trimestre, lo que puede causar asimetría en la evaluación: ${critSinNota.join(', ')}.</div>`
+     ? `<div class="alert-box" style="margin-bottom:16px">⚠️ <strong>Atenció:</strong> L'alumne/a no té qualificació en estos criteris que el grup ha treballat en esta avaluació, i això pot desequilibrar la nota: ${critSinNota.join(', ')}.</div>`
      : '');
 
   c.innerHTML=htmlClase+`
@@ -363,7 +363,7 @@ function renderResultados(grupo){
   <div class="card">
     <h2 style="font-size:15px">Comentarios a la calificación</h2>
     <p class="sub">Específico de ${TRIMESTRES[trim]}. Se imprime en el informe individual, junto a la nota de este periodo.</p>
-    <textarea class="in" id="resComentario" style="width:100%;min-height:90px;resize:vertical" placeholder="Comentario sobre la calificación de ${TRIMESTRES[trim]}…">${esc((al.comentariosEval&&al.comentariosEval[trim])||"")}</textarea>
+    <textarea class="in" id="resComentario" style="width:100%;min-height:90px;resize:vertical" placeholder="Comentari sobre la qualificació de la ${TRIMESTRES[trim]}…">${esc((al.comentariosEval&&al.comentariosEval[trim])||"")}</textarea>
     <div class="flex" style="gap:6px;margin-top:8px;flex-wrap:wrap">
       <button class="ghost small" style="border:1px solid var(--line)" onclick="comSugerir('${al.id}',${trim},'va')" title="Redacta un esborrany a partir de la nota, les competències, les entregues i l'assistència. Revisa'l abans d'imprimir.">💬 Suggerir comentari</button>
       ${(banc=bancComentarisHTML(grupo,al,trim)).boto}

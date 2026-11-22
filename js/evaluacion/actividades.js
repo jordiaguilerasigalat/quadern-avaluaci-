@@ -36,10 +36,10 @@ function _renderActividadesLlista(grupo){
       <label style="display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--mut)">📅 Data (opcional; apareix al calendari)<input class="in" type="date" id="fData" value="${esc(f.fecha||"")}" onchange="state.ui.form.fecha=this.value;save()"></label>
       ${prog?`<label style="display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--mut)">Tema${temaSelectHTML(grupo,f.temaId??(state.ui.segTema||((temaActualGrup(grupo)||{}).id)||""),'id="fTema" aria-label="Tema de l\x27activitat" onchange="state.ui.form.temaId=this.value;save()"')}</label>`:`<input class="in" id="fSdA" placeholder="Situación de Aprendizaje (opcional, ej. SdA 1)" value="${esc(f.sda||'')}">`}
     </div>
-    <div class="grid" style="margin-bottom:14px">
-      <div class="flex">
-        <select class="in" id="fT">${TIPOS.map(t=>`<option ${t===f.tipo?"selected":""}>${t}</option>`).join("")}</select>
-        <select class="in" id="fB">${grupo.bloques.map(b=>`<option value="${b.id}" ${b.id===f.bloqueId?"selected":""}>${esc(b.label)} (${b.inactiu?"desactivat":b.peso+" %"})</option>`).join("")}</select>
+    <div class="grid" style="margin-bottom:14px;grid-template-columns:minmax(0,1fr)">
+      <div class="flex" style="flex-wrap:wrap">
+        <select class="in" id="fT" style="max-width:100%;min-width:0">${TIPOS.map(t=>`<option ${t===f.tipo?"selected":""}>${t}</option>`).join("")}</select>
+        <select class="in" id="fB" style="max-width:100%;min-width:0">${grupo.bloques.map(b=>`<option value="${b.id}" ${b.id===f.bloqueId?"selected":""}>${esc(b.label)} (${b.inactiu?"desactivat":b.peso+" %"})</option>`).join("")}</select>
         <label style="display:flex;align-items:center;gap:7px;font-size:14px;color:var(--mut)">
           <input type="checkbox" id="fE" ${f.esExamen?"checked":""}> Es examen / prueba objetiva (nota cuantitativa propia)
         </label>
@@ -100,7 +100,7 @@ function _renderActividadesLlista(grupo){
     ${actsTrim(grupo).length? `<div class="grid" style="margin-top:8px">${actsTrim(grupo).map((a,iAct,lista)=>{
       const b=grupo.bloques.find(x=>x.id===a.bloqueId);
       const pctEnBloque=pesoActividadEnBloque(grupo,a).toFixed(0);
-      const tipoDesc = a.rubrica ? "examen amb rúbrica: nota quantitativa + % per criteri (gestionat des del Corrector)"
+      const tipoDesc = a.rubrica ? (/examen/i.test(a.tipo||"")?"examen amb rúbrica":"amb rúbrica")+": nota quantitativa + % per criteri (gestionat des del Corrector)"
         : a.esExamen ? "examen: nota quantitativa + escala de 4 nivells per criteri" : "escala de 4 nivells";
       const nAct=lista.length;
       return `<div class="act-row" ${nAct>1?`ondragstart="actDragStart(event,'${a.id}')" ondragend="actDragEnd()" ondragover="actDragOver(event,this)" ondragleave="this.classList.remove('act-drop')" ondrop="actDrop(event,'${a.id}')"`:""} data-actid="${a.id}" style="border:1px solid var(--line);border-radius:8px;padding:10px 12px">

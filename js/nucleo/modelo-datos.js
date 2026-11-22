@@ -106,7 +106,7 @@ function ordenarAlumnos(grupo){
 }
 function neseBadgeHTML(a){
   if(!a.nese) return "";
-  const txt = a.neseNivel? `NESE · ${a.neseNivel}` : "NESE";
+  const txt = a.neseNivel? `NESE · ${typeof traduirText==="function"?traduirText(a.neseNivel):a.neseNivel}` : "NESE";
   return `<span class="badge" style="font-size:10px;margin-left:9px;color:var(--warning);border-color:var(--warning);vertical-align:middle" title="Necesidad específica de apoyo educativo">${esc(txt)}</span>`;
 }
 function planBadgeHTML(a){

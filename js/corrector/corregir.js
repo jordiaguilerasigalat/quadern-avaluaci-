@@ -224,7 +224,7 @@ window.cxSetItemScore=(alId,actId,itemId,v)=>{
   const txt=String(v??"").trim().replace(",",".");
   let val=txt===""?null:Number(txt);
   if(val!=null){
-    if(!isFinite(val)){ mostrarAviso(`"${v}" no es una puntuación válida. Usa un número entre 0 y ${item.max} (puedes usar coma: 1,5).`); render(); return; }
+    if(!isFinite(val)){ mostrarAviso(`"${v}" no és una puntuació vàlida. Escriu un número entre 0 i ${item.max} (pots usar coma: 1,5).`); render(); return; }
     if(val<0) val=0; if(val>item.max){ mostrarToast(`Máximo del ítem: ${item.max}. Se ha ajustado.`,"info"); val=Number(item.max); }
   }
   quitarMarcaSiHay(grupo,alId,actId);
@@ -416,7 +416,7 @@ function renderCalificarRubrica(grupo,act,acts){
       </select>
       ${act.recupera?"":`<button class="ghost" style="border:1px solid var(--line)" title="Sumar punts a la nota d'este examen (p. ex. +0,5 per presentar-se voluntari/ària)" onclick="abrirExtrasActividad('${act.id}')">➕ Punts extra</button>`}
     </div>
-    <div class="alert-box" style="margin-bottom:14px">🖊️ Este examen se corrige con rúbrica desde el <strong>Corrector de Exámenes</strong>: la nota cuantitativa y la de cada criterio se calculan solas.
+    <div class="alert-box" style="margin-bottom:14px">🖊️ ${/examen/i.test(act.tipo||"")?"Este examen es corregix":"Esta activitat es corregix"} amb rúbrica des del <strong>Corrector d'Exàmens</strong>: la nota quantitativa i la de cada criteri es calculen soles.
       <button class="btn small" onclick="cxAbrirDesdeOtroModo('${act.id}')">Abrir en el Corrector →</button>
     </div>
     <div style="overflow-x:auto"><table><thead><tr><th>Alumno/a</th><th>Nota (0-10)</th><th>Criterios</th></tr></thead><tbody>${rows}</tbody></table></div>

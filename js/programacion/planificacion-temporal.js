@@ -121,7 +121,7 @@ function planTempL0(v){ return (v&&typeof v==="object")?(v.es||v.va||""):(v||"")
 window.planTempImportarSdas=async (progId)=>{
   const p=progPorId(progId); if(!p) return;
   if(!p.sdas||!p.sdas.length){ mostrarAviso("Esta Programación todavía no tiene ninguna Situación de Aprendizaje en la pestaña «Programación». Añade alguna primero y luego tráela aquí."); return; }
-  if(!await confirmar(`Se va a sustituir la lista de situaciones de la Planificación temporal por las ${p.sdas.length} de la Programación (ordenadas por trimestre). Si una situación ya existía en la planificación con el mismo nombre, conserva su número de sesiones y su "fijación" de fecha. ¿Continuar?`)) return;
+  if(!await confirmar(`Se substituirà la llista de situacions de la Planificació temporal per les ${p.sdas.length} de la Programació (ordenades per avaluació). Si una situació ja existia en la planificació amb el mateix nom, conserva el nombre de sessions i la data fixada. Vols continuar?`)) return;
   if(!p.planTemp && !await planTempAsegurar()){ mostrarAviso("No se ha podido cargar la herramienta de Planificación temporal. Comprueba la conexión e inténtalo de nuevo."); return; }
   const seedBase = p.planTemp ? JSON.parse(JSON.stringify(p.planTemp)) : planTempSeedPara(p);
   const existentesPorNombre = {};
@@ -145,7 +145,7 @@ window.planTempAplicarAProgramacion=async (progId)=>{
     return nombre && !p.sdas.some(s=>sdaNom(s).trim().toLowerCase()===nombre);
   }).length;
   const msg=nuevasPrevias
-    ? `Esto actualizará las sesiones previstas y el trimestre de las Situaciones de Aprendizaje que ya existan en la Programación con el mismo nombre, y creará ${nuevasPrevias} nueva(s) que hay en la Planificación temporal pero todavía no están en la Programación. ¿Continuar?`
+    ? `Això actualitzarà les sessions previstes i l'avaluació de les Situacions d'Aprenentatge que ja hi ha en la Programació amb el mateix nom, i en crearà ${nuevasPrevias} de noves que estan en la Planificació temporal però encara no en la Programació. Vols continuar?`
     : "Esto actualizará, en la Programación, las sesiones previstas (y el trimestre) de cada Situación de Aprendizaje cuyo nombre coincida exactamente con una de la Planificación temporal. ¿Continuar?";
   if(!await confirmar(msg)) return;
   const TRIM_DESDE_PT={1:0,2:1,3:2}; // en la Programación el trimestre se guarda 0-indexado

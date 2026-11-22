@@ -159,7 +159,7 @@ function renderHome(){
       ["📘","Programacions",`${nProgramaciones} programaci${nProgramaciones===1?"ó":"ons"}`,"irModo('programacion')","Programacions d'aula per temes i situacions d'aprenentatge, amb la temporització"],
       ["🖊️","Corrector d'exàmens",`${nExamenes} amb rúbrica`,"irModo('corrector')","Rúbriques per examen vinculades a criteris; les notes van soles a Seguiment i avaluació"],
       ["🧩","NESE",`${nNeseTotal} alumne${nNeseTotal===1?"":"s"}${nNesePendientes?` · ${nNesePendientes} sense pla`:""}`,"irModo('nese')","Adaptacions, plans de reforç NESE i dossiers"],
-      ["🔁","Repetició i pendents",`${nRepeticionActivos} repetició · ${nRefuerzoActivos} reforç`,"irModo('repeticion')","Plans de repetició i de reforç"],
+      ["🔁","Repetició i pendents",`${nRepeticionActivos} repetició · ${nRefuerzoActivos} reforç`+(((state.planesRefuerzo||[]).length+(state.planesRepeticion||[]).length)>(nRepeticionActivos+nRefuerzoActivos)?" actius":""),"irModo('repeticion')","Plans de repetició i de reforç"],
       ["📚","Biblioteca","Documents i material","irModo('biblioteca')","Programacions, propostes, material de cada tema, diversitat i els teus enllaços, amb buscador"],
       ["🗂️","Reunions",`${nReuniones} registrad${nReuniones===1?"a":"es"}`,"irModo('reuniones')","Reunions amb famílies, alumnat i equip directiu, amb acta imprimible"],
       ["📄","Memòria de curs",`${state.grupos.length} grup${state.grupos.length===1?"":"s"}`,"irModo('memoria')","Resultats, assistència, convivència i SdA de tots els grups junts"]

@@ -232,7 +232,7 @@ function renderAsistencia(grupo){
   c.innerHTML=`
   <div class="card">
     <h2 style="font-size:15px">📋 Pasar lista</h2>
-    <p class="sub" style="margin:0 0 10px">Cualquier fecha, sin relación con tu horario semanal. Por defecto, todo el alumnado está "Presente" — solo marca las excepciones.</p>
+    <p class="sub" style="margin:0 0 10px">Qualsevol data, sense relació amb el teu horari setmanal. Per defecte, tot l'alumnat està «Present»: marca només les excepcions.</p>
     <label style="font-size:12.5px;color:var(--mut);font-weight:500;display:block;max-width:260px;margin-bottom:10px">Fecha
       <div style="margin-top:4px">${campoFechaDualHTML("asistFechaInput",fecha,"asistFechaTextoChange(this.value)","asistSeleccionarFecha(this.value)")}</div>
     </label>

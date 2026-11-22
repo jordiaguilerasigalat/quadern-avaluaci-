@@ -175,7 +175,7 @@ function informeAlumnoBodyHTML(grupo,al,opts){
   const critSinNota = [];
   critTrabajados.forEach(cid => { if(scoreCriterio(grupo, al.id, cid) == null) critSinNota.push(cid); });
   const htmlAlertaAsimetria = critSinNota.length > 0 
-     ? `<div class="alert">⚠️ <strong>Atención:</strong> El alumno no tiene calificación en los siguientes criterios trabajados por el grupo este trimestre: ${critSinNota.join(', ')}.</div>`
+     ? `<div class="alert">⚠️ <strong>Atenció:</strong> L'alumne/a no té qualificació en estos criteris que el grup ha treballat en esta avaluació: ${critSinNota.join(', ')}.</div>`
      : '';
 
   const asistCnt=asistContarPeriodo(grupo,al.id,"2000-01-01","2099-12-31");

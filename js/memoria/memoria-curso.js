@@ -129,7 +129,7 @@ function memoriaResumenGrupoHTML(grupo,periodo,opts){
     ${radar?`<div class="section-eyebrow" style="margin-top:16px">Perfil competencial del grup</div><div style="max-width:300px;border:1px solid var(--line);border-radius:12px;padding:12px;background:${opts.print?'#fff':'var(--card)'}">${radar}</div>`:""}
     ${!opts.print?`<label style="font-size:12px;color:var(--mut);font-weight:500;display:block;margin-top:10px">Valoració d'este grup ${periodo==="curso"?"(avaluació final / memòria de curs)":`(${TRIMESTRES[periodo]})`} <span style="font-weight:400">— el mateix camp que en Resum</span>
       <textarea class="in" style="width:100%;margin-top:4px;min-height:60px;resize:vertical" onchange="${periodo==='curso'?`setPropuestaMejoraFinal(this.value)`:`memoriaSetPropuestaTrim('${grupo.id}',${periodo},this.value)`}" data-memgrupo="${grupo.id}">${esc(propuesta)}</textarea>
-    </label>`:`<div style="margin-top:10px"><strong style="font-size:12.5px">Valoración:</strong> <span style="font-size:13px">${propuesta?esc(propuesta):"<em style=color:#999>Sense registrar.</em>"}</span></div>`}
+    </label>`:`<div style="margin-top:10px"><strong style="font-size:12.5px">Valoració:</strong> <span style="font-size:13px">${propuesta?esc(propuesta):"<em style=color:#999>Sense registrar.</em>"}</span></div>`}
     ${periodo==="curso"?`<div class="section-eyebrow" style="margin-top:14px">Evolución a lo largo del curso</div>${memoriaEvolucionGrupoHTML(grupo)}`:""}
   `;
 }
