@@ -209,10 +209,36 @@ function homeGrupsActiusHTML(){
   };
   return `<div class="card">
     <div class="flex" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
-      <h2 style="font-size:15px;margin:0">👥 Els meus grups${state.cursoEscolarGlobal?" · "+esc(state.cursoEscolarGlobal):""}</h2>
+      <div class="flex" style="align-items:center;gap:10px;flex-wrap:wrap">
+        <h2 style="font-size:15px;margin:0">👥 Els meus grups</h2>
+        <label class="home-curs" style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);font-weight:600">Curs escolar
+          <select class="in" style="padding:4px 8px;font-size:13.5px;font-weight:600" aria-label="Curs escolar" title="Curs escolar que ix en les portades i informes" onchange="homeCanviarCurs(this.value)">${homeCursosOpcions()}</select>
+        </label>
+      </div>
       <button class="ghost small" style="border:1px dashed var(--line)" onclick="state.ui.appMode='competencial';irAGrupo(null)">+ Nou grup</button>
     </div>
     ${gs.length?`<div class="home-grups" data-ordre-grups>${gs.map(chip).join("")}${homePendentsChipHTML()}</div>`
       :`<p class="sub" style="margin:0">Encara no tens grups. Crea'n un amb «+ Nou grup».</p>`}
   </div>`;
 }
+
+/* Selector del curs escolar ben visible en «Els meus grups» (abans només estava
+   dins de «Les meues dades»). Canvia l'etiqueta del curs de totes les portades;
+   no arxiva res: per a passar de curs de veres hi ha «🎓 Començar curs nou». */
+function homeCursosOpcions(){
+  const act=(state.cursoEscolarGlobal||"").trim();
+  const any0=Number(((typeof cursoAcademicoActual==="function"? cursoAcademicoActual() : "")||"").slice(0,4))||new Date().getFullYear();
+  const llista=[];
+  for(let y=any0+1;y>=any0-6;y--) llista.push(`${y}-${y+1}`);
+  if(act && !llista.includes(act)) llista.unshift(act);
+  return llista.map(c=>`<option value="${esc(c)}" ${c===act?"selected":""}>${esc(c)}</option>`).join("")+`<option value="__altre">Altre…</option>`;
+}
+window.homeCanviarCurs=async v=>{
+  if(v==="__altre"){
+    const t=await pedirTexto("Curs escolar (p. ex. 2026-2027):",state.cursoEscolarGlobal||"");
+    if(t==null||!String(t).trim()){ render(); return; }
+    v=String(t).trim();
+  }
+  state.cursoEscolarGlobal=v; save(); render();
+  mostrarToast("✓ Curs escolar: "+v);
+};
