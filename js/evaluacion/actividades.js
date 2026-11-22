@@ -10,6 +10,7 @@ function renderActividades(grupo){
   _renderActividadesLlista(grupo);
   const tc=document.getElementById("tabContent");
   if(tc && typeof segApartatsHTML==="function") tc.insertAdjacentHTML("afterbegin",segApartatsHTML(grupo));
+  if(tc && state.ui.tnTornar && typeof tnBarraTornarHTML==="function") tc.insertAdjacentHTML("afterbegin",tnBarraTornarHTML());
 }
 function _renderActividadesLlista(grupo){
   const idx=catIndex(grupo.catalogoKey);

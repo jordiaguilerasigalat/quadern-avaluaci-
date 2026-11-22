@@ -53,12 +53,12 @@ function renderTaulaNotes(grupo){
   const acts=tnActivitats(grupo);
   if(!grupo.alumnos.length || !acts.length){
     c.innerHTML=`<div class="card"><div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px"><h2>Taula de notes</h2>${selTrim}</div>
-      <p class="sub" style="margin:8px 0 0">${!grupo.alumnos.length?"Afig abans l'alumnat del grup.":"Encara no hi ha cap activitat en esta avaluació. Crea-les en <strong>Activitats</strong> i ací apareixeran en columnes."}</p></div>`;
+      <p class="sub" style="margin:8px 0 0">${!grupo.alumnos.length?"Afig abans l'alumnat del grup.":"Encara no hi ha cap activitat en esta avaluació. Crea-les en <strong>Activitats</strong> i ací apareixeran en columnes."}</p>${grupo.alumnos.length?`<button class="btn" style="margin-top:10px" onclick="tnNovaActivitat()">＋ Nova activitat</button>`:""}</div>`;
     return;
   }
   const cap=acts.map(({a,f})=>{
     const crits=tnCriterisCap(grupo,a);
-    return `<th scope="col" class="tn-act" title="${esc(a.nombre)}${a.tipo?" · "+esc(a.tipo):""}">
+    return `<th scope="col" class="tn-act" data-act="${a.id}" title="${esc(a.nombre)}${a.tipo?" · "+esc(a.tipo):""}">
       <button type="button" class="tn-act-nom" onclick="tnObrirQualificar('${a.id}')" title="Obrir «${esc(a.nombre)}» per a qualificar tot el grup">${a.recupera?"🔁 ":""}${esc(a.nombre)}</button>
       <div class="tn-act-data">${f?tnDataCurta(f):"&nbsp;"}</div>
       <div class="tn-act-crit" title="${esc(crits.join(", "))}">${crits.length?esc(crits.join(" · ")):'<span class="tn-mut">sense criteris</span>'}</div>
@@ -68,7 +68,7 @@ function renderTaulaNotes(grupo){
     const cel=acts.map(({a})=>{
       const m=marcaDe(grupo,al.id,a.id);
       const v=m==="EX"? null : tnNota(grupo,al.id,a,trim);
-      const txt= m==="NP"? "NP" : m==="EX"? "Ex." : (v==null? "" : fmt(v));
+      const txt= m==="NP"? "NP" : m==="EX"? "Exempt" : (v==null? "" : fmt(v));
       const bg= m==="EX"? "" : tnColor(v);
       const extra=!a.recupera && extraAplicadoActividad(grupo,al.id,a);
       const rec=!a.recupera && recuperacionesDe(grupo,a.id).some(r=>notaActividadBase(grupo,al.id,r)!=null);
@@ -76,7 +76,7 @@ function renderTaulaNotes(grupo){
     }).join("");
     const nt=notaTrimestre(grupo,al.id,trim);
     return `<tr><th scope="row" class="tn-al"><span class="tn-num">${i+1}.</span> ${nomFitxaHTML(al)}${neseBadgeHTML(al)}</th>${cel}
-      <td class="tn-cel tn-final"${nt!=null?` style="background:${tnColor(nt)}"`:""}><span>${nt==null?"—":fmt(nt)}</span></td></tr>`;
+      <td class="tn-cel tn-final"${nt!=null?` style="background:${tnColor(nt)}"`:""}><span>${nt==null?"—":fmt(nt)}</span></td><td class="tn-cel tn-nova-cel"></td></tr>`;
   }).join("");
   c.innerHTML=`<div class="card tn-card">
     <div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px">
@@ -86,12 +86,14 @@ function renderTaulaNotes(grupo){
     </div>
     <div class="tn-wrap scroll" tabindex="0" aria-label="Taula de notes de ${esc(TRIMESTRES[trim]||"")}">
       <table class="tn-taula">
-        <thead><tr><th scope="col" class="tn-al tn-esq">Alumnat <span class="tn-mut">(${grupo.alumnos.length})</span></th>${cap}<th scope="col" class="tn-act tn-final"><div class="tn-act-nom">Nota ${esc((TRIMESTRES[trim]||"").replace(/ avaluació$/," av."))}</div><div class="tn-act-data">&nbsp;</div><div class="tn-act-crit">${modoNotaGrupo(grupo)==="ce"?"per competències":"per blocs"}</div></th></tr></thead>
+        <thead><tr><th scope="col" class="tn-al tn-esq">Alumnat <span class="tn-mut">(${grupo.alumnos.length})</span></th>${cap}<th scope="col" class="tn-act tn-final"><div class="tn-act-nom">Nota ${esc((TRIMESTRES[trim]||"").replace(/ avaluació$/," av."))}</div><div class="tn-act-data">&nbsp;</div><div class="tn-act-crit">${modoNotaGrupo(grupo)==="ce"?"per competències":"per blocs"}</div></th><th scope="col" class="tn-act tn-nova"><button type="button" class="tn-nova-bt" onclick="tnNovaActivitat()" title="Crear una activitat nova en esta avaluació (es crea en Activitats, com totes)"><span aria-hidden="true">＋</span>Nova activitat</button></th></tr></thead>
         <tbody>${files}</tbody>
       </table>
     </div>
   </div>`;
   if(state.ui.tnCel){ c.insertAdjacentHTML("beforeend",tnModalHTML(grupo)); tnRestaurarModal(); }
+  if(state.ui.tnNova){ const id=state.ui.tnNova; state.ui.tnNova=""; const w=c.querySelector(".tn-wrap"), th=c.querySelector(`.tn-act[data-act="${id}"]`);
+    if(w&&th){ w.scrollLeft=Math.max(0,th.offsetLeft-w.clientWidth/2); th.classList.add("tn-recent"); } }
 }
 
 window.tnTriarAvaluacio=v=>{ state.ui.trim=Number(v)||0; state.ui.tnCel=null; save(); render(); };
@@ -177,3 +179,38 @@ function tnModalHTML(grupo){
 document.addEventListener("scroll",e=>{ if(e.target&&e.target.id==="tnModalBox") _tnModalScroll=e.target.scrollTop; },true);
 document.addEventListener("keydown",e=>{ if(e.key==="Escape" && state && state.ui && state.ui.tnCel && document.querySelector(".tn-modal")){ e.preventDefault(); tnTancar(); } });
 function tnRestaurarModal(){ const b=document.getElementById("tnModalBox"); if(b && _tnModalScroll) b.scrollTop=_tnModalScroll; }
+
+/* ---- «＋ Nova activitat»: es crea en Activitats (amb el mateix formulari i el
+   selector de la Programació) i, en guardar-la, es torna a la taula amb la
+   columna nova a la vista. ---- */
+window.tnNovaActivitat=()=>{
+  const grupo=grupoActual(); if(!grupo) return;
+  state.ui.tnTornar=true; state.ui.tnCel=null; state.ui.segAct="";
+  state.ui.form={editId:null,nombre:"",tipo:TIPOS[0],esExamen:false,bloqueId:"",pesoBloque:"",links:[],sda:""};
+  state.ui.formLliure=false;
+  state.ui.tab="actividades"; save(); render(); window.scrollTo(0,0);
+};
+window.tnTornarTaula=()=>{ state.ui.tnTornar=false; state.ui.formLliure=false; state.ui.tab="taula"; save(); render(); };
+function tnBarraTornarHTML(){
+  return `<div class="card tn-tornar" role="note"><div class="flex" style="justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center">
+    <span>➕ <strong>Nova activitat per a la Taula de notes</strong> (${esc(TRIMESTRES[state.ui.trim]||"")}). Quan la guardes, tornaràs a la taula.</span>
+    <button class="ghost" style="border:1px solid var(--line)" onclick="tnTornarTaula()">← Tornar a la taula</button></div></div>`;
+}
+/* Després de crear l'activitat (formulari propi o des de la Programació), torna a la taula. */
+function tnEmbolcallarCrear(nom){
+  const orig=window[nom]; if(typeof orig!=="function") return;
+  window[nom]=function(){
+    const grupo=grupoActual(); const abans=grupo? new Set(grupo.actividades.map(a=>a.id)) : null;
+    const r=orig.apply(this,arguments);
+    if(state.ui.tnTornar && grupo){
+      const nova=grupo.actividades.find(a=>!abans.has(a.id));
+      if(nova){ state.ui.tnTornar=false; state.ui.formLliure=false; state.ui.segAct=""; state.ui.tnNova=nova.id; state.ui.trim=nova.trimestre; state.ui.tab="taula"; save(); render(); }
+    }
+    return r;
+  };
+}
+tnEmbolcallarCrear("saveActividad");
+tnEmbolcallarCrear("actAnadirDesdeProgramacion");
+tnEmbolcallarCrear("segCrear");
+/* Un examen amb rúbrica es crea en el Corrector: d'allí ja no es torna sol a la taula. */
+(function(){ const o=window.segNouExamen; if(typeof o==="function") window.segNouExamen=function(){ state.ui.tnTornar=false; return o.apply(this,arguments); }; })();

@@ -243,6 +243,7 @@ function renderGrupo(grupo){
   <div id="tabContent"></div>`;
   const t=state.ui.tab;
   if(t!=="taula") state.ui.tnCel=null;
+  if(t!=="actividades") state.ui.tnTornar=false;
   try{
     if(t==="alumnos") renderAlumnos(grupo);
     else if(t==="plano") renderPlano(grupo);
