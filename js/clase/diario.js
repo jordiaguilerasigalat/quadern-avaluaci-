@@ -73,7 +73,7 @@ function renderDiario(grupo){
             </div>
             ${entradas.length>1?`<div class="flex" style="gap:4px">
               <button class="ghost" style="padding:2px 8px;min-width:0" title="Subir un puesto" aria-label="Subir entrada del ${fmt2(fecha)}" ${i===0?"disabled":""} onclick="event.stopPropagation();diarioMoverEntrada('${fecha}',-1)">▲</button>
-              <button class="ghost" style="padding:2px 8px;min-width:0" title="Bajar un puesto" aria-label="Bajar entrada del ${fmt2(fecha)}" ${i===entradas.length-1?"disabled":""} onclick="event.stopPropagation();diarioMoverEntrada('${fecha}',1)">▼</button>
+              <button class="ghost" style="padding:2px 8px;min-width:0" title="Baixar una posició" aria-label="Baixar l'entrada del ${fmt2(fecha)}" ${i===entradas.length-1?"disabled":""} onclick="event.stopPropagation();diarioMoverEntrada('${fecha}',1)">▼</button>
             </div>`:""}
           </div>
           ${e.nota?`<div style="font-size:13.5px;color:var(--mut);white-space:pre-wrap"><strong>¿Qué se ha dado?</strong><br>${esc(e.nota)}</div>`:""}

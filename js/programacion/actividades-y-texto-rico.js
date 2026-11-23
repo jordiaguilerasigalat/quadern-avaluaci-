@@ -201,7 +201,7 @@ function progActividadCardHTML(idx,a,p,grupoId,iAct,totalGrupo){
     <div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
       ${conOrden?`<span style="display:inline-flex;gap:2px">
         <button class="ghost" style="padding:2px 8px;min-width:0" title="Subir un puesto" ${iAct===0?"disabled":""} onclick="progMoverActividad('${a.id}','${grupoId}',-1)">▲</button>
-        <button class="ghost" style="padding:2px 8px;min-width:0" title="Bajar un puesto" ${iAct===totalGrupo-1?"disabled":""} onclick="progMoverActividad('${a.id}','${grupoId}',1)">▼</button>
+        <button class="ghost" style="padding:2px 8px;min-width:0" title="Baixar una posició" ${iAct===totalGrupo-1?"disabled":""} onclick="progMoverActividad('${a.id}','${grupoId}',1)">▼</button>
       </span>`:""}
       <input class="in" style="flex:2;min-width:180px;font-weight:600" placeholder="Nombre de la actividad…" value="${esc(a.nombre)}" onchange="progSetActividadCampo('${a.id}','nombre',this.value)">
       <select class="in" style="flex:1;min-width:120px" onchange="progSetActividadCampo('${a.id}','tipo',this.value)">

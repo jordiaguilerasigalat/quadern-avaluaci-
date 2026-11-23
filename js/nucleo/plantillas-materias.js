@@ -70,7 +70,7 @@ window.eliminarPlantilla=async (key)=>{
   const {grupos,progs}=clavesUsoCatalogo(key);
   if(grupos.length || progs.length){
     const partes=[];
-    if(grupos.length) partes.push(`${grupos.length} grupo(s) (${grupos.join(", ")})`);
+    if(grupos.length) partes.push(`${grupos.length} grup(s) (${grupos.join(", ")})`);
     if(progs.length) partes.push(`${progs.length} Programación(es) de Aula (${progs.join(", ")})`);
     mostrarAviso(`No se puede eliminar: la están usando ${partes.join(" y ")}. Cambia su materia o elimínalos primero.`);
     return;

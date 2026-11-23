@@ -97,7 +97,7 @@ function progDetalleHTML(root){
         <div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:center">
           <span draggable="true" style="cursor:grab;color:var(--mut);font-size:17px;user-select:none" title="Arrastra para reordenar o cambiar de trimestre">⠿</span>
           <button class="ghost" style="padding:2px 8px;min-width:0" title="Subir un puesto" ${iSub===0?"disabled":""} onclick="progMoverSda('${s.id}',-1)">▲</button>
-          <button class="ghost" style="padding:2px 8px;min-width:0" title="Bajar un puesto" ${iSub===porTrim[t].length-1?"disabled":""} onclick="progMoverSda('${s.id}',1)">▼</button>
+          <button class="ghost" style="padding:2px 8px;min-width:0" title="Baixar una posició" ${iSub===porTrim[t].length-1?"disabled":""} onclick="progMoverSda('${s.id}',1)">▼</button>
           <button class="ghost" style="padding:2px 8px;min-width:0" title="${abierta?"Contraer":"Expandir"}" onclick="progToggleSdaAbierta('${s.id}')">${abierta?"▾":"▸"}</button>
           <div style="flex:1;min-width:220px;display:flex;flex-direction:column;gap:4px">
             <input class="in" style="width:100%;font-weight:700" placeholder="Tema (p. ex. Tema 1.- La mesura i la matèria)" aria-label="Tema" value="${esc(s.tema||"")}" onchange="progSetSdaCampo('${s.id}','tema',this.value)">
