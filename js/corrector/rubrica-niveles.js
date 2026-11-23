@@ -312,7 +312,7 @@ function cxnCorregirHTML(grupo,rub,sc,alId,actId){
       ${niv.map((l,i)=>{ const col=cxnColor(l.color,i), on=!!(pos&&pos.exacto===l.id), par=parcial.has(l.id), txt=String((it.celdas||{})[l.id]||"").trim();
         return `<td class="cxn-op${on?" on":""}${par?" parcial":""}" style="--cxn:${col};--cxn-tinta:${cxnTinta(col)}">
           <button type="button" aria-pressed="${on}" aria-label="${esc(it.label||"Categoria")}: ${esc(l.nombre||"nivell")} (${cxFmtPts(cxnPuntosNivel(it,l,niv))} punts)" onclick="cxnElegir('${alId}','${actId}','${it.id}','${l.id}')">
-            ${on?'<span class="cxn-check" aria-hidden="true">✓</span>':""}${txt?esc(txt):`<span class="cxn-solo-nom">${esc(l.nombre||"")}</span>`}
+            ${on?'<span class="cxn-check" aria-hidden="true">✓</span>':""}${txt?`<span class="cxn-niv-mob" aria-hidden="true">${esc(l.nombre||"")}</span>`+esc(txt):`<span class="cxn-solo-nom">${esc(l.nombre||"")}</span>`}
           </button></td>`; }).join("")}
       <td class="cxn-pts">
         ${cxSelectPuntuacionHTML(it.max,v,"",`onchange="cxSetItemScore('${alId}','${actId}','${it.id}',this.value)" title="Afinar la puntuació"`,np)}
