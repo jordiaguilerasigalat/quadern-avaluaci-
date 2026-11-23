@@ -1482,6 +1482,56 @@ export const PRUEBAS = [
     t.ok(/1a/i.test(r.capFinal) && /2a/i.test(r.capFinal) && /3a/i.test(r.capFinal) && /final/i.test(r.capFinal), 'amb «Avaluació final» la taula mostra 1a, 2a, 3a i la final', r.capFinal);
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'resultats-final-blocs-ce', descripcion: 'Resultats · «Avaluació final» també canvia les vistes «Per blocs» (nota del bloc en tot el curs i nota final) i «Per competències»', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const ids = await cuadernoConGrupo(p, t.url);
+    const r = await p.evaluate(async ids => {
+      const g = state.grupos[0], c1 = getCatalogo(g.catalogoKey).ces[0].criterios[0].id, b0 = g.bloques[0].id;
+      g.actividades = [0, 1, 2].map(t => ({ id: 'a' + t, nombre: 'Act ' + t, tipo: TIPOS[0], trimestre: t, bloqueId: b0, criterios: [{ critId: c1, peso: 100 }] }));
+      g.notas = { [ids[0]]: { a0: { [c1]: 4 }, a1: { [c1]: 6 }, a2: { [c1]: 8 } } };
+      state.ui.appMode = 'competencial'; state.ui.tab = 'resultados'; state.ui.resAl = ''; state.ui.resVista = 'blocs'; save();
+      const fila = () => document.querySelector('#tabContent tbody tr').textContent.replace(/\s+/g, ' ');
+      const cap = () => [...document.querySelectorAll('#tabContent thead th')].map(x => x.textContent).join('|');
+      resTriarAvaluacio('2'); const b3 = fila(), c3 = cap();
+      resTriarAvaluacio('final'); const bF = fila(), cF = cap();
+      setResVista('ce'); const ceF = document.getElementById('tabContent').textContent;
+      return { b3, bF, c3, cF, ceF, bloc: notaBloqueFinal(g, ids[0], b0), fin: notaFinal(g, ids[0]) };
+    }, ids);
+    t.ok(/8,0/.test(r.b3) && /3a/i.test(r.c3), 'amb la 3a: nota del bloc de la 3a', JSON.stringify(r));
+    t.ok(Math.abs(r.bloc - 6) < 1e-9 && /6,0/.test(r.bF) && !/8,0/.test(r.bF) && /Nota final/.test(r.cF), 'amb la final: el bloc i la nota final són de tot el curs', JSON.stringify(r));
+    t.ok(/final de curs/i.test(r.ceF), '«Per competències» diu que és el final de curs', r.ceF.slice(0, 300));
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
+  { nombre: 'resultats-informe-triar-avaluacions', descripcion: 'Resultats · en demanar un informe es trien les avaluacions (1a, 2a, 3a, Final), amb la del desplegable ja marcada; la Final fa l\'informe final', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const ids = await cuadernoConGrupo(p, t.url);
+    const r = await p.evaluate(async ids => {
+      const g = state.grupos[0], c1 = getCatalogo(g.catalogoKey).ces[0].criterios[0].id, b0 = g.bloques[0].id;
+      g.actividades = [0, 1, 2].map(t => ({ id: 'a' + t, nombre: 'Act ' + t, tipo: TIPOS[0], trimestre: t, bloqueId: b0, criterios: [{ critId: c1, peso: 100 }] }));
+      g.notas = { [ids[0]]: { a0: { [c1]: 4 }, a1: { [c1]: 6 }, a2: { [c1]: 8 } } };
+      state.ui.appMode = 'competencial'; state.ui.tab = 'resultados'; state.ui.resAl = ''; state.ui.resVista = 'notes'; save();
+      resTriarAvaluacio('final');
+      const out = {};
+      // Finestra real: ve marcada la Final
+      const pr = resTriarAvaluacionsInforme('Prova'); await new Promise(r => setTimeout(r, 30));
+      out.marcades = [...document.querySelectorAll('#resAvChecks input:checked')].map(x => x.value).join(',');
+      document.querySelector('#resAvChecks input[value="0"]').click();
+      document.querySelector('.dlg-overlay .dlg-si').click(); out.triades = (await pr).join(',');
+      const docs = []; const orig = window.mostrarImprimible; window.mostrarImprimible = (h, tit) => docs.push({ h, tit });
+      window.__dialogosAuto = { avaluacions: ['final'] }; await resInformeAlumne(ids[0]);
+      window.__dialogosAuto = { avaluacions: ['0', '2', 'final'] }; await resInformeAlumne(ids[0]);
+      window.__dialogosAuto = { avaluacions: ['final'] }; await resInformeGrup('families');
+      window.__dialogosAuto = null; window.mostrarImprimible = orig;
+      out.d = docs.map(d => ({ tit: d.tit, final: /Informe final de curs/.test(d.h), ind: (d.h.match(/Informe individual d'avaluació/g) || []).length, fam: /Avaluació final/.test(d.h) }));
+      return out;
+    }, ids);
+    t.ok(r.marcades === 'final', 'la finestra ve amb la Final marcada (la del desplegable)', JSON.stringify(r));
+    t.ok(r.triades === '0,final', 'es poden marcar i desmarcar avaluacions');
+    t.ok(r.d[0] && r.d[0].final && !r.d[0].ind, 'amb la Final, l\'informe és el final de curs (no el de la 3a)', JSON.stringify(r.d));
+    t.ok(r.d[1] && r.d[1].final && r.d[1].ind === 2 && /1a.*3a.*final/i.test(r.d[1].tit), 'diverses avaluacions en un sol document', JSON.stringify(r.d));
+    t.ok(r.d[2] && r.d[2].fam, 'informes per a les famílies de l\'avaluació final', JSON.stringify(r.d));
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
   { nombre: 'escala-competencies-itaca', descripcion: 'Escala qualitativa editable (NA/S/B/N/E), Resultats per blocs i per competències i nota ITACA a mà que va al CSV', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     const ids = await cuadernoConGrupo(p, t.url);

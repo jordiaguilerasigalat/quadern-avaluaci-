@@ -492,6 +492,17 @@ function pesoTrimestreEfectivo(grupo,t,disponibles){
   if(v!=null && v!=="") return Number(v);
   return 100/disponibles.length;
 }
+/* Nota d'un bloc en tot el curs: mitjana de la nota del bloc en cada
+   avaluació (amb totes les recuperacions, fins=2), ponderada amb els mateixos
+   pesos de les avaluacions que la nota final. */
+function notaBloqueFinal(grupo,alId,bloqueId){
+  const per=[0,1,2].map(t=>notaBloque(grupo,alId,bloqueId,t,2));
+  const disponibles=[0,1,2].filter(t=>per[t]!=null);
+  if(!disponibles.length) return null;
+  let sw=0,sv=0;
+  for(const t of disponibles){ const w=pesoTrimestreEfectivo(grupo,t,disponibles); sw+=w; sv+=per[t]*w; }
+  return sw>0? sv/sw : null;
+}
 function notaFinal(grupo,alId){
   return _sumarExtra(notaFinalSinExtra(grupo,alId),ptsExtraEval(grupo,alId,"final"));
 }
