@@ -65,7 +65,7 @@ function fitxaNotesActivitatsHTML(g,a){
   const trimAct=Number(state.ui.trim)||0;
   const seccions=[0,1,2].map(t=>{
     const acts=(g.actividades||[]).map((x,i)=>({x,i,f:dataDe(x)}))
-      .filter(({x})=>Number(x.trimestre)===t && !(x.quadernNese && marca(x)==="EX"))
+      .filter(({x})=>Number(x.trimestre)===t && !actAlienaNESE(g,x,a.id))
       .sort((p,q)=>(!!p.x.quadernNese-!!q.x.quadernNese) || ((p.f&&q.f)? (p.f<q.f?-1:p.f>q.f?1:p.i-q.i) : p.f? -1 : q.f? 1 : p.i-q.i));
     if(!acts.length) return "";
     let ambNota=0;
