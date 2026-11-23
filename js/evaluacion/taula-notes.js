@@ -45,8 +45,35 @@ function tnCriterisCap(grupo,a){
   return ids;
 }
 
+/* «Final» (selector de dalt): una fila per alumne/a amb la nota de cada
+   avaluació i la nota final del curs, amb els mateixos colors. Tocar una nota
+   d'avaluació obri la taula d'eixa avaluació. */
+function tnFinalHTML(grupo){
+  const q=typeof teQualitativaCE==="function" && teQualitativaCE(grupo);
+  const cap=[0,1,2].map(t=>`<th scope="col" class="tn-act"><button type="button" class="tn-act-nom" onclick="tnTriarAvaluacio(${t})" title="Obrir la taula de la ${esc(TRIMESTRES[t])}">${esc(TRIMESTRES[t])}</button><div class="tn-act-data">&nbsp;</div><div class="tn-act-crit">nota de l'avaluació</div></th>`).join("");
+  const files=grupo.alumnos.map((al,i)=>{
+    const cel=[0,1,2].map(t=>{ const v=notaTrimestre(grupo,al.id,t);
+      return `<td class="tn-cel"${v!=null?` style="background:${tnColor(v)}"`:""}><button type="button" onclick="tnTriarAvaluacio(${t})" aria-label="${esc(al.nombre)} · ${esc(TRIMESTRES[t])}: ${v==null?"sense nota":fmt(v)}" title="Obrir la taula de la ${esc(TRIMESTRES[t])}">${v==null?"":fmt(v)}</button></td>`; }).join("");
+    const f=notaFinal(grupo,al.id);
+    const qual=q && typeof pillQual==="function"? `<div class="tn-qual" title="Per competències (qualitativa), tot el curs">${pillQual(grupo,al.id,"final")}</div>` : "";
+    return `<tr><th scope="row" class="tn-al"><span class="tn-num">${i+1}.</span> ${nomFitxaHTML(al)}${neseBadgeHTML(al)}</th>${cel}
+      <td class="tn-cel tn-final"${f!=null?` style="background:${tnColor(f)}"`:""}><span>${f==null?"—":fmt(f)}</span>${qual}</td></tr>`;
+  }).join("");
+  return `<div class="card tn-card">
+    <div style="margin-bottom:8px"><h2 style="margin:0">Taula de notes · Final</h2>
+      <p class="sub" style="margin:2px 0 0">La nota de cada avaluació i la nota final del curs. Toca una avaluació per a vore'n totes les activitats.</p></div>
+    <div class="tn-wrap scroll" tabindex="0" aria-label="Taula de notes final">
+      <table class="tn-taula">
+        <thead><tr><th scope="col" class="tn-al tn-esq">Alumnat <span class="tn-mut">(${grupo.alumnos.length})</span></th>${cap}<th scope="col" class="tn-act tn-final"><div class="tn-act-nom">Nota final</div><div class="tn-act-data">&nbsp;</div><div class="tn-act-crit">${modoNotaGrupo(grupo)==="ce"?"per competències":"tot el curs"}</div></th></tr></thead>
+        <tbody>${files}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
 function renderTaulaNotes(grupo){
   const c=document.getElementById("tabContent");
+  if(state.ui.resInfFinal===true && grupo.alumnos.length){ state.ui.tnCel=null; c.innerHTML=tnFinalHTML(grupo); return; }
   const trim=state.ui.trim;
   /* L'avaluació es tria amb el selector de la barra de dalt (un sol selector per a tota l'app). */
   const selTrim="";
@@ -118,7 +145,7 @@ function renderTaulaNotes(grupo){
 }
 
 window.tnQnDetall=v=>{ state.ui.tnQnDetall=!!v; save(); render(); };
-window.tnTriarAvaluacio=v=>{ state.ui.trim=Number(v)||0; state.ui.tnCel=null; save(); render(); };
+window.tnTriarAvaluacio=v=>{ state.ui.trim=Number(v)||0; state.ui.resInfFinal=false; state.ui.tnCel=null; save(); render(); };
 window.tnObrirQualificar=actId=>{ state.ui.calAct=actId; state.ui.tnCel=null; state.ui.tab="calificar"; save(); render(); };
 let _tnModalScroll=0;
 window.tnObrir=(alId,actId)=>{ state.ui.tnCel={al:alId,act:actId}; _tnModalScroll=0; save(); render(); };
@@ -226,7 +253,7 @@ function tnEmbolcallarCrear(nom){
     const r=orig.apply(this,arguments);
     if(state.ui.tnTornar && grupo){
       const nova=grupo.actividades.find(a=>!abans.has(a.id));
-      if(nova){ state.ui.tnTornar=false; state.ui.formLliure=false; state.ui.segAct=""; state.ui.tnNova=nova.id; state.ui.trim=nova.trimestre; state.ui.tab="taula"; save(); render(); }
+      if(nova){ state.ui.tnTornar=false; state.ui.formLliure=false; state.ui.segAct=""; state.ui.tnNova=nova.id; state.ui.trim=nova.trimestre; state.ui.resInfFinal=false; state.ui.tab="taula"; save(); render(); }
     }
     return r;
   };
