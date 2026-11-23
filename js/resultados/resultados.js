@@ -124,39 +124,42 @@ function resCeldaItacaHTML(grupo,a,periodo,calc){
 }
 function resBotonsFilaHTML(grupo,a,trim){
   return `<td><button class="ghost small" style="border:1px solid var(--line)" title="Vore l'evolució de ${esc(a.nombre)} en esta avaluació" onclick="event.stopPropagation();verEvolucionAlumno('${a.id}')">👁️</button>${grupoTieneEntrega(grupo,a.id,trim)?`<span title="Informe entregado el ${fmt2(grupoTieneEntrega(grupo,a.id,trim).fecha)}" style="margin-left:4px;color:#1e5631;font-weight:700;font-size:13px">✓</span>`:""}</td>
-          <td><button class="ghost" onclick="event.stopPropagation();exportarInformeAlumno('${a.id}')">Informe</button></td>
+          <td><button class="ghost" onclick="event.stopPropagation();resInformeAlumne('${a.id}')">Informe</button></td>
           <td><button class="ghost" onclick="event.stopPropagation();exportarInformeFinalAlumno('${a.id}')">Informe final</button></td>`;
 }
 function resTaulaClasseHTML(grupo,al,trim){
   const v=resVista();
   const fila=(a,cos)=>`<tr style="cursor:pointer;${a.id===(al&&al.id)?'background:var(--surface-2)':''}" onclick="irAAlumnoResultados('${a.id}')" title="Vore i editar l'informe de ${esc(a.nombre)} davall"><td><strong><button type="button" class="nom-fitxa" title="Obrir la fitxa de ${esc(a.nombre)} (totes les notes i el seguiment)" onclick="event.stopPropagation();obrirFitxaAlumne('${escJS(a.id)}')">${avatarAlumneHTML(a)}${esc(a.nombre)}</button></strong>${neseBadgeHTML(a)}</td>${cos}</tr>`;
+  const finalCurs=state.ui.resInfFinal===true;
   if(v==="blocs"){
     const bl=grupo.bloques||[];
-    return `<div style="overflow-x:auto"><table>
-      <thead><tr><th>Alumno/a</th>${bl.map(b=>`<th title="${esc(b.label)} · ${b.inactiu?"desactivat":(b.peso||0)+" %"}">${esc(b.label)}<div class="sub" style="margin:0;font-weight:400;font-size:11.5px">${b.inactiu?"desactivat":(b.peso||0)+" %"}</div></th>`).join("")}<th>${TRIMESTRES[trim]}</th></tr></thead>
-      <tbody>${grupo.alumnos.map(a=>fila(a,bl.map(b=>{ const n=notaBloque(grupo,a.id,b.id,trim); return `<td style="${b.inactiu?"opacity:.55":""}">${fmt(n)}</td>`; }).join("")+`<td><strong>${fmt(notaTrimestre(grupo,a.id,trim))}</strong></td>`)).join("")}</tbody>
+    /* Amb «Avaluació final»: nota de cada bloc en tot el curs i la nota final. */
+    const nb=(a,b)=>finalCurs? notaBloqueFinal(grupo,a.id,b.id) : notaBloque(grupo,a.id,b.id,trim);
+    return `${finalCurs?`<p class="sub" style="margin:0 0 6px">Final de curs: nota de cada bloc amb les tres avaluacions (mitjana ponderada com la nota final, amb les recuperacions). La columna «Nota final» és la mitjana ponderada de les avaluacions.</p>`:""}<div style="overflow-x:auto"><table>
+      <thead><tr><th>Alumne/a</th>${bl.map(b=>`<th title="${esc(b.label)} · ${b.inactiu?"desactivat":(b.peso||0)+" %"}">${esc(b.label)}<div class="sub" style="margin:0;font-weight:400;font-size:11.5px">${b.inactiu?"desactivat":(b.peso||0)+" %"}</div></th>`).join("")}<th>${finalCurs?"Nota final":TRIMESTRES[trim]}</th></tr></thead>
+      <tbody>${grupo.alumnos.map(a=>fila(a,bl.map(b=>`<td style="${b.inactiu?"opacity:.55":""}">${fmt(nb(a,b))}</td>`).join("")+`<td><strong>${fmt(finalCurs? notaFinal(grupo,a.id) : notaTrimestre(grupo,a.id,trim))}</strong></td>`)).join("")}</tbody>
     </table></div>`;
   }
   if(v==="ce"){
-    /* En l'avaluació final, tot el curs (fins a la 3a). */
-    if(state.ui.resInfFinal===true) trim=2;
-    const qual=state.ui.resCEqual!==false, trims=trimsFinsA(trim);
+    const qual=state.ui.resCEqual!==false, trims=finalCurs? [0,1,2] : trimsFinsA(trim);
+    const fins=finalCurs? "final de curs (les tres avaluacions)" : esc(TRIMESTRES[trim]);
     const ces=catIndex(grupo.catalogoKey).cat.ces;
     const val={}; grupo.alumnos.forEach(a=>{ val[a.id]={}; ces.forEach(ce=>{ const p=scoreCETrims(grupo,a.id,ce.id,trims); val[a.id][ce.id]=p==null? null : p/10; }); });
     const usades=ces.filter(ce=>grupo.alumnos.some(a=>val[a.id][ce.id]!=null));
-    if(!usades.length) return `<p class="sub">Encara no hi ha cap competència específica avaluada fins a la ${esc(TRIMESTRES[trim])}. Lliga les preguntes de la rúbrica dels exàmens (o les activitats) als criteris i qualifica-les.</p>`;
+    if(!usades.length) return `<p class="sub">Encara no hi ha cap competència específica avaluada fins a la ${fins}. Lliga les preguntes de la rúbrica dels exàmens (o les activitats) als criteris i qualifica-les.</p>`;
     const cel0=x=>qual? pillNivellQual(grupo,x,"",true) : `<span title="${x==null?"":fmt(x)}">${fmt(x)}</span>`;
     /* Tocar la nota → d'on ix (activitats, notes i pesos). detall-ce.js */
-    const cel=(x,a,ce)=>x==null? cel0(x) : `<button type="button" class="res-cebtn" title="Vore en quines activitats s'ha treballat ${ce?esc(ce.id):"cada CE"} i quin pes té" aria-label="${ce?esc(ce.id):"Global"} de ${esc(a.nombre)}: d'on ix la nota" onclick="event.stopPropagation();${ce?`resDetallCE('${escJS(a.id)}','${escJS(ce.id)}',${trim})`:`resDetallGlobalCE('${escJS(a.id)}',${trim})`}">${cel0(x)}</button>`;
-    return `<p class="sub" style="margin:0 0 6px">Nota de cada CE amb tot el que s'ha treballat fins a la ${esc(TRIMESTRES[trim])} (mitjana dels seus criteris; en els exàmens, de les preguntes lligades a cada criteri). La columna «Global» és la mitjana ponderada de les CE (pesos en Ajustos). <strong>Toca una nota</strong> per a vore en quines activitats s'ha treballat i quin pes té cada una.</p>
+    const tf=finalCurs? 2 : trim;
+    const cel=(x,a,ce)=>x==null? cel0(x) : `<button type="button" class="res-cebtn" title="Vore en quines activitats s'ha treballat ${ce?esc(ce.id):"cada CE"} i quin pes té" aria-label="${ce?esc(ce.id):"Global"} de ${esc(a.nombre)}: d'on ix la nota" onclick="event.stopPropagation();${ce?`resDetallCE('${escJS(a.id)}','${escJS(ce.id)}',${tf})`:`resDetallGlobalCE('${escJS(a.id)}',${tf})`}">${cel0(x)}</button>`;
+    return `<p class="sub" style="margin:0 0 6px">Nota de cada CE amb tot el que s'ha treballat fins a ${finalCurs?"":"la "}${fins} (mitjana dels seus criteris; en els exàmens, de les preguntes lligades a cada criteri). La columna «Global» és la mitjana ponderada de les CE (pesos en Ajustos). <strong>Toca una nota</strong> per a vore en quines activitats s'ha treballat i quin pes té cada una.</p>
     <div style="overflow-x:auto"><table>
-      <thead><tr><th>Alumno/a</th>${usades.map(ce=>`<th title="${esc(ce.titulo)}">${esc(ce.id)}</th>`).join("")}<th title="Mitjana ponderada de les CE">Global</th></tr></thead>
+      <thead><tr><th>Alumne/a</th>${usades.map(ce=>`<th title="${esc(ce.titulo)}">${esc(ce.id)}</th>`).join("")}<th title="Mitjana ponderada de les CE">Global</th></tr></thead>
       <tbody>${grupo.alumnos.map(a=>fila(a,usades.map(ce=>`<td>${cel(val[a.id][ce.id],a,ce)}</td>`).join("")+`<td><strong>${cel(notaPorCE(grupo,a.id,trims),a,null)}</strong></td>`)).join("")}</tbody>
     </table></div>`;
   }
   /* «Notes i ITACA»: capçalera en dos files, agrupada per a que es veja a què
      correspon cada columna (l'avaluació triada, el final de curs o accions). */
-  const q=teQualitativaCE(grupo), finalCurs=state.ui.resInfFinal===true;
+  const q=teQualitativaCE(grupo);
   const thG=(txt,n,tit)=>`<th colspan="${n}" scope="colgroup" class="res-grup" title="${esc(tit||"")}" style="text-align:center;border-bottom:2px solid var(--line);border-left:2px solid var(--line)">${txt}</th>`;
   const th=(txt,tit,ini)=>`<th scope="col" title="${esc(tit||"")}"${ini?' style="border-left:2px solid var(--line)"':""}>${txt}</th>`;
   const td=(html,ini)=>`<td${ini?' style="border-left:2px solid var(--line)"':""}>${html}</td>`;
@@ -207,17 +210,17 @@ function renderResultados(grupo){
         <details class="res-menu">
           <summary class="btn">🖨️ Informes ▾</summary>
           <div class="res-menu-pop" onclick="if(event.target.closest('button')) this.parentElement.open=false">
-            <button class="ghost" onclick="exportarInformeGrupo(document.getElementById('repGrupoSel').value)">Informe de grupo</button>
-            <button class="ghost" onclick="exportarInformesDetalladosTodos(document.getElementById('repGrupoSel').value)">🖨️ Informes detallados</button>
-            <button class="ghost" title="Acta per a la sessió d'avaluació: mitjanes, suspesos per tema, alumnat amb mesures, faltes i espai per als acords" onclick="exportarActaSessio(document.getElementById('repGrupoSel').value)">🧾 Acta de la sessió</button>
-            <button class="ghost" title="Una pàgina per alumne/a per a les famílies: notes, temes, faltes, observacions i signatures" onclick="(v=>exportarInformesFamiliaTots(v==='final'?2:v))(document.getElementById('repGrupoSel').value)">👪 Informes per a les famílies</button>
+            <button class="ghost" onclick="resInformeGrup('grup')">Informe de grupo</button>
+            <button class="ghost" onclick="resInformeGrup('detallats')">🖨️ Informes detallados</button>
+            <button class="ghost" title="Acta per a la sessió d'avaluació: mitjanes, suspesos per tema, alumnat amb mesures, faltes i espai per als acords" onclick="resInformeGrup('acta')">🧾 Acta de la sessió</button>
+            <button class="ghost" title="Una pàgina per alumne/a per a les famílies: notes, temes, faltes, observacions i signatures" onclick="resInformeGrup('families')">👪 Informes per a les famílies</button>
           </div>
         </details>
         <details class="res-menu">
           <summary class="ghost" style="border:1px solid var(--line)">📤 Exportar ▾</summary>
           <div class="res-menu-pop" onclick="if(event.target.closest('button')) this.parentElement.open=false">
             <button class="ghost" onclick="exportarCSVGrupo()" title="Hoja de cálculo con la media y la nota de acta (entera) de cada alumno/a, lista para pasar a ITACA">Exportar notas (CSV)</button>
-            <button class="ghost" onclick="exportarInformesTodos()">Exportar todos los informes</button>
+            <button class="ghost" onclick="resInformeGrup('individuals')">Exportar tots els informes individuals</button>
             <button class="ghost" onclick="exportarInformesFinalesTodos()">Exportar informes finales de curso</button>
             <button class="ghost" title="Archivo con los suspensos de tu materia en cada evaluación, para cargarlo en el Gestor de Tutoría del tutor/a del grupo" onclick="exportarParaTutoria()">👥 Para la tutoría</button>
           </div>
@@ -313,7 +316,7 @@ function renderResultados(grupo){
       <div class="flex">
         <button class="ghost" style="border:1px solid var(--line)" onclick="irAAlumnoResultados('')">← Ver toda la clase</button>
         <button class="ghost" style="border:1px solid var(--line)" onclick="exportarInformeFinalAlumno('${al.id}')">Exportar informe final de curso</button>
-        <button class="btn" onclick="exportarInformeAlumno('${al.id}')">Exportar informe individual</button>
+        <button class="btn" onclick="resInformeAlumne('${al.id}')">Exportar informe individual</button>
       </div>
     </div>
   </div>
@@ -397,4 +400,72 @@ function renderResultados(grupo){
 window.resTriarAvaluacio=v=>{
   if(v==="final"){ state.ui.resInfFinal=true; save(); render(); return; }
   state.ui.resInfFinal=false; state.ui.trim=Number(v)||0; save(); render();
+};
+
+/* =================================================================
+   Triar les avaluacions d'un informe
+   En demanar un informe des de Resultats ix una finestra amb 1a, 2a, 3a i
+   Final per a marcar quines vols. Ja ve marcada la del desplegable de
+   Resultats (es pot desmarcar). Si en marques més d'una, s'obri un sol
+   document amb totes, cadascuna en pàgines a banda.
+   ================================================================= */
+const RES_INF_PERIODES=[{v:"0",t:()=>TRIMESTRES[0]},{v:"1",t:()=>TRIMESTRES[1]},{v:"2",t:()=>TRIMESTRES[2]},{v:"final",t:()=>"Avaluació final"}];
+function resAvaluacioTriada(){ return state.ui.resInfFinal===true? "final" : String(state.ui.trim); }
+function resTriarAvaluacionsInforme(titol){
+  const actual=resAvaluacioTriada();
+  if(window.__dialogosAuto){ const a=window.__dialogosAuto.avaluacions; return Promise.resolve(a? a.map(String) : [actual]); }
+  return new Promise(resolve=>{
+    const previo=document.activeElement;
+    const div=document.createElement("div");
+    div.className="modal-overlay dlg-overlay"; div.style.zIndex=String(++_dlgZ);
+    div.innerHTML=`<div class="modal-box dlg-box" role="dialog" aria-modal="true" aria-labelledby="resAvT" style="max-width:420px">
+      <h2 id="resAvT" style="font-size:16.5px;margin-bottom:6px">${esc(titol)}</h2>
+      <p class="sub" style="margin:0 0 10px">Quines avaluacions vols en l'informe? Pots marcar-ne més d'una: ixen totes en un mateix document.</p>
+      <div id="resAvChecks" style="display:grid;gap:8px">${RES_INF_PERIODES.map(p=>`<label style="display:flex;gap:8px;align-items:center;font-size:14.5px"><input type="checkbox" value="${p.v}" ${p.v===actual?"checked":""}> ${esc(p.t())}</label>`).join("")}</div>
+      <div class="flex" style="justify-content:flex-end;gap:8px;margin-top:16px">
+        <button class="ghost dlg-no" style="border:1px solid var(--line)">Cancel·lar</button>
+        <button class="btn dlg-si">Fer l'informe</button>
+      </div></div>`;
+    document.body.appendChild(div);
+    const si=div.querySelector(".dlg-si"), checks=[...div.querySelectorAll("#resAvChecks input")];
+    const triades=()=>checks.filter(c=>c.checked).map(c=>c.value);
+    const actualitza=()=>{ si.disabled=!triades().length; };
+    checks.forEach(c=>c.addEventListener("change",actualitza)); actualitza();
+    const fin=v=>{ div.remove(); document.removeEventListener("keydown",tecla,true); try{ previo&&previo.focus&&previo.focus(); }catch(e){} resolve(v); };
+    const tecla=e=>{ if(!document.body.contains(div)) return;
+      if(e.key==="Escape"){ e.preventDefault(); e.stopPropagation(); fin(null); }
+      else if(e.key==="Enter"){ e.preventDefault(); e.stopPropagation(); if(triades().length) fin(triades()); } };
+    document.addEventListener("keydown",tecla,true);
+    si.onclick=()=>{ if(triades().length) fin(triades()); };
+    div.querySelector(".dlg-no").onclick=()=>fin(null);
+    div.onclick=e=>{ if(e.target===div) fin(null); };
+    setTimeout(()=>{ (div.querySelector("#resAvChecks input:checked")||si).focus(); },20);
+  });
+}
+/* Crida genera(periode) per a cada avaluació triada; si n'hi ha més d'una,
+   ajunta tots els documents en un de sol. */
+function resInformePerAvaluacions(periodes,genera,titol){
+  if(periodes.length===1){ genera(periodes[0]); return; }
+  const parts=[]; window._capturaInforme=parts;
+  try{ periodes.forEach(p=>genera(p)); } finally { window._capturaInforme=null; }
+  if(!parts.length) return;
+  const noms=periodes.map(p=>RES_INF_PERIODES.find(x=>x.v===p).t()).join(", ");
+  const cos=parts.map((x,i)=>`<div${i?' style="page-break-before:always;break-before:page"':""}>${x.opts.portada||""}${x.bodyHtml}</div>`).join("");
+  abrirVentanaInforme(`${titol} · ${noms}`, cos, {landscape:parts.some(x=>x.opts.landscape), center:parts.some(x=>x.opts.center), maxWidth:parts[0].opts.maxWidth});
+}
+window.resInformeAlumne=async alId=>{
+  const grupo=grupoActual(); const al=grupo&&grupo.alumnos.find(a=>a.id===alId); if(!al) return;
+  const per=await resTriarAvaluacionsInforme(`Informe de ${al.nombre}`); if(!per) return;
+  resInformePerAvaluacions(per,p=>p==="final"? exportarInformeFinalAlumno(alId) : conTrim(Number(p),()=>exportarInformeAlumno(alId)),`Informe · ${al.nombre}`);
+};
+window.resInformeGrup=async tipus=>{
+  const grupo=grupoActual(); if(!grupo) return;
+  const T={grup:["Informe de grup",p=>exportarInformeGrupo(p)],
+    detallats:["Informes detallats",p=>exportarInformesDetalladosTodos(p)],
+    acta:["Acta de la sessió",p=>exportarActaSessio(p)],
+    families:["Informes per a les famílies",p=>exportarInformesFamiliaTots(p)],
+    individuals:["Informes individuals",p=>p==="final"? exportarInformesFinalesTodos() : conTrim(Number(p),()=>exportarInformesTodos())]}[tipus];
+  if(!T) return;
+  const per=await resTriarAvaluacionsInforme(T[0]); if(!per) return;
+  resInformePerAvaluacions(per,T[1],`${T[0]} · ${grupo.nombre}`);
 };
