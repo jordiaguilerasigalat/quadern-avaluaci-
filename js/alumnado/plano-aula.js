@@ -252,8 +252,10 @@ function renderAlumnos(grupo){
       <tbody>
       ${grupo.alumnos.length? alumSortearAlumnos(grupo.alumnos).map(a=>{ const edad=calcularEdad(a.fechaNacimiento); const colspanTotal=5+ALUM_COLUMNAS_OPCIONALES.filter(c=>alumColVisible(c.id)).length; return `
         <tr data-id="${a.id}" data-buscar="${esc(normalizarTexto(a.apellidos+" "+a.nombreP))}">
-          <td><div style="display:flex;align-items:center">${avatarAlumneHTML(a,{mida:28})}<input class="in" style="width:100%;min-width:0;border-color:transparent;background:transparent" value="${esc(a.apellidos||"")}" onchange="renombrarApellidos('${a.id}',this.value)"></div></td>
-          <td><input class="in" style="width:100%;border-color:transparent;background:transparent" value="${esc(a.nombreP||"")}" onchange="renombrarNombreP('${a.id}',this.value)"></td>
+          ${state.ui.alumEditNom===a.id?`<td><div style="display:flex;align-items:center">${avatarAlumneHTML(a,{mida:28})}<input class="in" style="width:100%;min-width:0" aria-label="Cognoms de ${esc(a.nombre)}" value="${esc(a.apellidos||"")}" onchange="renombrarApellidos('${a.id}',this.value)" onkeydown="if(event.key==='Enter'||event.key==='Escape'){ event.preventDefault(); alumFiEditNom(); }"></div></td>
+          <td><div style="display:flex;align-items:center;gap:4px"><input class="in" style="width:100%;min-width:0" aria-label="Nom de ${esc(a.nombre)}" value="${esc(a.nombreP||"")}" onchange="renombrarNombreP('${a.id}',this.value)" onkeydown="if(event.key==='Enter'||event.key==='Escape'){ event.preventDefault(); alumFiEditNom(); }"><button class="ghost small" title="Fet" aria-label="Acabar d'editar el nom" onmousedown="event.preventDefault()" onclick="alumFiEditNom()">✓</button></div></td>`
+          :`<td><div style="display:flex;align-items:center">${avatarAlumneHTML(a,{mida:28})}<button type="button" class="nom-fitxa al-nom" title="Obrir la fitxa de ${esc(a.nombre)} (notes i seguiment)" onclick="obrirFitxaAlumne('${a.id}')">${esc(a.apellidos||"")||'<span style="color:var(--mut)">—</span>'}</button></div></td>
+          <td><div style="display:flex;align-items:center;gap:4px"><button type="button" class="nom-fitxa al-nom" style="flex:1;min-width:0" title="Obrir la fitxa de ${esc(a.nombre)} (notes i seguiment)" onclick="obrirFitxaAlumne('${a.id}')">${esc(a.nombreP||"")||'<span style="color:var(--mut)">—</span>'}</button><button class="ghost small al-edit-nom" title="Canviar el nom o els cognoms" aria-label="Canviar el nom de ${esc(a.nombre)}" onclick="alumEditNom('${a.id}')">✏️</button></div></td>`}
           ${alumColVisible("nese")?`<td class="sens" style="text-align:center"><input type="checkbox" ${a.nese?"checked":""} onchange="toggleNese('${a.id}',this.checked)"></td>`:""}
           ${alumColVisible("nivelNese")?`<td class="sens" style="font-size:12.5px">${a.nese?neseNivelHTML(a):'<span style="color:var(--mut);font-size:12.5px">—</span>'}</td>`:""}
           ${alumColVisible("plan")?`<td class="sens"><select class="in" style="width:100%;font-size:12.5px;padding:6px 8px" onchange="setAlumnoPlan('${a.id}',this.value)">
@@ -560,12 +562,36 @@ window.setFechaNacimientoTexto=(id,valor)=>{
   if(a){ a.fechaNacimiento=f; save(); render(); }
   return true;
 };
+/* Tocar el nom obri la fitxa; el llapis ✏️ el posa en mode d'edició (només eixa fila). */
+window.alumEditNom=id=>{
+  state.ui.alumEditNom=id; repintarGrupQuietSegur();
+  const fila=[...document.querySelectorAll("#tablaAlumnos tr[data-id]")].find(tr=>tr.getAttribute("data-id")===id);
+  const inp=fila && fila.querySelector("input.in");
+  if(inp) try{ inp.focus({preventScroll:true}); inp.select(); }catch(e){}
+};
+window.alumFiEditNom=()=>{
+  const id=state.ui.alumEditNom; if(!id) return;
+  /* Guarda el que hi haja escrit encara que no s'haja eixit del camp. */
+  const f0=[...document.querySelectorAll("#tablaAlumnos tr[data-id]")].find(tr=>tr.getAttribute("data-id")===id);
+  const g=grupoActual(); const a=g&&g.alumnos.find(x=>x.id===id);
+  if(f0 && a){
+    const [ic,inm]=f0.querySelectorAll("input.in");
+    if(ic && ic.value.trim()!==(a.apellidos||"")) a.apellidos=ic.value.trim();
+    if(inm && inm.value.trim()!==(a.nombreP||"")) a.nombreP=inm.value.trim();
+    a.nombre=nombreCompleto(a.apellidos,a.nombreP); ordenarAlumnos(g); save();
+  }
+  state.ui.alumEditNom=""; repintarGrupQuietSegur();
+  const fila=[...document.querySelectorAll("#tablaAlumnos tr[data-id]")].find(tr=>tr.getAttribute("data-id")===id);
+  const b=fila && fila.querySelector("button.al-nom");
+  if(b) try{ b.focus({preventScroll:true}); }catch(e){}
+};
+function repintarGrupQuietSegur(){ if(typeof repintarGrupQuiet==="function") repintarGrupQuiet(); else render(); }
 window.abrirFichaAlumno=(id)=>{ state.ui.fichaSeguiment=false; state.ui.fichaAlumnoId=id; save(); render(); };
 window.cerrarFichaAlumno=()=>{
   const id=state.ui.fichaAlumnoId; state.ui.fichaAlumnoId=""; state.ui.fichaSeguiment=false; save(); render();
   /* El cursor torna a la fila de l'alumne/a (sense moure la pantalla) per a seguir amb el següent. */
   const fila=id && [...document.querySelectorAll("#tablaAlumnos tr[data-id]")].find(tr=>tr.getAttribute("data-id")===id);
-  const b=fila && [...fila.querySelectorAll("button")].find(x=>/Fitxa|Seguiment|NESE/.test(x.textContent));
+  const b=fila && (fila.querySelector("button.al-nom") || [...fila.querySelectorAll("button")].find(x=>/Fitxa|Seguiment|NESE/.test(x.textContent)));
   if(b) try{ b.focus({preventScroll:true}); }catch(e){}
 };
 function fichaAlumnoModalHTML(grupo,alumnoId){
