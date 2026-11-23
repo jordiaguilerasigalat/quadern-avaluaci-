@@ -109,6 +109,9 @@ function generarPortadaHTML(titulo,subtitulos,indiceItems){
 }
 function abrirVentanaInforme(titulo,bodyHtml,opts){
   opts=opts||{};
+  /* Informes de diverses avaluacions alhora (resInformePerAvaluacions): cada
+     part es guarda ací i després s'obri un sol document amb totes. */
+  if(window._capturaInforme){ window._capturaInforme.push({titulo,bodyHtml,opts}); return; }
   const paisaje=!!opts.landscape;
   const centrado=!!opts.center;
   const maxWidth=opts.maxWidth||"820px";

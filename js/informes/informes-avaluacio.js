@@ -93,12 +93,13 @@ function _iaCap(g,titol,trim){
 
 /* ───────────────────────── 4 · Informe per a la família ───────────────────────── */
 function informeFamiliaBodyHTML(g,al,trim){
-  const per=_iaPeriode(g,trim);
+  const fin=trim==="final", ambFinal=fin||trim===2;
+  const per=fin? {desde:"0000-00-00",fins:"9999-12-31",txt:"tot el curs"} : _iaPeriode(g,trim);
   const v=_iaNota(g,al.id,trim);
-  const trims=[0,1,2].filter(t=>t<=trim);
-  const notes=`<table><thead><tr>${trims.map(t=>`<th>${esc(TRIMESTRES[t])}</th>`).join("")}${trim===2?"<th>Final</th>":""}</tr></thead>
-    <tbody><tr>${trims.map(t=>`<td>${_iaPill(g,_iaNota(g,al.id,t))}</td>`).join("")}${trim===2?`<td>${_iaPill(g,_iaNota(g,al.id,"final"))}</td>`:""}</tr>
-    ${_iaQual(g)?`<tr>${trims.map(t=>`<td><span class="xicotet">Per competències (qualitativa):</span> ${_iaPillQual(g,al.id,t)}</td>`).join("")}${trim===2?`<td><span class="xicotet">Per competències (qualitativa):</span> ${_iaPillQual(g,al.id,"final")}</td>`:""}</tr>`:""}</tbody></table>
+  const trims=[0,1,2].filter(t=>fin||t<=trim);
+  const notes=`<table><thead><tr>${trims.map(t=>`<th>${esc(TRIMESTRES[t])}</th>`).join("")}${ambFinal?"<th>Final</th>":""}</tr></thead>
+    <tbody><tr>${trims.map(t=>`<td>${_iaPill(g,_iaNota(g,al.id,t))}</td>`).join("")}${ambFinal?`<td>${_iaPill(g,_iaNota(g,al.id,"final"))}</td>`:""}</tr>
+    ${_iaQual(g)?`<tr>${trims.map(t=>`<td><span class="xicotet">Per competències (qualitativa):</span> ${_iaPillQual(g,al.id,t)}</td>`).join("")}${ambFinal?`<td><span class="xicotet">Per competències (qualitativa):</span> ${_iaPillQual(g,al.id,"final")}</td>`:""}</tr>`:""}</tbody></table>
     ${_iaQual(g)?`<p class="xicotet" style="margin:3px 0 0">Dalt, la qualificació per continguts (quantitativa, la nota numèrica); baix, la qualificació per competències (qualitativa).</p>`:""}`;
   /* Temes */
   const temes=_iaTemesPeriode(g,trim);
@@ -111,14 +112,14 @@ function informeFamiliaBodyHTML(g,al,trim){
   /* Assistència i convivència */
   const as=asistContarPeriodo(g,al.id,per.desde,per.fins);
   const cv=typeof convContarTipos==="function"? convContarTipos(g,al.id,per.desde,per.fins) : {ac:0,rc:0,pa:0};
-  const np=(g.actividades||[]).filter(a=>a.trimestre===trim && marcaDe(g,al.id,a.id)==="NP");
-  const com=((al.comentariosEval||[])[trim]||"").trim();
+  const np=(g.actividades||[]).filter(a=>(fin||a.trimestre===trim) && marcaDe(g,al.id,a.id)==="NP");
+  const com=fin? "" : ((al.comentariosEval||[])[trim]||"").trim();
   const mes=_iaMesures(al,true).filter(x=>x!=="Repetidor/a");
   return `<div class="ia ia-full">
     ${_iaCap(g,"Informe d'avaluació per a la família",trim)}
     <div class="flex" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
       <div><div class="ia-nom">${esc(al.nombre)}</div><div class="xicotet">${esc(profesorNombreEfectivo(null)?"Professor/a: "+profesorNombreEfectivo(null):"")}</div></div>
-      <div style="text-align:right"><div class="xicotet">Qualificació · ${esc(TRIMESTRES[trim])}</div><div class="nota-gran">${esc(_iaActaTxt(g,v))}</div></div>
+      <div style="text-align:right"><div class="xicotet">Qualificació · ${esc(fin?"Avaluació final":TRIMESTRES[trim])}</div><div class="nota-gran">${esc(_iaActaTxt(g,v))}</div></div>
     </div>
     <h2>Qualificacions</h2>${notes}
     ${temes.length?`<h2>Tema a tema</h2><table><thead><tr><th>Tema</th><th style="width:70px;text-align:center">Nota</th><th style="width:220px">Estat</th></tr></thead><tbody>${filesTemes}</tbody></table>
@@ -141,13 +142,15 @@ function informeFamiliaBodyHTML(g,al,trim){
 window.exportarInformeFamilia=(alId,trim)=>{
   const g=grupoActual(); const al=g&&g.alumnos.find(a=>a.id===alId); if(!al) return;
   if(trim==null) trim=state.ui.trim;
-  abrirVentanaInforme(`Informe per a la família · ${al.nombre} · ${TRIMESTRES[trim]}`, _IA_CSS+informeFamiliaBodyHTML(g,al,trim));
+  if(trim!=="final") trim=Number(trim);
+  abrirVentanaInforme(`Informe per a la família · ${al.nombre} · ${trim==="final"?"Avaluació final":TRIMESTRES[trim]}`, _IA_CSS+informeFamiliaBodyHTML(g,al,trim));
 };
 window.exportarInformesFamiliaTots=(trim)=>{
   const g=grupoActual(); if(!g) return;
   if(!g.alumnos.length){ mostrarAviso("Este grup encara no té alumnat."); return; }
-  if(trim==null || trim==="") trim=state.ui.trim; trim=Number(trim);
-  abrirVentanaInforme(`Informes per a les famílies · ${g.nombre} · ${TRIMESTRES[trim]}`, _IA_CSS+g.alumnos.map(al=>informeFamiliaBodyHTML(g,al,trim)).join(""));
+  if(trim==null || trim==="") trim=state.ui.trim;
+  if(trim!=="final") trim=Number(trim);
+  abrirVentanaInforme(`Informes per a les famílies · ${g.nombre} · ${trim==="final"?"Avaluació final":TRIMESTRES[trim]}`, _IA_CSS+g.alumnos.map(al=>informeFamiliaBodyHTML(g,al,trim)).join(""));
 };
 
 /* ───────────────────────── 5 · Acta de la sessió d'avaluació ───────────────────────── */
