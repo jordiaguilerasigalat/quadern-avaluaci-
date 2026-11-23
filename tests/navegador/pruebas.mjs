@@ -1581,6 +1581,53 @@ export const PRUEBAS = [
     t.ok(/notaQualNum[^>]*>\(5,2\)/.test(r.pill), 'al costat del nivell, la nota sobre 10 entre parèntesis en gris', r.pill);
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'detall-ce', descripcion: 'Resultats → Per competències: tocar la nota d\'una CE mostra les activitats, la nota i el pes (també en la final i en la Global)', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const ids = await cuadernoConGrupo(p, t.url);
+    const r = await p.evaluate(async ids => {
+      const g = state.grupos[0], ce = getCatalogo('FiQ_2ESO').ces[0], c1 = ce.criterios[0].id, c2 = ce.criterios[1].id, al = ids[0];
+      g.modoNota = 'ambdues';
+      g.actividades = [
+        { id: 'e1', nombre: 'Examen tema 1', tipo: TIPOS[0], trimestre: 0, bloqueId: g.bloques[0].id, esExamen: true, criterios: [{ critId: c1, peso: 100 }],
+          rubrica: [{ id: 's1', title: 'Pregunta 1', items: [{ id: 'i1', label: 'Densitat', max: 4, links: [{ critId: c1, peso: 100 }] }, { id: 'i2', label: 'Unitats', max: 6, links: [{ critId: c1, peso: 100 }] }], subs: [] }] },
+        { id: 'a1', nombre: 'Pràctica laboratori', tipo: TIPOS[0], trimestre: 0, bloqueId: g.bloques[0].id, criterios: [{ critId: c1, peso: 50 }, { critId: c2, peso: 100 }] },
+        { id: 'a0', nombre: 'Treball exempt', tipo: TIPOS[0], trimestre: 0, bloqueId: g.bloques[0].id, criterios: [{ critId: c2, peso: 100 }] },
+        { id: 'b1', nombre: 'Projecte 2a', tipo: TIPOS[0], trimestre: 1, bloqueId: g.bloques[0].id, criterios: [{ critId: c2, peso: 100 }] }];
+      g.rubricScores = { [al]: { e1: { i1: 4, i2: 3 } } };
+      g.notasCuant = {}; g.notas = {};
+      cxRecalcAlumno(g, g.actividades[0], al);
+      g.notas[al].a1 = { [c1]: 4, [c2]: 6 }; g.notas[al].b1 = { [c2]: 10 };
+      g.marcas = { [al]: { a0: 'EX' } };
+      const out = {};
+      const suma = d => d.crits.reduce((s, x) => s + x.acts.reduce((u, f) => u + f.pesCE, 0), 0);
+      const recon = d => d.crits.reduce((s, x) => s + x.acts.reduce((u, f) => u + (f.pesCE ? f.pesCE * f.nota : 0), 0), 0) * 10;
+      const d0 = detallCETrims(g, al, ce.id, [0]);
+      out.suma0 = suma(d0); out.recon0 = recon(d0); out.score0 = scoreCETrims(g, al, ce.id, [0]);
+      state.ui.appMode = 'competencial'; state.ui.tab = 'resultados'; state.ui.resAl = ''; state.ui.trim = 0; state.ui.resInfFinal = false; state.ui.resVista = 'ce'; state.ui.resCEqual = true; save(); render();
+      const btn = [...document.querySelectorAll('#tabContent .res-cebtn')].find(b => b.getAttribute('onclick').includes(`'${ce.id}'`) && b.getAttribute('onclick').includes(al));
+      out.btn = !!btn; btn.click();
+      const m = document.getElementById('dceModalWrap');
+      out.modal = m ? m.textContent : '';
+      out.resAl = state.ui.resAl;
+      resTancarDetallCE(); out.tancat = !document.getElementById('dceModalWrap');
+      resTriarAvaluacio('final');
+      const btnF = [...document.querySelectorAll('#tabContent .res-cebtn')].find(b => b.getAttribute('onclick').includes(`'${ce.id}'`) && b.getAttribute('onclick').includes(al));
+      btnF.click(); out.modalF = document.getElementById('dceModalWrap').textContent;
+      const dF = detallCETrims(g, al, ce.id, [0, 1, 2]); out.sumaF = suma(dF); out.reconF = recon(dF); out.scoreF = scoreCETrims(g, al, ce.id, [0, 1, 2]);
+      resTancarDetallCE();
+      const glob = [...document.querySelectorAll('#tabContent .res-cebtn')].find(b => b.getAttribute('onclick').includes('resDetallGlobalCE') && b.getAttribute('onclick').includes(al));
+      glob.click(); out.glob = document.getElementById('dceModalWrap').textContent;
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); out.esc = !document.getElementById('dceModalWrap');
+      return out;
+    }, ids);
+    t.ok(Math.abs(r.suma0 - 1) < 1e-9 && Math.abs(r.recon0 - r.score0) < 1e-6, 'els pesos sumen el 100 % i reconstruïxen la nota de la CE', JSON.stringify([r.suma0, r.recon0, r.score0]));
+    t.ok(r.btn && /Examen tema 1/.test(r.modal) && /Pràctica laboratori/.test(r.modal) && /Densitat/.test(r.modal) && /Unitats/.test(r.modal) && /Pes en la CE/.test(r.modal) && /%/.test(r.modal), 'en tocar la nota s\'obri el detall amb les activitats, les preguntes de l\'examen i el pes', r.modal.slice(0, 400));
+    t.ok(/Exempt/.test(r.modal) && !/Projecte 2a/.test(r.modal), 'l\'activitat exempta ix però no compta; la de la 2a no ix en la 1a', r.modal.slice(0, 400));
+    t.ok(r.resAl === '' && r.tancat, 'tocar la nota no obri l\'informe de davall i el detall es tanca');
+    t.ok(/Projecte 2a/.test(r.modalF) && /Tot el curs/.test(r.modalF) && Math.abs(r.sumaF - 1) < 1e-9 && Math.abs(r.reconF - r.scoreF) < 1e-6, 'en l\'avaluació final, tot el curs', r.modalF.slice(0, 300));
+    t.ok(/Global per competències/.test(r.glob) && /Pes real/.test(r.glob) && r.esc, 'la Global mostra el pes de cada CE i Esc tanca', r.glob.slice(0, 300));
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
   { nombre: 'banc-comentaris', descripcion: 'Banc de comentaris: frases per categoria, la de la nota primer, inserir amb el nom posat, editar i desar al banc', async fn(t) {
     const p = await nuevaPagina(t.contexto);
     const ids = await cuadernoConGrupo(p, t.url);
