@@ -147,6 +147,7 @@ function renderHome(){
   ${hoyTarjetaHTML()}
   ${homeGrupsActiusHTML()}
   ${queMeFaltaHTML()}
+  ${typeof riscHTML==="function"?riscHTML():""}
   ${homeAlertasHTML()}
   ${coberturaAvisosInicioHTML()}
   ${typeof ccAvisoInicioHTML==="function"?ccAvisoInicioHTML():""}

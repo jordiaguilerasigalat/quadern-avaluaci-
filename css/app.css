@@ -789,3 +789,50 @@ body[data-tema="oscuro"]{--qualnum:#9aa3b5}
   .res-cebtn{background:none;border:0;padding:3px 4px;margin:-3px -4px;border-radius:8px;cursor:pointer;font:inherit;color:inherit;min-height:0}
   .res-cebtn:hover,.res-cebtn:focus-visible{background:var(--surface-2);outline:2px solid var(--accent);outline-offset:1px}
   .dce-box table th,.dce-box table td{vertical-align:top}
+
+/* ---- Millores 2026-11 ---- */
+/* Taula de notes: escriure les notes amb el teclat */
+.tn-cel-in{padding:0!important}
+.tn-in{all:unset;box-sizing:border-box;display:block;width:100%;height:100%;min-height:44px;min-width:64px;text-align:center;font-size:14px;font-variant-numeric:tabular-nums;color:#141b28;cursor:text}
+.tn-cel-in:not([style]) .tn-in{color:var(--ink)}
+.tn-in:focus{box-shadow:inset 0 0 0 3px var(--accent,#2b6cb0);background:rgba(255,255,255,.55)}
+.hn-de{color:var(--mut);text-decoration:line-through}
+/* Plànol d'aula → Actitud */
+.ac-placa{font-size:11px;font-weight:700;display:flex;gap:4px;justify-content:center;margin-top:2px}
+.ac-placa.ac-buida{color:var(--mut);font-weight:400}
+.ac-pos{color:#15803d;font-weight:700}
+.ac-neg{color:#b91c1c;font-weight:700}
+.ac-files{display:grid;gap:8px}
+.ac-fila{display:grid;grid-template-columns:1fr 1fr;gap:6px;align-items:center}
+.ac-fila .ac-nom{grid-column:1/-1;font-weight:600;font-size:13.5px}
+.ac-bt{min-height:48px;border-radius:10px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:1px solid var(--line);padding:6px 8px}
+.ac-bt-pos{background:#dcfce7;color:#14532d;border-color:#86efac}
+.ac-bt-neg{background:#fee2e2;color:#7f1d1d;border-color:#fca5a5}
+.ac-bt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ac-rub{margin-bottom:12px}
+/* Mòbil: rúbrica de nivells amb botons grans, un apartat davall de l'altre */
+.cxn-niv-mob{display:none}
+@media (max-width:640px){
+  .cxn-wrap{overflow-x:visible;margin:0;padding:0}
+  .cxn-corr{min-width:0!important;table-layout:auto;border-spacing:0}
+  .cxn-corr thead{display:none}
+  .cxn-corr,.cxn-corr tbody{display:block;width:100%}
+  .cxn-corr tr{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  .cxn-corr th.cxn-cat,.cxn-corr td.cxn-pts{grid-column:1/-1}
+  .cxn-corr td.cxn-pts{display:flex;align-items:center;gap:8px;text-align:left}
+  .cxn-corr td.cxn-op button{min-height:64px;font-size:12.5px;line-height:1.3;padding:8px 10px}
+  .cxn-niv-mob{display:block;font-weight:800;font-size:15px;margin-bottom:3px}
+  .tn-nav button{min-height:44px;flex:1}
+}
+/* Inici → Alumnat en risc */
+.risc-al{display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 10px;font:inherit;font-size:13px;cursor:pointer;color:var(--ink)}
+.risc-al:hover{border-color:var(--accent)}
+.risc-al:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.risc-mot{font-size:11.5px;font-weight:700;border-radius:999px;padding:1px 7px}
+.risc-n{background:#fee2e2;color:#7f1d1d}
+.risc-np{background:#fef3c7;color:#78350f}
+.risc-b{background:#e0e7ff;color:#312e81}
+@media (max-width:640px){
+  .seg-chips{flex-wrap:nowrap!important;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;scroll-snap-type:x proximity}
+  .seg-chips .gpill{flex:0 0 auto;scroll-snap-align:center}
+}

@@ -103,6 +103,7 @@ function renderTaulaNotes(grupo){
       <div class="tn-act-data">${qn.length} tasques</div>
       <div class="tn-act-crit"><button type="button" class="tn-qn-tog" onclick="tnQnDetall(true)">Vore-les ▸</button></div></th>`
     : "";
+  const teclat=!!state.ui.tnTeclat;
   const files=grupo.alumnos.map((al,i)=>{
     const cel=acts.map(({a})=>{
       const m=marcaDe(grupo,al.id,a.id);
@@ -111,6 +112,10 @@ function renderTaulaNotes(grupo){
       const bg= m==="EX"? "" : tnColor(v);
       const extra=!a.recupera && extraAplicadoActividad(grupo,al.id,a);
       const rec=!a.recupera && recuperacionesDe(grupo,a.id).some(r=>notaActividadBase(grupo,al.id,r)!=null);
+      if(teclat && tnEditable(a)){
+        const val= m==="NP"? "NP" : m==="EX"? "Exempt" : (v==null? "" : String(fmt(v)));
+        return `<td class="tn-cel tn-cel-in${m==="EX"?" tn-ex":""}"${bg?` style="background:${bg}"`:""}><input class="tn-in" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="next" data-al="${al.id}" data-act="${a.id}" value="${esc(val)}" aria-label="${esc(al.nombre)} · ${esc(a.nombre)}" onfocus="this.select()" onchange="tnTeclatCanvi(this)" onkeydown="tnTeclatTecla(event,this)"></td>`;
+      }
       return `<td class="tn-cel${m==="EX"?" tn-ex":""}"${bg?` style="background:${bg}"`:""}><button type="button" onclick="tnObrir('${al.id}','${a.id}')" aria-label="${esc(al.nombre)} · ${esc(a.nombre)}: ${m==="EX"?"exempt":txt||"sense nota"}"${m==="EX"?' title="Exempt: no compta per a este alumne/a"':""}>${txt}${extra?'<sup title="Amb punts extra">+</sup>':""}${rec?'<sup title="Amb recuperació">🔁</sup>':""}</button></td>`;
     }).join("");
     let celQn="";
@@ -124,12 +129,16 @@ function renderTaulaNotes(grupo){
     }
     const nt=notaTrimestre(grupo,al.id,trim);
     return `<tr><th scope="row" class="tn-al"><span class="tn-num">${i+1}.</span> ${nomFitxaHTML(al)}${neseBadgeHTML(al)}</th>${cel}${celQn}
-      <td class="tn-cel tn-final"${nt!=null?` style="background:${tnColor(nt)}"`:""}><span>${nt==null?"—":fmt(nt)}</span></td><td class="tn-cel tn-nova-cel"></td></tr>`;
+      <td class="tn-cel tn-final" data-final-al="${al.id}"${nt!=null?` style="background:${tnColor(nt)}"`:""}><span>${nt==null?"—":fmt(nt)}</span></td><td class="tn-cel tn-nova-cel"></td></tr>`;
   }).join("");
   c.innerHTML=`<div class="card tn-card">
     <div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px">
       <div><h2 style="margin:0">Taula de notes · ${esc(TRIMESTRES[trim]||"")}</h2>
-      <p class="sub" style="margin:2px 0 0">Toca una nota per a vore i canviar la rúbrica d'eixe alumne/a. Toca el nom d'una activitat per a qualificar tot el grup.</p></div>
+      <p class="sub" style="margin:2px 0 0">${teclat?"Escriu la nota i prem <strong>Enter</strong> per a passar a l'alumne/a següent (↑ ↓ per a moure't, Tab a la columna del costat). També NP, Exempt o, en les rúbriques de nivells, el nivell (AE, AN, AS, NA). En una activitat amb rúbrica, la nota es reparteix igual en tots els apartats: per a detallar-la, acaba i toca la casella.":"Toca una nota per a vore i canviar la rúbrica d'eixe alumne/a. Toca el nom d'una activitat per a qualificar tot el grup."}</p></div>
+      <div class="flex" style="gap:6px;flex-wrap:wrap;align-items:center">
+        <button type="button" class="${teclat?"btn":"ghost"} small" style="${teclat?"":"border:1px solid var(--line)"}" aria-pressed="${teclat}" onclick="tnTeclat(${!teclat})" title="Escriure les notes directament en les caselles, amb el teclat">⌨️ ${teclat?"Escrivint notes · Acabar":"Escriure notes"}</button>
+        <button type="button" class="ghost small" style="border:1px solid var(--line)" onclick="hnObrirGrup()" title="Tots els canvis de notes d'este grup: quan, de quin valor a quin">🕓 Historial</button>
+      </div>
       ${selTrim}
     </div>
     <div class="tn-wrap scroll" tabindex="0" aria-label="Taula de notes de ${esc(TRIMESTRES[trim]||"")}">
@@ -140,13 +149,114 @@ function renderTaulaNotes(grupo){
     </div>
   </div>`;
   if(state.ui.tnCel){ c.insertAdjacentHTML("beforeend",tnModalHTML(grupo)); tnRestaurarModal(); }
+  if(teclat && _tnFocus){ const f=_tnFocus; _tnFocus=null; const el=c.querySelector(`.tn-in[data-al="${f.al}"][data-act="${f.act}"]`); if(el){ el.focus(); } }
   if(state.ui.tnNova){ const id=state.ui.tnNova; state.ui.tnNova=""; const w=c.querySelector(".tn-wrap"), th=c.querySelector(`.tn-act[data-act="${id}"]`);
     if(w&&th){ w.scrollLeft=Math.max(0,th.offsetLeft-w.clientWidth/2); th.classList.add("tn-recent"); } }
 }
 
 window.tnQnDetall=v=>{ state.ui.tnQnDetall=!!v; save(); render(); };
 window.tnTriarAvaluacio=v=>{ state.ui.trim=Number(v)||0; state.ui.resInfFinal=false; state.ui.tnCel=null; save(); render(); };
-window.tnObrirQualificar=actId=>{ state.ui.calAct=actId; state.ui.tnCel=null; state.ui.tab="calificar"; save(); render(); };
+window.tnObrirQualificar=actId=>{
+  const grupo=grupoActual(), act=grupo&&grupo.actividades.find(a=>a.id===actId);
+  /* Les activitats de Seguiment (rúbrica de nivells) s'obrin alumne per alumne,
+     amb els botons grans dels nivells; la resta, en Qualificar (tot el grup). */
+  if(act && act.seguiment && typeof segObrir==="function"){ state.ui.tnCel=null; state.ui.tab="actividades"; segObrir(actId); return; }
+  state.ui.calAct=actId; state.ui.tnCel=null; state.ui.tab="calificar"; save(); render();
+};
+
+/* ---- ⌨️ Escriure notes amb el teclat ----
+   Les activitats sense rúbrica (examen amb nota directa o activitat amb
+   criteris) es poden escriure directament en la casella. Una nota d'una
+   activitat amb criteris es posa igual en tots els seus criteris (és la
+   mateixa nota que donaria Qualificar si tots tingueren eixe valor). Enter o ↓
+   passa a l'alumne/a següent, ↑ a l'anterior. No es torna a pintar la taula a
+   cada nota: només la casella i la nota de l'avaluació d'eixa fila. */
+function tnEditable(a){ return !!a && (!!a.rubrica || a.esExamen || (a.criterios||[]).length>0); }
+/* Activitat amb rúbrica: la nota escrita es reparteix igual en tots els
+   apartats (7,5 → cada apartat al 75 %). En una rúbrica de nivells també es pot
+   escriure el nivell (AE, AN, AS, NA…) i es punxa en tots els apartats. */
+function tnEscriureRubrica(grupo,alId,act,t,n){
+  const rub=cxRubricaDe(act,alId); const items=cxItemsFlat(rub); if(!items.length) return false;
+  grupo.rubricScores[alId]=grupo.rubricScores[alId]||{};
+  if(n===null && !t){ delete grupo.rubricScores[alId][act.id]; delete grupo.notasCuant[alId]?.[act.id]; cxRecalcAlumno(grupo,act,alId); return true; }
+  const sc=grupo.rubricScores[alId][act.id]={};
+  const niv=typeof cxEsNiveles==="function"&&cxEsNiveles(rub)? cxnNiveles(rub) : [];
+  const l=niv.find(x=>normalizarTexto(String(x.nombre||""))===normalizarTexto(t));
+  if(l){ items.forEach(it=>{ sc[it.id]=cxnPuntosNivel(it,l,niv); }); }
+  else{
+    const max=cxMaxTotal(rub);
+    const T=(cxEscalarDe(act,alId)||Math.abs(max-10)<0.01)? max*n/10 : Math.min(n,max);
+    items.forEach(it=>{ sc[it.id]=max>0? (Number(it.max)||0)*T/max : 0; });
+  }
+  cxRecalcAlumno(grupo,act,alId);
+  return true;
+}
+let _tnFocus=null;
+window.tnTeclat=v=>{
+  state.ui.tnTeclat=!!v; state.ui.tnCel=null;
+  if(v){ const g=grupoActual(); const p=g&&tnActivitats(g).map(o=>o.a).filter(a=>!a.quadernNese||state.ui.tnQnDetall).find(tnEditable);
+    if(p&&g.alumnos[0]) _tnFocus={al:g.alumnos[0].id,act:p.id}; }
+  save(); render();
+};
+function tnEscriureNota(grupo,alId,act,txt){
+  const t=String(txt==null?"":txt).trim();
+  const mk=/^n\.?\s*p\.?$/i.test(t)? "NP" : /^(ex|exempt|exempta|exento|exenta|e)\.?$/i.test(t)? "EX" : "";
+  if(mk){
+    if(marcaDe(grupo,alId,act.id)!==mk){ if(!grupo.marcas) grupo.marcas={}; grupo.marcas[alId]=grupo.marcas[alId]||{}; grupo.marcas[alId][act.id]=mk; aplicarMarca(grupo,act,alId); save(); }
+    return true;
+  }
+  grupo.notasCuant[alId]=grupo.notasCuant[alId]||{}; grupo.notas[alId]=grupo.notas[alId]||{};
+  if(act.rubrica){
+    const niv=typeof cxEsNiveles==="function"&&cxEsNiveles(cxRubricaDe(act,alId))? cxnNiveles(cxRubricaDe(act,alId)) : [];
+    const esNivell=niv.some(x=>normalizarTexto(String(x.nombre||""))===normalizarTexto(t));
+    const n=esNivell? 0 : parseNotaTexto(t);
+    if(n===undefined){ mostrarAviso(`La nota ha de ser un número del 0 al 10 (pots usar coma: 7,5)${niv.length?", un nivell ("+niv.map(x=>x.nombre).join(", ")+")":""}, NP o Exempt.`); return false; }
+    quitarMarcaSiHay(grupo,alId,act.id);
+    tnEscriureRubrica(grupo,alId,act,esNivell?t:"",n);
+    save(); return true;
+  }
+  const n=parseNotaTexto(t);
+  if(n===undefined){ mostrarAviso("La nota ha de ser un número del 0 al 10 (pots usar coma: 7,5), NP o Exempt."); return false; }
+  if(act.esExamen){
+    if(n===null) delete grupo.notasCuant[alId][act.id]; else grupo.notasCuant[alId][act.id]=n;
+  }else{
+    if(n===null) delete grupo.notas[alId][act.id];
+    else{ const d=grupo.notas[alId][act.id]={}; (act.criterios||[]).forEach(l=>{ d[l.critId]=n; }); }
+  }
+  quitarMarcaSiHay(grupo,alId,act.id);
+  save();
+  return true;
+}
+function tnRefrescarCasella(grupo,inp){
+  const alId=inp.dataset.al, act=grupo.actividades.find(a=>a.id===inp.dataset.act); if(!act) return;
+  const m=marcaDe(grupo,alId,act.id);
+  const v=m==="EX"? null : tnNota(grupo,alId,act,state.ui.trim);
+  const td=inp.closest("td"); if(td){ const bg=m==="EX"? "" : tnColor(v); td.style.background=bg||""; if(!bg) td.removeAttribute("style"); td.classList.toggle("tn-ex",m==="EX"); }
+  inp.value= m==="NP"? "NP" : m==="EX"? "Exempt" : (v==null? "" : String(fmt(v)));
+  inp.dataset.desat=inp.value;
+  const fin=document.querySelector(`.tn-final[data-final-al="${alId}"]`);
+  if(fin){ const nt=notaTrimestre(grupo,alId,state.ui.trim); fin.innerHTML=`<span>${nt==null?"—":fmt(nt)}</span>`; fin.style.background=nt!=null? tnColor(nt) : ""; }
+}
+window.tnTeclatCanvi=inp=>{
+  const grupo=grupoActual(); if(!grupo) return;
+  const act=grupo.actividades.find(a=>a.id===inp.dataset.act); if(!act) return;
+  if(inp.dataset.desat!==undefined && inp.value===inp.dataset.desat) return;
+  if(tnEscriureNota(grupo,inp.dataset.al,act,inp.value)) tnRefrescarCasella(grupo,inp);
+  else{ inp.value=inp.dataset.desat||""; }
+};
+window.tnTeclatTecla=(e,inp)=>{
+  const k=e.key;
+  if(k==="Enter"||k==="ArrowDown"||k==="ArrowUp"){
+    e.preventDefault();
+    tnTeclatCanvi(inp);
+    const fila=inp.closest("tr"); const col=[...fila.children].indexOf(inp.closest("td"));
+    let dest=k==="ArrowUp"? fila.previousElementSibling : fila.nextElementSibling;
+    if(!dest && k==="Enter"){ inp.blur(); mostrarToast("✓ Columna acabada"); return; }
+    const el=dest&&dest.children[col]&&dest.children[col].querySelector(".tn-in");
+    if(el) el.focus();
+  }else if(k==="Escape"){ e.preventDefault(); inp.value=inp.dataset.desat??inp.defaultValue; inp.blur(); }
+};
+document.addEventListener("focusin",e=>{ const t=e.target; if(t&&t.classList&&t.classList.contains("tn-in")&&t.dataset.desat===undefined) t.dataset.desat=t.value; });
 let _tnModalScroll=0;
 window.tnObrir=(alId,actId)=>{ state.ui.tnCel={al:alId,act:actId}; _tnModalScroll=0; save(); render(); };
 window.tnTancar=()=>{ state.ui.tnCel=null; save(); render(); };
@@ -214,7 +324,9 @@ function tnModalHTML(grupo){
         </div>
         <div><div class="tn-mut" style="font-size:12.5px;margin-bottom:4px">No presentat / exempt</div>${marcaBotonesHTML(grupo,al.id,act.id)}</div>
       </div>
+      ${act.seguiment==="actitud"&&typeof acRubricaCardHTML==="function"? acRubricaCardHTML(grupo,act,al) : ""}
       <div class="tn-rub">${cos}</div>
+      ${typeof hnLlistaCasellaHTML==="function"? hnLlistaCasellaHTML(grupo,al.id,act.id) : ""}
       ${act.recupera?"":`<div style="margin-top:12px"><div class="tn-mut" style="font-size:12.5px;margin-bottom:4px">Punts extra (opcional)${extraBadgeHTML(grupo,al.id,act)}</div>${extraCamposHTML("act",al.id,act.id,extraActividad(grupo,al.id,act.id))}</div>`}
       <div class="flex" style="justify-content:flex-end;gap:8px;margin-top:14px;flex-wrap:wrap">
         ${act.rubrica?`<button class="ghost" style="border:1px solid var(--line)" onclick="tnTancar();cxAbrirDesdeOtroModo('${act.id}')">Obrir al Corrector →</button>`:`<button class="ghost" style="border:1px solid var(--line)" onclick="tnObrirQualificar('${act.id}')">Qualificar tot el grup →</button>`}
@@ -227,7 +339,7 @@ function tnModalHTML(grupo){
    la posició de la rúbrica (scroll del diàleg) i Esc el tanca. */
 document.addEventListener("scroll",e=>{ if(e.target&&e.target.id==="tnModalBox") _tnModalScroll=e.target.scrollTop; },true);
 document.addEventListener("keydown",e=>{ if(e.key==="Escape" && state && state.ui && state.ui.tnCel && document.querySelector(".tn-modal")){ e.preventDefault(); tnTancar(); } });
-function tnRestaurarModal(){ const b=document.getElementById("tnModalBox"); if(b && _tnModalScroll) b.scrollTop=_tnModalScroll; }
+function tnRestaurarModal(){ const b=document.getElementById("tnModalBox"); if(b && _tnModalScroll) b.scrollTop=_tnModalScroll; if(b && typeof lliscarAlumnes==="function") lliscarAlumnes(b,d=>tnMoure(d,0)); }
 
 /* ---- «＋ Nova activitat»: es crea en Activitats (amb el mateix formulari i el
    selector de la Programació) i, en guardar-la, es torna a la taula amb la

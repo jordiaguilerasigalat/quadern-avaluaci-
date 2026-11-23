@@ -297,7 +297,11 @@ function renderSeguimentAlumne(grupo,act,al){
       <button class="ghost" style="border:1px solid var(--line)" onclick="segTornar()">← Activitats</button>
     </div>
     <p class="sub" style="margin:6px 0">Tria l'alumne/a (al costat, la seua nota en esta activitat):</p>
-    <div class="flex" style="gap:6px;flex-wrap:wrap">${chips}</div>
+    <div class="flex seg-chips" style="gap:6px;flex-wrap:wrap">${chips}</div>
   </div>`);
   if(typeof aaTargetaHTML==="function"){ const h=aaTargetaHTML(grupo,act,al); if(h) c.firstElementChild.insertAdjacentHTML("afterend",h); }
+  if(typeof acRubricaCardHTML==="function"){ const h=acRubricaCardHTML(grupo,act,al); if(h) c.firstElementChild.insertAdjacentHTML("afterend",h); }
+  { const ch=c.querySelector(".seg-chips .gpill.on"); if(ch&&ch.parentElement.scrollWidth>ch.parentElement.clientWidth) ch.parentElement.scrollLeft=Math.max(0,ch.offsetLeft-ch.parentElement.clientWidth/2+ch.offsetWidth/2); }
+  /* Mòbil: lliscar el dit canvia d'alumne/a (esquerra = següent). */
+  if(typeof lliscarAlumnes==="function") lliscarAlumnes(c,d=>{ const i=grupo.alumnos.findIndex(a=>a.id===state.ui.segAl); const x=grupo.alumnos[i+d]; if(x) segIrAlumne(x.id); });
 }

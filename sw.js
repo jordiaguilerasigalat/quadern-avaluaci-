@@ -18,10 +18,10 @@
 // Cuaderno_Profesor_v2), que comparte el mismo almacenamiento del navegador.
 
 const CACHE_PREFIJO = 'cuaderno-v3-';
-const CACHE_NAME = CACHE_PREFIJO + '131';
+const CACHE_NAME = CACHE_PREFIJO + '132';
 // Resumen de todos los archivos de esta versión. No lo cambies a mano: «npm run sellar» lo recalcula y, si
 // algún archivo ha cambiado, sube CACHE_NAME. La prueba «version-cache» falla si se sube un cambio sin sellar.
-const HUELLA = '04059829523729de';
+const HUELLA = '39aa8ea294b5ee9f';
 
 // El "esqueleto" de las dos apps: HTML, manifest e iconos.
 const APP_SHELL = [
@@ -70,13 +70,17 @@ const APP_SHELL = [
   './js/alumnado/fotos-alumnat.js',
   './js/inicio/horario.js',
   './js/inicio/alertas-home.js',
+  './js/inicio/alumnat-risc.js',
   './js/inicio/documents-inici.js',
   './js/ui/grupo-y-copias.js',
+  './js/ui/lliscar.js',
   './js/alumnado/plano-aula.js',
+  './js/alumnado/actitud-placa.js',
   './js/alumnado/ficha-familia.js',
   './js/evaluacion/actividades.js',
   './js/evaluacion/calificar.js',
   './js/evaluacion/taula-notes.js',
+  './js/evaluacion/historial-notes.js',
   './js/evaluacion/puntos-extra.js',
   './js/evaluacion/seguiment.js',
   './js/evaluacion/autoavaluacio.js',
@@ -86,6 +90,7 @@ const APP_SHELL = [
   './js/resultados/banc-comentaris.js',
   './js/resultados/grafiques.js',
   './js/resultados/cobertura-diagnostico.js',
+  './js/resultados/comparar-grups.js',
   './js/clase/asistencia.js',
   './js/clase/convivencia.js',
   './js/clase/familias.js',
@@ -104,6 +109,7 @@ const APP_SHELL = [
   './js/informes/capcalera-centre.js',
   './js/informes/informe-final.js',
   './js/informes/informes-avaluacio.js',
+  './js/informes/recuperacions.js',
   './js/resumen/resumen-grupo.js',
   './js/corrector/motor-rubricas.js',
   './js/corrector/programacion-corrector.js',

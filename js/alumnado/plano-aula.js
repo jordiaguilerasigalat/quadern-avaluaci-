@@ -50,7 +50,7 @@ function renderPlano(grupo){
   const idsColocados=new Set(Object.keys(plano.posiciones));
   const sinColocar=grupo.alumnos.filter(a=>!idsColocados.has(a.id));
   const fechaLista=state.ui.asistFecha||agHoyStr();
-  const modoLista=planoModo==="lista", modoAzar=planoModo==="azar";
+  const modoLista=planoModo==="lista", modoAzar=planoModo==="azar", modoActitud=planoModo==="actitud";
   const estadoDe=id=>asistDelDia(grupo,fechaLista,id).estado;
   const colorEstado=id=>{ const e=estadoDe(id); return e==="presente"?"":asistEstadoInfo(e).color; };
   const usadosAzar=planoAzar.usados[grupo.id]||new Set();
@@ -65,9 +65,9 @@ function renderPlano(grupo){
       const col=al&&modoLista?colorEstado(al.id):"";
       const esAzar=al&&modoAzar&&planoAzar.actual===al.id;
       const yaSalio=al&&modoAzar&&usadosAzar.has(al.id)&&!esAzar;
-      const click=modoLista?(al?`planoListaTocar('${al.id}')`:""):modoAzar?"":`planoTocarMesa(${f},${c})`;
+      const click=modoActitud?(al?`acObrir('${al.id}')`:""):modoLista?(al?`planoListaTocar('${al.id}')`:""):modoAzar?"":`planoTocarMesa(${f},${c})`;
       celdas+=`<div class="plano-mesa ${al?"ocupada":""} ${esSel&&!modoLista&&!modoAzar?"seleccionada":""}" ${click?`onclick="${click}"`:""} title="${al?esc(al.nombre)+(modoLista?" · "+asistEstadoInfo(estadoDe(al.id)).label:""):"Taula lliure"}" style="${col?`background:${col}22;border-color:${col};box-shadow:inset 0 0 0 2px ${col};color:var(--ink)`:""}${esAzar?";background:var(--accent);color:var(--accent-ink,#1c1408);transform:scale(1.08);box-shadow:0 0 0 4px var(--accent-2)":""}${yaSalio?";opacity:.45":""}">
-        ${al?avatarAlumneHTML(al,{mida:34})+'<div>'+nombreCorto+'</div>'+(col?`<div style="font-size:9.5px;font-weight:700;color:${col}">${asistEstadoInfo(estadoDe(al.id)).label.replace("Falta ","F. ")}</div>`:""):'<span class="plano-vacia">+</span>'}
+        ${al?avatarAlumneHTML(al,{mida:34})+'<div>'+nombreCorto+'</div>'+(modoActitud&&typeof acPlacaHTML==="function"?acPlacaHTML(grupo,al.id):"")+(col?`<div style="font-size:9.5px;font-weight:700;color:${col}">${asistEstadoInfo(estadoDe(al.id)).label.replace("Falta ","F. ")}</div>`:""):'<span class="plano-vacia">+</span>'}
       </div>`;
     }
   }
@@ -92,8 +92,10 @@ function renderPlano(grupo){
       <button class="${planoModo==="colocar"?"btn":"ghost"} small" style="${planoModo==="colocar"?"":"border:1px solid var(--line)"}" role="tab" aria-selected="${planoModo==="colocar"}" onclick="planoSetModo('colocar')">🪑 Colocar</button>
       <button class="${modoLista?"btn":"ghost"} small" style="${modoLista?"":"border:1px solid var(--line)"}" role="tab" aria-selected="${modoLista}" onclick="planoSetModo('lista')">✅ Pasar lista</button>
       <button class="${modoAzar?"btn":"ghost"} small" style="${modoAzar?"":"border:1px solid var(--line)"}" role="tab" aria-selected="${modoAzar}" onclick="planoSetModo('azar')">🎲 Al azar</button>
+      <button class="${modoActitud?"btn":"ghost"} small" style="${modoActitud?"":"border:1px solid var(--line)"}" role="tab" aria-selected="${modoActitud}" onclick="planoSetModo('actitud')">🙋 Actitud</button>
     </div>
-    ${modoLista?`<div class="flex" style="gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap">
+    ${modoActitud?`<p class="sub" style="margin:10px 0 0">Toca un alumne/a per a apuntar-li un positiu (＋) o un negatiu (−) d'actitud. En cada taula, els d'esta avaluació. Després, en la rúbrica d'Actitud, «Aplicar a la rúbrica» els convertix en nivells.</p>`
+    :modoLista?`<div class="flex" style="gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap">
         <label style="font-size:12.5px;color:var(--mut)">Fecha <input type="date" class="in" value="${fechaLista}" onchange="asistSeleccionarFecha(this.value)"></label>
         <span class="sub" style="margin:0">Toca una taula per a canviar: present → falta → retard → falta justificada. Es guarda en Assistència.</span>
         <button class="ghost small" style="border:1px solid var(--line)" onclick="asistMarcarTodosPresentes()">Tots presents</button>
@@ -114,7 +116,7 @@ function renderPlano(grupo){
     <div class="card" style="width:230px;flex-shrink:0">
       <div class="section-eyebrow" style="margin-bottom:8px">Sin colocar (${sinColocar.length})</div>
       <div class="plano-sidebar">
-        ${sinColocar.length?sinColocar.map(a=>{ const col=modoLista?colorEstado(a.id):""; const click=modoLista?`planoListaTocar('${a.id}')`:modoAzar?"":`planoSeleccionar('${a.id}')`;
+        ${sinColocar.length?sinColocar.map(a=>{ const col=modoLista?colorEstado(a.id):""; const click=modoActitud?`acObrir('${a.id}')`:modoLista?`planoListaTocar('${a.id}')`:modoAzar?"":`planoSeleccionar('${a.id}')`;
           return `<div class="plano-chip ${sel===a.id&&!modoLista?"seleccionado":""}" ${click?`onclick="${click}"`:""} style="${col?`border-color:${col};box-shadow:inset 3px 0 0 ${col}`:""}${modoAzar&&planoAzar.actual===a.id?";background:var(--accent);font-weight:700":""}">${avatarAlumneHTML(a,{mida:22})}${esc(a.nombre)}${col?` <small style="color:${col}">· ${asistEstadoInfo(estadoDe(a.id)).label}</small>`:""}</div>`; }).join(""):'<p class="sub" style="margin:0">Tot l\'alumnat ja està col·locat.</p>'}
       </div>
       ${sel&&idsColocados.has(sel)?`<button class="ghost" style="border:1px solid var(--line);margin-top:10px;width:100%" onclick="planoQuitarDeMesa('${sel}')">🗑️ Llevar de la seua taula</button>`:""}

@@ -214,6 +214,8 @@ function renderResultados(grupo){
             <button class="ghost" onclick="resInformeGrup('detallats')">🖨️ Informes detallados</button>
             <button class="ghost" title="Acta per a la sessió d'avaluació: mitjanes, suspesos per tema, alumnat amb mesures, faltes i espai per als acords" onclick="resInformeGrup('acta')">🧾 Acta de la sessió</button>
             <button class="ghost" title="Una pàgina per alumne/a per a les famílies: notes, temes, faltes, observacions i signatures" onclick="resInformeGrup('families')">👪 Informes per a les famílies</button>
+            <button class="ghost" title="Llista de qui ha de recuperar i què (temes, blocs o avaluacions), i una carta per a cada família" onclick="resRecuperacions()">🔁 Recuperacions</button>
+            <button class="ghost" title="Este grup al costat dels altres grups de la mateixa matèria i curs: mitjanes, aprovats, blocs i temes" onclick="resCompararGrups()">📊 Comparar grups</button>
           </div>
         </details>
         <details class="res-menu">

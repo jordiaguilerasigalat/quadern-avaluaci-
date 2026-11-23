@@ -38,7 +38,7 @@ function renderDiario(grupo){
         <label style="font-size:12.5px;color:var(--mut);font-weight:500">¿Qué se ha dado?
           <textarea class="in" style="width:100%;margin-top:4px;min-height:120px;resize:vertical" id="diarioNotaInput" placeholder="Ej. Tema 3, apartado 2: causas de la Revolución Industrial. Actividad de comentario de gráficos.">${esc(entradaActual.nota||"")}</textarea>
         </label>
-        <label style="font-size:12.5px;color:var(--mut);font-weight:500">Incidencias
+        <label style="font-size:12.5px;color:var(--mut);font-weight:500">Incidències
           <textarea class="in" style="width:100%;margin-top:4px;min-height:120px;resize:vertical" id="diarioIncidenciasInput" placeholder="Ej. Dos alumnos sin material. Interrupción de la clase por una conducta disruptiva.">${esc(entradaActual.incidencias||"")}</textarea>
         </label>
       </div>
@@ -77,7 +77,7 @@ function renderDiario(grupo){
             </div>`:""}
           </div>
           ${e.nota?`<div style="font-size:13.5px;color:var(--mut);white-space:pre-wrap"><strong>¿Qué se ha dado?</strong><br>${esc(e.nota)}</div>`:""}
-          ${e.incidencias?`<div style="font-size:13.5px;color:var(--mut);white-space:pre-wrap;margin-top:5px"><strong>Incidencias</strong><br>${esc(e.incidencias)}</div>`:""}
+          ${e.incidencias?`<div style="font-size:13.5px;color:var(--mut);white-space:pre-wrap;margin-top:5px"><strong>Incidències</strong><br>${esc(e.incidencias)}</div>`:""}
         </div>`).join(""):'<p class="sub" style="margin:0">Todavía no hay entradas. Añade la primera arriba.</p>'}
     </div>
     <style>.diario-row.diario-drop{box-shadow:0 -3px 0 0 var(--accent-2) inset, 0 3px 0 0 var(--accent-2)} .diario-row.diario-arrastrando{opacity:.45}</style>
@@ -187,7 +187,7 @@ window.diarioImprimir=()=>{
   const body=`
     <h1>Diario de clase</h1>
     <div class="meta">${esc(grupo.nombre)} · ${esc(cat.materia)} · ${esc(cat.curso)} · Generat el ${new Date().toLocaleDateString("ca-ES")}</div>
-    <table><thead><tr><th style="width:110px">Fecha</th><th style="width:160px">Situación de Aprendizaje</th><th>¿Qué se ha dado?</th><th>Incidencias</th></tr></thead><tbody>${filas}</tbody></table>
+    <table><thead><tr><th style="width:110px">Fecha</th><th style="width:160px">Situación de Aprendizaje</th><th>¿Qué se ha dado?</th><th>Incidències</th></tr></thead><tbody>${filas}</tbody></table>
   `;
   const portada=generarPortadaHTML(`Diari de classe — ${grupo.nombre}`,
     [`${esc(cat.materia)} · ${esc(cat.curso)}`,

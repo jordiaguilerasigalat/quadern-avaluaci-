@@ -49,6 +49,8 @@ function normalizarGrupo(g){
   if(!Array.isArray(g.convivencia)) g.convivencia=[];
   if(!Array.isArray(g.contactosFamilia)) g.contactosFamilia=[];
   if(!Array.isArray(g.anotacions)) g.anotacions=[];
+  if(!Array.isArray(g.historialNotes)) g.historialNotes=[];
+  if(!Array.isArray(g.actitudObs)) g.actitudObs=[];
   if(!Array.isArray(g.fechasTrimestre) || g.fechasTrimestre.length!==3) g.fechasTrimestre=[{inicio:"",fin:""},{inicio:"",fin:""},{inicio:"",fin:""}];
   if(g.programacionId===undefined) g.programacionId="";
   return g;
