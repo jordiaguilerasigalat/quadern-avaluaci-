@@ -47,7 +47,17 @@ function docsContingutFix(id){
         <div class="flex" style="flex-wrap:wrap;gap:6px">${docsPdfChip(pa,"PDF original")}${accio}</div>
       </div>`;
     }).join("");
-    return `<p class="sub" style="margin:0 0 4px">Programacions d'aula del departament 2026-2027 (PDF sense noms ni dades dels grups) i la seua versió editable dins del Quadern.</p>${files}`;
+    /* Les programacions del Quadern (abans en la rajola «Programacions» d'Inici). */
+    const progs=state.programaciones||[];
+    const meues=`<div style="padding:4px 0 12px;border-bottom:2px solid var(--line);margin-bottom:6px">
+      <div class="flex" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <div style="font-weight:700;font-size:14px">Les meues programacions en el Quadern</div>
+        <button class="btn small" onclick="irModo('programacion')" title="Crear, importar, duplicar, imprimir i editar les programacions d'aula">📘 Gestionar les programacions</button>
+      </div>
+      ${progs.length? `<div class="flex" style="flex-wrap:wrap;gap:6px;margin-top:8px">${progs.map(p=>`<button class="ghost small" style="border:1px solid var(--line)" onclick="progAbrirDetalle('${escJS(p.id)}');irModo('programacion')">📘 ${esc(p.nombre)}</button>`).join("")}</div>`
+        : `<p class="sub" style="margin:6px 0 0">Encara no n'has creat cap. Crea-la a partir de la del departament (botó «📥» de davall) o des de «Gestionar les programacions».</p>`}
+    </div>`;
+    return `${meues}<p class="sub" style="margin:0 0 4px">Programacions d'aula del departament 2026-2027 (PDF sense noms ni dades dels grups) i la seua versió editable dins del Quadern.</p>${files}`;
   }
   if(id==="pp"){
     const pps=pdfs.filter(x=>/^PP_/.test(x[0]));
@@ -171,7 +181,7 @@ function renderBibliotecaApp(){
   const teniaFocus=document.activeElement&&document.activeElement.id==="bibCerca";
   app.innerHTML=`<div class="card" style="padding:12px 16px">
     <div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
-      <div><strong style="font-size:15px">📚 Biblioteca</strong><span style="color:var(--mut);font-size:13px"> · tots els documents en un sol lloc</span></div>
+      <div><strong style="font-size:15px">📚 Programacions i biblioteca</strong><span style="color:var(--mut);font-size:13px"> · les teues programacions i tots els documents en un sol lloc</span></div>
       <button class="ghost boto-inici-intern" style="border:1px solid var(--line)" onclick="irInicio()">← Inici</button>
     </div>
   </div>${renderDocumentsIniciHTML().replace('<div class="card" style="margin-top:12px">','<div class="card">')}`;

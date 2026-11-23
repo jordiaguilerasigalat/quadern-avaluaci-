@@ -156,10 +156,9 @@ function renderHome(){
   ${homeSeccionHeaderHTML("evaluacion","🧰 Totes les eines")}
   ${homeSecciones.evaluacion?`<div class="home-eines">
     ${[
-      ["📘","Programacions",`${nProgramaciones} programaci${nProgramaciones===1?"ó":"ons"}`,"irModo('programacion')","Programacions d'aula per temes i situacions d'aprenentatge, amb la temporització"],
       ["🖊️","Corrector d'exàmens",`${nExamenes} amb rúbrica`,"irModo('corrector')","Rúbriques per examen vinculades a criteris; les notes van soles a Seguiment i avaluació"],
       ["🌈","Atenció a la diversitat",`${nNeseTotal} NESE${nNesePendientes?` (${nNesePendientes} sense pla)`:""} · ${nRepeticionActivos} repetició · ${nRefuerzoActivos} reforç`+(((state.planesRefuerzo||[]).length+(state.planesRepeticion||[]).length)>(nRepeticionActivos+nRefuerzoActivos)?" actius":""),"irModo('nese')","Alumnat NESE (adaptacions, plans i dossiers), plans de repetició i de reforç i pendents"],
-      ["📚","Biblioteca","Documents i material","irModo('biblioteca')","Programacions, propostes, material de cada tema, diversitat i els teus enllaços, amb buscador"],
+      ["📚","Programacions i biblioteca",`${nProgramaciones} programaci${nProgramaciones===1?"ó":"ons"} · documents i material`,"state.ui.docsTab='prog';irModo('biblioteca')","Les teues programacions (crear, editar, temporització) i els documents del departament: propostes, material de cada tema, diversitat i els teus enllaços, amb buscador"],
       ["🗂️","Reunions",`${nReuniones} registrad${nReuniones===1?"a":"es"}`,"irModo('reuniones')","Reunions amb famílies, alumnat i equip directiu, amb acta imprimible"],
       ["📄","Memòria de curs",`${state.grupos.length} grup${state.grupos.length===1?"":"s"}`,"irModo('memoria')","Resultats, assistència, convivència i SdA de tots els grups junts"]
     ].map(([ico,nom,meta,on,tit])=>`<button class="home-eina" onclick="${on}" title="${esc(tit)}"><span class="home-eina-ico">${ico}</span><span><span class="home-eina-nom">${nom}</span><span class="home-eina-meta">${meta}</span></span></button>`).join("")}

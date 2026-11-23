@@ -90,3 +90,28 @@ window.resRecuperacions=async()=>{
   if(data===null) return;
   resInformePerAvaluacions(per,p=>exportarRecuperacions(p,String(data).trim()),`Recuperacions · ${g.nombre}`);
 };
+
+/* Pestanya Resultats → «Recuperacions»: la llista es veu dins de l'app (amb
+   l'avaluació del selector de dalt, també «Final») i des d'ací s'imprimix la
+   llista amb una carta per a cada família. */
+function renderRecuperacionsTab(g){
+  const c=document.getElementById("tabContent"); if(!c) return;
+  const trim=state.ui.resInfFinal===true? "final" : Number(state.ui.trim)||0;
+  const per=trim==="final"? "Avaluació final" : TRIMESTRES[trim];
+  const l=g.alumnos.length? recAlumnat(g,trim).sort((a,b)=>a.v-b.v) : [];
+  const recs=(g.actividades||[]).filter(a=>a.recupera && (trim==="final"||a.trimestre===trim));
+  c.innerHTML=`<div class="card">
+    <div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:center">
+      <h2 style="font-size:15px;margin:0">🔁 Recuperacions · ${esc(per)}</h2>
+      <button class="btn" onclick="resRecuperacions()" ${l.length?"":"disabled"} title="Document amb la llista i una carta per a cada família (data de la recuperació opcional)">🖨️ Llista i cartes per a les famílies</button>
+    </div>
+    <p class="sub" style="margin:6px 0 10px">Alumnat amb ${esc(per.toLowerCase())} suspesa i què ha de recuperar${trim==="final"?" (les avaluacions suspeses)":" (temes i blocs per davall de 5)"}. L'avaluació es tria en el selector de dalt; «Final» mostra el curs complet.</p>
+    ${!g.alumnos.length? `<p class="sub">Este grup encara no té alumnat.</p>`
+      : !l.length? `<p style="font-size:14px">✓ Ningú no ha de recuperar ${esc(per.toLowerCase())}.</p>`
+      : `<div class="scroll"><table><thead><tr><th>Alumne/a</th><th style="width:90px">Nota</th><th>Què ha de recuperar</th></tr></thead><tbody>
+        ${l.map(x=>`<tr><td>${typeof nomFitxaHTML==="function"? nomFitxaHTML(x.al) : esc(x.al.nombre)}</td><td>${esc(fmt(x.v))}</td><td style="font-size:13px">${recLlistaQueHTML(x)}</td></tr>`).join("")}
+      </tbody></table></div>`}
+    ${recs.length?`<p class="sub" style="margin:12px 0 0">Activitats de recuperació d'este període: ${recs.map(a=>`<button class="ghost small" style="border:1px solid var(--line)" onclick="tnObrirQualificar('${escJS(a.id)}')">${esc(a.nombre)}</button>`).join(" ")}</p>`
+      :`<p class="sub" style="margin:12px 0 0">Per a posar les notes de recuperació, crea-la des d'Avaluar → Activitats amb el botó «🔁 Crear recuperació» de l'examen.</p>`}
+  </div>`;
+}

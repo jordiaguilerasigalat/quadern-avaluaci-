@@ -2325,4 +2325,34 @@ export const PRUEBAS = [
     t.ok(!fallits.some(u => /js\/datos\/material\//.test(u)), 'la Biblioteca no demana arxius de material que no existeixen', fallits.join('; '));
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'reorganitzacio-seccions', descripcion: 'Seccions del grup: Classe, Avaluar comença per la Taula, Recuperacions i Comparar grups en Resultats, cada grup s\'obri on el vas deixar, Programacions dins de la Biblioteca', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    await cuadernoConGrupo(p, t.url);
+    const r = await p.evaluate(() => { _mostrarBienvenida = false; const g = state.grupos[0];
+      const g2 = defGrupo('3r ESO B', 'FiQ_2ESO'); g2.alumnos = g.alumnos.map(a => normalizarAlumno({ id: uid(), nombre: a.nombre })); state.grupos.push(g2);
+      state.ui.appMode = 'competencial'; state.ui.grupoId = g.id; state.ui.tab = 'alumnos'; save(); render();
+      const seccions = [...document.querySelectorAll('.gseccio')].map(b => b.textContent.replace(/\s+/g, ' ').trim());
+      irASeccio('classe'); const classe = [state.ui.tab, [...document.querySelectorAll('.gtab')].map(b => b.textContent.trim())];
+      irASeccio('avaluar'); const avaluar = [state.ui.tab, [...document.querySelectorAll('.gtab')].map(b => b.textContent.trim())];
+      irASeccio('resultats'); const resultats = [...document.querySelectorAll('.gtab')].map(b => b.textContent.trim());
+      irATab('recuperacions'); const rec = document.getElementById('tabContent').textContent;
+      const opFinal = [...document.querySelectorAll('#trimSel option')].some(o => o.value === 'final');
+      irATab('comparar'); const comp = !!document.querySelector('#cgVista') && !!document.querySelector('#cgVista').shadowRoot.querySelector('table');
+      irATab('plano'); irAGrupo(g2.id); const g2tab = state.ui.tab; irATab('diario');
+      irAGrupo(g.id); const gtab = state.ui.tab; irAGrupo(g2.id); const g2tornada = state.ui.tab;
+      state.ui.appMode = 'inicio'; save(); render();
+      const rajoles = [...document.querySelectorAll('.home-eina-nom')].map(e => e.textContent);
+      state.ui.docsTab = 'prog'; irModo('biblioteca'); const bib = document.getElementById('app').textContent;
+      return { seccions, classe, avaluar, resultats, rec, opFinal, comp, g2tab, gtab, g2tornada, rajoles, bib }; });
+    t.ok(r.seccions.join('|') === '👥 Alumnat|🏫 Classe|✍️ Avaluar|📊 Resultats|⚙️ Ajustos', 'cinc seccions: Alumnat, Classe, Avaluar, Resultats, Ajustos', r.seccions.join('|'));
+    t.ok(r.classe[1].join('|') === "Assistència|Diari de classe|Plànol d'aula", 'Classe = Assistència, Diari i Plànol', JSON.stringify(r.classe));
+    t.ok(r.avaluar[0] === 'taula' && r.avaluar[1][0] === 'Taula de notes' && r.avaluar[1].includes('Cobertura de criteris'), 'Avaluar comença per la Taula de notes i inclou la Cobertura', JSON.stringify(r.avaluar));
+    t.ok(r.resultats.join('|') === 'Notes i informes|Recuperacions|Comparar grups|Resum del grup', 'Resultats: Notes i informes, Recuperacions, Comparar grups, Resum', r.resultats.join('|'));
+    t.ok(/Recuperacions/.test(r.rec) && /Llista i cartes/.test(r.rec) && r.opFinal, 'Recuperacions es veu en una pestanya (amb «Final» dalt)', r.rec.slice(0, 200));
+    t.ok(r.comp, 'Comparar grups mostra la taula dels dos grups', '');
+    t.ok(r.g2tab === 'alumnos' && r.gtab === 'plano' && r.g2tornada === 'diario', 'cada grup s\'obri en l\'última pestanya que hi feies servir', JSON.stringify([r.g2tab, r.gtab, r.g2tornada]));
+    t.ok(!r.rajoles.includes('Programacions') && r.rajoles.includes('Programacions i biblioteca'), 'Inici: la rajola Programacions va dins de «Programacions i biblioteca»', r.rajoles.join('|'));
+    t.ok(/Les meues programacions en el Quadern/.test(r.bib) && /Gestionar les programacions/.test(r.bib), 'la Biblioteca mostra les meues programacions i el botó per a gestionar-les', '');
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
 ];
