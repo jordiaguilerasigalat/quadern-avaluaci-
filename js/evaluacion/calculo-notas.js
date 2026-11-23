@@ -69,6 +69,16 @@ function _estructura(grupo){
   }
   return c;
 }
+/* Activitats del quadern NESE d'un altre alumne/a: no han d'eixir mai en
+   cap informe, fitxa o desglossament d'este alumne/a (porten el nom de
+   l'altre i no li compten: hi està exempt). */
+function actAlienaNESE(grupo,a,alId){
+  if(!a||!a.quadernNese) return false;
+  let owner=a.quadernAlumne;
+  if(!owner){ const p=(state.planesNESE||[]).find(x=>x.id===a.quadernNese); owner=p&&p.alumnoId; }
+  return owner? owner!==alId : marcaDe(grupo,alId,a.id)==="EX";
+}
+function actsDeAlumne(grupo,acts,alId){ return (acts||[]).filter(a=>!actAlienaNESE(grupo,a,alId)); }
 function actsTrim(grupo){ const c=_estructura(grupo), t=state.ui.trim; return c.trim[t]||(c.trim[t]=grupo.actividades.filter(a=>a.trimestre===t)); }
 
 /* =================================================================

@@ -1917,6 +1917,15 @@ export const PRUEBAS = [
     t.ok(r && r.crits === '7.1+7.2+9.3' && Math.abs(r.nota - (10 + 2.5 + 2.5) / 3) < 0.01 && r.ex === 'EX' && r.n === 1, 'passa al grup una activitat per tema només per a l\'alumne/a NESE', JSON.stringify(r));
     await p.evaluate(async () => { await qnPassarAlGrup(0); }); await esperar(300);
     t.ok(await p.evaluate(() => state.grupos[0].actividades.length) === 1, 'tornar a passar-ho actualitza la mateixa activitat');
+    // Les activitats del quadern NESE només ixen en els informes de l'alumne/a NESE
+    r = await p.evaluate(() => { const g = state.grupos[0], a0 = g.alumnos[0], a1 = g.alumnos[1]; state.ui.trim = 0;
+      const act = g.actividades.find(x => x.quadernNese); const vell = Object.assign({}, act); delete vell.quadernAlumne; // dades d'abans (sense quadernAlumne)
+      const html = al => [informeAlumnoBodyHTML(g, al), informeFinalAlumnoBodyHTML(g, al), desgloseBloqueHTML(g, al, g.bloques.find(b => b.id === act.bloqueId) || g.bloques[0], 0), desgloseCriterioHTML(g, al, '7.1', 0)].join('');
+      return { owner: act.quadernAlumne === a1.id, altre: html(a0), nese: html(a1), vellAltre: actAlienaNESE(g, vell, a0.id), vellNese: actAlienaNESE(g, vell, a1.id) }; });
+    t.ok(r.owner, 'l\'activitat recorda de quin alumne/a és');
+    t.ok(!/Quadern NESE|Beta, Bruno/.test(r.altre), 'en els informes d\'un altre alumne/a no ix ni el quadern ni el nom de l\'alumne/a NESE');
+    t.ok(/Quadern NESE/.test(r.nese), 'en els informes de l\'alumne/a NESE sí que ix');
+    t.ok(r.vellAltre && !r.vellNese, 'també amaga les activitats ja passades abans d\'este canvi');
     r = await p.evaluate(() => qnInformeHTML(state.planesNESE[0], 'final'));
     t.ok(/Quadern de reforç/.test(r) && /Li costa mesurar/.test(r), 'l\'informe del pla inclou el quadern');
     r = await p.evaluate(() => { const g = state.grupos[0]; return fitxaResumHTML(g, g.alumnos[1]); });

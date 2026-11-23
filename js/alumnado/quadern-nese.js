@@ -351,9 +351,9 @@ window.qnPassarAlGrup=async trim=>{
     let a=g.actividades.find(x=>x.id===p.quadern.activitats[clau]);
     const nom=`Quadern NESE · ${T?`T${T.n} ${T.titol}`:"Altres tasques"} · ${al.nombre}`;
     if(!a){
-      a={id:uid(),trimestre:trim,nombre:nom,tipo:"Quadern / llibreta",bloqueId:blocQ?blocQ.id:"",esExamen:false,pesoBloque:"",criterios:[],sda:"",temaId:"",quadernNese:p.id};
+      a={id:uid(),trimestre:trim,nombre:nom,tipo:"Quadern / llibreta",bloqueId:blocQ?blocQ.id:"",esExamen:false,pesoBloque:"",criterios:[],sda:"",temaId:"",quadernNese:p.id,quadernAlumne:al.id};
       g.actividades.push(a); p.quadern.activitats[clau]=a.id; creades++;
-    }else{ a.nombre=nom; actualitzades++; }
+    }else{ a.nombre=nom; a.quadernAlumne=al.id; actualitzades++; }
     a.criterios=crits.map(c=>({critId:c,peso:1}));
     const notes={}; crits.forEach(c=>{ const v=per[c]; notes[c]=Math.round(100*v.reduce((s,x)=>s+x,0)/v.length)/100; });
     g.notas[al.id]=g.notas[al.id]||{}; g.notas[al.id][a.id]=notes;
