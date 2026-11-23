@@ -4,6 +4,8 @@
    ============================================================================ */
 
 window.irAGrupo=id=>{ state.ui.grupoId=id;
+  /* Des de «Pendents» les pestanyes de grup també es veuen: tocar-ne una ha d'obrir el grup. */
+  if(state.ui.appMode==="pendents") state.ui.appMode="competencial";
   if(state.ui.appMode==="corrector"){ state.ui.corTab="lista"; state.ui.corExamId=""; state.ui.corAlId=""; }
   else if(id){ state.ui.tab="resultados";
     state.ui.form={editId:null,nombre:"",tipo:TIPOS[0],esExamen:false,bloqueId:"",pesoBloque:"",links:[],sda:""}; state.ui.alumAbierto=null; }

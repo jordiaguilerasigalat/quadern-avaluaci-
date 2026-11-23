@@ -17,8 +17,8 @@ const MATERIAL_CURSOS={
   FiQ_3ESO:"FiQ 3r ESO",
   FiQ_4ESO:"FiQ 4t ESO",
   FiQ_1BAT:"FiQ 1r Batxillerat",
-  QUI_2BAT:"Química 2n Batxillerat",
-  FIS_2BAT:"Física 2n Batxillerat"
+  QUI_2BAT:"Química 2n Batxillerat"
+  /* Física 2n Batx: sense material (no se'n vol); no s'ha de demanar js/datos/material/FIS_2BAT.js. */
 };
 const MATERIAL_TIPUS={
   repas:{ico:"🔁",nom:"Dossier de repàs (exercicis + models d'examen en un PDF)"},

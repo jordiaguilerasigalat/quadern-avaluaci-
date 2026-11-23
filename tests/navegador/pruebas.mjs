@@ -2308,4 +2308,21 @@ export const PRUEBAS = [
     t.ok(r.tornaAv[0] === 1 && r.tornaAv[1] === false && r.tornaAv[2] === '1' && r.senseFinalAct, "tocar una avaluació obri la seua taula; en Activitats no hi ha «Final»", JSON.stringify([r.tornaAv, r.senseFinalAct]));
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
+  { nombre: 'navegacio-enllacos', descripcion: 'Des de «Pendents» les pestanyes de grup obrin el grup; la Biblioteca no demana material inexistent', async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    const fallits = []; p.on('response', r => { if (r.status() >= 400) fallits.push(r.status() + ' ' + r.url()); });
+    await cuadernoConGrupo(p, t.url);
+    const r = await p.evaluate(() => { _mostrarBienvenida = false; const g = state.grupos[0];
+      state.ui.appMode = 'pendents'; save(); render();
+      const pill = [...document.querySelectorAll('#groupTabs [onclick]')].find(e => (e.getAttribute('onclick') || '').includes("irAGrupo('" + g.id + "')"));
+      if (pill) pill.click();
+      const a = [state.ui.appMode, state.ui.grupoId === g.id];
+      state.ui.appMode = 'pendents'; save(); render(); irAGrupo(null);
+      return { pill: !!pill, a, nou: state.ui.appMode }; });
+    t.ok(r.pill && r.a[0] === 'competencial' && r.a[1], 'tocar un grup des de «Pendents» obri el grup', JSON.stringify(r));
+    t.ok(r.nou === 'competencial', '«+ Nou grup» des de «Pendents» obri el formulari de grup nou', r.nou);
+    await p.evaluate(() => { state.ui.appMode = 'biblioteca'; save(); render(); }); await esperar(1200);
+    t.ok(!fallits.some(u => /js\/datos\/material\//.test(u)), 'la Biblioteca no demana arxius de material que no existeixen', fallits.join('; '));
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
 ];

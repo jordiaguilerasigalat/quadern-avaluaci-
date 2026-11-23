@@ -121,7 +121,7 @@ function _renderActividadesLlista(grupo){
           ${nAct>1?`<div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0">
             <span draggable="true" style="cursor:grab;color:var(--mut);font-size:17px;user-select:none;line-height:1" title="Arrastra para reordenar">⠿</span>
             <button class="ghost" style="padding:2px 8px;min-width:0" title="Pujar una posició" aria-label="Pujar ${esc(a.nombre)}" ${iAct===0?"disabled":""} onclick="moverActividad('${a.id}',-1)">▲</button>
-            <button class="ghost" style="padding:2px 8px;min-width:0" title="Bajar un puesto" aria-label="Baixar ${esc(a.nombre)}" ${iAct===nAct-1?"disabled":""} onclick="moverActividad('${a.id}',1)">▼</button>
+            <button class="ghost" style="padding:2px 8px;min-width:0" title="Baixar una posició" aria-label="Baixar ${esc(a.nombre)}" ${iAct===nAct-1?"disabled":""} onclick="moverActividad('${a.id}',1)">▼</button>
           </div>`:""}
           <div style="flex:1;min-width:0">
             <div style="font-size:14.5px;font-weight:500">${esc(a.nombre)} ${agDataBadgeHTML(a.id)}${temaBadgeHTML(grupo,a)||(a.sda ? `<span class="badge" style="vertical-align:middle;margin-left:6px">${esc(a.sda)}</span>` : '')}</div>
