@@ -138,16 +138,20 @@ function resTaulaClasseHTML(grupo,al,trim){
     </table></div>`;
   }
   if(v==="ce"){
+    /* En l'avaluació final, tot el curs (fins a la 3a). */
+    if(state.ui.resInfFinal===true) trim=2;
     const qual=state.ui.resCEqual!==false, trims=trimsFinsA(trim);
     const ces=catIndex(grupo.catalogoKey).cat.ces;
     const val={}; grupo.alumnos.forEach(a=>{ val[a.id]={}; ces.forEach(ce=>{ const p=scoreCETrims(grupo,a.id,ce.id,trims); val[a.id][ce.id]=p==null? null : p/10; }); });
     const usades=ces.filter(ce=>grupo.alumnos.some(a=>val[a.id][ce.id]!=null));
     if(!usades.length) return `<p class="sub">Encara no hi ha cap competència específica avaluada fins a la ${esc(TRIMESTRES[trim])}. Lliga les preguntes de la rúbrica dels exàmens (o les activitats) als criteris i qualifica-les.</p>`;
-    const cel=x=>qual? pillNivellQual(grupo,x,"",true) : `<span title="${x==null?"":fmt(x)}">${fmt(x)}</span>`;
-    return `<p class="sub" style="margin:0 0 6px">Nota de cada CE amb tot el que s'ha treballat fins a la ${esc(TRIMESTRES[trim])} (mitjana dels seus criteris; en els exàmens, de les preguntes lligades a cada criteri). La columna «Global» és la mitjana ponderada de les CE (pesos en Ajustos).</p>
+    const cel0=x=>qual? pillNivellQual(grupo,x,"",true) : `<span title="${x==null?"":fmt(x)}">${fmt(x)}</span>`;
+    /* Tocar la nota → d'on ix (activitats, notes i pesos). detall-ce.js */
+    const cel=(x,a,ce)=>x==null? cel0(x) : `<button type="button" class="res-cebtn" title="Vore en quines activitats s'ha treballat ${ce?esc(ce.id):"cada CE"} i quin pes té" aria-label="${ce?esc(ce.id):"Global"} de ${esc(a.nombre)}: d'on ix la nota" onclick="event.stopPropagation();${ce?`resDetallCE('${escJS(a.id)}','${escJS(ce.id)}',${trim})`:`resDetallGlobalCE('${escJS(a.id)}',${trim})`}">${cel0(x)}</button>`;
+    return `<p class="sub" style="margin:0 0 6px">Nota de cada CE amb tot el que s'ha treballat fins a la ${esc(TRIMESTRES[trim])} (mitjana dels seus criteris; en els exàmens, de les preguntes lligades a cada criteri). La columna «Global» és la mitjana ponderada de les CE (pesos en Ajustos). <strong>Toca una nota</strong> per a vore en quines activitats s'ha treballat i quin pes té cada una.</p>
     <div style="overflow-x:auto"><table>
       <thead><tr><th>Alumno/a</th>${usades.map(ce=>`<th title="${esc(ce.titulo)}">${esc(ce.id)}</th>`).join("")}<th title="Mitjana ponderada de les CE">Global</th></tr></thead>
-      <tbody>${grupo.alumnos.map(a=>fila(a,usades.map(ce=>`<td>${cel(val[a.id][ce.id])}</td>`).join("")+`<td><strong>${cel(notaPorCE(grupo,a.id,trims))}</strong></td>`)).join("")}</tbody>
+      <tbody>${grupo.alumnos.map(a=>fila(a,usades.map(ce=>`<td>${cel(val[a.id][ce.id],a,ce)}</td>`).join("")+`<td><strong>${cel(notaPorCE(grupo,a.id,trims),a,null)}</strong></td>`)).join("")}</tbody>
     </table></div>`;
   }
   /* «Notes i ITACA»: capçalera en dos files, agrupada per a que es veja a què

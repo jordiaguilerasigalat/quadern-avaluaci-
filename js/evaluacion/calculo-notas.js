@@ -416,25 +416,53 @@ function _notaRecCriteri(grupo,alId,r,cid,numerica){
    En mode «ce» (la nota numèrica ix d'ací) també: la nota numèrica d'un examen
    sense notes per criteris i els punts extra de cada activitat. La qualificació
    qualitativa de «Les dues» continua usant només les notes per criteris. */
-function _scoreCriterioTrims(grupo,alId,cid,trims){
+/* det (opcional): array on s'apunta cada activitat que ha treballat el criteri
+   (també les que no compten), per al detall «d'on ix esta nota» de Resultats. */
+function _scoreCriterioTrims(grupo,alId,cid,trims,det){
   const numerica=modoNotaGrupo(grupo)==="ce";
   const fins=Math.max(...trims);
   let sw=0,sv=0;
   for(const a of grupo.actividades){
     if(a.recupera || !trims.includes(a.trimestre)) continue;
     const l=(numerica? criterisActivitatCE(a) : (a.criterios||[])).find(x=>x.critId===cid); if(!l) continue;
-    let n=numerica? _notaCritCE(grupo,alId,a,cid,true) : _notaCritCruda(grupo,alId,a,cid);
+    const n0=numerica? _notaCritCE(grupo,alId,a,cid,true) : _notaCritCruda(grupo,alId,a,cid);
+    let n=n0; const recs=[];
     for(const r of recuperacionesDe(grupo,a.id)){
       if(marcaDe(grupo,alId,r.id)==="EX") continue;
       if(!_recCompta(r,fins)) continue;
-      n=_combinarRec(n,_notaRecCriteri(grupo,alId,r,cid,numerica),r.recupera.modo);
+      const rv=_notaRecCriteri(grupo,alId,r,cid,numerica);
+      if(rv!=null) recs.push({act:r,nota:rv});
+      n=_combinarRec(n,rv,r.recupera.modo);
     }
+    const w=Number(l.peso)||0;
+    const fila=det? {act:a,peso:w,base:n0,recs,marca:marcaDe(grupo,alId,a.id),nota:null,extra:0} : null;
+    if(fila) det.push(fila);
     if(n==null||n==="") continue;
-    if(numerica && !marcaDe(grupo,alId,a.id)) n=_sumarExtra(Number(n),ptsExtraActividad(grupo,alId,a.id));
-    const w=Number(l.peso)||0; if(w<=0) continue;
+    if(numerica && !marcaDe(grupo,alId,a.id)){ const pe=ptsExtraActividad(grupo,alId,a.id); const n2=_sumarExtra(Number(n),pe); if(fila && pe) fila.extra=n2-Number(n); n=n2; }
+    if(w<=0) continue;
+    if(fila) fila.nota=Number(n);
     sw+=w; sv+=(Number(n)/10)*100*w;
   }
   return sw>0? sv/sw : null;
+}
+/* Desglossament de la nota d'una CE (trimestres indicats): cada criteri amb el
+   seu pes dins de la CE i, dins de cada criteri, les activitats que l'han
+   treballat amb la nota i el pes. pesCE = part (0-1) de la nota de la CE que
+   ve d'eixa activitat en eixe criteri. Fa exactament el mateix càlcul que
+   scoreCETrims, de manera que la suma quadra amb la nota de la taula. */
+function detallCETrims(grupo,alId,ceId,trims){
+  const ce=catIndex(grupo.catalogoKey).ceMap[ceId]; if(!ce) return null;
+  const crits=ce.criterios.map(c=>{
+    const acts=[]; const sc=_scoreCriterioTrims(grupo,alId,c.id,trims,acts);
+    return {crit:c,score:sc,pesCrit:pesoCriterio(grupo,c.id),acts};
+  });
+  const swc=crits.reduce((s,x)=>s+(x.score==null?0:x.pesCrit),0);
+  crits.forEach(x=>{
+    x.part=(x.score!=null && swc>0)? x.pesCrit/swc : 0;
+    const swa=x.acts.reduce((s,f)=>s+(f.nota==null||f.peso<=0?0:f.peso),0);
+    x.acts.forEach(f=>{ f.pesCrit=(f.nota!=null && f.peso>0 && swa>0)? f.peso/swa : 0; f.pesCE=x.part*f.pesCrit; });
+  });
+  return {ce,score:scoreCETrims(grupo,alId,ceId,trims),crits};
 }
 /* Activitats amb alguna nota que, en mode «ce», no compten perquè no tenen
    cap criteri (ni enllaçat ni previst). Per a avisar-ne. */
