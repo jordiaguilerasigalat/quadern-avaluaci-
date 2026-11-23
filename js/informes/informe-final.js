@@ -19,12 +19,13 @@ function informeFinalAlumnoBodyHTML(grupo,al,opts){
     return `<tr><td>${t}</td><td>${notaEvalInformeHTML(grupo,al.id,i)}</td><td>${pillCuant(v)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,al.id,i)}</td>`:""}<td>${com?esc(com):"—"}</td></tr>`;}).join("");
 
   let htmlActsPDF = `<h2>Desglossament d'activitats (curs complet)</h2>`;
-  const trimsConActs=[0,1,2].filter(t=>grupo.actividades.some(a=>a.trimestre===t));
+  const actsAl=actsDeAlumne(grupo,grupo.actividades,al.id);
+  const trimsConActs=[0,1,2].filter(t=>actsAl.some(a=>a.trimestre===t));
   if(!trimsConActs.length){
     htmlActsPDF += '<p>No hi ha activitats registrades este curs.</p>';
   } else {
     trimsConActs.forEach(t=>{
-      const actsT=grupo.actividades.filter(a=>a.trimestre===t && marcaDe(grupo,al.id,a.id)!=="EX"); // les exemptes (p. ex. el quadern NESE d'un altre alumne/a) no ixen
+      const actsT=actsAl.filter(a=>a.trimestre===t && marcaDe(grupo,al.id,a.id)!=="EX"); // les exemptes (p. ex. el quadern NESE d'un altre alumne/a) no ixen
       if(!actsT.length) return;
       htmlActsPDF += `<h3 style="font-size:13px;color:#666;margin:14px 0 4px">${TRIMESTRES[t]}</h3>`;
       const sdaMap={};
@@ -43,7 +44,7 @@ function informeFinalAlumnoBodyHTML(grupo,al,opts){
   }
 
   const critTrabajados=new Set();
-  [0,1,2].forEach(t=>grupo.actividades.filter(a=>a.trimestre===t).forEach(a=>a.criterios.forEach(c=>critTrabajados.add(c.critId))));
+  [0,1,2].forEach(t=>actsAl.filter(a=>a.trimestre===t).forEach(a=>a.criterios.forEach(c=>critTrabajados.add(c.critId))));
   const critSinNota=[];
   critTrabajados.forEach(cid=>{ const tieneNota=[0,1,2].some(t=>conTrim(t,()=>scoreCriterio(grupo,al.id,cid))!=null); if(!tieneNota) critSinNota.push(cid); });
   const htmlAlertaAsimetria = critSinNota.length>0

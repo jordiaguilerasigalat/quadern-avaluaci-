@@ -34,9 +34,14 @@ function renderTopBar(){
     <button class="ghost" id="btnRehacer" onclick="rehacer()" ${_pilaRehacer.length?"":"disabled"} title="Refer (Ctrl/Cmd+Maj+Z)" aria-label="Refer" style="${_pilaRehacer.length?"":"opacity:.45"}">↷</button>
     <button class="ghost boto-ajuda" onclick="ajudaObrir()" title="Ajuda: com funciona el quadern" aria-label="Ajuda">?</button>`;
   const trimSel=document.getElementById("trimSel");
-  trimSel.innerHTML=TRIMESTRES.map((t,i)=>`<option value="${i}">${t}</option>`).join("");
-  trimSel.value=state.ui.trim;
-  trimSel.addEventListener("change",e=>{ state.ui.trim=Number(e.target.value); state.ui.resInfFinal=false; save(); render(); });
+  /* En la Taula de notes i en Resultats també es pot triar la final (tot el curs):
+     no canvia l'avaluació amb què treballes, només ho marca amb state.ui.resInfFinal. */
+  const ambFinal = state.ui.appMode==="competencial" && (state.ui.tab==="taula"||state.ui.tab==="resultados");
+  trimSel.innerHTML=TRIMESTRES.map((t,i)=>`<option value="${i}">${t}</option>`).join("")+(ambFinal?`<option value="final">Final</option>`:"");
+  trimSel.value= ambFinal && state.ui.resInfFinal===true ? "final" : state.ui.trim;
+  trimSel.addEventListener("change",e=>{
+    if(e.target.value==="final"){ state.ui.resInfFinal=true; state.ui.tnCel=null; save(); render(); return; }
+    state.ui.trim=Number(e.target.value); state.ui.resInfFinal=false; save(); render(); });
 }
 /* Pestanya «📌 Pendents» al costat dels grups: alumnat amb la matèria pendent
    que no tens este curs (js/alumnado/pendents.js). */

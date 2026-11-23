@@ -1806,10 +1806,14 @@ export const PRUEBAS = [
       const fila = n => document.querySelectorAll('#tablaAlumnos tbody tr[data-id]')[n];
       window.scrollTo(0, 300); caixa().scrollTop = 500;
       // Edició en la llista
-      const inp = fila(18).querySelector('input'); const id18 = fila(18).dataset.id;
+      const id18 = fila(18).dataset.id; fila(18).querySelector('button.al-edit-nom').click();
+      out.llistaEdit = [scrollY, caixa().scrollTop];
+      const inp = fila(18).querySelector('input.in');
       inp.focus({ preventScroll: true }); inp.value = 'Cognom18 Y'; inp.dispatchEvent(new Event('change'));
       out.llista = [scrollY, caixa().scrollTop];
       out.focus = document.activeElement && document.activeElement.closest('tr') && document.activeElement.closest('tr').dataset.id === id18;
+      out.nouNom = g.alumnos.find(x => x.id === id18).apellidos === 'Cognom18 Y';
+      alumFiEditNom();
       // Edició des de la fitxa
       const id20 = fila(20).dataset.id;
       abrirFichaAlumno(id20);
@@ -1820,7 +1824,7 @@ export const PRUEBAS = [
       out.focusFitxa = document.activeElement && document.activeElement.closest('tr') && document.activeElement.closest('tr').dataset.id === id20;
       // Seguiment: no NESE → fitxa amb el resum (les dades plegades)
       obrirSeguimentAlumne(id20);
-      out.seguiment = !!document.querySelector('.modal-box') && !document.querySelector('.modal-box details[open]') && /Notes/.test(document.querySelector('.modal-box').textContent);
+      out.seguiment = !!document.querySelector('.modal-box') && !document.querySelector('.modal-box details.fitxa-dades[open]') && /Notes/.test(document.querySelector('.modal-box').textContent);
       cerrarFichaAlumno();
       // NESE amb pla → pantalla NESE i tornar al mateix lloc
       const a = g.alumnos.find(x => x.id === id20); a.nese = true;
@@ -1840,13 +1844,48 @@ export const PRUEBAS = [
       neTornarAlGrup();
       return out;
     });
-    t.ok(r.llista[0] === 300 && r.llista[1] === 500, 'editar un nom en la llista no mou la pantalla', JSON.stringify(r.llista));
+    t.ok(r.llista[0] === 300 && r.llista[1] === 500 && r.llistaEdit.join() === '300,500' && r.nouNom, 'editar un nom en la llista (✏️) no mou la pantalla', JSON.stringify(r));
     t.ok(r.focus, 'el cursor es queda en la mateixa fila');
     t.ok(r.fitxa[0] === 300 && r.fitxa[1] === 500 && r.focusFitxa, 'editar des de la fitxa i tancar-la deixa la llista on estava i el cursor en la fila', JSON.stringify(r.fitxa));
     t.ok(r.seguiment, 'el seguiment d\'un alumne/a no NESE obri la fitxa amb el resum');
     t.ok(r.boto && r.nese.join() === 'nese,detalle,pn1', 'un alumne/a NESE va directament a la pantalla del seu pla NESE', JSON.stringify(r.nese));
     t.ok(r.tornar && r.tornat.join() === 'competencial,alumnos,300,500', '«Tornar» porta a la llista al mateix lloc', JSON.stringify(r.tornat));
     t.ok(r.crear, 'un alumne/a NESE sense pla obri el formulari per a crear-lo');
+    t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
+  } },
+  { nombre: 'fitxa-nom', descripcion: "Tocar el nom en Alumnat i en Resultats obri la fitxa (també NESE) amb les notes de cada activitat; la resta de la fila de Resultats obri l'informe", async fn(t) {
+    const p = await nuevaPagina(t.contexto);
+    await cuadernoConGrupo(p, t.url, { nombres: ['Alfa A, Anna', 'Beta B, Bernat', 'Gamma G, Gina'] });
+    const r = await p.evaluate(() => {
+      const g = state.grupos[0], out = {};
+      const al = g.alumnos[1]; al.nese = true;
+      g.actividades.push({ id: 'axf1', nombre: 'Examen de prova fitxa', trimestre: 0, esExamen: true, criterios: [], bloque: (g.bloques[0] || {}).id });
+      g.notasCuant = g.notasCuant || {}; g.notasCuant[al.id] = { axf1: 4.5 };
+      state.ui.appMode = 'competencial'; state.ui.tab = 'alumnos'; state.ui.trim = 0; save(); render();
+      const fila = [...document.querySelectorAll('#tablaAlumnos tbody tr[data-id]')].find(tr => tr.dataset.id === al.id);
+      out.inputsNom = fila.querySelectorAll('input.in:not([type])').length;
+      fila.querySelector('button.al-nom').click();
+      const m = document.querySelector('.modal-box');
+      out.alumnat = [state.ui.appMode, state.ui.fichaAlumnoId === al.id, !!m];
+      out.notesAct = !!m && /Notes de cada activitat/.test(m.textContent) && /Examen de prova fitxa/.test(m.textContent) && /4,5/.test(m.textContent);
+      out.neseBoto = !!m && [...m.querySelectorAll('button')].some(b => /NESE/.test(b.textContent));
+      cerrarFichaAlumno();
+      state.ui.tab = 'resultados'; state.ui.resAl = ''; save(); render();
+      const nom = [...document.querySelectorAll('#tabContent table tbody tr button.nom-fitxa')].find(b => /Beta/.test(b.textContent));
+      out.resNom = !!nom; nom.click();
+      out.resultats = [state.ui.fichaAlumnoId === al.id, state.ui.resAl, !!document.querySelector('.modal-box')];
+      cerrarFichaAlumno();
+      const tr = [...document.querySelectorAll('#tabContent table tbody tr')].find(x => /Beta/.test(x.textContent));
+      tr.querySelector('td:last-child').click();
+      out.informe = state.ui.resAl === al.id;
+      return out;
+    });
+    t.ok(r.inputsNom === 0, 'en la llista el nom ja no és un camp de text (es toca per a obrir la fitxa)', r.inputsNom);
+    t.ok(r.alumnat.join() === 'competencial,true,true', 'en Alumnat, tocar el nom (també d\'un alumne/a NESE) obri la fitxa', JSON.stringify(r.alumnat));
+    t.ok(r.notesAct, 'la fitxa mostra les notes de cada activitat');
+    t.ok(r.neseBoto, 'la fitxa d\'un alumne/a NESE porta al seu pla NESE');
+    t.ok(r.resNom && r.resultats.join() === 'true,,true', 'en Resultats, tocar el nom obri la fitxa (no l\'informe)', JSON.stringify(r.resultats));
+    t.ok(r.informe, 'en Resultats, tocar la resta de la fila obri l\'informe');
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
   { nombre: 'blocs-desactivar', descripcion: 'Blocs: es poden posar a 0 % i desactivar sense perdre res; els treballs i exposicions no van al bloc de l\'actitud', async fn(t) {
@@ -1964,6 +2003,15 @@ export const PRUEBAS = [
     t.ok(r && r.crits === '7.1+7.2+9.3' && Math.abs(r.nota - (10 + 2.5 + 2.5) / 3) < 0.01 && r.ex === 'EX' && r.n === 1, 'passa al grup una activitat per tema només per a l\'alumne/a NESE', JSON.stringify(r));
     await p.evaluate(async () => { await qnPassarAlGrup(0); }); await esperar(300);
     t.ok(await p.evaluate(() => state.grupos[0].actividades.length) === 1, 'tornar a passar-ho actualitza la mateixa activitat');
+    // Les activitats del quadern NESE només ixen en els informes de l'alumne/a NESE
+    r = await p.evaluate(() => { const g = state.grupos[0], a0 = g.alumnos[0], a1 = g.alumnos[1]; state.ui.trim = 0;
+      const act = g.actividades.find(x => x.quadernNese); const vell = Object.assign({}, act); delete vell.quadernAlumne; // dades d'abans (sense quadernAlumne)
+      const html = al => [informeAlumnoBodyHTML(g, al), informeFinalAlumnoBodyHTML(g, al), desgloseBloqueHTML(g, al, g.bloques.find(b => b.id === act.bloqueId) || g.bloques[0], 0), desgloseCriterioHTML(g, al, '7.1', 0)].join('');
+      return { owner: act.quadernAlumne === a1.id, altre: html(a0), nese: html(a1), vellAltre: actAlienaNESE(g, vell, a0.id), vellNese: actAlienaNESE(g, vell, a1.id) }; });
+    t.ok(r.owner, 'l\'activitat recorda de quin alumne/a és');
+    t.ok(!/Quadern NESE|Beta, Bruno/.test(r.altre), 'en els informes d\'un altre alumne/a no ix ni el quadern ni el nom de l\'alumne/a NESE');
+    t.ok(/Quadern NESE/.test(r.nese), 'en els informes de l\'alumne/a NESE sí que ix');
+    t.ok(r.vellAltre && !r.vellNese, 'també amaga les activitats ja passades abans d\'este canvi');
     r = await p.evaluate(() => qnInformeHTML(state.planesNESE[0], 'final'));
     t.ok(/Quadern de reforç/.test(r) && /Li costa mesurar/.test(r), 'l\'informe del pla inclou el quadern');
     r = await p.evaluate(() => { const g = state.grupos[0]; return fitxaResumHTML(g, g.alumnos[1]); });
@@ -2187,6 +2235,17 @@ export const PRUEBAS = [
       const inp = document.getElementById('segNom_deures');
       if (inp) { inp.value = 'Deures 3'; segCrear('deures'); await new Promise(r => setTimeout(r, 50)); }
       out.seg = [!!inp, state.ui.tab, state.ui.segAct, !!g.actividades.find(a => a.nombre === 'Deures 3')];
+      // «Final» en el selector de dalt: nota de cada avaluació + final; tocar una avaluació hi torna
+      const sel = document.getElementById('trimSel');
+      out.opFinal = [...sel.options].some(o => o.value === 'final');
+      sel.value = 'final'; sel.dispatchEvent(new Event('change')); await new Promise(r => setTimeout(r, 50));
+      const capF = [...document.querySelectorAll('.tn-taula thead .tn-act .tn-act-nom')].map(x => x.textContent.trim());
+      const celF = [...document.querySelectorAll('.tn-taula tbody tr')[0].querySelectorAll('.tn-cel')].map(x => x.textContent.trim());
+      out.final = [capF, celF, document.getElementById('trimSel').value, fmt(notaTrimestre(g, ids[0], 0)), fmt(notaFinal(g, ids[0]))];
+      document.querySelectorAll('.tn-taula thead .tn-act .tn-act-nom')[1].click(); await new Promise(r => setTimeout(r, 50));
+      out.tornaAv = [state.ui.trim, state.ui.resInfFinal, document.getElementById('trimSel').value];
+      state.ui.tab = 'actividades'; render(); await new Promise(r => setTimeout(r, 50));
+      out.senseFinalAct = ![...document.getElementById('trimSel').options].some(o => o.value === 'final');
       return out;
     }, ids);
     t.ok(r.seg[0] && (r.seg[1] === 'taula' && r.seg[2] === '' && r.seg[3]), '«+ Nova» d\'un apartat (Deures…) també torna a la taula', JSON.stringify(r.seg));
@@ -2195,6 +2254,8 @@ export const PRUEBAS = [
     t.ok(r.modal && r.despres[0] === 5 && r.despres[1] && r.despres[2] === '5,0', "tocar la nota obri l'activitat d'eixe alumne/a i el canvi es guarda i es veu en la taula", JSON.stringify(r));
     t.ok(r.seg && r.tancat && r.trim1.length === 1 && r.trim1[0] === 'Altra avaluació', 'navegar a l\'alumne/a següent i canviar d\'avaluació', JSON.stringify(r));
     t.ok(r.anarAct && r.tornat[0] === 'taula' && r.tornat[1] && r.tornat[2], '«＋ Nova activitat» crea l\'activitat en Activitats i torna a la taula amb la columna nova', JSON.stringify(r));
+    t.ok(r.opFinal && r.final[0].join('|') === '1a avaluació|2a avaluació|3a avaluació|Nota final' && r.final[1][0] === r.final[3] && r.final[1][3] === r.final[4] && r.final[2] === 'final', '«Final» en el selector: nota de cada avaluació i nota final', JSON.stringify(r.final));
+    t.ok(r.tornaAv[0] === 1 && r.tornaAv[1] === false && r.tornaAv[2] === '1' && r.senseFinalAct, "tocar una avaluació obri la seua taula; en Activitats no hi ha «Final»", JSON.stringify([r.tornaAv, r.senseFinalAct]));
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
 ];

@@ -41,17 +41,67 @@ function fitxaResumHTML(g,a){
     rp? `<button class="ghost small" style="border:1px solid var(--line)" onclick="cerrarFichaAlumno();rpAbrirDesdeOtroModo('${escJS(rp.id)}')">🔁 Pla de repetició</button>` : "",
     ...rf.map(p=>`<button class="ghost small" style="border:1px solid var(--line)" onclick="cerrarFichaAlumno();rfAbrirDesdeOtroModo('${escJS(p.id)}')">📈 Pla de reforç${p.titulo?" · "+esc(p.titulo):""}</button>`)
   ].filter(Boolean).join("");
+  const informe=`<button class="ghost small" style="border:1px solid var(--line)" title="Obrir l'informe complet de ${esc(a.nombre)} en Resultats (notes de cada activitat, criteris i comentari)" onclick="fitxaAnarInforme('${escJS(a.id)}')">📄 Informe complet</button>`;
   const anar=(tab,txt)=>`<button class="ghost small" style="border:1px solid var(--line)" onclick="cerrarFichaAlumno();state.ui.tab='${tab}';save();render()">${txt}</button>`;
   return `<div style="display:grid;gap:8px;margin-top:10px">
     ${bloc("📊 Notes",notes+qual+temes)}
+    ${fitxaNotesActivitatsHTML(g,a)}
     ${typeof anotacionsBlocHTML==="function"?`<div class="sens">${anotacionsBlocHTML(g,a)}</div>`:""}
     <div style="display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
       ${bloc("✅ Assistència",`<div class="sens">${faltes}</div>`)}${bloc("⚖️ Convivència",`<div class="sens">${convHTML}</div>`)}${bloc("👪 Família",`<div class="sens">${famHTML}</div>`)}
     </div>
     ${plans?bloc("🌈 Atenció a la diversitat",`<div class="flex sens" style="gap:6px;flex-wrap:wrap">${plans}</div>`):""}
-    <div class="flex" style="gap:6px;flex-wrap:wrap">${anar("resultados","📄 Informe complet")}<button class="ghost small" style="border:1px solid var(--line)" title="Una pàgina per a la família amb les notes, faltes i observacions (${esc(TRIMESTRES[state.ui.trim]||"")})" onclick="cerrarFichaAlumno();exportarInformeFamilia('${escJS(a.id)}')">👪 Informe per a la família</button>${anar("asistencia","✅ Assistència")}${anar("convivencia","⚖️ Convivència")}${anar("familias","👪 Famílies")}</div>
-    <details><summary style="cursor:pointer;font-weight:600;font-size:13px">✏️ Dades de l'alumne/a</summary>`;
+    <div class="flex" style="gap:6px;flex-wrap:wrap">${informe}<button class="ghost small" style="border:1px solid var(--line)" title="Una pàgina per a la família amb les notes, faltes i observacions (${esc(TRIMESTRES[state.ui.trim]||"")})" onclick="cerrarFichaAlumno();exportarInformeFamilia('${escJS(a.id)}')">👪 Informe per a la família</button>${anar("asistencia","✅ Assistència")}${anar("convivencia","⚖️ Convivència")}${anar("familias","👪 Famílies")}</div>
+    <details class="fitxa-dades"><summary style="cursor:pointer;font-weight:600;font-size:13px">✏️ Dades de l'alumne/a</summary>`;
 }
+/* Totes les notes de l'alumne/a, activitat per activitat, agrupades per
+   avaluació (la que tens triada, oberta). Mostra la nota que compta (amb la
+   recuperació i els punts extra), NP i Exempt. Tocar una activitat obri la
+   seua rúbrica en la Taula de notes. */
+function fitxaNotesActivitatsHTML(g,a){
+  const dataDe=x=>(typeof agDataActivitat==="function"? agDataActivitat(x.id) : "")||"";
+  const dataCurta=f=>{ const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(f||""); return m? `${m[3]}/${m[2]}` : ""; };
+  const marca=(x)=>(g.marcas&&g.marcas[a.id]&&g.marcas[a.id][x.id])||"";
+  const trimAct=Number(state.ui.trim)||0;
+  const seccions=[0,1,2].map(t=>{
+    const acts=(g.actividades||[]).map((x,i)=>({x,i,f:dataDe(x)}))
+      .filter(({x})=>Number(x.trimestre)===t && !actAlienaNESE(g,x,a.id))
+      .sort((p,q)=>(!!p.x.quadernNese-!!q.x.quadernNese) || ((p.f&&q.f)? (p.f<q.f?-1:p.f>q.f?1:p.i-q.i) : p.f? -1 : q.f? 1 : p.i-q.i));
+    if(!acts.length) return "";
+    let ambNota=0;
+    const files=acts.map(({x,f})=>{
+      const m=marca(x);
+      let v=null; if(m!=="EX"){ try{ v=x.recupera? notaActividadBase(g,a.id,x) : notaActividad(g,a.id,x,t); }catch(e){} }
+      if(v!=null || m) ambNota++;
+      const txt= m==="NP"? "NP" : m==="EX"? "Exempt" : (v==null? "—" : fmt(v));
+      const col= m==="NP" || (v!=null&&v<5)? "color:var(--danger,#b91c1c)" : (v==null&&!m? "color:var(--mut)" : "");
+      const tipus= x.recupera? " 🔁" : "";
+      return `<div class="flex" style="justify-content:space-between;gap:8px;padding:2px 0;border-bottom:1px dashed var(--line)"><button type="button" class="nom-fitxa" style="text-decoration:none;flex:1;min-width:0" title="Obrir la rúbrica de «${esc(x.nombre)}» per a ${esc(a.nombre)}" onclick="fitxaObrirActivitat('${escJS(a.id)}','${escJS(x.id)}',${t})">${f?`<span style="color:var(--mut);font-size:11.5px;margin-right:6px">${dataCurta(f)}</span>`:""}${esc(x.nombre||"Activitat")}${tipus}</button><strong style="${col}">${txt}</strong></div>`;
+    }).join("");
+    let nt=null; try{ nt=notaTrimestre(g,a.id,t); }catch(e){}
+    return `<details ${t===trimAct?"open":""} class="fitxa-notes-av"><summary style="cursor:pointer;font-size:13px;font-weight:600">${esc(TRIMESTRES[t])} <span style="font-weight:400;color:var(--mut)">· ${ambNota} de ${acts.length} amb nota${nt!=null?` · nota ${fmt(nt)}`:""}</span></summary><div style="display:grid;font-size:12.5px;margin:4px 0 6px">${files}</div></details>`;
+  }).join("");
+  if(!seccions) return "";
+  return `<div style="border:1px solid var(--line);border-radius:10px;padding:8px 10px"><div style="font-size:12px;font-weight:700;color:var(--mut);margin-bottom:4px">📝 Notes de cada activitat</div>${seccions}</div>`;
+}
+window.fitxaObrirActivitat=(alId,actId,t)=>{
+  state.ui.fichaAlumnoId=""; state.ui.fichaSeguiment=false;
+  state.ui.trim=t; state.ui.tab="taula"; save(); render();
+  if(typeof tnObrir==="function") tnObrir(alId,actId);
+};
+window.fitxaAnarInforme=alId=>{
+  state.ui.fichaAlumnoId=""; state.ui.fichaSeguiment=false;
+  state.ui.tab="resultados"; state.ui.resAl=alId; save(); render();
+  const el=document.querySelector(".res-informe-nom");
+  if(el) try{ el.closest(".card")?.scrollIntoView({block:"start"}); }catch(e){}
+};
+/* Fitxa única amb el resum (notes, seguiment, plans), també per a l'alumnat
+   NESE: és el que obri tocar el nom en Alumnat i en Resultats. Des de la fitxa,
+   el botó «🧩 NESE» porta al seu pla. */
+window.obrirFitxaAlumne=id=>{
+  const g=grupoActual(); if(!g || !g.alumnos.some(x=>x.id===id)) return;
+  state.ui.fichaAlumnoId=id; state.ui.fichaSeguiment=true; save(); render();
+};
 /* Seguiment de l'alumne/a: tocar el nom (o el botó «Seguiment» de la llista)
    mostra la fitxa amb el resum (notes, faltes, plans). Si és NESE, va
    directament a la pantalla NESE del seu pla, amb un botó per a tornar al

@@ -129,7 +129,7 @@ function resBotonsFilaHTML(grupo,a,trim){
 }
 function resTaulaClasseHTML(grupo,al,trim){
   const v=resVista();
-  const fila=(a,cos)=>`<tr style="cursor:pointer;${a.id===(al&&al.id)?'background:var(--surface-2)':''}" onclick="irAAlumnoResultados('${a.id}')"><td>${avatarAlumneHTML(a)}<strong>${esc(a.nombre)}</strong>${neseBadgeHTML(a)}</td>${cos}</tr>`;
+  const fila=(a,cos)=>`<tr style="cursor:pointer;${a.id===(al&&al.id)?'background:var(--surface-2)':''}" onclick="irAAlumnoResultados('${a.id}')" title="Vore i editar l'informe de ${esc(a.nombre)} davall"><td><strong><button type="button" class="nom-fitxa" title="Obrir la fitxa de ${esc(a.nombre)} (totes les notes i el seguiment)" onclick="event.stopPropagation();obrirFitxaAlumne('${escJS(a.id)}')">${avatarAlumneHTML(a)}${esc(a.nombre)}</button></strong>${neseBadgeHTML(a)}</td>${cos}</tr>`;
   if(v==="blocs"){
     const bl=grupo.bloques||[];
     return `<div style="overflow-x:auto"><table>
@@ -227,7 +227,7 @@ function renderResultados(grupo){
       </div>
     </div>
     ${resVistaBotonsHTML(grupo)}
-    <p class="sub" style="margin:6px 0 10px">Toca un alumno/a para ver y editar su informe completo debajo.</p>
+    <p class="sub" style="margin:6px 0 10px">Toca el nom d'un alumne/a per a obrir la seua fitxa (totes les notes i el seguiment). Toca la resta de la fila per a vore i editar el seu informe complet davall.</p>
     ${resTaulaClasseHTML(grupo,al,trim)}
   </div>
   ${state.ui.evolModalAl?evolucionModalHTML(grupo,grupo.alumnos.find(x=>x.id===state.ui.evolModalAl)):""}`;
@@ -237,7 +237,7 @@ function renderResultados(grupo){
   const ccT=Object.keys(COMP_CLAVE).filter(cc=>idx.cat.ces.some(ce=>ce.cc.includes(cc))).map(cc=>({cc,p:scoreCC(grupo,al.id,cc)})).filter(x=>x.p!=null);
   const ceT=idx.cat.ces.map(ce=>({ce,p:scoreCE(grupo,al.id,ce.id)})).filter(x=>x.p!=null);
   
-  const actsT = actsTrim(grupo);
+  const actsT = actsDeAlumne(grupo, actsTrim(grupo), al.id);
   let htmlActs = '<div style="margin-top:8px">';
   if (actsT.length === 0) {
      htmlActs += '<p style="color:var(--mut);font-size:14px">Sin actividades en este periodo.</p>';
@@ -309,7 +309,7 @@ function renderResultados(grupo){
   c.innerHTML=htmlClase+`
   <div class="card res-informe-cap" style="margin-top:28px">
     <div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
-      <div><h2 style="margin:0 0 4px">Informe de <span class="res-informe-nom" style="font-size:1.45em;display:inline-block;margin-left:4px">${nomFitxaHTML(al)}</span>${neseBadgeHTML(al)}</h2><p class="sub" style="margin:0">${TRIMESTRES[trim]}</p></div>
+      <div><h2 style="margin:0 0 4px">Informe de <span class="res-informe-nom" style="font-size:1.45em;display:inline-block;margin-left:4px"><button type="button" class="nom-fitxa" title="Obrir la fitxa de ${esc(al.nombre)} (totes les notes i el seguiment)" onclick="obrirFitxaAlumne('${escJS(al.id)}')">${typeof avatarAlumneHTML==="function"?avatarAlumneHTML(al):""}${esc(al.nombre)}</button></span>${neseBadgeHTML(al)}</h2><p class="sub" style="margin:0">${TRIMESTRES[trim]}</p></div>
       <div class="flex">
         <button class="ghost" style="border:1px solid var(--line)" onclick="irAAlumnoResultados('')">← Ver toda la clase</button>
         <button class="ghost" style="border:1px solid var(--line)" onclick="exportarInformeFinalAlumno('${al.id}')">Exportar informe final de curso</button>
