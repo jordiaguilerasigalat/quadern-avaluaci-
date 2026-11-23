@@ -142,7 +142,7 @@ function desgloseNotaActividadHTML(grupo,al,a){
   return `<table class="dsg-mini"><thead><tr><th>Criterio</th><th style="text-align:right">Nota</th><th style="text-align:right">Peso</th></tr></thead><tbody>${filas}</tbody></table>`;
 }
 function desgloseBloqueHTML(grupo,al,b,trim){
-  const acts=grupo.actividades.filter(a=>a.trimestre===trim && actEnBloque(a,b.id) && !a.recupera);
+  const acts=actsDeAlumne(grupo,grupo.actividades,al.id).filter(a=>a.trimestre===trim && actEnBloque(a,b.id) && !a.recupera);
   const v=notaBloque(grupo,al.id,b.id,trim);
   if(!acts.length){
     return `<div class="dsg-bloque"><div class="dsg-bloque-head"><span>${esc(b.label)}</span><span class="dsg-muted">Sin actividades este periodo</span></div></div>`;
@@ -232,7 +232,7 @@ function desgloseFinalHTML(grupo,al){
 /* ---- Nota cualitativa (competencias): desglose ---- */
 function desgloseCriterioHTML(grupo,al,cid,trim){
   return conTrim(trim,()=>{
-    const acts=actsTrim(grupo).filter(a=>(a.criterios||[]).some(l=>l.critId===cid));
+    const acts=actsDeAlumne(grupo,actsTrim(grupo),al.id).filter(a=>(a.criterios||[]).some(l=>l.critId===cid));
     if(!acts.length) return `<p class="dsg-muted" style="margin:2px 0 8px">Sin actividades con este criterio en este periodo.</p>`;
     const filas=acts.map(a=>{
       const l=a.criterios.find(x=>x.critId===cid);

@@ -152,7 +152,7 @@ function informeAlumnoBodyHTML(grupo,al,opts){
   const filas3=TRIMESTRES.map((t,i)=>{const v=notaTrimestre(grupo,al.id,i); const com=(al.comentariosEval&&al.comentariosEval[i])||"";
     return `<tr><td>${t}</td><td>${notaEvalInformeHTML(grupo,al.id,i)}</td><td>${pillCuant(v)}</td>${teQualitativaCE(grupo)?`<td>${pillQual(grupo,al.id,i)}</td>`:""}<td>${com?esc(com):"—"}</td></tr>`;}).join("");
 
-  const actsT = actsTrim(grupo);
+  const actsT = actsDeAlumne(grupo, actsTrim(grupo), al.id);
   let htmlActsPDF = `<h2>Desglose de actividades (${TRIMESTRES[trim]})</h2>`;
   if (actsT.length === 0) {
       htmlActsPDF += '<p>Sin actividades en este periodo.</p>';

@@ -237,7 +237,7 @@ function renderResultados(grupo){
   const ccT=Object.keys(COMP_CLAVE).filter(cc=>idx.cat.ces.some(ce=>ce.cc.includes(cc))).map(cc=>({cc,p:scoreCC(grupo,al.id,cc)})).filter(x=>x.p!=null);
   const ceT=idx.cat.ces.map(ce=>({ce,p:scoreCE(grupo,al.id,ce.id)})).filter(x=>x.p!=null);
   
-  const actsT = actsTrim(grupo);
+  const actsT = actsDeAlumne(grupo, actsTrim(grupo), al.id);
   let htmlActs = '<div style="margin-top:8px">';
   if (actsT.length === 0) {
      htmlActs += '<p style="color:var(--mut);font-size:14px">Sin actividades en este periodo.</p>';
