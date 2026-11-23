@@ -107,17 +107,17 @@ function ordenarAlumnos(grupo){
 function neseBadgeHTML(a){
   if(!a.nese) return "";
   const txt = a.neseNivel? `NESE · ${typeof traduirText==="function"?traduirText(a.neseNivel):a.neseNivel}` : "NESE";
-  return `<span class="badge badge-nese" style="font-size:10px;margin-left:9px;color:var(--warning);border-color:var(--warning);vertical-align:middle" title="Necesidad específica de apoyo educativo">${esc(txt)}</span>`;
+  return `<span class="badge badge-nese sens" style="font-size:10px;margin-left:9px;color:var(--warning);border-color:var(--warning);vertical-align:middle" title="Necesidad específica de apoyo educativo">${esc(txt)}</span>`;
 }
 function planBadgeHTML(a){
   if(!a.plan) return "";
   const label=a.plan==="refuerzo"?"Refuerzo":"Repetición";
   const color=a.plan==="refuerzo"?"#2563eb":"#7c3aed";
-  return `<span class="badge" style="font-size:10px;margin-left:9px;color:${color};border-color:${color};vertical-align:middle">${label}</span>`;
+  return `<span class="badge sens" style="font-size:10px;margin-left:9px;color:${color};border-color:${color};vertical-align:middle">${label}</span>`;
 }
 function repetidorBadgeHTML(a){
   if(!a.repetidor) return "";
-  return `<span class="badge" style="font-size:10px;margin-left:9px;color:#dc2626;border-color:#dc2626;vertical-align:middle">Repite</span>`;
+  return `<span class="badge sens" style="font-size:10px;margin-left:9px;color:#dc2626;border-color:#dc2626;vertical-align:middle">Repite</span>`;
 }
 function normalizarAlumno(a){
   if(a.observaciones===undefined) a.observaciones=a.comentario||"";
