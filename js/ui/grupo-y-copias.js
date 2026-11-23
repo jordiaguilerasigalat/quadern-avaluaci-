@@ -7,7 +7,7 @@ window.irAGrupo=id=>{ state.ui.grupoId=id;
   /* Des de «Pendents» les pestanyes de grup també es veuen: tocar-ne una ha d'obrir el grup. */
   if(state.ui.appMode==="pendents") state.ui.appMode="competencial";
   if(state.ui.appMode==="corrector"){ state.ui.corTab="lista"; state.ui.corExamId=""; state.ui.corAlId=""; }
-  else if(id){ state.ui.tab="resultados";
+  else if(id){ state.ui.tab=tabGuardatGrup(id);
     state.ui.form={editId:null,nombre:"",tipo:TIPOS[0],esExamen:false,bloqueId:"",pesoBloque:"",links:[],sda:""}; state.ui.alumAbierto=null; }
   save(); render(); };
 
@@ -204,12 +204,23 @@ window.importarTodo=inp=>{ _procesarArchivoCopiaJSON(inp.files[0],()=>{ inp.valu
 /* Les 12 pestanyes del grup s'agrupen en 4 seccions. state.ui.tab continua
    guardant la subpestanya (alumnos, calificar…), així els enllaços de tota
    l'aplicació (irATab('asistencia'), etc.) segueixen funcionant igual. */
+/* 2026-11-23: «🏫 Classe» reunix el que es fa cada dia en l'aula (passar llista,
+   diari i plànol amb l'actitud); Avaluar comença per la Taula de notes i
+   inclou la Cobertura (és planificació); Resultats té Recuperacions i
+   Comparar grups com a pestanyes pròpies. */
 const GRUPO_SECCIONS=[
-  ["alumnat","👥 Alumnat",[["alumnos","Llista"],["plano","Plànol d'aula"],["asistencia","Assistència"],["convivencia","Convivència"],["familias","Famílies"]]],
-  ["avaluar","✍️ Avaluar",[["programa","Programació"],["diario","Diari de classe"],["actividades","Activitats"],["taula","Taula de notes"],["calificar","Qualificar",true]]],
-  ["resultats","📊 Resultats",[["resultados","Notes i informes"],["resumen","Resum del grup"],["cobertura","Cobertura de criteris"]]],
+  ["alumnat","👥 Alumnat",[["alumnos","Llista"],["convivencia","Convivència"],["familias","Famílies"]]],
+  ["classe","🏫 Classe",[["asistencia","Assistència"],["diario","Diari de classe"],["plano","Plànol d'aula"]]],
+  ["avaluar","✍️ Avaluar",[["taula","Taula de notes"],["actividades","Activitats"],["programa","Programació"],["cobertura","Cobertura de criteris"],["calificar","Qualificar",true]]],
+  ["resultats","📊 Resultats",[["resultados","Notes i informes"],["recuperacions","Recuperacions"],["comparar","Comparar grups"],["resumen","Resum del grup"]]],
   ["ajustos","⚙️ Ajustos",[["ajustes","Ajustos del grup"]]]
 ];
+/* Cada grup s'obri en l'última pestanya que hi feies servir (state.ui.tabGrup). */
+function tabGuardatGrup(id){
+  const t=((state.ui.tabGrup||{})[id])||"";
+  if(t==="calificar"||t==="seguiment") return "taula";
+  return GRUPO_SECCIONS.some(x=>x[2].some(y=>y[0]===t))? t : "alumnos";
+}
 const GRUPO_PESTANAS=GRUPO_SECCIONS.flatMap(x=>x[2]);
 function grupSeccioDe(tab){ return GRUPO_SECCIONS.find(x=>x[2].some(y=>y[0]===tab))||GRUPO_SECCIONS[0]; }
 window.irASeccio=k=>{
@@ -224,6 +235,7 @@ function renderGrupo(grupo){
   if(!GRUPO_PESTANAS.some(x=>x[0]===state.ui.tab) && state.ui.tab!=="seguiment") state.ui.tab="alumnos";
   const sec=grupSeccioDe(state.ui.tab==="seguiment"?"actividades":state.ui.tab);
   state.ui.tabUltim=Object.assign({},state.ui.tabUltim,{[sec[0]]:state.ui.tab});
+  state.ui.tabGrup=Object.assign({},state.ui.tabGrup,{[grupo.id]:state.ui.tab});
   app.innerHTML=`
   <div class="card" style="padding:12px 16px">
     <div class="flex" style="justify-content:space-between">
@@ -236,7 +248,7 @@ function renderGrupo(grupo){
       </div>
     </div>
     <div class="gseccions" role="tablist" aria-label="Seccions del grup">
-      ${GRUPO_SECCIONS.map(([k,l])=>`<button class="gseccio ${sec[0]===k?"on":""}" role="tab" aria-selected="${sec[0]===k?"true":"false"}" onclick="irASeccio('${k}')">${l}</button>`).join("")}
+      ${GRUPO_SECCIONS.map(([k,l])=>`<button class="gseccio ${sec[0]===k?"on":""}" role="tab" aria-selected="${sec[0]===k?"true":"false"}" onclick="irASeccio('${k}')"><span class="gs-ico" aria-hidden="true">${l.split(" ")[0]}</span> <span class="gs-nom">${l.replace(/^\S+\s/,"")}</span></button>`).join("")}
     </div>
     ${sec[2].filter(([k,,amagat])=>!amagat||state.ui.tab===k).length>1?`<div class="gtabs" role="tablist" aria-label="Apartats de ${esc(sec[1].replace(/^\S+\s/,""))}">
       ${sec[2].filter(([k,,amagat])=>!amagat||state.ui.tab===k).map(([k,l])=>`<button class="gtab ${state.ui.tab===k?"on":""}" role="tab" aria-selected="${state.ui.tab===k?"true":"false"}" onclick="irATab('${k}')">${l}</button>`).join("")}
@@ -255,6 +267,8 @@ function renderGrupo(grupo){
     else if(t==="taula") renderTaulaNotes(grupo);
     else if(t==="calificar") renderCalificar(grupo);
     else if(t==="resultados") renderResultados(grupo);
+    else if(t==="recuperacions") renderRecuperacionsTab(grupo);
+    else if(t==="comparar") renderCompararTab(grupo);
     else if(t==="resumen") renderResumen(grupo);
     else if(t==="cobertura") renderCobertura(grupo);
     else if(t==="asistencia") renderAsistencia(grupo);

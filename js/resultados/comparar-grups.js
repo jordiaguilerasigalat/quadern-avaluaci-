@@ -80,3 +80,27 @@ window.resCompararGrups=async()=>{
   const per=await resTriarAvaluacionsInforme(`📊 Comparar grups (${gs.map(x=>x.nombre).join(", ")})`); if(!per) return;
   resInformePerAvaluacions(per,p=>exportarComparativaGrups(p),"Comparativa de grups");
 };
+
+/* Pestanya Resultats → «Comparar grups»: la comparativa es veu dins de l'app
+   (avaluació del selector de dalt, també «Final») i es pot imprimir. */
+function renderCompararTab(g){
+  const c=document.getElementById("tabContent"); if(!c) return;
+  const trim=state.ui.resInfFinal===true? "final" : Number(state.ui.trim)||0;
+  const per=trim==="final"? "Avaluació final" : TRIMESTRES[trim];
+  const gs=cgGrups(g), cat=getCatalogo(g.catalogoKey);
+  const nivell=cat? cat.materia+" · "+cat.curso : "la mateixa matèria i curs";
+  c.innerHTML=`<div class="card">
+    <div class="flex" style="justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:center">
+      <h2 style="font-size:15px;margin:0">📊 Comparar grups · ${esc(per)}</h2>
+      ${gs.length>1?`<button class="btn" onclick="resCompararGrups()">🖨️ Imprimir la comparativa</button>`:""}
+    </div>
+    <p class="sub" style="margin:6px 0 10px">Els grups de ${esc(nivell)} costat per costat: mitjana, aprovats, distribució de notes, NP i mitjana de cada bloc i tema. L'avaluació es tria en el selector de dalt.</p>
+    ${gs.length<2? `<p style="font-size:14px">Per a comparar fan falta almenys dos grups de ${esc(nivell)} amb alumnat. Ara només tens «${esc(g.nombre)}».</p>` : `<div id="cgVista" style="overflow-x:auto"></div>`}
+  </div>`;
+  const host=document.getElementById("cgVista"); if(!host) return;
+  const sh=host.attachShadow({mode:"open"});
+  sh.innerHTML=`<style>:host{display:block}.doc{background:#fff;color:#222;font-family:system-ui,sans-serif;font-size:13px;padding:14px;border-radius:8px}
+    table{border-collapse:collapse;width:100%;font-size:13px;margin-bottom:6px}th,td{text-align:left;padding:5px 8px;border-bottom:1px solid #ddd}th{color:#555}
+    h1{font-size:16px;margin:0}h2{font-size:14px;margin:16px 0 6px;border-bottom:1px solid #ccc;padding-bottom:3px}.meta{color:#666;font-size:12px;margin:0}</style>
+    ${_IA_CSS}<div class="doc">${cgDocumentHTML(g,trim)}</div>`;
+}

@@ -111,7 +111,7 @@ function acRubricaCardHTML(g,act,al){
     </div>
     ${amb.length?`<div class="flex" style="gap:6px;flex-wrap:wrap;margin-top:6px">${amb.map(f=>`<span class="chip" title="${esc(f.nom)}: ${r[f.k].p} positius i ${r[f.k].n} negatius">${esc(f.nom)} <span class="ac-pos">+${r[f.k].p}</span> <span class="ac-neg">−${r[f.k].n}</span>${niv.length&&files.some(x=>x.f.k===f.k)?` → ${esc((niv[acNivellIdx(r[f.k].p-r[f.k].n,niv.length)]||{}).nombre||"")}`:""}</span>`).join("")}</div>
       <p class="sub" style="margin:6px 0 0">Balanç +2 o més → ${esc((niv[0]||{}).nombre||"el nivell més alt")}; +1 o 0 → ${esc((niv[1]||{}).nombre||"el segon")}; −1 → ${esc((niv[2]||{}).nombre||"el tercer")}; −2 o menys → ${esc((niv[3]||niv[niv.length-1]||{}).nombre||"el més baix")}. Després ho pots canviar a mà.</p>`
-    :`<p class="sub" style="margin:6px 0 0">Encara no hi ha cap positiu ni negatiu en esta avaluació. Apunta'ls en <strong>Alumnat → Plànol d'aula → 🙋 Actitud</strong>, tocant l'alumne/a durant la classe.</p>`}
+    :`<p class="sub" style="margin:6px 0 0">Encara no hi ha cap positiu ni negatiu en esta avaluació. Apunta'ls en <strong>Classe → Plànol d'aula → 🙋 Actitud</strong>, tocant l'alumne/a durant la classe.</p>`}
   </div>`;
 }
 window.acAplicarRubrica=(actId,alId)=>{

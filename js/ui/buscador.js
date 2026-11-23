@@ -63,7 +63,7 @@ function buscarNavItems(){
   return items;
 }
 window.buscarIrModulo=(modo)=>{ buscarCerrar(); state.ui.appMode=modo; save(); render(); };
-window.buscarIrGrupo=(gid)=>{ buscarCerrar(); state.ui.appMode="competencial"; state.ui.grupoId=gid; state.ui.tab="alumnos"; save(); render(); };
+window.buscarIrGrupo=(gid)=>{ buscarCerrar(); state.ui.appMode="competencial"; state.ui.grupoId=gid; state.ui.tab=typeof tabGuardatGrup==="function"? tabGuardatGrup(gid) : "alumnos"; save(); render(); };
 window.buscarIrProgramacion=(pid)=>{ buscarCerrar(); state.ui.appMode="programacion"; state.ui.progTab="detalle"; state.ui.progId=pid; state.ui.progDetTab="general"; save(); render(); };
 function buscarRenderResultados(q){
   const cont=document.getElementById("buscarResultados"); if(!cont) return;

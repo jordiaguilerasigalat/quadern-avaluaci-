@@ -36,7 +36,7 @@ function renderTopBar(){
   const trimSel=document.getElementById("trimSel");
   /* En la Taula de notes i en Resultats també es pot triar la final (tot el curs):
      no canvia l'avaluació amb què treballes, només ho marca amb state.ui.resInfFinal. */
-  const ambFinal = state.ui.appMode==="competencial" && (state.ui.tab==="taula"||state.ui.tab==="resultados");
+  const ambFinal = state.ui.appMode==="competencial" && ["taula","resultados","recuperacions","comparar"].includes(state.ui.tab);
   trimSel.innerHTML=TRIMESTRES.map((t,i)=>`<option value="${i}">${t}</option>`).join("")+(ambFinal?`<option value="final">Final</option>`:"");
   trimSel.value= ambFinal && state.ui.resInfFinal===true ? "final" : state.ui.trim;
   trimSel.addEventListener("change",e=>{
@@ -62,7 +62,7 @@ window.ajudaObrir=()=>{
   div.innerHTML=`<div class="modal-box" style="max-width:620px">
     <div class="flex" style="justify-content:space-between;align-items:center"><h2 style="font-size:17px;margin:0">❓ Ajuda</h2><button class="modal-close" onclick="ajudaTancar()" aria-label="Tancar">×</button></div>
     <p class="sub" style="margin:8px 0 6px">El teu quadern d'avaluació de Física i Química: programació, seguiment i avaluació, correcció amb rúbriques i el seguiment diari de l'alumnat (assistència, convivència, famílies, reforç, repetició i NESE). Tot compartix el mateix alumnat i les mateixes notes, i tot ix en informes preparats per a imprimir.</p>
-    ${bloc("📌 Com està organitzat","<strong>Inici</strong>: el que tens hui (Avui), els teus grups i el que et falta per fer. <strong>Cada grup</strong> té 4 seccions: Alumnat (llista, plànol, assistència, convivència, famílies), Avaluar (programació, diari, activitats, taula de notes, qualificar), Resultats i Ajustos. Toca el nom d'un alumne/a per a obrir la seua fitxa. La <strong>Biblioteca</strong> té tots els documents amb buscador.")}
+    ${bloc("📌 Com està organitzat","<strong>Inici</strong>: el que tens hui (Avui), els teus grups i el que et falta per fer. <strong>Cada grup</strong> té 5 seccions: Alumnat (llista, convivència, famílies), Classe (assistència, diari, plànol d'aula amb l'actitud), Avaluar (taula de notes, activitats, programació, cobertura de criteris), Resultats (notes i informes, recuperacions, comparar grups, resum) i Ajustos. Cada grup s'obri on el vas deixar. Toca el nom d'un alumne/a per a obrir la seua fitxa. <strong>Programacions i biblioteca</strong> té les teues programacions i tots els documents amb buscador.")}
     ${bloc("🔍 Buscar","El botó Cercar (o Ctrl/Cmd + K) troba alumnat, activitats, exàmens, programacions, reunions i esdeveniments de tots els grups.")}
     ${bloc("🛟 Còpies de seguretat","Les dades es guarden només en este dispositiu: cada ordinador, iPad o mòbil té les seues. Exporta una còpia des de 🛟 Còpies; l'app t'ho recorda en Inici quan fa més de 3 dies o portes 20 canvis sense còpia, i mentre treballes cada 30 canvis. També en fa d'automàtiques dins del dispositiu.")}
     ${bloc("🧾 Sessió d'avaluació","En <strong>Resultats → Notes i informes</strong> tries l'avaluació i tens l'<strong>Acta de la sessió</strong> (mitjanes, suspesos per tema, alumnat amb mesures, faltes i acords) i els <strong>Informes per a les famílies</strong> (una pàgina per alumne/a). L'informe d'un sol alumne/a ix també des de la seua fitxa.")}
