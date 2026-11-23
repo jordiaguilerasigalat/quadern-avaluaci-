@@ -2229,6 +2229,17 @@ export const PRUEBAS = [
       const inp = document.getElementById('segNom_deures');
       if (inp) { inp.value = 'Deures 3'; segCrear('deures'); await new Promise(r => setTimeout(r, 50)); }
       out.seg = [!!inp, state.ui.tab, state.ui.segAct, !!g.actividades.find(a => a.nombre === 'Deures 3')];
+      // «Final» en el selector de dalt: nota de cada avaluació + final; tocar una avaluació hi torna
+      const sel = document.getElementById('trimSel');
+      out.opFinal = [...sel.options].some(o => o.value === 'final');
+      sel.value = 'final'; sel.dispatchEvent(new Event('change')); await new Promise(r => setTimeout(r, 50));
+      const capF = [...document.querySelectorAll('.tn-taula thead .tn-act .tn-act-nom')].map(x => x.textContent.trim());
+      const celF = [...document.querySelectorAll('.tn-taula tbody tr')[0].querySelectorAll('.tn-cel')].map(x => x.textContent.trim());
+      out.final = [capF, celF, document.getElementById('trimSel').value, fmt(notaTrimestre(g, ids[0], 0)), fmt(notaFinal(g, ids[0]))];
+      document.querySelectorAll('.tn-taula thead .tn-act .tn-act-nom')[1].click(); await new Promise(r => setTimeout(r, 50));
+      out.tornaAv = [state.ui.trim, state.ui.resInfFinal, document.getElementById('trimSel').value];
+      state.ui.tab = 'actividades'; render(); await new Promise(r => setTimeout(r, 50));
+      out.senseFinalAct = ![...document.getElementById('trimSel').options].some(o => o.value === 'final');
       return out;
     }, ids);
     t.ok(r.seg[0] && (r.seg[1] === 'taula' && r.seg[2] === '' && r.seg[3]), '«+ Nova» d\'un apartat (Deures…) també torna a la taula', JSON.stringify(r.seg));
@@ -2237,6 +2248,8 @@ export const PRUEBAS = [
     t.ok(r.modal && r.despres[0] === 5 && r.despres[1] && r.despres[2] === '5,0', "tocar la nota obri l'activitat d'eixe alumne/a i el canvi es guarda i es veu en la taula", JSON.stringify(r));
     t.ok(r.seg && r.tancat && r.trim1.length === 1 && r.trim1[0] === 'Altra avaluació', 'navegar a l\'alumne/a següent i canviar d\'avaluació', JSON.stringify(r));
     t.ok(r.anarAct && r.tornat[0] === 'taula' && r.tornat[1] && r.tornat[2], '«＋ Nova activitat» crea l\'activitat en Activitats i torna a la taula amb la columna nova', JSON.stringify(r));
+    t.ok(r.opFinal && r.final[0].join('|') === '1a avaluació|2a avaluació|3a avaluació|Nota final' && r.final[1][0] === r.final[3] && r.final[1][3] === r.final[4] && r.final[2] === 'final', '«Final» en el selector: nota de cada avaluació i nota final', JSON.stringify(r.final));
+    t.ok(r.tornaAv[0] === 1 && r.tornaAv[1] === false && r.tornaAv[2] === '1' && r.senseFinalAct, "tocar una avaluació obri la seua taula; en Activitats no hi ha «Final»", JSON.stringify([r.tornaAv, r.senseFinalAct]));
     t.ok(!p.errores.length, 'sin errores de JavaScript', p.errores.slice(0, 3).join('; '));
   } },
 ];
