@@ -750,6 +750,7 @@ body[data-tema="oscuro"]{--qualnum:#9aa3b5}
 .tn-ex{color:var(--mut)!important;font-size:12px}
 .tn-final{border-left:2px solid var(--line)!important;font-weight:700;min-width:84px}
 .tn-taula td.tn-final{padding:0 8px}
+.tn-taula td.tn-final .tn-qual{margin-top:2px;font-size:11.5px;font-weight:400}
 .tn-nav{gap:4px;margin:10px 0 4px;flex-wrap:nowrap}
 .tn-nav button{white-space:nowrap;padding-left:6px;padding-right:6px}
 .tn-nota{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;padding:10px 12px;margin:8px 0 12px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
